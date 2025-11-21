@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constants/app_routes.dart';
-import '../../data/auth_exceptions.dart';
-import '../../data/auth_repository.dart';
+import '../../application/auth_cubit.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -15,9 +14,6 @@ class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController(text: 'solista@example.com');
   final _passwordController = TextEditingController(text: 'token');
-  final AuthRepository _repository = AuthRepository();
-  bool _isLoading = false;
-  String? _error;
 
   @override
   void dispose() {
@@ -26,68 +22,60 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
-  Future<void> _login() async {
+  void _login() {
     if (!_formKey.currentState!.validate()) return;
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      await _repository.signIn(_emailController.text.trim(), _passwordController.text.trim());
-      if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(AppRoutes.userHome);
-    } on AuthException catch (error) {
-      setState(() => _error = error.message);
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
+    context.read<AuthCubit>().signIn(_emailController.text, _passwordController.text);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(labelText: 'Correo electrónico'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Ingresa tu correo';
-              }
-              if (!value.contains('@')) {
-                return 'Correo inválido';
-              }
-              return null;
-            },
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        final isLoading = state.isLoading && state.lastAction == AuthAction.login;
+        final error = state.lastAction == AuthAction.login ? state.errorMessage : null;
+        return Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Correo electrónico'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Ingresa tu correo';
+                  }
+                  if (!value.contains('@')) {
+                    return 'Correo inválido';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Contraseña'),
+                obscureText: true,
+                validator: (value) => value != null && value.length >= 4 ? null : 'Contraseña demasiado corta',
+              ),
+              const SizedBox(height: 16),
+              if (error != null)
+                Text(
+                  error,
+                  style: const TextStyle(color: Colors.redAccent),
+                ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : _login,
+                  child: isLoading ? const CircularProgressIndicator() : const Text('Ingresar'),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _passwordController,
-            decoration: const InputDecoration(labelText: 'Contraseña'),
-            obscureText: true,
-            validator: (value) => value != null && value.length >= 4 ? null : 'Contraseña demasiado corta',
-          ),
-          const SizedBox(height: 16),
-          if (_error != null)
-            Text(
-              _error!,
-              style: const TextStyle(color: Colors.redAccent),
-            ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _login,
-              child: _isLoading ? const CircularProgressIndicator() : const Text('Ingresar'),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

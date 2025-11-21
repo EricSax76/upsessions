@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../application/musician_search_cubit.dart';
 import '../../data/musicians_repository.dart';
 import '../../domain/musician_entity.dart';
 import '../widgets/musician_card.dart';
@@ -7,29 +9,36 @@ import '../widgets/musician_filter_panel.dart';
 import '../widgets/musician_filters_chip_row.dart';
 import 'musician_detail_page.dart';
 
-class MusicianSearchPage extends StatefulWidget {
+class MusicianSearchPage extends StatelessWidget {
   const MusicianSearchPage({super.key});
 
   @override
-  State<MusicianSearchPage> createState() => _MusicianSearchPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => MusicianSearchCubit(repository: context.read<MusiciansRepository>())..search(),
+      child: const _MusicianSearchView(),
+    );
+  }
 }
 
-class _MusicianSearchPageState extends State<MusicianSearchPage> {
-  final _searchController = TextEditingController();
-  final MusiciansRepository _repository = MusiciansRepository();
-  List<MusicianEntity> _results = const [];
-  bool _loading = false;
+class _MusicianSearchView extends StatefulWidget {
+  const _MusicianSearchView();
 
   @override
-  void initState() {
-    super.initState();
-    _search();
+  State<_MusicianSearchView> createState() => _MusicianSearchViewState();
+}
+
+class _MusicianSearchViewState extends State<_MusicianSearchView> {
+  final _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
-  Future<void> _search() async {
-    setState(() => _loading = true);
-    _results = await _repository.search(query: _searchController.text);
-    setState(() => _loading = false);
+  void _search() {
+    context.read<MusicianSearchCubit>().search(query: _searchController.text.trim());
   }
 
   @override
@@ -46,20 +55,36 @@ class _MusicianSearchPageState extends State<MusicianSearchPage> {
             MusicianFiltersChipRow(onChanged: (_) => _search()),
             const SizedBox(height: 16),
             Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: _results.length,
-                      itemBuilder: (context, index) {
-                        final musician = _results[index];
-                        return MusicianCard(
-                          musician: musician,
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => MusicianDetailPage(musician: musician)),
-                          ),
-                        );
-                      },
-                    ),
+              child: BlocBuilder<MusicianSearchCubit, MusicianSearchState>(
+                builder: (context, state) {
+                  if (state.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state.errorMessage != null) {
+                    return Center(
+                      child: Text(
+                        state.errorMessage!,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
+                      ),
+                    );
+                  }
+                  if (state.results.isEmpty) {
+                    return const Center(child: Text('No encontramos músicos con esos filtros.'));
+                  }
+                  return ListView.builder(
+                    itemCount: state.results.length,
+                    itemBuilder: (context, index) {
+                      final MusicianEntity musician = state.results[index];
+                      return MusicianCard(
+                        musician: musician,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => MusicianDetailPage(musician: musician)),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),

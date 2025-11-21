@@ -1,46 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_routes.dart';
-import '../../auth/domain/user_entity.dart';
+import '../../../core/services/firebase_initializer.dart';
 import '../../auth/data/auth_repository.dart';
-import '../../auth/data/auth_exceptions.dart';
-import '../application/splash_controller.dart';
+import '../application/bootstrap_cubit.dart';
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => BootstrapCubit(
+        firebaseInitializer: context.read<FirebaseInitializer>(),
+        authRepository: context.read<AuthRepository>(),
+      )..initialize(),
+      child: const _SplashView(),
+    );
+  }
 }
 
-class _SplashPageState extends State<SplashPage> {
-  final SplashController _controller = SplashController();
-  final AuthRepository _authRepository = AuthRepository();
-
-  @override
-  void initState() {
-    super.initState();
-    _bootstrap();
-  }
-
-  Future<void> _bootstrap() async {
-    await _controller.initialize();
-    if (!mounted) return;
-    try {
-      final UserEntity user = await _authRepository.signIn('solista@example.com', 'token');
-      if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(user.isVerified ? AppRoutes.userHome : AppRoutes.login);
-    } on AuthException {
-      if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(AppRoutes.login);
-    }
-  }
+class _SplashView extends StatelessWidget {
+  const _SplashView();
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
+    return BlocConsumer<BootstrapCubit, BootstrapState>(
+      listenWhen: (previous, current) => previous.status != current.status,
+      listener: (context, state) {
+        if (state.status == BootstrapStatus.authenticated) {
+          Navigator.of(context).pushReplacementNamed(AppRoutes.userHome);
+        } else if (state.status == BootstrapStatus.needsLogin) {
+          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+        }
+      },
+      builder: (context, state) {
+        final showError = state.status == BootstrapStatus.error && state.errorMessage != null;
         return Scaffold(
           body: Center(
             child: Column(
@@ -48,14 +44,18 @@ class _SplashPageState extends State<SplashPage> {
               children: [
                 const FlutterLogo(size: 88),
                 const SizedBox(height: 16),
-                _controller.isLoading
-                    ? const CircularProgressIndicator()
-                    : const Icon(Icons.music_note, size: 32),
-                if (_controller.error != null)
+                if (state.status == BootstrapStatus.loading)
+                  const CircularProgressIndicator()
+                else if (showError)
+                  const Icon(Icons.error_outline, size: 32, color: Colors.redAccent)
+                else
+                  const Icon(Icons.music_note, size: 32),
+                if (showError)
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
                     child: Text(
-                      _controller.error!,
+                      state.errorMessage!,
+                      textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
                     ),
                   ),

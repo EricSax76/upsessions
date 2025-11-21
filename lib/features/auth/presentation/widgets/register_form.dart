@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constants/app_routes.dart';
-import '../../data/auth_exceptions.dart';
-import '../../data/auth_repository.dart';
+import '../../application/auth_cubit.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
@@ -16,9 +15,6 @@ class _RegisterFormState extends State<RegisterForm> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final AuthRepository _repository = AuthRepository();
-  bool _isLoading = false;
-  String? _error;
 
   @override
   void dispose() {
@@ -28,69 +24,61 @@ class _RegisterFormState extends State<RegisterForm> {
     super.dispose();
   }
 
-  Future<void> _register() async {
+  void _register() {
     if (!_formKey.currentState!.validate()) return;
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      await _repository.register(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-        displayName: _nameController.text.trim(),
-      );
-      if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(AppRoutes.userHome);
-    } on AuthException catch (error) {
-      setState(() => _error = error.message);
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
+    context.read<AuthCubit>().register(
+          email: _emailController.text,
+          password: _passwordController.text,
+          displayName: _nameController.text,
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _nameController,
-            decoration: const InputDecoration(labelText: 'Nombre artístico'),
-            validator: (value) => value != null && value.trim().length >= 3 ? null : 'Nombre muy corto',
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        final isLoading = state.isLoading && state.lastAction == AuthAction.register;
+        final error = state.lastAction == AuthAction.register ? state.errorMessage : null;
+        return Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Nombre artístico'),
+                validator: (value) => value != null && value.trim().length >= 3 ? null : 'Nombre muy corto',
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Correo'),
+                validator: (value) => value != null && value.contains('@') ? null : 'Correo inválido',
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'Contraseña'),
+                obscureText: true,
+                validator: (value) => value != null && value.length >= 6 ? null : 'Mínimo 6 caracteres',
+              ),
+              const SizedBox(height: 16),
+              if (error != null)
+                Text(
+                  error,
+                  style: const TextStyle(color: Colors.redAccent),
+                ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : _register,
+                  child: isLoading ? const CircularProgressIndicator() : const Text('Crear cuenta'),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(labelText: 'Correo'),
-            validator: (value) => value != null && value.contains('@') ? null : 'Correo inválido',
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _passwordController,
-            decoration: const InputDecoration(labelText: 'Contraseña'),
-            obscureText: true,
-            validator: (value) => value != null && value.length >= 6 ? null : 'Mínimo 6 caracteres',
-          ),
-          const SizedBox(height: 16),
-          if (_error != null)
-            Text(
-              _error!,
-              style: const TextStyle(color: Colors.redAccent),
-            ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _register,
-              child: _isLoading ? const CircularProgressIndicator() : const Text('Crear cuenta'),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
