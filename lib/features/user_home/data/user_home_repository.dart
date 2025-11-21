@@ -1,105 +1,96 @@
-import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'announcement_model.dart';
 import 'instrument_category_model.dart';
 import 'musician_card_model.dart';
 
 class UserHomeRepository {
+  UserHomeRepository({FirebaseFirestore? firestore}) : _firestore = firestore ?? FirebaseFirestore.instance;
+
+  final FirebaseFirestore _firestore;
+
   Future<List<MusicianCardModel>> fetchRecommendedMusicians() async {
-    await Future<void>.delayed(const Duration(milliseconds: 300));
-    return _musicians.take(6).toList();
+    final snapshot = await _firestore
+        .collection('musicians')
+        .orderBy('rating', descending: true)
+        .limit(6)
+        .get();
+    return snapshot.docs.map(_mapMusician).toList();
   }
 
   Future<List<MusicianCardModel>> fetchNewMusicians() async {
-    await Future<void>.delayed(const Duration(milliseconds: 350));
-    return _musicians.reversed.take(4).toList();
+    final snapshot = await _firestore
+        .collection('musicians')
+        .orderBy('createdAt', descending: true)
+        .limit(6)
+        .get();
+    return snapshot.docs.map(_mapMusician).toList();
   }
 
   Future<List<AnnouncementModel>> fetchRecentAnnouncements() async {
-    await Future<void>.delayed(const Duration(milliseconds: 280));
-    return _announcements;
+    final snapshot = await _firestore
+        .collection('announcements')
+        .orderBy('publishedAt', descending: true)
+        .limit(5)
+        .get();
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      return AnnouncementModel(
+        id: doc.id,
+        title: (data['title'] ?? '') as String,
+        description: (data['body'] ?? data['description'] ?? '') as String,
+        city: (data['city'] ?? '') as String,
+        date: _parseTimestamp(data['publishedAt']),
+      );
+    }).toList();
   }
 
   Future<List<InstrumentCategoryModel>> fetchInstrumentCategories() async {
-    await Future<void>.delayed(const Duration(milliseconds: 200));
-    return _categories;
+    final snapshot = await _firestore.collection('instrument_categories').orderBy('category').get();
+    return snapshot.docs
+        .map((doc) => InstrumentCategoryModel(
+              category: (doc.data()['category'] ?? '') as String,
+              instruments: _stringList(doc.data()['instruments']),
+            ))
+        .toList();
   }
 
   Future<List<String>> fetchProvinces() async {
-    return const ['CDMX', 'Jalisco', 'Monterrey', 'Yucatán', 'Baja California'];
+    final doc = await _firestore.collection('metadata').doc('geography').get();
+    if (!doc.exists) {
+      return const [];
+    }
+    return _stringList(doc.data()?['provinces']);
   }
 
-  static final List<MusicianCardModel> _musicians = [
-    const MusicianCardModel(
-      id: '1',
-      name: 'María Rivera',
-      instrument: 'Voz',
-      location: 'Ciudad de México',
-      style: 'Soul',
-      rating: 4.9,
-    ),
-    const MusicianCardModel(
-      id: '2',
-      name: 'Juan Herrera',
-      instrument: 'Guitarra',
-      location: 'Guadalajara',
-      style: 'Rock',
-      rating: 4.6,
-    ),
-    const MusicianCardModel(
-      id: '3',
-      name: 'Luisa Méndez',
-      instrument: 'Batería',
-      location: 'Monterrey',
-      style: 'Pop',
-      rating: 4.4,
-    ),
-    const MusicianCardModel(
-      id: '4',
-      name: 'Rafa Lozano',
-      instrument: 'Bajo',
-      location: 'Puebla',
-      style: 'Funk',
-      rating: 4.5,
-    ),
-    const MusicianCardModel(
-      id: '5',
-      name: 'Diana Cárdenas',
-      instrument: 'Teclado',
-      location: 'Cancún',
-      style: 'Indie',
-      rating: 4.7,
-    ),
-    const MusicianCardModel(
-      id: '6',
-      name: 'Diego Flores',
-      instrument: 'Saxofón',
-      location: 'Tijuana',
-      style: 'Jazz',
-      rating: 4.8,
-    ),
-  ];
+  static MusicianCardModel _mapMusician(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data();
+    final styles = _stringList(data['styles']);
+    return MusicianCardModel(
+      id: doc.id,
+      name: (data['name'] ?? '') as String,
+      instrument: (data['instrument'] ?? '') as String,
+      location: (data['city'] ?? '') as String,
+      style: styles.isNotEmpty ? styles.first : '',
+      avatarUrl: data['photoUrl'] as String?,
+      rating: (data['rating'] as num?)?.toDouble() ?? 0,
+    );
+  }
 
-  static final List<AnnouncementModel> _announcements = [
-    AnnouncementModel(
-      id: 'a1',
-      title: 'Buscamos vocalista femenina',
-      description: 'Proyecto pop latino con fechas confirmadas.',
-      city: 'CDMX',
-      date: DateTime.now().subtract(const Duration(days: 1)),
-    ),
-    AnnouncementModel(
-      id: 'a2',
-      title: 'Guitarrista rítmico para banda de funk',
-      description: 'Ensayos dos veces por semana, experiencia mínima de 2 años.',
-      city: 'Guadalajara',
-      date: DateTime.now().subtract(const Duration(days: 2)),
-    ),
-  ];
+  static DateTime _parseTimestamp(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+    if (value is DateTime) {
+      return value;
+    }
+    return DateTime.now();
+  }
 
-  static final List<InstrumentCategoryModel> _categories = [
-    const InstrumentCategoryModel(category: 'Cuerdas', instruments: ['Guitarra', 'Bajo', 'Violin']),
-    const InstrumentCategoryModel(category: 'Viento', instruments: ['Saxofón', 'Trompeta']),
-    const InstrumentCategoryModel(category: 'Percusión', instruments: ['Batería', 'Congas', 'Cajón']),
-  ];
+  static List<String> _stringList(dynamic raw) {
+    if (raw is Iterable) {
+      return raw.map((e) => e.toString()).toList();
+    }
+    return const [];
+  }
 }

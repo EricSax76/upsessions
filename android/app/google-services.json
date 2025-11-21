@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "735814338688",
+    "project_id": "upsessions-31987",
+    "storage_bucket": "upsessions-31987.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735814338688:android:445f7e6a35adbe03a4fe65",
+        "android_client_info": {
+          "package_name": "com.example.music_in_touch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6JJ9g72o1aJdyA3Z2OIKNi9HbA5FQzd8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

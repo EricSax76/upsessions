@@ -114,7 +114,7 @@ class _UserHomePageState extends State<UserHomePage> {
                             const SizedBox(height: 32),
                             const ProfileLinkBox(),
                             const SizedBox(height: 32),
-                            const ProvincesListSection(),
+                            ProvincesListSection(provinces: _controller.provinces),
                             const SizedBox(height: 24),
                             const BottomCookieBar(),
                           ],

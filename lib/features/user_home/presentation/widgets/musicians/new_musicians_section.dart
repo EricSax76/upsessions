@@ -14,7 +14,7 @@ class NewMusiciansSection extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: musicians.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (context, _) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final musician = musicians[index];
           return Container(

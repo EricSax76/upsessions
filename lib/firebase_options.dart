@@ -27,29 +27,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_WEB_API_KEY',
-    appId: 'REPLACE_WITH_WEB_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_SENDER_ID',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    authDomain: 'REPLACE_WITH_AUTH_DOMAIN',
-    storageBucket: 'REPLACE_WITH_STORAGE_BUCKET',
+    apiKey: 'AIzaSyBHbysipgC7jnKItgGzSULzRGnsPnC5U2Y',
+    appId: '1:735814338688:web:f84e88a008ea8aa1a4fe65',
+    messagingSenderId: '735814338688',
+    projectId: 'upsessions-31987',
+    authDomain: 'upsessions-31987.firebaseapp.com',
+    storageBucket: 'upsessions-31987.firebasestorage.app',
+    measurementId: 'G-DK8CD9TBK7',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_ANDROID_API_KEY',
-    appId: 'REPLACE_WITH_ANDROID_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_SENDER_ID',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    storageBucket: 'REPLACE_WITH_STORAGE_BUCKET',
+    apiKey: 'AIzaSyA6JJ9g72o1aJdyA3Z2OIKNi9HbA5FQzd8',
+    appId: '1:735814338688:android:445f7e6a35adbe03a4fe65',
+    messagingSenderId: '735814338688',
+    projectId: 'upsessions-31987',
+    storageBucket: 'upsessions-31987.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_IOS_API_KEY',
-    appId: 'REPLACE_WITH_IOS_APP_ID',
-    messagingSenderId: 'REPLACE_WITH_SENDER_ID',
-    projectId: 'REPLACE_WITH_PROJECT_ID',
-    storageBucket: 'REPLACE_WITH_STORAGE_BUCKET',
-    iosClientId: 'REPLACE_WITH_IOS_CLIENT_ID',
+    apiKey: 'AIzaSyC-0fWZDQsYYJSHEMFLPWQzAKl-KbOQc5A',
+    appId: '1:735814338688:ios:7b48e86a55a6c014a4fe65',
+    messagingSenderId: '735814338688',
+    projectId: 'upsessions-31987',
+    storageBucket: 'upsessions-31987.firebasestorage.app',
     iosBundleId: 'com.example.musicInTouch',
   );
 

@@ -1,12 +1,13 @@
 import 'package:flutter/foundation.dart';
 
+import '../../../core/services/service_locator.dart';
 import '../data/announcement_model.dart';
 import '../data/instrument_category_model.dart';
 import '../data/musician_card_model.dart';
 import '../data/user_home_repository.dart';
 
 class UserHomeController extends ChangeNotifier {
-  UserHomeController({UserHomeRepository? repository}) : _repository = repository ?? UserHomeRepository();
+  UserHomeController({UserHomeRepository? repository}) : _repository = repository ?? getIt<UserHomeRepository>();
 
   final UserHomeRepository _repository;
 
@@ -22,6 +23,7 @@ class UserHomeController extends ChangeNotifier {
   List<MusicianCardModel> _newMusicians = const [];
   List<AnnouncementModel> _announcements = const [];
   List<InstrumentCategoryModel> _categories = const [];
+  List<String> _provinces = const [];
 
   bool get isLoading => _loading;
   String get province => _province;
@@ -34,6 +36,7 @@ class UserHomeController extends ChangeNotifier {
   List<MusicianCardModel> get newMusicians => _newMusicians;
   List<AnnouncementModel> get announcements => _announcements;
   List<InstrumentCategoryModel> get categories => _categories;
+  List<String> get provinces => _provinces;
 
   Future<void> loadHome() async {
     _setLoading(true);
@@ -41,6 +44,7 @@ class UserHomeController extends ChangeNotifier {
     _newMusicians = await _repository.fetchNewMusicians();
     _announcements = await _repository.fetchRecentAnnouncements();
     _categories = await _repository.fetchInstrumentCategories();
+    _provinces = await _repository.fetchProvinces();
     _setLoading(false);
   }
 

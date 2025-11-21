@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/services/service_locator.dart';
 import '../../data/chat_repository.dart';
 import '../../domain/chat_message.dart';
 import '../../domain/chat_thread.dart';
@@ -14,7 +15,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final ChatRepository _repository = ChatRepository();
+  final ChatRepository _repository = getIt();
   List<ChatThread> _threads = const [];
   List<ChatMessage> _messages = const [];
   ChatThread? _selectedThread;

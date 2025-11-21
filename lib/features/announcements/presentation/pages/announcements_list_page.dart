@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/services/service_locator.dart';
 import '../../data/announcements_repository.dart';
 import '../../domain/announcement_entity.dart';
 import '../widgets/announcement_card.dart';
@@ -15,7 +16,7 @@ class AnnouncementsListPage extends StatefulWidget {
 }
 
 class _AnnouncementsListPageState extends State<AnnouncementsListPage> {
-  final AnnouncementsRepository _repository = AnnouncementsRepository();
+  final AnnouncementsRepository _repository = getIt();
   List<AnnouncementEntity> _announcements = const [];
   bool _loading = false;
 

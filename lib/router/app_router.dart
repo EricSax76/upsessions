@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/constants/app_routes.dart';
-import '../features/announcements/data/announcements_repository.dart';
+import '../core/services/service_locator.dart';
 import '../features/announcements/domain/announcement_entity.dart';
 import '../features/announcements/presentation/pages/announcement_detail_page.dart';
 import '../features/announcements/presentation/pages/announcement_form_page.dart';
@@ -61,7 +61,7 @@ class AppRouter {
         break;
       case AppRoutes.announcementForm:
         return MaterialPageRoute(
-          builder: (_) => AnnouncementFormPage(repository: AnnouncementsRepository()),
+          builder: (_) => AnnouncementFormPage(repository: getIt()),
           settings: settings,
         );
       case AppRoutes.media:

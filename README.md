@@ -2,6 +2,21 @@
 
 Solomusicos Flutter app scaffold that centralizes musicians, announcements, and user collaboration experiences.
 
+## Firebase setup
+
+1. Instala la CLI de FlutterFire si aún no la tienes (`dart pub global activate flutterfire_cli`).
+2. Ejecuta `flutterfire configure --project=upsessions-31987 --out=lib/firebase_options.dart` para regenerar las opciones cuando agregues nuevas plataformas. El proyecto ya incluye los archivos de Android (`android/app/google-services.json`) e iOS (`ios/Runner/GoogleService-Info.plist`).
+3. Para macOS, Windows y Linux repite el comando anterior seleccionando las plataformas correspondientes; los placeholders en `lib/firebase_options.dart` dejarán de usarse cuando completes ese paso.
+4. Poblado mínimo de Firestore y Storage:
+   - `musicians`: documentos con `name`, `instrument`, `city`, `styles` (array de strings), `experienceYears`, `rating`, `photoUrl` y `createdAt` (`Timestamp`).
+   - `announcements`: `title`, `body`, `city`, `author`, `publishedAt`.
+   - `profiles`: cada doc debe compartir el `uid` del usuario autenticado y almacenar `name`, `bio`, `location`, `skills` (array) y `links` (mapa de nombre → URL).
+   - `instrument_categories`: docs con `category` y `instruments`.
+   - `metadata/geography`: documento con arrays `provinces` y cualquier otra metainformación geográfica.
+   - `chat_threads`: cada doc mantiene `participants`, `lastMessage`, `lastMessageAt` y la subcolección `messages` (`sender`, `body`, `sentAt`).
+   - `media_items`: `title`, `type` (`audio`/`video`/`image`), `storagePath`, `thumbnailPath`, `durationSeconds`, `createdAt`. Sube los archivos a Firebase Storage en las rutas indicadas para que el repositorio construya los `downloadURL`.
+   - Opcional: despliega una función HTTPS llamada `sendChatNotification` para que `CloudFunctionsService` envíe notificaciones cuando alguien mande un mensaje.
+
 ## Project Structure
 
 ```text
@@ -64,7 +79,7 @@ solomusicos_flutter/
 │       │   ├── presentation/
 │       │   │   └── splash_page.dart
 │       │   └── application/
-│       │       └── splash_controller.dart
+│       │       └── bootstrap_cubit.dart
 │       ├── auth/
 │       │   ├── data/
 │       │   │   ├── auth_repository.dart

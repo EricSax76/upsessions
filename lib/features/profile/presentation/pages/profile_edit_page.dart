@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/services/service_locator.dart';
 import '../../data/profile_repository.dart';
 import '../../domain/profile_entity.dart';
 import '../widgets/profile_form.dart';
@@ -11,8 +12,7 @@ class ProfileEditPage extends StatefulWidget {
   State<ProfileEditPage> createState() => _ProfileEditPageState();
 }
 
-class _ProfileEditPageState extends State<ProfileEditPage> {
-  final ProfileRepository _repository = ProfileRepository();
+  final ProfileRepository _repository = getIt();
   ProfileEntity? _profile;
 
   @override

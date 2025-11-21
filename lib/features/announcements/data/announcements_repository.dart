@@ -1,39 +1,33 @@
-import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../domain/announcement_entity.dart';
+import 'announcement_dto.dart';
 
 class AnnouncementsRepository {
+  AnnouncementsRepository({FirebaseFirestore? firestore})
+      : _collection = (firestore ?? FirebaseFirestore.instance).collection('announcements');
+
+  final CollectionReference<Map<String, dynamic>> _collection;
+
   Future<List<AnnouncementEntity>> fetchAll() async {
-    await Future<void>.delayed(const Duration(milliseconds: 300));
-    return _announcements;
+    final snapshot = await _collection.orderBy('publishedAt', descending: true).get();
+    return snapshot.docs.map((doc) => AnnouncementDto.fromDocument(doc).toEntity()).toList();
   }
 
   Future<AnnouncementEntity> findById(String id) async {
-    await Future<void>.delayed(const Duration(milliseconds: 200));
-    return _announcements.firstWhere((element) => element.id == id);
+    final doc = await _collection.doc(id).get();
+    if (!doc.exists) {
+      throw Exception('Anuncio no encontrado');
+    }
+    return AnnouncementDto.fromDocument(doc).toEntity();
   }
 
   Future<void> create(AnnouncementEntity entity) async {
-    await Future<void>.delayed(const Duration(milliseconds: 350));
-    _announcements.add(entity);
+    final dto = AnnouncementDto.fromEntity(entity);
+    if (entity.id.isEmpty) {
+      await _collection.add(dto.toJson());
+    } else {
+      await _collection.doc(entity.id).set(dto.toJson());
+    }
   }
-
-  static final List<AnnouncementEntity> _announcements = [
-    AnnouncementEntity(
-      id: 'a1',
-      title: 'Busco tecladista para tour',
-      body: 'Repertorio pop, ensayos en CDMX.',
-      city: 'CDMX',
-      author: 'María Rivera',
-      publishedAt: DateTime.now().subtract(const Duration(days: 1)),
-    ),
-    AnnouncementEntity(
-      id: 'a2',
-      title: 'Productor busca vocalista',
-      body: 'Proyecto soul con experiencias pagadas.',
-      city: 'Guadalajara',
-      author: 'Alex Soto',
-      publishedAt: DateTime.now().subtract(const Duration(days: 3)),
-    ),
-  ];
 }

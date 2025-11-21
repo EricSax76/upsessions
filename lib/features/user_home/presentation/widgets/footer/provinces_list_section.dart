@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class ProvincesListSection extends StatelessWidget {
-  const ProvincesListSection({super.key});
+  const ProvincesListSection({super.key, required this.provinces});
 
-  static const _provinces = ['CDMX', 'Jalisco', 'Puebla', 'Nuevo León', 'Quintana Roo'];
+  final List<String> provinces;
 
   @override
   Widget build(BuildContext context) {
     return Wrap(
       spacing: 12,
-      children: _provinces.map((province) => Chip(label: Text(province))).toList(),
+      children: provinces.map((province) => Chip(label: Text(province))).toList(),
     );
   }
 }
