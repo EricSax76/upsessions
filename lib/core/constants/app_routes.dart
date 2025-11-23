@@ -3,6 +3,7 @@ class AppRoutes {
   static const login = '/auth/login';
   static const register = '/auth/register';
   static const forgotPassword = '/auth/forgot-password';
+  static const musicianOnboarding = '/onboarding/musician';
   static const userHome = '/home';
   static const musicians = '/musicians';
   static const musicianDetail = '/musicians/detail';

@@ -39,51 +39,97 @@ class AdvancedSearchBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Theme.of(context).dividerColor)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Búsqueda avanzada', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 16),
-            Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 600;
+        return Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: Theme.of(context).dividerColor),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: InstrumentDropdown(value: selectedInstrument, onChanged: onInstrumentChanged)),
-                const SizedBox(width: 12),
-                Expanded(child: StyleDropdown(value: selectedStyle, onChanged: onStyleChanged)),
+                Text(
+                  'Búsqueda avanzada',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 16),
+                ..._buildFieldGroup(
+                  isCompact: isCompact,
+                  left: InstrumentDropdown(
+                    value: selectedInstrument,
+                    onChanged: onInstrumentChanged,
+                  ),
+                  right: StyleDropdown(
+                    value: selectedStyle,
+                    onChanged: onStyleChanged,
+                  ),
+                ),
+                ..._buildFieldGroup(
+                  isCompact: isCompact,
+                  left: ProfileTypeDropdown(
+                    value: selectedProfileType,
+                    onChanged: onProfileTypeChanged,
+                  ),
+                  right: GenderRadioGroup(
+                    value: selectedGender,
+                    onChanged: onGenderChanged,
+                  ),
+                ),
+                ..._buildFieldGroup(
+                  isCompact: isCompact,
+                  left: ProvinceDropdown(
+                    value: selectedProvince,
+                    onChanged: onProvinceChanged,
+                  ),
+                  right: CityDropdown(
+                    value: selectedCity,
+                    onChanged: onCityChanged,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.search),
+                    label: const Text('Buscar'),
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(child: ProfileTypeDropdown(value: selectedProfileType, onChanged: onProfileTypeChanged)),
-                const SizedBox(width: 12),
-                Expanded(child: GenderRadioGroup(value: selectedGender, onChanged: onGenderChanged)),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(child: ProvinceDropdown(value: selectedProvince, onChanged: onProvinceChanged)),
-                const SizedBox(width: 12),
-                Expanded(child: CityDropdown(value: selectedCity, onChanged: onCityChanged)),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.search),
-                label: const Text('Buscar'),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
+  }
+
+  List<Widget> _buildFieldGroup({
+    required bool isCompact,
+    required Widget left,
+    required Widget right,
+  }) {
+    if (isCompact) {
+      return [
+        left,
+        const SizedBox(height: 12),
+        right,
+        const SizedBox(height: 12),
+      ];
+    }
+    return [
+      Row(
+        children: [
+          Expanded(child: left),
+          const SizedBox(width: 12),
+          Expanded(child: right),
+        ],
+      ),
+      const SizedBox(height: 12),
+    ];
   }
 }

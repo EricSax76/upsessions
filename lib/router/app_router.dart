@@ -14,6 +14,7 @@ import '../features/messaging/presentation/pages/chat_page.dart';
 import '../features/musicians/domain/musician_entity.dart';
 import '../features/musicians/presentation/pages/musician_detail_page.dart';
 import '../features/musicians/presentation/pages/musician_search_page.dart';
+import '../features/onboarding/presentation/pages/musician_onboarding_page.dart';
 import '../features/profile/presentation/pages/account_page.dart';
 import '../features/profile/presentation/pages/profile_edit_page.dart';
 import '../features/profile/presentation/pages/profile_overview_page.dart';
@@ -28,17 +29,40 @@ class AppRouter {
   Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case AppRoutes.splash:
-        return MaterialPageRoute(builder: (_) => const SplashPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const SplashPage(),
+          settings: settings,
+        );
       case AppRoutes.login:
-        return MaterialPageRoute(builder: (_) => const LoginPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const LoginPage(),
+          settings: settings,
+        );
       case AppRoutes.register:
-        return MaterialPageRoute(builder: (_) => const RegisterPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const RegisterPage(),
+          settings: settings,
+        );
       case AppRoutes.forgotPassword:
-        return MaterialPageRoute(builder: (_) => const ForgotPasswordPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const ForgotPasswordPage(),
+          settings: settings,
+        );
+      case AppRoutes.musicianOnboarding:
+        return MaterialPageRoute(
+          builder: (_) => const MusicianOnboardingPage(),
+          settings: settings,
+        );
       case AppRoutes.userHome:
-        return MaterialPageRoute(builder: (_) => const UserHomePage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const UserHomePage(),
+          settings: settings,
+        );
       case AppRoutes.musicians:
-        return MaterialPageRoute(builder: (_) => const MusicianSearchPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const MusicianSearchPage(),
+          settings: settings,
+        );
       case AppRoutes.musicianDetail:
         final musician = settings.arguments;
         if (musician is MusicianEntity) {
@@ -49,7 +73,10 @@ class AppRouter {
         }
         break;
       case AppRoutes.announcements:
-        return MaterialPageRoute(builder: (_) => const AnnouncementsListPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const AnnouncementsListPage(),
+          settings: settings,
+        );
       case AppRoutes.announcementDetail:
         final announcement = settings.arguments;
         if (announcement is AnnouncementEntity) {
@@ -65,23 +92,45 @@ class AppRouter {
           settings: settings,
         );
       case AppRoutes.media:
-        return MaterialPageRoute(builder: (_) => const MediaGalleryPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const MediaGalleryPage(),
+          settings: settings,
+        );
       case AppRoutes.chat:
-        return MaterialPageRoute(builder: (_) => const ChatPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const ChatPage(),
+          settings: settings,
+        );
       case AppRoutes.profile:
-        return MaterialPageRoute(builder: (_) => const ProfileOverviewPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const ProfileOverviewPage(),
+          settings: settings,
+        );
       case AppRoutes.profileEdit:
-        return MaterialPageRoute(builder: (_) => const ProfileEditPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const ProfileEditPage(),
+          settings: settings,
+        );
       case AppRoutes.account:
-        return MaterialPageRoute(builder: (_) => const AccountPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const AccountPage(),
+          settings: settings,
+        );
       case AppRoutes.settings:
-        return MaterialPageRoute(builder: (_) => const SettingsPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const SettingsPage(),
+          settings: settings,
+        );
       case AppRoutes.help:
-        return MaterialPageRoute(builder: (_) => const HelpPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const HelpPage(),
+          settings: settings,
+        );
     }
 
     return MaterialPageRoute(
-      builder: (context) => _UnknownRouteScreen(name: settings.name ?? 'unknown'),
+      builder: (context) =>
+          _UnknownRouteScreen(name: settings.name ?? 'unknown'),
       settings: settings,
     );
   }
@@ -95,12 +144,8 @@ class _UnknownRouteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ruta no encontrada'),
-      ),
-      body: Center(
-        child: Text('La ruta "$name" no existe.'),
-      ),
+      appBar: AppBar(title: const Text('Ruta no encontrada')),
+      body: Center(child: Text('La ruta "$name" no existe.')),
     );
   }
 }

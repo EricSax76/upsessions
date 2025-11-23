@@ -21,7 +21,9 @@ class LoginPage extends StatelessWidget {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == AuthStatus.authenticated) {
-          Navigator.of(context).pushReplacementNamed(AppRoutes.userHome);
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil(AppRoutes.splash, (route) => false);
         }
       },
       child: Scaffold(
@@ -45,11 +47,14 @@ class LoginPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextButton(
-                        onPressed: () => Navigator.of(context).pushNamed(AppRoutes.forgotPassword),
+                        onPressed: () => Navigator.of(
+                          context,
+                        ).pushNamed(AppRoutes.forgotPassword),
                         child: const Text('¿Olvidaste tu contraseña?'),
                       ),
                       TextButton(
-                        onPressed: () => Navigator.of(context).pushNamed(AppRoutes.register),
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed(AppRoutes.register),
                         child: const Text('Crear cuenta'),
                       ),
                     ],
@@ -57,7 +62,9 @@ class LoginPage extends StatelessWidget {
                   const Divider(height: 32),
                   const Text('O continúa con'),
                   const SizedBox(height: 8),
-                  SocialLoginButtons(onSelected: (provider) => _onSocialLogin(context, provider)),
+                  SocialLoginButtons(
+                    onSelected: (provider) => _onSocialLogin(context, provider),
+                  ),
                 ],
               ),
             ),

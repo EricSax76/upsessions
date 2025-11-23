@@ -13,6 +13,7 @@ class StyleDropdown extends StatelessWidget {
     return DropdownButtonFormField<String>(
       initialValue: value,
       decoration: const InputDecoration(labelText: 'Estilo'),
+      isExpanded: true,
       items: _styles.map((style) => DropdownMenuItem(value: style, child: Text(style))).toList(),
       onChanged: (selected) {
         if (selected != null) {

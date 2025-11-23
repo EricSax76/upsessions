@@ -13,6 +13,7 @@ class CityDropdown extends StatelessWidget {
     return DropdownButtonFormField<String>(
       initialValue: value,
       decoration: const InputDecoration(labelText: 'Ciudad'),
+      isExpanded: true,
       items: _cities.map((city) => DropdownMenuItem(value: city, child: Text(city))).toList(),
       onChanged: (selected) {
         if (selected != null) {

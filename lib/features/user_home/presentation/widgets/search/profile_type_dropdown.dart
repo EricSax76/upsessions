@@ -13,6 +13,7 @@ class ProfileTypeDropdown extends StatelessWidget {
     return DropdownButtonFormField<String>(
       initialValue: value,
       decoration: const InputDecoration(labelText: 'Tipo de perfil'),
+      isExpanded: true,
       items: _types.map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
       onChanged: (selected) {
         if (selected != null) {

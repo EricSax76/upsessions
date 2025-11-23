@@ -14,7 +14,9 @@ class RegisterPage extends StatelessWidget {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == AuthStatus.authenticated) {
-          Navigator.of(context).pushReplacementNamed(AppRoutes.userHome);
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil(AppRoutes.splash, (route) => false);
         }
       },
       child: Scaffold(
@@ -35,7 +37,9 @@ class RegisterPage extends StatelessWidget {
                   const RegisterForm(),
                   const SizedBox(height: 12),
                   TextButton(
-                    onPressed: () => Navigator.of(context).pushReplacementNamed(AppRoutes.login),
+                    onPressed: () => Navigator.of(
+                      context,
+                    ).pushReplacementNamed(AppRoutes.login),
                     child: const Text('¿Ya tienes cuenta? Inicia sesión'),
                   ),
                 ],

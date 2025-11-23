@@ -1,6 +1,13 @@
 part of 'bootstrap_cubit.dart';
 
-enum BootstrapStatus { initial, loading, authenticated, needsLogin, error }
+enum BootstrapStatus {
+  initial,
+  loading,
+  authenticated,
+  needsLogin,
+  needsOnboarding,
+  error,
+}
 
 class BootstrapState extends Equatable {
   const BootstrapState({
@@ -23,7 +30,9 @@ class BootstrapState extends Equatable {
     return BootstrapState(
       status: status ?? this.status,
       user: identical(user, _unset) ? this.user : user as UserEntity?,
-      errorMessage: identical(errorMessage, _unset) ? this.errorMessage : errorMessage as String?,
+      errorMessage: identical(errorMessage, _unset)
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 

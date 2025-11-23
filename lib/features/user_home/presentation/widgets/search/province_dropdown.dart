@@ -13,6 +13,7 @@ class ProvinceDropdown extends StatelessWidget {
     return DropdownButtonFormField<String>(
       initialValue: value,
       decoration: const InputDecoration(labelText: 'Estado'),
+      isExpanded: true,
       items: _provinces.map((province) => DropdownMenuItem(value: province, child: Text(province))).toList(),
       onChanged: (selected) {
         if (selected != null) {
