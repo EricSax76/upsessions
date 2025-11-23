@@ -13,6 +13,7 @@ class ProfileOverviewPage extends StatefulWidget {
   State<ProfileOverviewPage> createState() => _ProfileOverviewPageState();
 }
 
+class _ProfileOverviewPageState extends State<ProfileOverviewPage> {
   final ProfileRepository _repository = getIt();
   ProfileEntity? _profile;
 

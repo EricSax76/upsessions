@@ -64,10 +64,10 @@ class ChatRepository {
       'lastMessage': lastMessage,
       'lastMessageAt': Timestamp.fromDate(now),
     });
-    await _cloudFunctionsService.notifyChatMessage(threadId: threadId, sender: user.email ?? '', body: body);
+    await _cloudFunctionsService.notifyChatMessage(threadId: threadId, sender: user.email, body: body);
     return ChatMessage(
       id: docRef.id,
-      sender: user.email ?? '',
+      sender: user.email,
       body: body,
       sentAt: now,
       isMine: true,

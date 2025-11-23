@@ -12,6 +12,7 @@ class ProfileEditPage extends StatefulWidget {
   State<ProfileEditPage> createState() => _ProfileEditPageState();
 }
 
+class _ProfileEditPageState extends State<ProfileEditPage> {
   final ProfileRepository _repository = getIt();
   ProfileEntity? _profile;
 
