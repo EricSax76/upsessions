@@ -38,7 +38,7 @@ class _SplashView extends StatelessWidget {
             context,
           ).pushReplacementNamed(AppRoutes.musicianOnboarding);
         } else if (state.status == BootstrapStatus.needsLogin) {
-          Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+          Navigator.of(context).pushReplacementNamed(AppRoutes.welcome);
         }
       },
       builder: (context, state) {

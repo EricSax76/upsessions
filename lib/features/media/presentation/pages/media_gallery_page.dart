@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/services/service_locator.dart';
+import 'package:upsessions/locator.dart';
 import '../../data/media_repository.dart';
 import '../../domain/media_item.dart';
 import '../widgets/media_grid.dart';
@@ -13,7 +13,7 @@ class MediaGalleryPage extends StatefulWidget {
 }
 
 class _MediaGalleryPageState extends State<MediaGalleryPage> {
-  final MediaRepository _repository = getIt();
+  final MediaRepository _repository = locate();
   List<MediaItem> _media = const [];
 
   @override

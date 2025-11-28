@@ -8,6 +8,7 @@ class ProfileDto {
     required this.location,
     required this.skills,
     required this.links,
+    this.photoUrl,
   });
 
   final String id;
@@ -16,6 +17,7 @@ class ProfileDto {
   final String location;
   final List<String> skills;
   final Map<String, String> links;
+  final String? photoUrl;
 
   ProfileEntity toEntity() {
     return ProfileEntity(
@@ -25,6 +27,7 @@ class ProfileDto {
       location: location,
       skills: skills,
       links: links,
+      photoUrl: photoUrl,
     );
   }
 }

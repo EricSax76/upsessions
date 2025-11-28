@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/profile_entity.dart';
+import 'package:upsessions/features/auth/domain/profile_entity.dart';
 
 class ProfileStatsRow extends StatelessWidget {
   const ProfileStatsRow({super.key, required this.profile});

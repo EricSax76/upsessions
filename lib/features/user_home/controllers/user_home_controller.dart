@@ -1,15 +1,17 @@
 import 'package:flutter/foundation.dart';
 
-import '../../../core/services/service_locator.dart';
+import 'package:upsessions/locator.dart';
 import '../data/announcement_model.dart';
 import '../data/instrument_category_model.dart';
 import '../data/musician_card_model.dart';
 import '../data/user_home_repository.dart';
 
 class UserHomeController extends ChangeNotifier {
-  UserHomeController({UserHomeRepository? repository}) : _repository = repository ?? getIt<UserHomeRepository>();
+  UserHomeController({UserHomeRepository? repository})
+    : _repository = repository ?? locate<UserHomeRepository>();
 
   final UserHomeRepository _repository;
+  bool _isDisposed = false;
 
   bool _loading = false;
   String _province = 'CDMX';
@@ -50,36 +52,52 @@ class UserHomeController extends ChangeNotifier {
 
   void selectProvince(String value) {
     _province = value;
-    notifyListeners();
+    _safeNotify();
   }
 
   void selectCity(String value) {
     _city = value;
-    notifyListeners();
+    _safeNotify();
   }
 
   void selectInstrument(String value) {
     _instrument = value;
-    notifyListeners();
+    _safeNotify();
   }
 
   void selectStyle(String value) {
     _style = value;
-    notifyListeners();
+    _safeNotify();
   }
 
   void selectProfileType(String value) {
     _profileType = value;
-    notifyListeners();
+    _safeNotify();
   }
 
   void selectGender(String value) {
     _gender = value;
-    notifyListeners();
+    _safeNotify();
   }
 
   void _setLoading(bool value) {
+    if (_isDisposed) {
+      return;
+    }
     _loading = value;
+    _safeNotify();
+  }
+
+  void _safeNotify() {
+    if (_isDisposed) {
+      return;
+    }
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
   }
 }

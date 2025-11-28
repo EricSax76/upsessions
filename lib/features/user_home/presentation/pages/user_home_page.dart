@@ -19,7 +19,7 @@ import '../widgets/musicians/new_musicians_section.dart';
 import '../widgets/musicians/recommended_users_section.dart';
 import '../widgets/profile/profile_link_box.dart';
 import '../widgets/profile/profile_status_bar.dart';
-import '../widgets/profile/quick_actions_row.dart';
+
 import '../widgets/search/advanced_search_box.dart';
 import '../widgets/sidebar/user_sidebar.dart';
 
@@ -109,7 +109,7 @@ class _UserHomePageState extends State<UserHomePage> {
           const SizedBox(height: 16),
           const ProfileStatusBar(),
           const SizedBox(height: 16),
-          const QuickActionsRow(),
+
           const SizedBox(height: 24),
           AdvancedSearchBox(
             selectedInstrument: _controller.instrument,

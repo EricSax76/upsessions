@@ -1,12 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'app.dart';
 import 'core/services/firebase_initializer.dart';
-import 'core/services/service_locator.dart';
+import 'package:upsessions/locator.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupServiceLocator();
-  await getIt<FirebaseInitializer>().init();
+  debugPrintSynchronously('Locator inicializado');
+  await locate<FirebaseInitializer>().init();
   runApp(const MusicInTouchApp());
 }

@@ -83,9 +83,12 @@ solomusicos_flutter/
 │       ├── auth/
 │       │   ├── data/
 │       │   │   ├── auth_repository.dart
-│       │   │   └── auth_exceptions.dart
+│       │   │   ├── auth_exceptions.dart
+│       │   │   ├── profile_repository.dart
+│       │   │   └── profile_dto.dart
 │       │   ├── domain/
-│       │   │   └── user_entity.dart
+│       │   │   ├── user_entity.dart
+│       │   │   └── profile_entity.dart
 │       │   └── presentation/
 │       │       ├── pages/
 │       │       │   ├── login_page.dart
@@ -168,11 +171,6 @@ solomusicos_flutter/
 │       │           ├── announcement_filter_panel.dart
 │       │           └── announcement_form.dart
 │       ├── profile/
-│       │   ├── data/
-│       │   │   ├── profile_repository.dart
-│       │   │   └── profile_dto.dart
-│       │   ├── domain/
-│       │   │   └── profile_entity.dart
 │       │   └── presentation/
 │       │       ├── pages/
 │       │       │   ├── profile_overview_page.dart

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/profile_entity.dart';
+import 'package:upsessions/features/auth/domain/profile_entity.dart';
 
 class ProfileForm extends StatefulWidget {
   const ProfileForm({super.key, required this.profile, required this.onSave});

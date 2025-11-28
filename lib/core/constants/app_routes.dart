@@ -1,5 +1,9 @@
 class AppRoutes {
   static const splash = '/';
+  static const welcome = '/welcome';
+  static const onboardingStoryOne = '/onboarding/story-one';
+  static const onboardingStoryTwo = '/onboarding/story-two';
+  static const onboardingStoryThree = '/onboarding/story-three';
   static const login = '/auth/login';
   static const register = '/auth/register';
   static const forgotPassword = '/auth/forgot-password';

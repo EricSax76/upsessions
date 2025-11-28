@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/profile_entity.dart';
+import 'package:upsessions/features/auth/domain/profile_entity.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key, required this.profile});
@@ -11,7 +11,11 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const CircleAvatar(radius: 36, child: Icon(Icons.person)),
+        CircleAvatar(
+          radius: 36,
+          backgroundImage: profile.photoUrl != null ? NetworkImage(profile.photoUrl!) : null,
+          child: profile.photoUrl == null ? const Icon(Icons.person) : null,
+        ),
         const SizedBox(width: 16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,

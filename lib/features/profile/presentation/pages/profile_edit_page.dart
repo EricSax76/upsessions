@@ -1,48 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/services/service_locator.dart';
-import '../../data/profile_repository.dart';
-import '../../domain/profile_entity.dart';
+import '../../../auth/application/auth_cubit.dart';
+import 'package:upsessions/features/auth/domain/profile_entity.dart';
 import '../widgets/profile_form.dart';
 
-class ProfileEditPage extends StatefulWidget {
+class ProfileEditPage extends StatelessWidget {
   const ProfileEditPage({super.key});
 
-  @override
-  State<ProfileEditPage> createState() => _ProfileEditPageState();
-}
-
-class _ProfileEditPageState extends State<ProfileEditPage> {
-  final ProfileRepository _repository = getIt();
-  ProfileEntity? _profile;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    final dto = await _repository.fetchProfile();
-    setState(() => _profile = dto.toEntity());
-  }
-
-  void _save(ProfileEntity profile) {
-    setState(() => _profile = profile);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Perfil actualizado')));
+  Future<void> _save(BuildContext context, ProfileEntity profile) async {
+    final cubit = context.read<AuthCubit>();
+    await cubit.updateProfile(profile);
+    final state = cubit.state;
+    final isError = state.lastAction == AuthAction.updateProfile && state.errorMessage != null;
+    if (isError) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+      cubit.clearMessages();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Perfil actualizado')));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final profile = _profile;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Editar perfil')),
-      body: profile == null
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: ProfileForm(profile: profile, onSave: _save),
-            ),
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        final profile = state.profile;
+        final updating = state.isLoading && state.lastAction == AuthAction.updateProfile;
+
+        Widget body;
+        if (profile == null) {
+          final isLoadingProfile = state.isLoading && state.lastAction == AuthAction.loadProfile;
+          final error = state.lastAction == AuthAction.loadProfile ? state.errorMessage : null;
+          body = Center(
+            child: isLoadingProfile
+                ? const CircularProgressIndicator()
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(error ?? 'No pudimos cargar tu perfil.'),
+                      const SizedBox(height: 12),
+                      FilledButton(
+                        onPressed: () => context.read<AuthCubit>().refreshProfile(),
+                        child: const Text('Reintentar'),
+                      ),
+                    ],
+                  ),
+          );
+        } else {
+          body = Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: ProfileForm(
+                  profile: profile,
+                  onSave: (updated) => _save(context, updated),
+                ),
+              ),
+              if (updating)
+                const Positioned.fill(
+                  child: ColoredBox(
+                    color: Colors.black26,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+            ],
+          );
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Editar perfil'),
+            actions: [
+              IconButton(
+                onPressed: () => context.read<AuthCubit>().refreshProfile(),
+                icon: const Icon(Icons.refresh),
+                tooltip: 'Recargar perfil',
+              ),
+            ],
+          ),
+          body: body,
+        );
+      },
     );
   }
 }

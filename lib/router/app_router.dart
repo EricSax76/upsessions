@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/constants/app_routes.dart';
-import '../core/services/service_locator.dart';
 import '../features/announcements/domain/announcement_entity.dart';
 import '../features/announcements/presentation/pages/announcement_detail_page.dart';
 import '../features/announcements/presentation/pages/announcement_form_page.dart';
@@ -14,7 +13,9 @@ import '../features/messaging/presentation/pages/chat_page.dart';
 import '../features/musicians/domain/musician_entity.dart';
 import '../features/musicians/presentation/pages/musician_detail_page.dart';
 import '../features/musicians/presentation/pages/musician_search_page.dart';
+import '../features/onboarding/presentation/pages/app_welcome_page.dart';
 import '../features/onboarding/presentation/pages/musician_onboarding_page.dart';
+import '../features/onboarding/presentation/pages/onboarding_story_pages.dart';
 import '../features/profile/presentation/pages/account_page.dart';
 import '../features/profile/presentation/pages/profile_edit_page.dart';
 import '../features/profile/presentation/pages/profile_overview_page.dart';
@@ -22,6 +23,7 @@ import '../features/settings/presentation/pages/help_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/splash/presentation/splash_page.dart';
 import '../features/user_home/presentation/pages/user_home_page.dart';
+import 'package:upsessions/locator.dart';
 
 class AppRouter {
   AppRouter();
@@ -31,6 +33,26 @@ class AppRouter {
       case AppRoutes.splash:
         return MaterialPageRoute(
           builder: (_) => const SplashPage(),
+          settings: settings,
+        );
+      case AppRoutes.welcome:
+        return MaterialPageRoute(
+          builder: (_) => const AppWelcomePage(),
+          settings: settings,
+        );
+      case AppRoutes.onboardingStoryOne:
+        return MaterialPageRoute(
+          builder: (_) => const CollaborateOnboardingPage(),
+          settings: settings,
+        );
+      case AppRoutes.onboardingStoryTwo:
+        return MaterialPageRoute(
+          builder: (_) => const ShowcaseOnboardingPage(),
+          settings: settings,
+        );
+      case AppRoutes.onboardingStoryThree:
+        return MaterialPageRoute(
+          builder: (_) => const BookOnboardingPage(),
           settings: settings,
         );
       case AppRoutes.login:
@@ -88,7 +110,7 @@ class AppRouter {
         break;
       case AppRoutes.announcementForm:
         return MaterialPageRoute(
-          builder: (_) => AnnouncementFormPage(repository: getIt()),
+          builder: (_) => AnnouncementFormPage(repository: locate()),
           settings: settings,
         );
       case AppRoutes.media:
