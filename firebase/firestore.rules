@@ -1,13 +1,50 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /musicians/{musicianId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == musicianId;
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    match /announcements/{document} {
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isStringList(field) {
+      return field is list;
+    }
+
+    function isValidAnnouncement() {
+      return request.resource.data.keys().hasOnly([
+        'title',
+        'body',
+        'city',
+        'province',
+        'instrument',
+        'styles',
+        'author',
+        'authorId',
+        'publishedAt',
+      ])
+      && request.resource.data.title is string
+      && request.resource.data.body is string
+      && request.resource.data.city is string
+      && request.resource.data.province is string
+      && request.resource.data.instrument is string
+      && isStringList(request.resource.data.styles)
+      && request.resource.data.author is string
+      && request.resource.data.authorId is string
+      && request.resource.data.publishedAt is timestamp;
+    }
+
+    match /musicians/{musicianId} {
       allow read: if true;
+      allow write: if isOwner(musicianId);
+    }
+
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isValidAnnouncement();
+      allow delete: if isOwner(resource.data.authorId);
     }
 
     match /instrument_categories/{document} {

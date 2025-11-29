@@ -14,8 +14,8 @@ class UserHomeController extends ChangeNotifier {
   bool _isDisposed = false;
 
   bool _loading = false;
-  String _province = 'CDMX';
-  String _city = 'Ciudad de México';
+  String _province = 'Madrid';
+  String _city = 'Madrid';
   String _instrument = 'Voz';
   String _style = 'Soul';
   String _profileType = 'Solista';
@@ -26,6 +26,7 @@ class UserHomeController extends ChangeNotifier {
   List<AnnouncementModel> _announcements = const [];
   List<InstrumentCategoryModel> _categories = const [];
   List<String> _provinces = const [];
+  List<String> _cities = const [];
 
   bool get isLoading => _loading;
   String get province => _province;
@@ -39,6 +40,7 @@ class UserHomeController extends ChangeNotifier {
   List<AnnouncementModel> get announcements => _announcements;
   List<InstrumentCategoryModel> get categories => _categories;
   List<String> get provinces => _provinces;
+  List<String> get cities => _cities;
 
   Future<void> loadHome() async {
     _setLoading(true);
@@ -47,11 +49,16 @@ class UserHomeController extends ChangeNotifier {
     _announcements = await _repository.fetchRecentAnnouncements();
     _categories = await _repository.fetchInstrumentCategories();
     _provinces = await _repository.fetchProvinces();
+    if (_provinces.isNotEmpty) {
+      _province = _provinces.first;
+    }
+    await _loadCitiesForProvince(_province);
     _setLoading(false);
   }
 
   void selectProvince(String value) {
     _province = value;
+    _loadCitiesForProvince(value);
     _safeNotify();
   }
 
@@ -77,6 +84,15 @@ class UserHomeController extends ChangeNotifier {
 
   void selectGender(String value) {
     _gender = value;
+    _safeNotify();
+  }
+
+  Future<void> _loadCitiesForProvince(String value) async {
+    final cities = await _repository.fetchCitiesForProvince(value);
+    _cities = cities;
+    if (_cities.isNotEmpty) {
+      _city = _cities.first;
+    }
     _safeNotify();
   }
 

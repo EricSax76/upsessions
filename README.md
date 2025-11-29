@@ -1,4 +1,4 @@
-# music_in_touch
+# upsessions
 
 Solomusicos Flutter app scaffold that centralizes musicians, announcements, and user collaboration experiences.
 

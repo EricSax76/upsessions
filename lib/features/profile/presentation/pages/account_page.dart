@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../auth/application/auth_cubit.dart';
+import '../../../user_home/presentation/widgets/profile/profile_link_box.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -28,7 +29,9 @@ class _AccountPageState extends State<AccountPage> {
       setState(() => _uploadingPhoto = true);
       final bytes = await file.readAsBytes();
       final extension = _extensionFromName(file.name);
-      await context.read<AuthCubit>().updateProfilePhoto(bytes, fileExtension: extension);
+      if (!mounted) return;
+      final authCubit = context.read<AuthCubit>();
+      await authCubit.updateProfilePhoto(bytes, fileExtension: extension);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Foto actualizada')));
       }
@@ -181,6 +184,17 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () => Navigator.of(context).pushNamed(AppRoutes.profileEdit),
+                    icon: const Icon(Icons.edit_outlined),
+                    label: const Text('Actualizar perfil'),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const ProfileLinkBox(),
                 const SizedBox(height: 16),
                 Card(
                   child: Padding(

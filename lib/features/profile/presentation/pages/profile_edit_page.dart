@@ -11,6 +11,7 @@ class ProfileEditPage extends StatelessWidget {
   Future<void> _save(BuildContext context, ProfileEntity profile) async {
     final cubit = context.read<AuthCubit>();
     await cubit.updateProfile(profile);
+    if (!context.mounted) return;
     final state = cubit.state;
     final isError = state.lastAction == AuthAction.updateProfile && state.errorMessage != null;
     if (isError) {

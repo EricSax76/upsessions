@@ -16,6 +16,9 @@ class AdvancedSearchBox extends StatelessWidget {
     required this.selectedGender,
     required this.selectedProvince,
     required this.selectedCity,
+    required this.provinces,
+    required this.cities,
+    this.onSearch,
     required this.onInstrumentChanged,
     required this.onStyleChanged,
     required this.onProfileTypeChanged,
@@ -30,6 +33,9 @@ class AdvancedSearchBox extends StatelessWidget {
   final String selectedGender;
   final String selectedProvince;
   final String selectedCity;
+  final List<String> provinces;
+  final List<String> cities;
+  final VoidCallback? onSearch;
   final ValueChanged<String> onInstrumentChanged;
   final ValueChanged<String> onStyleChanged;
   final ValueChanged<String> onProfileTypeChanged;
@@ -84,10 +90,12 @@ class AdvancedSearchBox extends StatelessWidget {
                   isCompact: isCompact,
                   left: ProvinceDropdown(
                     value: selectedProvince,
+                    provinces: provinces,
                     onChanged: onProvinceChanged,
                   ),
                   right: CityDropdown(
                     value: selectedCity,
+                    cities: cities,
                     onChanged: onCityChanged,
                   ),
                 ),
@@ -95,7 +103,7 @@ class AdvancedSearchBox extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: FilledButton.icon(
-                    onPressed: () {},
+                    onPressed: onSearch,
                     icon: const Icon(Icons.search),
                     label: const Text('Buscar'),
                   ),

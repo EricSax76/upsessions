@@ -17,11 +17,11 @@ import '../widgets/header/sm_app_bar.dart';
 import '../widgets/musicians/musicians_by_instrument_section.dart';
 import '../widgets/musicians/new_musicians_section.dart';
 import '../widgets/musicians/recommended_users_section.dart';
-import '../widgets/profile/profile_link_box.dart';
+import '../widgets/profile/profile_quick_actions_fab.dart';
 import '../widgets/profile/profile_status_bar.dart';
 
-import '../widgets/search/advanced_search_box.dart';
 import '../widgets/sidebar/user_sidebar.dart';
+import 'home_tabs/secondary_tabs.dart';
 
 class UserHomePage extends StatefulWidget {
   const UserHomePage({super.key});
@@ -48,35 +48,54 @@ class _UserHomePageState extends State<UserHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthCubit, AuthState>(
-      listenWhen: (previous, current) => previous.status != current.status,
-      listener: (context, state) {
-        if (state.status == AuthStatus.unauthenticated) {
-          Navigator.of(
-            context,
-          ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
-        }
-      },
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          final isWideLayout = MediaQuery.of(context).size.width >= 900;
-          return Scaffold(
-            appBar: const SmAppBar(),
-            drawer: isWideLayout
-                ? null
-                : Drawer(child: SafeArea(child: _buildSidebar())),
-            body: _controller.isLoading
-                ? const LoadingIndicator()
-                : _buildResponsiveLayout(isWideLayout),
-          );
+    return DefaultTabController(
+      length: MainNavBar.sections.length,
+      child: BlocListener<AuthCubit, AuthState>(
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.status == AuthStatus.unauthenticated) {
+            Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+          }
         },
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            final isWideLayout = MediaQuery.of(context).size.width >= 900;
+            return Scaffold(
+              appBar: const SmAppBar(bottom: MainNavBar()),
+              drawer: isWideLayout
+                  ? null
+                  : Drawer(child: SafeArea(child: _buildSidebar())),
+              body: _controller.isLoading
+                  ? const LoadingIndicator()
+                  : Stack(
+                      children: [
+                        TabBarView(
+                          children: [
+                            _buildResponsiveLayout(isWideLayout, _buildMainContent()),
+                            _buildResponsiveLayout(isWideLayout, const MusiciansTab()),
+                            _buildResponsiveLayout(isWideLayout, const AnnouncementsTab()),
+                            _buildResponsiveLayout(isWideLayout, const MessagesTab()),
+                            _buildResponsiveLayout(isWideLayout, const EventsTab()),
+                          ],
+                        ),
+                        const Positioned(
+                          right: 24,
+                          bottom: 24,
+                          child: SafeArea(child: ProfileQuickActionsFab()),
+                        ),
+                      ],
+                    ),
+            );
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildResponsiveLayout(bool isWideLayout) {
-    final content = _buildMainContent();
+  Widget _buildResponsiveLayout(bool isWideLayout, Widget content) {
     if (!isWideLayout) {
       return content;
     }
@@ -91,12 +110,7 @@ class _UserHomePageState extends State<UserHomePage> {
   }
 
   Widget _buildSidebar() {
-    return UserSidebar(
-      province: _controller.province,
-      city: _controller.city,
-      onProvinceChanged: _controller.selectProvince,
-      onCityChanged: _controller.selectCity,
-    );
+    return const UserSidebar();
   }
 
   Widget _buildMainContent() {
@@ -105,31 +119,10 @@ class _UserHomePageState extends State<UserHomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const MainNavBar(),
           const SizedBox(height: 16),
           const ProfileStatusBar(),
-          const SizedBox(height: 16),
-
           const SizedBox(height: 24),
-          AdvancedSearchBox(
-            selectedInstrument: _controller.instrument,
-            selectedStyle: _controller.style,
-            selectedProfileType: _controller.profileType,
-            selectedGender: _controller.gender,
-            selectedProvince: _controller.province,
-            selectedCity: _controller.city,
-            onInstrumentChanged: _controller.selectInstrument,
-            onStyleChanged: _controller.selectStyle,
-            onProfileTypeChanged: _controller.selectProfileType,
-            onGenderChanged: _controller.selectGender,
-            onProvinceChanged: _controller.selectProvince,
-            onCityChanged: _controller.selectCity,
-          ),
-          const SizedBox(height: 24),
-          GlobalStatsRow(
-            musicians: _controller.recommended.length,
-            announcements: _controller.announcements.length,
-          ),
+          const GlobalStatsRow(),
           const SizedBox(height: 32),
           SectionTitle(
             text: 'Recomendados para ti',
@@ -153,9 +146,6 @@ class _UserHomePageState extends State<UserHomePage> {
             builder: (announcement) =>
                 AnnouncementCard(announcement: announcement),
           ),
-          const SizedBox(height: 32),
-          const ProfileLinkBox(),
-          const SizedBox(height: 32),
           ProvincesListSection(provinces: _controller.provinces),
           const SizedBox(height: 24),
           const BottomCookieBar(),

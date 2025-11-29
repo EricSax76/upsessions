@@ -17,6 +17,19 @@ class AnnouncementDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('${announcement.city} · ${announcement.author}'),
+            const SizedBox(height: 8),
+            Text(
+              '${announcement.province} · ${announcement.instrument}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            if (announcement.styles.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: announcement.styles.map((s) => Chip(label: Text(s))).toList(),
+              ),
+            ],
             const SizedBox(height: 12),
             Text(announcement.body),
             const Spacer(),

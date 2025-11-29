@@ -8,7 +8,7 @@ class UserMenuList extends StatefulWidget {
 }
 
 class _UserMenuListState extends State<UserMenuList> {
-  final _items = const ['Panel', 'Mensajes', 'Calendario', 'Contactos'];
+  final _items = const ['Mensajes', 'Calendario', 'Contactos'];
   int _selectedIndex = 0;
 
   @override

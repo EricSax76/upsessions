@@ -9,6 +9,10 @@ class AnnouncementDto {
     required this.body,
     required this.city,
     required this.author,
+    required this.authorId,
+    required this.province,
+    required this.instrument,
+    required this.styles,
     required this.publishedAt,
   });
 
@@ -20,6 +24,10 @@ class AnnouncementDto {
       body: (data['body'] ?? '') as String,
       city: (data['city'] ?? '') as String,
       author: (data['author'] ?? '') as String,
+      authorId: (data['authorId'] ?? '') as String,
+      province: (data['province'] ?? '') as String,
+      instrument: (data['instrument'] ?? '') as String,
+      styles: _stringList(data['styles']),
       publishedAt: _parseDate(data['publishedAt']),
     );
   }
@@ -31,6 +39,10 @@ class AnnouncementDto {
       body: entity.body,
       city: entity.city,
       author: entity.author,
+      authorId: entity.authorId,
+      province: entity.province,
+      instrument: entity.instrument,
+      styles: entity.styles,
       publishedAt: entity.publishedAt,
     );
   }
@@ -40,6 +52,10 @@ class AnnouncementDto {
   final String body;
   final String city;
   final String author;
+  final String authorId;
+  final String province;
+  final String instrument;
+  final List<String> styles;
   final DateTime publishedAt;
 
   Map<String, dynamic> toJson() {
@@ -48,6 +64,10 @@ class AnnouncementDto {
       'body': body,
       'city': city,
       'author': author,
+      'authorId': authorId,
+      'province': province,
+      'instrument': instrument,
+      'styles': styles,
       'publishedAt': Timestamp.fromDate(publishedAt),
     };
   }
@@ -59,6 +79,10 @@ class AnnouncementDto {
       body: body,
       city: city,
       author: author,
+      authorId: authorId,
+      province: province,
+      instrument: instrument,
+      styles: styles,
       publishedAt: publishedAt,
     );
   }
@@ -71,5 +95,12 @@ class AnnouncementDto {
       return value;
     }
     return DateTime.now();
+  }
+
+  static List<String> _stringList(dynamic raw) {
+    if (raw is Iterable) {
+      return raw.map((e) => e.toString()).toList();
+    }
+    return const [];
   }
 }

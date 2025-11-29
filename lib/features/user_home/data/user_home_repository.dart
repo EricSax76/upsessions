@@ -63,6 +63,20 @@ class UserHomeRepository {
     return _stringList(doc.data()?['provinces']);
   }
 
+  Future<List<String>> fetchCitiesForProvince(String province) async {
+    final doc = await _firestore.collection('metadata').doc('geography').get();
+    if (!doc.exists) {
+      return const [];
+    }
+    final data = doc.data();
+    final byProvince = data?['citiesByProvince'];
+    if (byProvince is Map<String, dynamic>) {
+      final cities = byProvince[province];
+      return _stringList(cities);
+    }
+    return const [];
+  }
+
   static MusicianCardModel _mapMusician(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data();
     final styles = _stringList(data['styles']);

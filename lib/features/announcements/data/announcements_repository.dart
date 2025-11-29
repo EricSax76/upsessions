@@ -22,12 +22,26 @@ class AnnouncementsRepository {
     return AnnouncementDto.fromDocument(doc).toEntity();
   }
 
-  Future<void> create(AnnouncementEntity entity) async {
-    final dto = AnnouncementDto.fromEntity(entity);
+  Future<AnnouncementEntity> create(AnnouncementEntity entity) async {
+    final dto = AnnouncementDto.fromEntity(
+      entity.copyWith(
+        publishedAt: DateTime.now(),
+      ),
+    );
+
+    final payload = {
+      ...dto.toJson(),
+      'publishedAt': FieldValue.serverTimestamp(),
+    };
+
     if (entity.id.isEmpty) {
-      await _collection.add(dto.toJson());
+      final ref = await _collection.add(payload);
+      final snapshot = await ref.get();
+      return AnnouncementDto.fromDocument(snapshot).toEntity();
     } else {
-      await _collection.doc(entity.id).set(dto.toJson());
+      await _collection.doc(entity.id).set(payload);
+      final snapshot = await _collection.doc(entity.id).get();
+      return AnnouncementDto.fromDocument(snapshot).toEntity();
     }
   }
 }

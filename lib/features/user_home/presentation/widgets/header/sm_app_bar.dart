@@ -5,10 +5,12 @@ import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/features/auth/application/auth_cubit.dart';
 
 class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const SmAppBar({super.key});
+  const SmAppBar({super.key, this.bottom});
+
+  final PreferredSizeWidget? bottom;
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 12);
+  Size get preferredSize => Size.fromHeight(kToolbarHeight + 12 + (bottom?.preferredSize.height ?? 0));
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
         final displayName = user?.displayName ?? 'Cuenta';
         return AppBar(
           title: const Text('Solo Músicos'),
+          bottom: bottom,
           leading: Builder(
             builder: (context) {
               final scaffold = Scaffold.maybeOf(context);

@@ -3,26 +3,14 @@ import 'package:flutter/material.dart';
 class GlobalStatsRow extends StatelessWidget {
   const GlobalStatsRow({
     super.key,
-    required this.musicians,
-    required this.announcements,
   });
-
-  final int musicians;
-  final int announcements;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 600;
-        final stats = [
-          _StatCard(label: 'Músicos activos', value: musicians.toString()),
-          _StatCard(
-            label: 'Anuncios publicados',
-            value: announcements.toString(),
-          ),
-          const _StatCard(label: 'Eventos esta semana', value: '12'),
-        ];
+        final stats = const <_StatCard>[];
 
         if (isCompact) {
           return Column(
