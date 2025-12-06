@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 
@@ -9,11 +10,12 @@ class CollaborateOnboardingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return OnboardingStoryLayout(
       title: 'Conecta con músicos reales',
-      description: 'Descubre instrumentistas y productores disponibles para sesiones en vivo o remotas.',
+      description:
+          'Descubre instrumentistas y productores disponibles para sesiones en vivo o remotas.',
       icon: Icons.group_work_outlined,
       step: 1,
       totalSteps: 3,
-      onContinue: () => Navigator.of(context).pushReplacementNamed(AppRoutes.onboardingStoryTwo),
+      onContinue: () => context.go(AppRoutes.onboardingStoryTwo),
     );
   }
 }
@@ -25,11 +27,12 @@ class ShowcaseOnboardingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return OnboardingStoryLayout(
       title: 'Muestra tu talento',
-      description: 'Comparte clips, reseñas y medallas para que la comunidad ubique tu sonido.',
+      description:
+          'Comparte clips, reseñas y medallas para que la comunidad ubique tu sonido.',
       icon: Icons.mic_none_outlined,
       step: 2,
       totalSteps: 3,
-      onContinue: () => Navigator.of(context).pushReplacementNamed(AppRoutes.onboardingStoryThree),
+      onContinue: () => context.go(AppRoutes.onboardingStoryThree),
     );
   }
 }
@@ -41,12 +44,13 @@ class BookOnboardingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return OnboardingStoryLayout(
       title: 'Reserva sesiones sin fricción',
-      description: 'Coordina disponibilidad, contratos y pagos con unas cuantas pulsaciones.',
+      description:
+          'Coordina disponibilidad, contratos y pagos con unas cuantas pulsaciones.',
       icon: Icons.calendar_today_outlined,
       step: 3,
       totalSteps: 3,
       primaryLabel: 'Iniciar sesión',
-      onContinue: () => Navigator.of(context).pushReplacementNamed(AppRoutes.login),
+      onContinue: () => context.go(AppRoutes.login),
     );
   }
 }
@@ -72,7 +76,7 @@ class OnboardingStoryLayout extends StatelessWidget {
   final String primaryLabel;
 
   void _skip(BuildContext context) {
-    Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+    context.go(AppRoutes.login);
   }
 
   @override
@@ -101,13 +105,17 @@ class OnboardingStoryLayout extends StatelessWidget {
                     const SizedBox(height: 32),
                     Text(
                       title,
-                      style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       description,
-                      style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -123,17 +131,16 @@ class OnboardingStoryLayout extends StatelessWidget {
                     height: 8,
                     width: index + 1 == step ? 32 : 12,
                     decoration: BoxDecoration(
-                      color: index + 1 == step ? theme.colorScheme.primary : theme.colorScheme.primaryContainer,
+                      color: index + 1 == step
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 24),
-              FilledButton(
-                onPressed: onContinue,
-                child: Text(primaryLabel),
-              ),
+              FilledButton(onPressed: onContinue, child: Text(primaryLabel)),
             ],
           ),
         ),

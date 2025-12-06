@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 
@@ -8,7 +9,7 @@ class AppWelcomePage extends StatelessWidget {
   static const Color _wineRed = Color(0xFF5A0A16);
 
   void _continue(BuildContext context) {
-    Navigator.of(context).pushReplacementNamed(AppRoutes.onboardingStoryOne);
+    context.go(AppRoutes.onboardingStoryOne);
   }
 
   @override
@@ -32,19 +33,18 @@ class AppWelcomePage extends StatelessWidget {
                   Text(
                     'UPSESSIONS',
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                          color: Colors.white,
-                          letterSpacing: 4,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      color: Colors.white,
+                      letterSpacing: 4,
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'Conecta tu música\ncon nuevas sesiones.',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(color: Colors.white70),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(color: Colors.white70),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 40),

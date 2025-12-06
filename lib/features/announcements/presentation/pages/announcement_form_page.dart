@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/announcements_repository.dart';
 import '../../domain/announcement_entity.dart';
-import '../../../auth/application/auth_cubit.dart';
+import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import '../widgets/announcement_form.dart';
 
 class AnnouncementFormPage extends StatelessWidget {
@@ -18,15 +18,14 @@ class AnnouncementFormPage extends StatelessWidget {
     final authorId = user?.id ?? '';
     final authorName = profile?.name ?? user?.displayName ?? 'Autor';
 
-    final enriched = entity.copyWith(
-      authorId: authorId,
-      author: authorName,
-    );
+    final enriched = entity.copyWith(authorId: authorId, author: authorName);
 
     await repository.create(enriched);
     if (context.mounted) {
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Anuncio publicado')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Anuncio publicado')));
     }
   }
 

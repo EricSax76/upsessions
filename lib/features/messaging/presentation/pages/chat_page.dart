@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:upsessions/locator.dart';
+import 'package:upsessions/core/locator/locator.dart';
 import '../../data/chat_repository.dart';
 import '../../domain/chat_message.dart';
 import '../../domain/chat_thread.dart';
@@ -8,7 +8,9 @@ import '../widgets/chat_input_field.dart';
 import '../widgets/message_bubble.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  const ChatPage({super.key, this.showAppBar = true});
+
+  final bool showAppBar;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -51,45 +53,90 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Mensajes')),
-      body: Row(
+    final conversationPane = Expanded(
+      child: Column(
         children: [
-          SizedBox(
-            width: 260,
-            child: ListView.builder(
-              itemCount: _threads.length,
-              itemBuilder: (context, index) {
-                final thread = _threads[index];
-                return ListTile(
-                  title: Text(thread.participants.last),
-                  subtitle: Text(thread.lastMessage.body, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  selected: thread.id == _selectedThread?.id,
-                  onTap: () {
-                    setState(() => _selectedThread = thread);
-                    _loadMessages(thread.id);
-                  },
-                );
-              },
-            ),
-          ),
-          const VerticalDivider(width: 1),
           Expanded(
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) => MessageBubble(message: _messages[index]),
-                  ),
-                ),
-                ChatInputField(onSend: _sendMessage),
-              ],
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) =>
+                  MessageBubble(message: _messages[index]),
             ),
           ),
+          ChatInputField(onSend: _sendMessage),
         ],
       ),
+    );
+
+    final body = Row(
+      children: [
+        SizedBox(
+          width: 260,
+          child: ListView.builder(
+            itemCount: _threads.length,
+            itemBuilder: (context, index) {
+              final thread = _threads[index];
+              return ListTile(
+                title: Text(thread.participants.last),
+                subtitle: Text(
+                  thread.lastMessage.body,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                selected: thread.id == _selectedThread?.id,
+                onTap: () {
+                  setState(() => _selectedThread = thread);
+                  _loadMessages(thread.id);
+                },
+              );
+            },
+          ),
+        ),
+        const VerticalDivider(width: 1),
+        conversationPane,
+      ],
+    );
+
+    if (!widget.showAppBar) {
+      return SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'Mensajes',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Mantén tus conversaciones organizadas en un solo lugar.',
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            Expanded(child: body),
+          ],
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Mensajes')),
+      body: body,
     );
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
-import '../../../auth/data/auth_repository.dart';
-import '../../../musicians/data/musicians_repository.dart';
+import 'package:upsessions/modules/auth/data/auth_repository.dart';
+import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
 
 class MusicianOnboardingPage extends StatefulWidget {
   const MusicianOnboardingPage({super.key});
@@ -60,9 +61,7 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
               const Text('No pudimos encontrar tu sesión.'),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () => Navigator.of(
-                  context,
-                ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false),
+                onPressed: () => context.go(AppRoutes.login),
                 child: const Text('Volver a iniciar sesión'),
               ),
             ],
@@ -286,9 +285,7 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
             : _bioController.text.trim(),
       );
       if (!mounted) return;
-      Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil(AppRoutes.userHome, (route) => false);
+      context.go(AppRoutes.userHome);
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

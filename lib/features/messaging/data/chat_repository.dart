@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/services/cloud_functions_service.dart';
-import '../../auth/data/auth_repository.dart';
+import 'package:upsessions/modules/auth/data/auth_repository.dart';
 import '../domain/chat_message.dart';
 import '../domain/chat_thread.dart';
 

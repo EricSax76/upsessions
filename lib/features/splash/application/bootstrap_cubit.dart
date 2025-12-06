@@ -2,9 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../core/services/firebase_initializer.dart';
-import '../../auth/data/auth_repository.dart';
-import '../../auth/domain/user_entity.dart';
-import '../../musicians/data/musicians_repository.dart';
+import 'package:upsessions/modules/auth/data/auth_repository.dart';
+import 'package:upsessions/modules/auth/domain/user_entity.dart';
+import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
 
 part 'bootstrap_state.dart';
 

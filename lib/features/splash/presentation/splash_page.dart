@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_routes.dart';
 import '../../../core/services/firebase_initializer.dart';
-import '../../auth/data/auth_repository.dart';
-import '../../musicians/data/musicians_repository.dart';
+import 'package:upsessions/modules/auth/data/auth_repository.dart';
+import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
 import '../application/bootstrap_cubit.dart';
 
 class SplashPage extends StatelessWidget {
@@ -32,13 +33,11 @@ class _SplashView extends StatelessWidget {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == BootstrapStatus.authenticated) {
-          Navigator.of(context).pushReplacementNamed(AppRoutes.userHome);
+          context.go(AppRoutes.userHome);
         } else if (state.status == BootstrapStatus.needsOnboarding) {
-          Navigator.of(
-            context,
-          ).pushReplacementNamed(AppRoutes.musicianOnboarding);
+          context.go(AppRoutes.musicianOnboarding);
         } else if (state.status == BootstrapStatus.needsLogin) {
-          Navigator.of(context).pushReplacementNamed(AppRoutes.welcome);
+          context.go(AppRoutes.welcome);
         }
       },
       builder: (context, state) {

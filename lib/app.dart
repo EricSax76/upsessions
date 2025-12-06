@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'core/constants/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'core/services/firebase_initializer.dart';
-import 'features/auth/application/auth_cubit.dart';
-import 'features/auth/data/auth_repository.dart';
-import 'features/auth/data/profile_repository.dart';
-import 'features/musicians/data/musicians_repository.dart';
-import 'package:upsessions/locator.dart';
+import 'modules/auth/cubits/auth_cubit.dart';
+import 'modules/auth/data/auth_repository.dart';
+import 'modules/auth/data/profile_repository.dart';
+import 'modules/musicians/data/musicians_repository.dart';
+import 'package:upsessions/core/locator/locator.dart';
 import 'router/app_router.dart';
 
 class MusicInTouchApp extends StatelessWidget {
-  const MusicInTouchApp({super.key});
+  MusicInTouchApp({super.key});
+
+  final AppRouter _appRouter = AppRouter();
 
   @override
   Widget build(BuildContext context) {
-    final router = AppRouter();
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (_) => locate<FirebaseInitializer>()),
@@ -33,12 +33,11 @@ class MusicInTouchApp extends StatelessWidget {
             ),
           ),
         ],
-        child: MaterialApp(
-          title: 'Solo Músicos',
+        child: MaterialApp.router(
+          title: 'UPSESSIONS',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
-          initialRoute: AppRoutes.splash,
-          onGenerateRoute: router.onGenerateRoute,
+          routerConfig: _appRouter.router,
         ),
       ),
     );

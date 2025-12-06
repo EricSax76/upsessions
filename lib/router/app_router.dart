@@ -1,173 +1,182 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_routes.dart';
 import '../features/announcements/domain/announcement_entity.dart';
 import '../features/announcements/presentation/pages/announcement_detail_page.dart';
 import '../features/announcements/presentation/pages/announcement_form_page.dart';
 import '../features/announcements/presentation/pages/announcements_list_page.dart';
-import '../features/auth/presentation/pages/forgot_password_page.dart';
-import '../features/auth/presentation/pages/login_page.dart';
-import '../features/auth/presentation/pages/register_page.dart';
-import '../features/media/presentation/pages/media_gallery_page.dart';
+import '../features/media/ui/pages/media_gallery_page.dart';
 import '../features/messaging/presentation/pages/chat_page.dart';
-import '../features/musicians/domain/musician_entity.dart';
-import '../features/musicians/presentation/pages/musician_detail_page.dart';
-import '../features/musicians/presentation/pages/musician_search_page.dart';
 import '../features/onboarding/presentation/pages/app_welcome_page.dart';
 import '../features/onboarding/presentation/pages/musician_onboarding_page.dart';
 import '../features/onboarding/presentation/pages/onboarding_story_pages.dart';
-import '../features/profile/presentation/pages/account_page.dart';
-import '../features/profile/presentation/pages/profile_edit_page.dart';
-import '../features/profile/presentation/pages/profile_overview_page.dart';
 import '../features/settings/presentation/pages/help_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/splash/presentation/splash_page.dart';
-import '../features/user_home/presentation/pages/user_home_page.dart';
-import 'package:upsessions/locator.dart';
+import '../home/ui/pages/user_home_page.dart';
+import '../modules/auth/ui/pages/forgot_password_page.dart';
+import '../modules/auth/ui/pages/login_page.dart';
+import '../modules/auth/ui/pages/register_page.dart';
+import '../modules/musicians/domain/musician_entity.dart';
+import '../modules/musicians/ui/pages/musician_detail_page.dart';
+import '../modules/musicians/ui/pages/musician_search_page.dart';
+import '../modules/profile/presentation/pages/account_page.dart';
+import '../modules/profile/presentation/pages/profile_edit_page.dart';
+import '../modules/profile/presentation/pages/profile_overview_page.dart';
+import 'package:upsessions/core/locator/locator.dart';
 
 class AppRouter {
-  AppRouter();
-
-  Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case AppRoutes.splash:
-        return MaterialPageRoute(
-          builder: (_) => const SplashPage(),
-          settings: settings,
-        );
-      case AppRoutes.welcome:
-        return MaterialPageRoute(
-          builder: (_) => const AppWelcomePage(),
-          settings: settings,
-        );
-      case AppRoutes.onboardingStoryOne:
-        return MaterialPageRoute(
-          builder: (_) => const CollaborateOnboardingPage(),
-          settings: settings,
-        );
-      case AppRoutes.onboardingStoryTwo:
-        return MaterialPageRoute(
-          builder: (_) => const ShowcaseOnboardingPage(),
-          settings: settings,
-        );
-      case AppRoutes.onboardingStoryThree:
-        return MaterialPageRoute(
-          builder: (_) => const BookOnboardingPage(),
-          settings: settings,
-        );
-      case AppRoutes.login:
-        return MaterialPageRoute(
-          builder: (_) => const LoginPage(),
-          settings: settings,
-        );
-      case AppRoutes.register:
-        return MaterialPageRoute(
-          builder: (_) => const RegisterPage(),
-          settings: settings,
-        );
-      case AppRoutes.forgotPassword:
-        return MaterialPageRoute(
-          builder: (_) => const ForgotPasswordPage(),
-          settings: settings,
-        );
-      case AppRoutes.musicianOnboarding:
-        return MaterialPageRoute(
-          builder: (_) => const MusicianOnboardingPage(),
-          settings: settings,
-        );
-      case AppRoutes.userHome:
-        return MaterialPageRoute(
-          builder: (_) => const UserHomePage(),
-          settings: settings,
-        );
-      case AppRoutes.musicians:
-        return MaterialPageRoute(
-          builder: (_) => const MusicianSearchPage(),
-          settings: settings,
-        );
-      case AppRoutes.musicianDetail:
-        final musician = settings.arguments;
-        if (musician is MusicianEntity) {
-          return MaterialPageRoute(
-            builder: (_) => MusicianDetailPage(musician: musician),
-            settings: settings,
-          );
-        }
-        break;
-      case AppRoutes.announcements:
-        return MaterialPageRoute(
-          builder: (_) => const AnnouncementsListPage(),
-          settings: settings,
-        );
-      case AppRoutes.announcementDetail:
-        final announcement = settings.arguments;
-        if (announcement is AnnouncementEntity) {
-          return MaterialPageRoute(
-            builder: (_) => AnnouncementDetailPage(announcement: announcement),
-            settings: settings,
-          );
-        }
-        break;
-      case AppRoutes.announcementForm:
-        return MaterialPageRoute(
-          builder: (_) => AnnouncementFormPage(repository: locate()),
-          settings: settings,
-        );
-      case AppRoutes.media:
-        return MaterialPageRoute(
-          builder: (_) => const MediaGalleryPage(),
-          settings: settings,
-        );
-      case AppRoutes.chat:
-        return MaterialPageRoute(
-          builder: (_) => const ChatPage(),
-          settings: settings,
-        );
-      case AppRoutes.profile:
-        return MaterialPageRoute(
-          builder: (_) => const ProfileOverviewPage(),
-          settings: settings,
-        );
-      case AppRoutes.profileEdit:
-        return MaterialPageRoute(
-          builder: (_) => const ProfileEditPage(),
-          settings: settings,
-        );
-      case AppRoutes.account:
-        return MaterialPageRoute(
-          builder: (_) => const AccountPage(),
-          settings: settings,
-        );
-      case AppRoutes.settings:
-        return MaterialPageRoute(
-          builder: (_) => const SettingsPage(),
-          settings: settings,
-        );
-      case AppRoutes.help:
-        return MaterialPageRoute(
-          builder: (_) => const HelpPage(),
-          settings: settings,
-        );
-    }
-
-    return MaterialPageRoute(
-      builder: (context) =>
-          _UnknownRouteScreen(name: settings.name ?? 'unknown'),
-      settings: settings,
+  AppRouter() {
+    router = GoRouter(
+      initialLocation: AppRoutes.splash,
+      routes: [
+        GoRoute(
+          path: AppRoutes.splash,
+          builder: (context, state) => const SplashPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.welcome,
+          builder: (context, state) => const AppWelcomePage(),
+        ),
+        GoRoute(
+          path: AppRoutes.onboardingStoryOne,
+          builder: (context, state) => const CollaborateOnboardingPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.onboardingStoryTwo,
+          builder: (context, state) => const ShowcaseOnboardingPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.onboardingStoryThree,
+          builder: (context, state) => const BookOnboardingPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) => const LoginPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.register,
+          builder: (context, state) => const RegisterPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.forgotPassword,
+          builder: (context, state) => const ForgotPasswordPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.musicianOnboarding,
+          builder: (context, state) => const MusicianOnboardingPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.userHome,
+          builder: (context, state) => const UserHomePage(),
+        ),
+        GoRoute(
+          path: AppRoutes.musicians,
+          builder: (context, state) => const MusicianSearchPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.musicianDetail,
+          builder: (context, state) {
+            final musician = state.extra;
+            if (musician is MusicianEntity) {
+              return MusicianDetailPage(musician: musician);
+            }
+            return _UnknownRouteScreen(
+              name: state.uri.toString(),
+              message: 'Missing MusicianEntity for ${state.uri}',
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.announcements,
+          builder: (context, state) => const AnnouncementsListPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.announcementDetail,
+          builder: (context, state) {
+            final announcement = state.extra;
+            if (announcement is AnnouncementEntity) {
+              return AnnouncementDetailPage(announcement: announcement);
+            }
+            return _UnknownRouteScreen(
+              name: state.uri.toString(),
+              message: 'Missing AnnouncementEntity for ${state.uri}',
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.announcementForm,
+          builder: (context, state) =>
+              AnnouncementFormPage(repository: locate()),
+        ),
+        GoRoute(
+          path: AppRoutes.media,
+          builder: (context, state) => const MediaGalleryPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.chat,
+          builder: (context, state) => const ChatPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.profile,
+          builder: (context, state) => const ProfileOverviewPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.profileEdit,
+          builder: (context, state) => const ProfileEditPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.account,
+          builder: (context, state) => const AccountPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.settings,
+          builder: (context, state) => const SettingsPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.help,
+          builder: (context, state) => const HelpPage(),
+        ),
+      ],
+      errorBuilder: (context, state) => _UnknownRouteScreen(
+        name: state.uri.toString(),
+        message: state.error?.toString(),
+      ),
     );
   }
+
+  late final GoRouter router;
 }
 
 class _UnknownRouteScreen extends StatelessWidget {
-  const _UnknownRouteScreen({required this.name});
+  const _UnknownRouteScreen({required this.name, this.message});
 
   final String name;
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Ruta no encontrada')),
-      body: Center(child: Text('La ruta "$name" no existe.')),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('La ruta "$name" no existe.'),
+            if (message != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                message!,
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }
