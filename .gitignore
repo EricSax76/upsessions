@@ -1,3 +1,11 @@
+# OS / tool artifacts
+.DS_Store
+
+# Environment / secrets
+.env
+.env.*
+*.env
+
 # Miscellaneous
 *.class
 *.lock
@@ -106,6 +114,15 @@ unlinked_spec.ds
 
 # Coverage
 coverage/
+
+# Firebase / Node.js (functions)
+firebase-debug.log
+firebase-debug.*.log
+functions/lib/
+functions/node_modules/
+functions/.runtimeconfig.json
+functions/.env
+functions/.env.*
 
 # Symbols
 app.*.symbols
