@@ -4,6 +4,7 @@ import 'package:upsessions/core/locator/locator.dart';
 import '../data/models/announcement_model.dart';
 import '../data/models/instrument_category_model.dart';
 import '../data/models/musician_card_model.dart';
+import '../data/models/home_event_model.dart';
 import '../data/repositories/user_home_repository.dart';
 
 class UserHomeController extends ChangeNotifier {
@@ -27,6 +28,7 @@ class UserHomeController extends ChangeNotifier {
   List<InstrumentCategoryModel> _categories = const [];
   List<String> _provinces = const [];
   List<String> _cities = const [];
+  List<HomeEventModel> _events = const [];
 
   bool get isLoading => _loading;
   String get province => _province;
@@ -41,6 +43,7 @@ class UserHomeController extends ChangeNotifier {
   List<InstrumentCategoryModel> get categories => _categories;
   List<String> get provinces => _provinces;
   List<String> get cities => _cities;
+  List<HomeEventModel> get events => _events;
 
   Future<void> loadHome() async {
     _setLoading(true);
@@ -48,6 +51,7 @@ class UserHomeController extends ChangeNotifier {
     _newMusicians = await _repository.fetchNewMusicians();
     _announcements = await _repository.fetchRecentAnnouncements();
     _categories = await _repository.fetchInstrumentCategories();
+    _events = await _repository.fetchUpcomingEvents();
     _provinces = await _repository.fetchProvinces();
     if (_provinces.isNotEmpty) {
       _province = _provinces.first;

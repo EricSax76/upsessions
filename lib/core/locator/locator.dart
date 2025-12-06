@@ -8,6 +8,7 @@ import 'package:upsessions/modules/auth/data/auth_repository.dart';
 import 'package:upsessions/modules/auth/data/profile_repository.dart';
 import 'package:upsessions/features/media/data/repositories/media_repository.dart';
 import 'package:upsessions/features/messaging/data/chat_repository.dart';
+import 'package:upsessions/features/events/data/events_repository.dart';
 import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
 import 'package:upsessions/home/data/repositories/user_home_repository.dart';
 
@@ -35,7 +36,10 @@ Future<void> setupServiceLocator() async {
       () => ProfileRepository(authRepository: getIt<AuthRepository>()),
     )
     ..registerLazySingleton<ChatRepository>(() => ChatRepository())
-    ..registerLazySingleton<MediaRepository>(() => MediaRepository());
+    ..registerLazySingleton<MediaRepository>(() => MediaRepository())
+    ..registerLazySingleton<EventsRepository>(
+      () => EventsRepository(authRepository: getIt<AuthRepository>()),
+    );
 }
 
 T locate<T extends Object>() {

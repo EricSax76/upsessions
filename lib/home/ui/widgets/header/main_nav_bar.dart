@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/constants/app_routes.dart';
 
 class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
   const MainNavBar({super.key});
 
-  static const List<String> sections = [
-    'Inicio',
-    'Músicos',
-    'Anuncios',
-    'Mensajes',
-    'Eventos',
+  static const _items = [
+    _NavItem(label: 'Inicio', path: AppRoutes.userHome),
+    _NavItem(label: 'Músicos', path: AppRoutes.musicians),
+    _NavItem(label: 'Anuncios', path: AppRoutes.announcements),
+    _NavItem(label: 'Mensajes', path: AppRoutes.messages),
+    _NavItem(label: 'Eventos', path: AppRoutes.events),
   ];
 
   @override
@@ -17,7 +20,7 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final tabs = sections.map((section) => Tab(text: section)).toList();
+    final location = GoRouterState.of(context).uri.path;
 
     return ColoredBox(
       color: colorScheme.surface,
@@ -26,36 +29,62 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
         children: [
           Divider(height: 1, color: Theme.of(context).dividerColor),
           SizedBox(
-            height: 56,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: TabBar(
-                isScrollable: true,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                labelPadding: const EdgeInsets.symmetric(horizontal: 12),
-                labelColor: colorScheme.primary,
-
-                labelStyle: const TextStyle(fontWeight: FontWeight.w600),
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicatorPadding: const EdgeInsets.symmetric(vertical: 10),
-                overlayColor: WidgetStateProperty.resolveWith(
-                  (states) => states.contains(WidgetState.pressed)
-                      ? colorScheme.primary.withValues(alpha: 0.08)
-                      : Colors.transparent,
-                ),
-                indicator: BoxDecoration(
-                  color: colorScheme.primary.withValues(alpha: 0.12),
-                  border: Border.all(
-                    color: colorScheme.primary.withValues(alpha: 0.32),
+            height: 60,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemBuilder: (context, index) {
+                final item = _items[index];
+                final selected = _isCurrent(location, item.path);
+                return TextButton(
+                  onPressed: selected ? null : () => context.go(item.path),
+                  style: TextButton.styleFrom(
+                    foregroundColor: selected
+                        ? colorScheme.primary
+                        : colorScheme.onSurface,
+                    textStyle: const TextStyle(fontWeight: FontWeight.w600),
+                    backgroundColor: selected
+                        ? colorScheme.primary.withValues(alpha: 0.12)
+                        : Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(
+                        color: selected
+                            ? colorScheme.primary.withValues(alpha: 0.32)
+                            : Colors.transparent,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                tabs: tabs,
-              ),
+                  child: Text(item.label),
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
+              itemCount: _items.length,
             ),
           ),
         ],
       ),
     );
   }
+
+  static bool _isCurrent(String location, String path) {
+    if (location == path) {
+      return true;
+    }
+    if (path == AppRoutes.userHome) {
+      return location == path;
+    }
+    return location.startsWith('$path/');
+  }
+}
+
+class _NavItem {
+  const _NavItem({required this.label, required this.path});
+
+  final String label;
+  final String path;
 }

@@ -6,9 +6,10 @@ import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 
 class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const SmAppBar({super.key, this.bottom});
+  const SmAppBar({super.key, this.bottom, this.showMenuButton = false});
 
   final PreferredSizeWidget? bottom;
+  final bool showMenuButton;
 
   @override
   Size get preferredSize => Size.fromHeight(
@@ -25,21 +26,17 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
         final avatarUrl = profile?.photoUrl ?? user?.photoUrl;
         final displayName = user?.displayName ?? 'Cuenta';
         return AppBar(
-          title: const Text('Solo Músicos'),
+          automaticallyImplyLeading: false,
+          title: const Text('Upsessions'),
           bottom: bottom,
-          leading: Builder(
-            builder: (context) {
-              final scaffold = Scaffold.maybeOf(context);
-              final hasDrawer = scaffold?.hasDrawer ?? false;
-              if (!hasDrawer) {
-                return const SizedBox.shrink();
-              }
-              return IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () => scaffold?.openDrawer(),
-              );
-            },
-          ),
+          leading: showMenuButton
+              ? Builder(
+                  builder: (context) => IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                  ),
+                )
+              : null,
           actions: [
             IconButton(
               onPressed: () {},

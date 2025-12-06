@@ -5,9 +5,10 @@ import '../core/constants/app_routes.dart';
 import '../features/announcements/domain/announcement_entity.dart';
 import '../features/announcements/presentation/pages/announcement_detail_page.dart';
 import '../features/announcements/presentation/pages/announcement_form_page.dart';
-import '../features/announcements/presentation/pages/announcements_list_page.dart';
+import '../features/announcements/presentation/pages/announcements_hub_page.dart';
 import '../features/media/ui/pages/media_gallery_page.dart';
-import '../features/messaging/presentation/pages/chat_page.dart';
+import '../features/events/presentation/pages/events_page.dart';
+import '../features/messaging/presentation/pages/messages_page.dart';
 import '../features/onboarding/presentation/pages/app_welcome_page.dart';
 import '../features/onboarding/presentation/pages/musician_onboarding_page.dart';
 import '../features/onboarding/presentation/pages/onboarding_story_pages.dart';
@@ -20,7 +21,7 @@ import '../modules/auth/ui/pages/login_page.dart';
 import '../modules/auth/ui/pages/register_page.dart';
 import '../modules/musicians/domain/musician_entity.dart';
 import '../modules/musicians/ui/pages/musician_detail_page.dart';
-import '../modules/musicians/ui/pages/musician_search_page.dart';
+import '../modules/musicians/ui/pages/musicians_hub_page.dart';
 import '../modules/profile/presentation/pages/account_page.dart';
 import '../modules/profile/presentation/pages/profile_edit_page.dart';
 import '../modules/profile/presentation/pages/profile_overview_page.dart';
@@ -73,7 +74,7 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.musicians,
-          builder: (context, state) => const MusicianSearchPage(),
+          builder: (context, state) => const MusiciansHubPage(),
         ),
         GoRoute(
           path: AppRoutes.musicianDetail,
@@ -90,7 +91,7 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.announcements,
-          builder: (context, state) => const AnnouncementsListPage(),
+          builder: (context, state) => const AnnouncementsHubPage(),
         ),
         GoRoute(
           path: AppRoutes.announcementDetail,
@@ -115,8 +116,12 @@ class AppRouter {
           builder: (context, state) => const MediaGalleryPage(),
         ),
         GoRoute(
-          path: AppRoutes.chat,
-          builder: (context, state) => const ChatPage(),
+          path: AppRoutes.messages,
+          builder: (context, state) => const MessagesPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.events,
+          builder: (context, state) => const EventsPage(),
         ),
         GoRoute(
           path: AppRoutes.profile,

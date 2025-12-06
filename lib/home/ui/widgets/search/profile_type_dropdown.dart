@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 class ProfileTypeDropdown extends StatelessWidget {
-  const ProfileTypeDropdown({super.key, required this.value, required this.onChanged});
+  const ProfileTypeDropdown({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
 
   final String value;
   final ValueChanged<String> onChanged;
@@ -10,11 +14,16 @@ class ProfileTypeDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedValue =
+        value.isNotEmpty && _types.contains(value) ? value : null;
     return DropdownButtonFormField<String>(
-      initialValue: value,
+      initialValue: selectedValue,
       decoration: const InputDecoration(labelText: 'Tipo de perfil'),
+      hint: const Text('Selecciona tipo'),
       isExpanded: true,
-      items: _types.map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(),
+      items: _types
+          .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+          .toList(),
       onChanged: (selected) {
         if (selected != null) {
           onChanged(selected);

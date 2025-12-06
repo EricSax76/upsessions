@@ -15,7 +15,8 @@ class AppRoutes {
   static const announcementDetail = '/announcements/detail';
   static const announcementForm = '/announcements/form';
   static const media = '/media';
-  static const chat = '/chat';
+  static const messages = '/messages';
+  static const events = '/events';
   static const profile = '/profile';
   static const profileEdit = '/profile/edit';
   static const account = '/profile/account';

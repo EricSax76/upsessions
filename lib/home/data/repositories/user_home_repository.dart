@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/announcement_model.dart';
 import '../models/instrument_category_model.dart';
 import '../models/musician_card_model.dart';
+import '../models/home_event_model.dart';
 
 class UserHomeRepository {
   UserHomeRepository({FirebaseFirestore? firestore})
@@ -83,6 +84,25 @@ class UserHomeRepository {
     return const [];
   }
 
+  Future<List<HomeEventModel>> fetchUpcomingEvents({int limit = 6}) async {
+    final now = Timestamp.fromDate(DateTime.now());
+    final snapshot = await _firestore
+        .collection('events')
+        .where('start', isGreaterThanOrEqualTo: now)
+        .orderBy('start')
+        .limit(limit)
+        .get();
+    if (snapshot.docs.isEmpty) {
+      final fallback = await _firestore
+          .collection('events')
+          .orderBy('start', descending: true)
+          .limit(limit)
+          .get();
+      return fallback.docs.map(_mapEvent).toList();
+    }
+    return snapshot.docs.map(_mapEvent).toList();
+  }
+
   static MusicianCardModel _mapMusician(
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
   ) {
@@ -96,6 +116,24 @@ class UserHomeRepository {
       style: styles.isNotEmpty ? styles.first : '',
       avatarUrl: data['photoUrl'] as String?,
       rating: (data['rating'] as num?)?.toDouble() ?? 0,
+    );
+  }
+
+  static HomeEventModel _mapEvent(
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final data = doc.data();
+    return HomeEventModel(
+      id: doc.id,
+      title: (data['title'] ?? '') as String,
+      city: (data['city'] ?? '') as String,
+      venue: (data['venue'] ?? '') as String,
+      start: _parseTimestamp(data['start']),
+      description: (data['description'] ?? '') as String,
+      organizer: (data['organizer'] ?? '') as String,
+      capacity: (data['capacity'] as num?)?.toInt() ?? 0,
+      ticketInfo: (data['ticketInfo'] ?? '') as String,
+      tags: _stringList(data['tags']),
     );
   }
 

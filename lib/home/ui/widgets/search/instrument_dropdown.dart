@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 class InstrumentDropdown extends StatelessWidget {
-  const InstrumentDropdown({super.key, required this.value, required this.onChanged});
+  const InstrumentDropdown({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
 
   final String value;
   final ValueChanged<String> onChanged;
@@ -10,11 +14,20 @@ class InstrumentDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedValue = value.isNotEmpty && _options.contains(value)
+        ? value
+        : null;
     return DropdownButtonFormField<String>(
-      initialValue: value,
+      initialValue: selectedValue,
       decoration: const InputDecoration(labelText: 'Instrumento'),
+      hint: const Text('Selecciona instrumento'),
       isExpanded: true,
-      items: _options.map((instrument) => DropdownMenuItem(value: instrument, child: Text(instrument))).toList(),
+      items: _options
+          .map(
+            (instrument) =>
+                DropdownMenuItem(value: instrument, child: Text(instrument)),
+          )
+          .toList(),
       onChanged: (selected) {
         if (selected != null) {
           onChanged(selected);
