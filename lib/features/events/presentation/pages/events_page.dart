@@ -173,7 +173,7 @@ class _EventsHeader extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          'Planifica sesiones, showcases y talleres. Genera una ficha en formato texto para compartirla por correo o chat.',
+          'Planifica tus sesiones. Genera una ficha en formato texto para compartirla por correo o chat.',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: 24),
@@ -533,33 +533,19 @@ class _EventFormCard extends StatefulWidget {
 
 class _EventFormCardState extends State<_EventFormCard> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController(text: 'Session colaborativa');
-  final _cityController = TextEditingController(text: 'Buenos Aires');
-  final _venueController = TextEditingController(text: 'Estudio Rivera');
-  final _descriptionController = TextEditingController(
-    text: 'Encuentro íntimo para producir tres tracks en vivo.',
-  );
-  final _organizerController = TextEditingController(text: 'Upsessions Crew');
-  final _contactEmailController = TextEditingController(
-    text: 'contacto@upsessions.com',
-  );
-  final _contactPhoneController = TextEditingController(
-    text: '+54 11 5555-9696',
-  );
-  final _lineupController = TextEditingController(
-    text: 'Backline house, Invitados especiales, Jam libre',
-  );
-  final _tagsController = TextEditingController(text: 'Jam, Networking, Live');
-  final _ticketController = TextEditingController(
-    text: 'Early \$4.000 | Puerta \$5.500',
-  );
-  final _capacityController = TextEditingController(text: '80');
-  final _resourcesController = TextEditingController(
-    text: 'PA completo, Proyector, Drumkit Maple',
-  );
-  final _notesController = TextEditingController(
-    text: 'Check-in técnico 17:00 hs.',
-  );
+  final _titleController = TextEditingController(text: '');
+  final _cityController = TextEditingController(text: '');
+  final _venueController = TextEditingController(text: '');
+  final _descriptionController = TextEditingController(text: '');
+  final _organizerController = TextEditingController(text: '');
+  final _contactEmailController = TextEditingController(text: '');
+  final _contactPhoneController = TextEditingController(text: '');
+  final _lineupController = TextEditingController(text: '');
+  final _tagsController = TextEditingController(text: '');
+  final _ticketController = TextEditingController(text: '');
+  final _capacityController = TextEditingController(text: '');
+  final _resourcesController = TextEditingController(text: '');
+  final _notesController = TextEditingController(text: '');
 
   DateTime? _selectedDate;
   TimeOfDay? _startTime;

@@ -76,7 +76,7 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Cuéntanos sobre ti'),
+        title: const Text('Cuéntanos sobre ti y tu pasión por la música'),
       ),
       body: SafeArea(
         child: Padding(
@@ -143,7 +143,7 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
         child: _StepCard(
           title: 'Tu identidad musical',
           description:
-              'Comparte tu nombre artístico y el instrumento principal que dominas.',
+              'Comparte tu nombre artístico y el/los instrumento/S que tocas.',
           child: Column(
             children: [
               TextFormField(
@@ -172,9 +172,9 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
       Form(
         key: _experienceKey,
         child: _StepCard(
-          title: 'Tu trayectoria',
+          title: 'Tu trayectoria musical',
           description:
-              '¿Dónde tocas y qué estilos te definen? Usa comas para separar varios estilos.',
+              '¿Qué estilos te definen? Usa comas para separar varios estilos.',
           child: Column(
             children: [
               TextFormField(

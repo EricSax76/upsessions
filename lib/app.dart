@@ -10,8 +10,8 @@ import 'modules/musicians/data/musicians_repository.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'router/app_router.dart';
 
-class MusicInTouchApp extends StatelessWidget {
-  MusicInTouchApp({super.key});
+class UpsessionsApp extends StatelessWidget {
+  UpsessionsApp({super.key});
 
   final AppRouter _appRouter = AppRouter();
 

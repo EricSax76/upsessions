@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../application/settings_controller.dart';
+import '../../settings_controller.dart';
 import '../widgets/settings_list.dart';
 
 class SettingsPage extends StatefulWidget {

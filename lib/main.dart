@@ -10,5 +10,5 @@ Future<void> main() async {
   await setupServiceLocator();
   debugPrintSynchronously('Locator inicializado');
   await locate<FirebaseInitializer>().init();
-  runApp(MusicInTouchApp());
+  runApp(UpsessionsApp());
 }

@@ -6,7 +6,7 @@ import '../../../core/constants/app_routes.dart';
 import '../../../core/services/firebase_initializer.dart';
 import 'package:upsessions/modules/auth/data/auth_repository.dart';
 import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
-import '../application/bootstrap_cubit.dart';
+import '../../../home/cubits/bootstrap_cubit.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});

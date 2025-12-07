@@ -27,8 +27,7 @@ class ShowcaseOnboardingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return OnboardingStoryLayout(
       title: 'Muestra tu talento',
-      description:
-          'Comparte clips, reseñas y medallas para que la comunidad ubique tu sonido.',
+      description: 'Comparte tu música',
       icon: Icons.mic_none_outlined,
       step: 2,
       totalSteps: 3,
@@ -43,9 +42,9 @@ class BookOnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OnboardingStoryLayout(
-      title: 'Reserva sesiones sin fricción',
+      title: 'Tu centro de reservas musical',
       description:
-          'Coordina disponibilidad, contratos y pagos con unas cuantas pulsaciones.',
+          'Coordina disponibilidad, contratos y pagos en pocos clicks.',
       icon: Icons.calendar_today_outlined,
       step: 3,
       totalSteps: 3,

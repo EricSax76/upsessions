@@ -41,7 +41,7 @@ class AppWelcomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Conecta tu música\ncon nuevas sesiones.',
+                    'Conecta tu música\nsin limite.',
                     style: Theme.of(
                       context,
                     ).textTheme.titleMedium?.copyWith(color: Colors.white70),
