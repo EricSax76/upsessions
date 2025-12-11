@@ -24,10 +24,17 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
         final user = state.user;
         final profile = state.profile;
         final avatarUrl = profile?.photoUrl ?? user?.photoUrl;
-        final displayName = user?.displayName ?? 'Cuenta';
+        final displayName = user?.displayName ?? '';
         return AppBar(
           automaticallyImplyLeading: false,
-          title: const Text('Upsessions'),
+          title: InkWell(
+            onTap: () => context.go(AppRoutes.userHome),
+            borderRadius: BorderRadius.circular(8),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              child: Text('Upsessions'),
+            ),
+          ),
           bottom: bottom,
           leading: showMenuButton
               ? Builder(
@@ -58,7 +65,7 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ? Text(
                               displayName.isNotEmpty
                                   ? displayName[0].toUpperCase()
-                                  : '?',
+                                  : '',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),

@@ -11,69 +11,64 @@ class ProfileQuickActionsFab extends StatefulWidget {
 }
 
 class _ProfileQuickActionsFabState extends State<ProfileQuickActionsFab> {
-  bool _isOpen = false;
-
   @override
   Widget build(BuildContext context) {
-    final actions = [
-      _FabActionButton(
-        icon: Icons.post_add_outlined,
-        label: 'Nuevo anuncio',
-        onPressed: () => _onAction(() => context.push(AppRoutes.announcements)),
-      ),
-      _FabActionButton(
-        icon: Icons.campaign_outlined,
-        label: 'Promocionar show',
-        onPressed: () => _onAction(() => _showSnack(context)),
-      ),
-      _FabActionButton(
-        icon: Icons.event_outlined,
-        label: 'Agendar evento',
-        onPressed: () => _onAction(() => _showSnack(context)),
-      ),
-    ];
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 250),
-          transitionBuilder: (child, animation) => FadeTransition(
-            opacity: animation,
-            child: SizeTransition(
-              sizeFactor: animation,
-              axisAlignment: -1,
-              child: child,
-            ),
-          ),
-          child: !_isOpen
-              ? const SizedBox.shrink()
-              : Column(
-                  key: const ValueKey('fab-actions'),
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    for (final action in actions) ...[
-                      action,
-                      const SizedBox(height: 12),
-                    ],
-                  ],
-                ),
-        ),
-        FloatingActionButton(
-          onPressed: _toggle,
-          child: Icon(_isOpen ? Icons.close : Icons.add),
-        ),
-      ],
+    return FloatingActionButton(
+      onPressed: () => _openQuickActionsModal(context),
+      child: const Icon(Icons.add),
     );
   }
 
-  void _toggle() {
-    setState(() => _isOpen = !_isOpen);
+  void _openQuickActionsModal(BuildContext context) {
+    final navigator = Navigator.of(context);
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Acciones rápidas'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _FabActionButton(
+                icon: Icons.post_add_outlined,
+                label: 'Nuevo anuncio',
+                onPressed: () {
+                  navigator.pop(); // cierra el modal
+                  _onAction(() => context.push(AppRoutes.announcements));
+                },
+              ),
+              const SizedBox(height: 12),
+              _FabActionButton(
+                icon: Icons.campaign_outlined,
+                label: 'Promocionar show',
+                onPressed: () {
+                  navigator.pop();
+                  _onAction(() => _showSnack(context));
+                },
+              ),
+              const SizedBox(height: 12),
+              _FabActionButton(
+                icon: Icons.event_outlined,
+                label: 'Agendar evento',
+                onPressed: () {
+                  navigator.pop();
+                  _onAction(() => _showSnack(context));
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _onAction(VoidCallback action) {
-    setState(() => _isOpen = false);
+    // Aquí ya no gestionamos _isOpen ni nada, solo ejecutamos la acción
     action();
   }
 
@@ -107,7 +102,6 @@ class _FabActionButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           foregroundColor: theme.colorScheme.primary,
-
           shape: const StadiumBorder(),
           backgroundColor: theme.colorScheme.surface,
           elevation: 0,

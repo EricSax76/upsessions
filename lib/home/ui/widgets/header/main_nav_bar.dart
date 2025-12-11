@@ -7,7 +7,6 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
   const MainNavBar({super.key});
 
   static const _items = [
-    _NavItem(label: 'Inicio', path: AppRoutes.userHome),
     _NavItem(label: 'Músicos', path: AppRoutes.musicians),
     _NavItem(label: 'Anuncios', path: AppRoutes.announcements),
     _NavItem(label: 'Mensajes', path: AppRoutes.messages),
@@ -74,9 +73,6 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
   static bool _isCurrent(String location, String path) {
     if (location == path) {
       return true;
-    }
-    if (path == AppRoutes.userHome) {
-      return location == path;
     }
     return location.startsWith('$path/');
   }

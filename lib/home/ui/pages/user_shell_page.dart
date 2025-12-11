@@ -16,7 +16,7 @@ class UserShellPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isWideLayout = MediaQuery.of(context).size.width >= 900;
+    final isWideLayout = MediaQuery.of(context).size.width >= 1200;
 
     final layout = isWideLayout
         ? Row(
@@ -45,6 +45,7 @@ class UserShellPage extends StatelessWidget {
             ? null
             : const Drawer(child: SafeArea(child: UserSidebar())),
         body: layout,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: const ProfileQuickActionsFab(),
       ),
     );

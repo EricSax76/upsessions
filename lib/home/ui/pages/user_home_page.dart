@@ -91,9 +91,9 @@ class _UserHomePageState extends State<UserHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HomeHeroBanner(
-                      title: 'Pasión por la música en vivo',
+                      title: 'Pasión por la música',
                       description:
-                          'Conecta con artistas, agenda showcases híbridos y comparte tus proyectos en una plataforma diseñada para creadores.',
+                          'Conecta con artistas, agenda shows y comparte tus proyectos.',
                       primaryActionLabel: 'Crear evento',
                       onPrimaryAction: () => context.push(AppRoutes.events),
                       secondaryActionLabel: 'Explorar músicos',
@@ -115,8 +115,7 @@ class _UserHomePageState extends State<UserHomePage> {
                     ..._buildResponsiveRow(
                       isWide,
                       HomeSectionCard(
-                        title: 'Eventos próximos',
-                        subtitle: 'Híbridos, residencias y sesiones íntimas',
+                        title: 'Próximos eventos',
                         action: TextButton.icon(
                           onPressed: () => context.push(AppRoutes.events),
                           icon: const Icon(Icons.arrow_outward),
@@ -128,8 +127,7 @@ class _UserHomePageState extends State<UserHomePage> {
                       ),
                       HomeSectionCard(
                         title: 'Anuncios recientes',
-                        subtitle:
-                            'Colaboraciones y oportunidades publicadas hoy',
+
                         child: NewAnnouncementsSection(
                           announcements: _controller.announcements,
                           builder: (announcement) =>
