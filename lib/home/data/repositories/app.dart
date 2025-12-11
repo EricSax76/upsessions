@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'core/theme/app_theme.dart';
-import 'core/services/firebase_initializer.dart';
-import 'modules/auth/cubits/auth_cubit.dart';
-import 'modules/auth/data/auth_repository.dart';
-import 'modules/auth/data/profile_repository.dart';
-import 'modules/musicians/data/musicians_repository.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/services/firebase_initializer.dart';
+import '../../../modules/auth/cubits/auth_cubit.dart';
+import '../../../modules/auth/data/auth_repository.dart';
+import '../../../modules/auth/data/profile_repository.dart';
+import '../../../modules/musicians/data/musicians_repository.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'router/app_router.dart';
+import '../../../router/app_router.dart';
 
 class UpsessionsApp extends StatelessWidget {
   UpsessionsApp({super.key});
