@@ -5,6 +5,7 @@ import '../domain/musician_entity.dart';
 class MusicianDto {
   const MusicianDto({
     required this.id,
+    required this.ownerId,
     required this.name,
     required this.instrument,
     required this.city,
@@ -18,6 +19,7 @@ class MusicianDto {
     final stylesDynamic = data['styles'];
     return MusicianDto(
       id: doc.id,
+      ownerId: (data['ownerId'] ?? doc.id).toString(),
       name: (data['name'] ?? '') as String,
       instrument: (data['instrument'] ?? '') as String,
       city: (data['city'] ?? '') as String,
@@ -28,6 +30,7 @@ class MusicianDto {
   }
 
   final String id;
+  final String ownerId;
   final String name;
   final String instrument;
   final String city;
@@ -38,6 +41,7 @@ class MusicianDto {
   MusicianEntity toEntity() {
     return MusicianEntity(
       id: id,
+      ownerId: ownerId,
       name: name,
       instrument: instrument,
       city: city,

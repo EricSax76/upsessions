@@ -9,6 +9,10 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    function userId() {
+      return isSignedIn() ? request.auth.uid : null;
+    }
+
     function userEmail() {
       return isSignedIn() ? request.auth.token.email : null;
     }
@@ -20,8 +24,10 @@ service cloud.firestore {
     function isThreadParticipant(data) {
       return isSignedIn()
         && data.participants is list
-        && userEmail() != null
-        && userEmail() in data.participants;
+        && (
+          (userId() != null && userId() in data.participants)
+          || (userEmail() != null && userEmail() in data.participants)
+        );
     }
 
     function threadForId(threadId) {
@@ -132,16 +138,32 @@ service cloud.firestore {
         }
 
         function isValidMessage() {
-          return request.resource.data.keys().hasOnly(['sender', 'body', 'sentAt'])
-            && request.resource.data.sender is string
+          return request.resource.data.keys().hasOnly(['sender', 'senderId', 'senderEmail', 'body', 'sentAt'])
             && request.resource.data.body is string
-            && request.resource.data.sentAt is timestamp;
+            && request.resource.data.sentAt is timestamp
+            && (
+              (request.resource.data.sender is string && request.resource.data.sender != null)
+              || (request.resource.data.senderId is string && request.resource.data.senderId != null)
+              || (request.resource.data.senderEmail is string && request.resource.data.senderEmail != null)
+            );
+        }
+
+        function senderMatchesCurrentUser() {
+          return (
+            (userId() != null && (
+              request.resource.data.sender == userId()
+              || request.resource.data.senderId == userId()
+            ))
+            || (userEmail() != null && (
+              request.resource.data.sender == userEmail()
+              || request.resource.data.senderEmail == userEmail()
+            ))
+          );
         }
 
         allow read: if isThreadParticipant(parentThreadData());
         allow create: if isThreadParticipant(parentThreadData())
-          && userEmail() != null
-          && request.resource.data.sender == userEmail()
+          && senderMatchesCurrentUser()
           && isValidMessage();
         allow update, delete: if false;
       }

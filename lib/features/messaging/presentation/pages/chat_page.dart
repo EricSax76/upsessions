@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:upsessions/core/locator/locator.dart';
+import 'package:upsessions/modules/auth/data/auth_repository.dart';
+
 import '../../data/chat_repository.dart';
 import '../../domain/chat_message.dart';
 import '../../domain/chat_thread.dart';
@@ -8,9 +9,10 @@ import '../widgets/chat_input_field.dart';
 import '../widgets/message_bubble.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key, this.showAppBar = true});
+  const ChatPage({super.key, this.showAppBar = true, this.initialThreadId});
 
   final bool showAppBar;
+  final String? initialThreadId;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -18,6 +20,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final ChatRepository _repository = locate();
+  final AuthRepository _authRepository = locate();
   List<ChatThread> _threads = const [];
   List<ChatMessage> _messages = const [];
   ChatThread? _selectedThread;
@@ -30,12 +33,24 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _loadThreads() async {
     final threads = await _repository.fetchThreads();
+    ChatThread? selected;
+    if (widget.initialThreadId != null) {
+      for (final thread in threads) {
+        if (thread.id == widget.initialThreadId) {
+          selected = thread;
+          break;
+        }
+      }
+    }
+    selected ??= threads.isNotEmpty ? threads.first : null;
     setState(() {
       _threads = threads;
-      _selectedThread = threads.isNotEmpty ? threads.first : null;
+      _selectedThread = selected;
     });
-    if (_selectedThread != null) {
-      _loadMessages(_selectedThread!.id);
+    if (selected != null) {
+      _loadMessages(selected.id);
+    } else {
+      setState(() => _messages = const []);
     }
   }
 
@@ -53,18 +68,27 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUserId = _authRepository.currentUser?.id ?? '';
+    final hasSelectedThread = _selectedThread != null;
     final conversationPane = Expanded(
       child: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) =>
-                  MessageBubble(message: _messages[index]),
-            ),
+            child: hasSelectedThread
+                ? ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) =>
+                        MessageBubble(message: _messages[index]),
+                  )
+                : const Center(
+                    child: Text('Selecciona una conversación para empezar.'),
+                  ),
           ),
-          ChatInputField(onSend: _sendMessage),
+          if (hasSelectedThread)
+            ChatInputField(onSend: _sendMessage)
+          else
+            const SizedBox.shrink(),
         ],
       ),
     );
@@ -78,7 +102,7 @@ class _ChatPageState extends State<ChatPage> {
             itemBuilder: (context, index) {
               final thread = _threads[index];
               return ListTile(
-                title: Text(thread.participants.last),
+                title: Text(thread.titleFor(currentUserId)),
                 subtitle: Text(
                   thread.lastMessage.body,
                   maxLines: 1,

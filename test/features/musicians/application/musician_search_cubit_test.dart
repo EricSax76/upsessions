@@ -13,6 +13,7 @@ void main() {
   const mockResults = [
     MusicianEntity(
       id: '1',
+      ownerId: 'owner-1',
       name: 'María Rivera',
       instrument: 'Voz',
       city: 'CDMX',
@@ -21,6 +22,7 @@ void main() {
     ),
     MusicianEntity(
       id: '2',
+      ownerId: 'owner-2',
       name: 'Juan Herrera',
       instrument: 'Guitarra',
       city: 'GDL',

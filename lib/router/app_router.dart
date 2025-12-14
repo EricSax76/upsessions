@@ -117,7 +117,13 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.messages,
-          builder: (context, state) => const MessagesPage(),
+          builder: (context, state) {
+            final extra = state.extra;
+            if (extra is MessagesPageArgs) {
+              return MessagesPage(initialThreadId: extra.initialThreadId);
+            }
+            return const MessagesPage();
+          },
         ),
         GoRoute(
           path: AppRoutes.events,

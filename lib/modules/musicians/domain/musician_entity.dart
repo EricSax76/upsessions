@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 class MusicianEntity {
   const MusicianEntity({
     required this.id,
+    required this.ownerId,
     required this.name,
     required this.instrument,
     required this.city,
@@ -13,6 +14,7 @@ class MusicianEntity {
   });
 
   final String id;
+  final String ownerId;
   final String name;
   final String instrument;
   final String city;
