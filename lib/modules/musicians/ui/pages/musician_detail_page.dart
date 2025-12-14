@@ -24,7 +24,9 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
     setState(() => _isContacting = true);
     try {
       final musician = widget.musician;
-      final participantId = musician.ownerId.isNotEmpty ? musician.ownerId : musician.id;
+      final participantId = musician.ownerId.isNotEmpty
+          ? musician.ownerId
+          : musician.id;
       final thread = await _chatRepository.ensureThreadWithParticipant(
         participantId: participantId,
         participantName: musician.name,
@@ -49,32 +51,49 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
   @override
   Widget build(BuildContext context) {
     final musician = widget.musician;
-    return Scaffold(
-      appBar: AppBar(title: Text(musician.name)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('${musician.instrument} · ${musician.city}', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Wrap(spacing: 8, children: musician.styles.map((style) => Chip(label: Text(style))).toList()),
-            const SizedBox(height: 12),
-            Text('Experiencia: ${musician.experienceYears} años'),
-            const Spacer(),
-            FilledButton.icon(
-              onPressed: _isContacting ? null : _contactMusician,
-              icon: _isContacting
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.message),
-              label: Text(_isContacting ? 'Abriendo...' : 'Contactar'),
+    final theme = Theme.of(context);
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            musician.name,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${musician.instrument} · ${musician.city}',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: musician.styles
+                .map((style) => Chip(label: Text(style)))
+                .toList(),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Experiencia: ${musician.experienceYears} años',
+            style: theme.textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 24),
+          FilledButton.icon(
+            onPressed: _isContacting ? null : _contactMusician,
+            icon: _isContacting
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.message),
+            label: Text(_isContacting ? 'Abriendo...' : 'Contactar'),
+          ),
+        ],
       ),
     );
   }

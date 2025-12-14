@@ -1,0 +1,25 @@
+{
+  "threads": [
+    {
+      "participants": ["userA", "userB"],
+      "participantLabels": {
+        "userA": "Músico A",
+        "userB": "Músico B"
+      },
+      "messages": [
+        {
+          "sender": "userA",
+          "body": "¡Hola! ¿Te interesa colaborar?"
+        },
+        {
+          "sender": "userB",
+          "body": "¡Claro! ¿Cuándo nos vemos?"
+        }
+      ],
+      "unreadCounts": {
+        "userA": 0,
+        "userB": 1
+      }
+    }
+  ]
+}

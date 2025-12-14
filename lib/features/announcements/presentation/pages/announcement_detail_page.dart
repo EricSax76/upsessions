@@ -47,43 +47,53 @@ class _AnnouncementDetailPageState extends State<AnnouncementDetailPage> {
   @override
   Widget build(BuildContext context) {
     final announcement = widget.announcement;
-    return Scaffold(
-      appBar: AppBar(title: Text(announcement.title)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('${announcement.city} · ${announcement.author}'),
-            const SizedBox(height: 8),
-            Text(
-              '${announcement.province} · ${announcement.instrument}',
-              style: Theme.of(context).textTheme.bodyMedium,
+    final theme = Theme.of(context);
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            announcement.title,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
-            if (announcement.styles.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: announcement.styles.map((s) => Chip(label: Text(s))).toList(),
-              ),
-            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${announcement.city} · ${announcement.author}',
+            style: theme.textTheme.labelLarge,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${announcement.province} · ${announcement.instrument}',
+            style: theme.textTheme.bodyMedium,
+          ),
+          if (announcement.styles.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text(announcement.body),
-            const Spacer(),
-            FilledButton.icon(
-              onPressed: _isContacting ? null : _contactAuthor,
-              icon: _isContacting
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.message),
-              label: Text(_isContacting ? 'Abriendo...' : 'Contactar autor'),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: announcement.styles
+                  .map((s) => Chip(label: Text(s)))
+                  .toList(),
             ),
           ],
-        ),
+          const SizedBox(height: 16),
+          Text(announcement.body, style: theme.textTheme.bodyLarge),
+          const SizedBox(height: 24),
+          FilledButton.icon(
+            onPressed: _isContacting ? null : _contactAuthor,
+            icon: _isContacting
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.message),
+            label: Text(_isContacting ? 'Abriendo...' : 'Contactar autor'),
+          ),
+        ],
       ),
     );
   }

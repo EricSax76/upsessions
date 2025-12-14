@@ -1,0 +1,155 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+const path = require('path');
+const admin = require('firebase-admin');
+
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
+
+const db = admin.firestore();
+
+const [, , inputFile] = process.argv;
+
+const configPath =
+  inputFile && typeof inputFile === 'string'
+    ? path.resolve(process.cwd(), inputFile)
+    : path.resolve(__dirname, 'seed-chat-threads.sample.json');
+
+if (!fs.existsSync(configPath)) {
+  console.error(`No se encontró el archivo de datos en ${configPath}`);
+  process.exit(1);
+}
+
+const payload = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+
+const threads = Array.isArray(payload.threads) ? payload.threads : [];
+
+const isNonEmptyString = (value) => typeof value === 'string' && value.trim().length > 0;
+
+const ensureParticipants = (value) => {
+  const candidates = Array.isArray(value) ? value : typeof value === 'string' ? [value] : [];
+  return candidates
+    .map((entry) => (entry ?? '').toString().trim())
+    .filter((entry) => entry.length > 0);
+};
+
+const toTimestamp = (value, fallback) => {
+  if (value instanceof admin.firestore.Timestamp) {
+    return value;
+  }
+  if (typeof value === 'number') {
+    return admin.firestore.Timestamp.fromMillis(value);
+  }
+  if (typeof value === 'string') {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.valueOf())) {
+      return admin.firestore.Timestamp.fromDate(parsed);
+    }
+  }
+  return fallback ?? admin.firestore.Timestamp.now();
+};
+
+const normalizeMessagePayload = (message, sentAt) => ({
+  sender: message.sender ?? message.senderEmail ?? message.senderId ?? '',
+  senderId: message.senderId ?? '',
+  senderEmail: message.senderEmail ?? '',
+  body: message.body ?? '',
+  sentAt,
+});
+
+const seedThread = async (raw) => {
+  const participants = ensureParticipants(raw.participants);
+  if (participants.length === 0) {
+    return { id: '', status: 'omitido: sin participantes' };
+  }
+
+  const threadId = isNonEmptyString(raw.id) ? raw.id.trim() : undefined;
+  const docRef = threadId ? db.collection('chat_threads').doc(threadId) : db.collection('chat_threads').doc();
+  const createdAt = toTimestamp(raw.createdAt);
+
+  await docRef.set(
+    {
+      participants,
+      participantLabels: raw.participantLabels ?? {},
+      createdAt,
+      unreadCounts: raw.unreadCounts ?? {},
+    },
+    { merge: true },
+  );
+
+  const messageEntries = Array.isArray(raw.messages) ? raw.messages : [];
+  if (messageEntries.length === 0 && raw.lastMessage) {
+    messageEntries.push(raw.lastMessage);
+  }
+  if (messageEntries.length === 0) {
+    messageEntries.push({
+      sender: participants[0],
+      senderId: participants[0],
+      senderEmail: '',
+      body: '',
+      sentAt: createdAt,
+    });
+  }
+
+  const messagesCollection = docRef.collection('messages');
+  let lastMessageWritten = null;
+
+  for (const entry of messageEntries) {
+    const messageTimestamp = toTimestamp(entry.sentAt, createdAt);
+    const messageId = isNonEmptyString(entry.id) ? entry.id.trim() : undefined;
+    const messageRef = messageId ? messagesCollection.doc(messageId) : messagesCollection.doc();
+    const messagePayload = normalizeMessagePayload(entry, messageTimestamp);
+    await messageRef.set(messagePayload);
+    lastMessageWritten = { ...messagePayload, id: messageRef.id };
+  }
+
+  const lastMessageSentAt = toTimestamp(raw.lastMessageAt, lastMessageWritten?.sentAt ?? createdAt);
+  const lastMessageSource =
+    raw.lastMessage ?? lastMessageWritten ?? {
+      sender: participants[0],
+      senderId: participants[0],
+      senderEmail: '',
+      body: '',
+    };
+  const normalizedLastMessage = normalizeMessagePayload(lastMessageSource, lastMessageSentAt);
+  const lastMessageIdCandidate = raw.lastMessage?.id;
+  const finalLastMessage = {
+    ...normalizedLastMessage,
+    id: isNonEmptyString(lastMessageIdCandidate) ? lastMessageIdCandidate.trim() : lastMessageWritten?.id ?? '',
+  };
+
+  await docRef.set(
+    {
+      lastMessage: finalLastMessage,
+      lastMessageAt: finalLastMessage.sentAt,
+    },
+    { merge: true },
+  );
+
+  return { id: docRef.id, status: 'creado' };
+};
+
+const run = async () => {
+  if (threads.length === 0) {
+    console.warn('No se encontraron threads en el archivo de configuración.');
+    return;
+  }
+  console.log(`Sembrando ${threads.length} hilos desde ${configPath}`);
+  const results = [];
+  for (const thread of threads) {
+    results.push(await seedThread(thread));
+  }
+  console.table(results);
+};
+
+run()
+  .then(() => {
+    console.log('Seed completado.');
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('Seed fallido:', error);
+    process.exit(1);
+  });

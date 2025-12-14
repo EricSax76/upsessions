@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../cubits/musician_search_cubit.dart';
 import '../../data/musicians_repository.dart';
 import '../../domain/musician_entity.dart';
 import '../widgets/musician_card.dart';
-import 'musician_detail_page.dart';
+import '../../../../core/constants/app_routes.dart';
 import '../../../../home/controllers/user_home_controller.dart';
 import '../../../../home/ui/widgets/search/advanced_search_box.dart';
 
@@ -153,11 +154,9 @@ class _MusicianSearchViewState extends State<MusicianSearchView> {
                           final MusicianEntity musician = state.results[index];
                           return MusicianCard(
                             musician: musician,
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    MusicianDetailPage(musician: musician),
-                              ),
+                            onTap: () => context.push(
+                              AppRoutes.musicianDetail,
+                              extra: musician,
                             ),
                           );
                         },

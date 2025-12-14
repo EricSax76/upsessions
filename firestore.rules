@@ -23,11 +23,9 @@ service cloud.firestore {
 
     function isThreadParticipant(data) {
       return isSignedIn()
-        && data.participants is list
-        && (
-          (userId() != null && userId() in data.participants)
-          || (userEmail() != null && userEmail() in data.participants)
-        );
+        && data != null
+        && data.participantIds is list
+        && request.auth.uid in data.participantIds;
     }
 
     function threadForId(threadId) {
@@ -55,6 +53,14 @@ service cloud.firestore {
       && request.resource.data.author is string
       && request.resource.data.authorId is string
       && request.resource.data.publishedAt is timestamp;
+    }
+    
+    function isValidThread() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['participantIds', 'createdAt'])
+        && data.participantIds is list
+        && data.participantIds.size() >= 2
+        && data.createdAt is timestamp;
     }
 
     function isValidEvent() {
@@ -106,7 +112,8 @@ service cloud.firestore {
 
     match /announcements/{announcementId} {
       allow read: if true;
-      allow create, update: if isSignedIn() && isValidAnnouncement();
+      allow create: if isSignedIn() && isValidAnnouncement();
+      allow update: if isOwner(resource.data.authorId) && isValidAnnouncement();
       allow delete: if isOwner(resource.data.authorId);
     }
 
@@ -129,40 +136,39 @@ service cloud.firestore {
 
     match /chat_threads/{threadId} {
       allow read: if isThreadParticipant(resource.data);
-      allow create: if isThreadParticipant(request.resource.data);
-      allow update, delete: if isThreadParticipant(resource.data);
+      allow create: if isThreadParticipant(request.resource.data) && isValidThread();
+      allow update: if isThreadParticipant(resource.data)
+        // Only allow updating last message info and participants
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastMessage', 'lastMessageAt', 'participants', 'participantIds'])
+        // Ensure participants cannot be removed
+        && resource.data.participantIds.diff(request.resource.data.participantIds).removed.size() == 0;
+      // Allow deletion only by a participant and if the messages subcollection is empty.
+      allow delete: if isThreadParticipant(resource.data) && !exists(/databases/$(database)/documents/chat_threads/$(threadId)/messages);
 
       match /messages/{messageId} {
         function parentThreadData() {
           return threadForId(threadId).data;
         }
 
+        function parentThreadExists() {
+          return exists(threadForId(threadId));
+        }
+
         function isValidMessage() {
-          return request.resource.data.keys().hasOnly(['sender', 'senderId', 'senderEmail', 'body', 'sentAt'])
-            && request.resource.data.body is string
-            && request.resource.data.sentAt is timestamp
-            && (
-              (request.resource.data.sender is string && request.resource.data.sender != null)
-              || (request.resource.data.senderId is string && request.resource.data.senderId != null)
-              || (request.resource.data.senderEmail is string && request.resource.data.senderEmail != null)
-            );
+          let data = request.resource.data;
+          return data.keys().hasOnly(['sender', 'senderId', 'body', 'sentAt'])
+            && data.body is string
+            && data.sentAt is timestamp
+            && data.sender is string
+            && data.senderId is string;
         }
 
         function senderMatchesCurrentUser() {
-          return (
-            (userId() != null && (
-              request.resource.data.sender == userId()
-              || request.resource.data.senderId == userId()
-            ))
-            || (userEmail() != null && (
-              request.resource.data.sender == userEmail()
-              || request.resource.data.senderEmail == userEmail()
-            ))
-          );
+          return request.resource.data.senderId == request.auth.uid;
         }
 
-        allow read: if isThreadParticipant(parentThreadData());
-        allow create: if isThreadParticipant(parentThreadData())
+        allow read: if parentThreadExists() && isThreadParticipant(parentThreadData());
+        allow create: if parentThreadExists() && isThreadParticipant(parentThreadData())
           && senderMatchesCurrentUser()
           && isValidMessage();
         allow update, delete: if false;

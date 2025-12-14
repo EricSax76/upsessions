@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import '../../data/announcements_repository.dart';
 import '../../domain/announcement_entity.dart';
 import '../widgets/announcement_card.dart';
 import '../widgets/announcement_filter_panel.dart';
-import 'announcement_detail_page.dart';
 import 'announcement_form_page.dart';
 
 class AnnouncementsListPage extends StatefulWidget {
@@ -57,11 +58,9 @@ class _AnnouncementsListPageState extends State<AnnouncementsListPage> {
                 for (final announcement in _announcements)
                   AnnouncementCard(
                     announcement: announcement,
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            AnnouncementDetailPage(announcement: announcement),
-                      ),
+                    onTap: () => context.push(
+                      AppRoutes.announcementDetail,
+                      extra: announcement,
                     ),
                   ),
               ],

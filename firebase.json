@@ -1,8 +1,8 @@
 {
   "project": "upsessions-31987",
   "firestore": {
-    "rules": "firebase/firestore.rules",
-    "indexes": "firebase/firestore.indexes.json"
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   },
   "storage": {
     "rules": "firebase/storage.rules"

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
 import '../../data/events_repository.dart';
@@ -54,6 +56,11 @@ class _EventsPageState extends State<EventsPage> {
     );
   }
 
+  void _viewEventDetail(EventEntity event) {
+    if (!mounted) return;
+    context.push(AppRoutes.eventDetail, extra: event);
+  }
+
   void _handlePreviewSelection(EventEntity event) {
     setState(() => _preview = event);
   }
@@ -68,6 +75,7 @@ class _EventsPageState extends State<EventsPage> {
         onRefresh: _load,
         onGenerateDraft: _handleDraft,
         onSelectForPreview: _handlePreviewSelection,
+        onViewDetails: _viewEventDetail,
         ownerId: _authRepository.currentUser?.id,
       ),
     );
@@ -82,6 +90,7 @@ class _EventsDashboard extends StatelessWidget {
     required this.onRefresh,
     required this.onGenerateDraft,
     required this.onSelectForPreview,
+    required this.onViewDetails,
     required this.ownerId,
   });
 
@@ -91,6 +100,7 @@ class _EventsDashboard extends StatelessWidget {
   final Future<void> Function() onRefresh;
   final ValueChanged<EventEntity> onGenerateDraft;
   final ValueChanged<EventEntity> onSelectForPreview;
+  final ValueChanged<EventEntity> onViewDetails;
   final String? ownerId;
 
   @override
@@ -109,12 +119,14 @@ class _EventsDashboard extends StatelessWidget {
                   _EventHighlightCard(
                     event: events.first,
                     onSelect: onSelectForPreview,
+                    onViewDetails: onViewDetails,
                   ),
                 if (events.isNotEmpty) const SizedBox(height: 32),
                 if (events.isNotEmpty)
                   _EventList(
                     events: events.skip(1).toList(),
                     onSelect: onSelectForPreview,
+                    onViewDetails: onViewDetails,
                   ),
                 if (events.isNotEmpty) const SizedBox(height: 32),
                 _EventPlannerSection(
@@ -247,10 +259,15 @@ class _SummaryChip extends StatelessWidget {
 }
 
 class _EventHighlightCard extends StatelessWidget {
-  const _EventHighlightCard({required this.event, required this.onSelect});
+  const _EventHighlightCard({
+    required this.event,
+    required this.onSelect,
+    required this.onViewDetails,
+  });
 
   final EventEntity event;
   final ValueChanged<EventEntity> onSelect;
+  final ValueChanged<EventEntity> onViewDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -316,6 +333,15 @@ class _EventHighlightCard extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () => onViewDetails(event),
+                icon: const Icon(Icons.open_in_new),
+                label: const Text('Ver detalles'),
+              ),
+            ),
           ],
         ),
       ),
@@ -324,10 +350,15 @@ class _EventHighlightCard extends StatelessWidget {
 }
 
 class _EventList extends StatelessWidget {
-  const _EventList({required this.events, required this.onSelect});
+  const _EventList({
+    required this.events,
+    required this.onSelect,
+    required this.onViewDetails,
+  });
 
   final List<EventEntity> events;
   final ValueChanged<EventEntity> onSelect;
+  final ValueChanged<EventEntity> onViewDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -347,7 +378,11 @@ class _EventList extends StatelessWidget {
         Column(
           children: [
             for (final event in events) ...[
-              _EventCard(event: event, onSelect: onSelect),
+              _EventCard(
+                event: event,
+                onSelect: onSelect,
+                onViewDetails: onViewDetails,
+              ),
               const SizedBox(height: 12),
             ],
           ],
@@ -358,10 +393,15 @@ class _EventList extends StatelessWidget {
 }
 
 class _EventCard extends StatelessWidget {
-  const _EventCard({required this.event, required this.onSelect});
+  const _EventCard({
+    required this.event,
+    required this.onSelect,
+    required this.onViewDetails,
+  });
 
   final EventEntity event;
   final ValueChanged<EventEntity> onSelect;
+  final ValueChanged<EventEntity> onViewDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -427,6 +467,15 @@ class _EventCard extends StatelessWidget {
                 ),
                 _InfoChip(icon: Icons.call_outlined, label: event.contactPhone),
               ],
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () => onViewDetails(event),
+                icon: const Icon(Icons.open_in_new),
+                label: const Text('Ver detalles'),
+              ),
             ),
           ],
         ),

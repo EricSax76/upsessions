@@ -7,6 +7,8 @@ import '../features/announcements/presentation/pages/announcement_detail_page.da
 import '../features/announcements/presentation/pages/announcement_form_page.dart';
 import '../features/announcements/presentation/pages/announcements_hub_page.dart';
 import '../features/media/ui/pages/media_gallery_page.dart';
+import '../features/events/domain/event_entity.dart';
+import '../features/events/presentation/pages/event_detail_page.dart';
 import '../features/events/presentation/pages/events_page.dart';
 import '../features/messaging/presentation/pages/messages_page.dart';
 import '../features/onboarding/presentation/pages/app_welcome_page.dart';
@@ -20,6 +22,7 @@ import '../modules/auth/ui/pages/forgot_password_page.dart';
 import '../modules/auth/ui/pages/login_page.dart';
 import '../modules/auth/ui/pages/register_page.dart';
 import '../modules/musicians/domain/musician_entity.dart';
+import '../home/ui/pages/user_shell_page.dart';
 import '../modules/musicians/ui/pages/musician_detail_page.dart';
 import '../modules/musicians/ui/pages/musicians_hub_page.dart';
 import '../modules/profile/presentation/pages/account_page.dart';
@@ -81,7 +84,9 @@ class AppRouter {
           builder: (context, state) {
             final musician = state.extra;
             if (musician is MusicianEntity) {
-              return MusicianDetailPage(musician: musician);
+              return UserShellPage(
+                child: MusicianDetailPage(musician: musician),
+              );
             }
             return _UnknownRouteScreen(
               name: state.uri.toString(),
@@ -98,7 +103,9 @@ class AppRouter {
           builder: (context, state) {
             final announcement = state.extra;
             if (announcement is AnnouncementEntity) {
-              return AnnouncementDetailPage(announcement: announcement);
+              return UserShellPage(
+                child: AnnouncementDetailPage(announcement: announcement),
+              );
             }
             return _UnknownRouteScreen(
               name: state.uri.toString(),
@@ -128,6 +135,19 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.events,
           builder: (context, state) => const EventsPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.eventDetail,
+          builder: (context, state) {
+            final extra = state.extra;
+            if (extra is EventEntity) {
+              return EventDetailPage(event: extra);
+            }
+            return _UnknownRouteScreen(
+              name: state.uri.toString(),
+              message: 'Missing EventEntity for ${state.uri}',
+            );
+          },
         ),
         GoRoute(
           path: AppRoutes.profile,
