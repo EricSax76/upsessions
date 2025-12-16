@@ -22,25 +22,38 @@ class ChatRepository {
   Future<List<ChatThread>> fetchThreads() async {
     final currentUser = _authRepository.currentUser;
     if (currentUser == null) {
+      print(
+        '[ChatRepository] fetchThreads: No current user. Returning empty list.',
+      );
       return const [];
     }
     try {
+      print(
+        '[ChatRepository] fetchThreads: Fetching for user ${currentUser.id}',
+      );
       final query = _firestore
           .collection('chat_threads')
-          .where('participantIds', arrayContains: currentUser.id);
+          .where('participants', arrayContains: currentUser.id);
 
-      final snapshot = await query
-          .orderBy('lastMessageAt', descending: true)
-          .get();
+      final snapshot =
+          await query //
+              .get();
 
       final threads = snapshot.docs
           .map((doc) => _mapThread(doc, currentUser.id))
           .toList();
+      print(
+        '[ChatRepository] fetchThreads: ${threads.length} threads mapped. Sorting by last message timestamp.',
+      );
       threads.sort(
         (a, b) => b.lastMessage.sentAt.compareTo(a.lastMessage.sentAt),
       );
+      print('[ChatRepository] fetchThreads: Found ${threads.length} threads.');
       return threads;
     } on FirebaseException catch (error) {
+      print(
+        '[ChatRepository] fetchThreads: FirebaseException - ${error.code}: ${error.message}',
+      );
       if (error.code == 'permission-denied') {
         throw Exception('No tienes permisos para ver tus conversaciones.');
       }
@@ -51,16 +64,26 @@ class ChatRepository {
   Future<List<ChatMessage>> fetchMessages(String threadId) async {
     final currentUser = _authRepository.currentUser;
     try {
+      print(
+        '[ChatRepository] fetchMessages: Fetching messages for thread $threadId',
+      );
       final snapshot = await _firestore
           .collection('chat_threads')
           .doc(threadId)
           .collection('messages')
           .orderBy('sentAt', descending: false)
           .get();
-      return snapshot.docs
+      final messages = snapshot.docs
           .map((doc) => _mapMessage(doc, currentUser?.id))
           .toList();
+      print(
+        '[ChatRepository] fetchMessages: Found ${messages.length} messages for thread $threadId',
+      );
+      return messages;
     } on FirebaseException catch (error) {
+      print(
+        '[ChatRepository] fetchMessages: FirebaseException - ${error.code}: ${error.message}',
+      );
       if (error.code == 'permission-denied') {
         throw Exception('No tienes permisos para leer los mensajes.');
       }
@@ -74,6 +97,9 @@ class ChatRepository {
       throw Exception('Debes iniciar sesión para enviar mensajes.');
     }
     try {
+      print(
+        '[ChatRepository] sendMessage: User ${user.id} sending "$body" to thread $threadId',
+      );
       final messagesCollection = _firestore
           .collection('chat_threads')
           .doc(threadId)
@@ -106,6 +132,9 @@ class ChatRepository {
         isMine: true,
       );
     } on FirebaseException catch (error) {
+      print(
+        '[ChatRepository] sendMessage: FirebaseException - ${error.code}: ${error.message}',
+      );
       if (error.code == 'permission-denied') {
         throw Exception(
           'No tienes permisos para enviar mensajes en este chat.',
@@ -132,27 +161,36 @@ class ChatRepository {
 
     final participantIds = [user.id, participantId]..sort();
     final threadId = participantIds.join('_');
+    print(
+      '[ChatRepository] ensureThreadWithParticipant: Ensuring thread $threadId for users ${user.id} and $participantId',
+    );
 
     try {
       final docRef = _firestore.collection('chat_threads').doc(threadId);
       final existingDoc = await docRef.get();
 
       if (existingDoc.exists) {
+        print(
+          '[ChatRepository] ensureThreadWithParticipant: Thread $threadId already exists.',
+        );
         return _mapThread(existingDoc, user.id);
       }
 
-      final otherName = participantName.trim().isEmpty
-          ? 'Músico'
-          : participantName.trim();
       final myName = user.displayName.trim().isEmpty
           ? 'Tú'
           : user.displayName.trim();
 
+      final otherName = participantName.trim().isEmpty
+          ? 'Músico'
+          : participantName.trim();
       final now = DateTime.now();
       final timestamp = Timestamp.fromDate(now);
       final participantLabels = {user.id: myName, participantId: otherName};
+      print(
+        '[ChatRepository] ensureThreadWithParticipant: Creating new thread $threadId. My name: "$myName", other name: "$otherName"',
+      );
       final payload = {
-        'participantIds': participantIds,
+        'participants': participantIds,
         'participantLabels': participantLabels,
         'lastMessageAt': timestamp,
         'createdAt': timestamp,
@@ -160,13 +198,16 @@ class ChatRepository {
       };
 
       await docRef.set(payload);
-      await _createMessagesPlaceholder(
-        docRef: docRef,
-        userId: user.id,
-        userDisplayName: myName,
-      );
+      // await _createMessagesPlaceholder(
+      //   docRef: docRef,
+      //   userId: user.id,
+      //   userDisplayName: myName,
+      // );
       return _mapThreadFromMap(threadId, payload, user.id);
     } on FirebaseException catch (error) {
+      print(
+        '[ChatRepository] ensureThreadWithParticipant: FirebaseException - ${error.code}: ${error.message}',
+      );
       if (error.code == 'permission-denied') {
         throw Exception('No tienes permisos para iniciar este chat.');
       }
@@ -188,9 +229,12 @@ class ChatRepository {
   ) {
     final lastMessageMap =
         (data['lastMessage'] ?? <String, dynamic>{}) as Map<String, dynamic>;
+    print(
+      '[ChatRepository] _mapThreadFromMap: Mapping thread ${docId} for user ${currentUserId}.',
+    );
     return ChatThread(
       id: docId,
-      participants: _stringList(data['participantIds']),
+      participants: _stringList(data['participants']),
       participantLabels: _stringMap(data['participantLabels']),
       lastMessage: _mapMessageFromMap(lastMessageMap, currentUserId),
       unreadCount: _unreadCount(data['unreadCounts'], currentUserId),
@@ -211,8 +255,12 @@ class ChatRepository {
     String? id,
   }) {
     final senderId = (data['senderId'] ?? '') as String;
+    final messageId = id ?? data['id'] as String?;
+    if (messageId == null || messageId.isEmpty) {
+      return ChatMessage.placeholder();
+    }
     return ChatMessage(
-      id: id ?? (data['id'] ?? '') as String,
+      id: messageId,
       sender: senderId,
       body: (data['body'] ?? '') as String,
       sentAt: _parseTimestamp(data['sentAt']),
@@ -254,23 +302,5 @@ class ChatRepository {
       }
     }
     return 0;
-  }
-
-  Future<void> _createMessagesPlaceholder({
-    required DocumentReference<Map<String, dynamic>> docRef,
-    required String userId,
-    required String userDisplayName,
-  }) async {
-    try {
-      final messagesCollection = docRef.collection('messages');
-      await messagesCollection.doc('__placeholder__').set({
-        'sender': userDisplayName,
-        'senderId': userId,
-        'body': '¡Chat iniciado!',
-        'sentAt': Timestamp.now(),
-      });
-    } catch (_) {
-      // Ignoramos errores: el placeholder solo es para visibilidad temprana.
-    }
   }
 }

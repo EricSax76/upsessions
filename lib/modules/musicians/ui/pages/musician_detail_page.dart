@@ -37,6 +37,7 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
         extra: MessagesPageArgs(initialThreadId: thread.id),
       );
     } catch (error) {
+      print('Error contacting musician: $error');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('No se pudo iniciar el chat: $error')),

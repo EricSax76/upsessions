@@ -87,6 +87,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> signOut() async {
+    print('[AuthCubit] Signing out...');
     emit(state.copyWith(lastAction: AuthAction.signOut));
     await _authRepository.signOut();
   }
@@ -188,6 +189,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   void _handleUserChanged(UserEntity? user) {
+    print('[AuthCubit] User state changed: ${user != null ? 'Authenticated' : 'Unauthenticated'} (user ID: ${user?.id})');
     emit(state.copyWith(
       status: user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated,
       user: user,

@@ -7,7 +7,7 @@ class ChatMessage {
     required this.sender,
     required this.body,
     required this.sentAt,
-    this.isMine = false,
+    this.isMine = true,
   });
 
   final String id;
@@ -15,4 +15,12 @@ class ChatMessage {
   final String body;
   final DateTime sentAt;
   final bool isMine;
+
+  factory ChatMessage.placeholder() => ChatMessage(
+    id: '',
+    sender: '',
+    body: 'Aún no hay mensajes.',
+    sentAt: DateTime.now(),
+    isMine: false,
+  );
 }

@@ -17,6 +17,7 @@ class AuthRepository {
   Future<UserEntity> signIn(String email, String password) async {
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+      print('[AuthRepository] User signed in: ${credential.user?.uid}');
       return _mapUser(credential.user)!;
     } on FirebaseAuthException catch (error) {
       throw _mapFirebaseAuthException(error);
@@ -50,7 +51,9 @@ class AuthRepository {
   }
 
   Future<void> signOut() async {
+    final uid = _firebaseAuth.currentUser?.uid;
     await _firebaseAuth.signOut();
+    print('[AuthRepository] User signed out: $uid');
   }
 
   AuthException _mapFirebaseAuthException(FirebaseAuthException error) {

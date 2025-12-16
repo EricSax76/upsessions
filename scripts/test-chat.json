@@ -1,0 +1,27 @@
+{
+  "threads": [
+    {
+      "participants": ["P2w4QxRwxAeGOoXVhokGhxmTCb22", "6crJdysdoMXX4Thgw79xVLyBczz2"],
+      "participantLabels": {
+        "P2w4QxRwxAeGOoXVhokGhxmTCb22": "Salomé",
+        "6crJdysdoMXX4Thgw79xVLyBczz2": "Mala Sax"
+      },
+      "messages": [
+        {
+          "senderId": "P2w4QxRwxAeGOoXVhokGhxmTCb22",
+          "sender": "Salomé",
+          "body": "¡Hola! Este es un mensaje de prueba."
+        },
+        {
+          "senderId": "6crJdysdoMXX4Thgw79xVLyBczz2",
+          "sender": "Mala Sax",
+          "body": "¡Recibido! Respondiendo a la prueba."
+        }
+      ],
+      "unreadCounts": {
+        "P2w4QxRwxAeGOoXVhokGhxmTCb22": 0,
+        "6crJdysdoMXX4Thgw79xVLyBczz2": 1
+      }
+    }
+  ]
+}

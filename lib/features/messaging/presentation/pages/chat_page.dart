@@ -26,7 +26,6 @@ class _ChatPageState extends State<ChatPage> {
   final ChatRepository _repository = locate();
   final AuthRepository _authRepository = locate();
   final MusiciansRepository _musiciansRepository = locate();
-  final AnnouncementsRepository _announcementsRepository = locate();
   List<ChatThread> _threads = const [];
   List<ChatMessage> _messages = const [];
   ChatThread? _selectedThread;
@@ -110,7 +109,7 @@ class _ChatPageState extends State<ChatPage> {
       context: context,
       builder: (context) => _NewConversationDialog(
         musiciansRepository: _musiciansRepository,
-        announcementsRepository: _announcementsRepository,
+        announcementsRepository: locate<AnnouncementsRepository>(),
       ),
     );
     if (target == null || !mounted) {
@@ -146,6 +145,7 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: hasSelectedThread
                 ? ListView.builder(
+                    reverse: true,
                     padding: const EdgeInsets.all(16),
                     itemCount: _messages.length,
                     itemBuilder: (context, index) =>
@@ -228,7 +228,9 @@ class _ChatPageState extends State<ChatPage> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.add_comment_rounded),
-                    label: Text(_creatingNewChat ? 'Creando...' : 'Nuevo mensaje'),
+                    label: Text(
+                      _creatingNewChat ? 'Creando...' : 'Nuevo mensaje',
+                    ),
                   ),
                 ],
               ),
@@ -263,7 +265,10 @@ class _ChatPageState extends State<ChatPage> {
 }
 
 class _ConversationTarget {
-  const _ConversationTarget({required this.participantId, required this.displayName});
+  const _ConversationTarget({
+    required this.participantId,
+    required this.displayName,
+  });
 
   final String participantId;
   final String displayName;
@@ -319,11 +324,13 @@ class _NewConversationDialogState extends State<_NewConversationDialog> {
                       emptyMessage: 'No hay músicos disponibles.',
                       itemBuilder: (context, musician) => ListTile(
                         title: Text(musician.name),
-                        subtitle: Text('${musician.instrument} · ${musician.city}'),
+                        subtitle: Text(
+                          '${musician.instrument} · ${musician.city}',
+                        ),
                         onTap: () {
                           Navigator.of(context).pop(
                             _ConversationTarget(
-                              participantId: musician.ownerId.isNotEmpty ? musician.ownerId : musician.id,
+                              participantId: musician.ownerId,
                               displayName: musician.name,
                             ),
                           );
@@ -335,12 +342,16 @@ class _NewConversationDialogState extends State<_NewConversationDialog> {
                       emptyMessage: 'No hay anuncios publicados.',
                       itemBuilder: (context, announcement) => ListTile(
                         title: Text(announcement.title),
-                        subtitle: Text('${announcement.city} · ${announcement.author}'),
+                        subtitle: Text(
+                          '${announcement.city} · ${announcement.author}',
+                        ),
                         onTap: () {
                           Navigator.of(context).pop(
                             _ConversationTarget(
                               participantId: announcement.authorId,
-                              displayName: announcement.author.isNotEmpty ? announcement.author : announcement.title,
+                              displayName: announcement.author.isNotEmpty
+                                  ? announcement.author
+                                  : announcement.title,
                             ),
                           );
                         },
@@ -386,7 +397,9 @@ class _AsyncListBuilder<T> extends StatelessWidget {
           return Center(
             child: Text(
               'No pudimos cargar los datos.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
             ),
           );
         }

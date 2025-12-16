@@ -15,7 +15,7 @@ const [, , inputFile] = process.argv;
 const configPath =
   inputFile && typeof inputFile === 'string'
     ? path.resolve(process.cwd(), inputFile)
-    : path.resolve(__dirname, 'seed-chat-threads.sample.json');
+    : path.resolve(__dirname, 'test-chat.json');
 
 if (!fs.existsSync(configPath)) {
   console.error(`No se encontró el archivo de datos en ${configPath}`);
@@ -51,14 +51,14 @@ const toTimestamp = (value, fallback) => {
   return fallback ?? admin.firestore.Timestamp.now();
 };
 
-const normalizeMessagePayload = (message, sentAt) => ({
-  sender: message.sender ?? message.senderEmail ?? message.senderId ?? '',
-  senderId: message.senderId ?? '',
-  senderEmail: message.senderEmail ?? '',
-  body: message.body ?? '',
-  sentAt,
-});
-
+const normalizeMessagePayload = (message, defaultTimestamp) => {
+  const sentAt = toTimestamp(message.sentAt, defaultTimestamp);
+  return {
+    senderId: message.senderId ?? message.sender ?? '',
+    body: message.body ?? '',
+    sentAt,
+  };
+};
 const seedThread = async (raw) => {
   const participants = ensureParticipants(raw.participants);
   if (participants.length === 0) {
@@ -68,58 +68,44 @@ const seedThread = async (raw) => {
   const threadId = isNonEmptyString(raw.id) ? raw.id.trim() : undefined;
   const docRef = threadId ? db.collection('chat_threads').doc(threadId) : db.collection('chat_threads').doc();
   const createdAt = toTimestamp(raw.createdAt);
-
-  await docRef.set(
-    {
-      participants,
-      participantLabels: raw.participantLabels ?? {},
-      createdAt,
-      unreadCounts: raw.unreadCounts ?? {},
-    },
-    { merge: true },
-  );
-
+  
   const messageEntries = Array.isArray(raw.messages) ? raw.messages : [];
-  if (messageEntries.length === 0 && raw.lastMessage) {
-    messageEntries.push(raw.lastMessage);
-  }
-  if (messageEntries.length === 0) {
-    messageEntries.push({
-      sender: participants[0],
-      senderId: participants[0],
-      senderEmail: '',
-      body: '',
-      sentAt: createdAt,
-    });
-  }
-
   const messagesCollection = docRef.collection('messages');
-  let lastMessageWritten = null;
+  const batch = db.batch();
+  let lastMessagePayload = null;
 
   for (const entry of messageEntries) {
-    const messageTimestamp = toTimestamp(entry.sentAt, createdAt);
     const messageId = isNonEmptyString(entry.id) ? entry.id.trim() : undefined;
     const messageRef = messageId ? messagesCollection.doc(messageId) : messagesCollection.doc();
-    const messagePayload = normalizeMessagePayload(entry, messageTimestamp);
-    await messageRef.set(messagePayload);
-    lastMessageWritten = { ...messagePayload, id: messageRef.id };
+    const messagePayload = normalizeMessagePayload(entry, createdAt);
+    batch.set(messageRef, messagePayload);
+    lastMessagePayload = messagePayload;
   }
 
-  const lastMessageSentAt = toTimestamp(raw.lastMessageAt, lastMessageWritten?.sentAt ?? createdAt);
-  const lastMessageSource =
-    raw.lastMessage ?? lastMessageWritten ?? {
-      sender: participants[0],
+  if (!lastMessagePayload && participants.length > 0) {
+    // Si no hay mensajes, crea uno vacío para que el hilo no esté incompleto
+    lastMessagePayload = {
       senderId: participants[0],
-      senderEmail: '',
-      body: '',
+      body: 'Hilo iniciado.',
+      sentAt: createdAt,
     };
-  const normalizedLastMessage = normalizeMessagePayload(lastMessageSource, lastMessageSentAt);
-  const lastMessageIdCandidate = raw.lastMessage?.id;
-  const finalLastMessage = {
-    ...normalizedLastMessage,
-    id: isNonEmptyString(lastMessageIdCandidate) ? lastMessageIdCandidate.trim() : lastMessageWritten?.id ?? '',
+    const messageRef = messagesCollection.doc();
+    batch.set(messageRef, lastMessagePayload);
+  }
+
+  const threadData = {
+    participants,
+    participantLabels: raw.participantLabels ?? {},
+    createdAt,
+    unreadCounts: raw.unreadCounts ?? {},
+    lastMessage: lastMessagePayload,
+    lastMessageAt: lastMessagePayload?.sentAt ?? createdAt,
   };
 
+  batch.set(docRef, threadData, { merge: true });
+
+  await batch.commit();
+  /*
   await docRef.set(
     {
       lastMessage: finalLastMessage,
@@ -127,6 +113,7 @@ const seedThread = async (raw) => {
     },
     { merge: true },
   );
+  */
 
   return { id: docRef.id, status: 'creado' };
 };

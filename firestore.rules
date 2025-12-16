@@ -24,8 +24,8 @@ service cloud.firestore {
     function isThreadParticipant(data) {
       return isSignedIn()
         && data != null
-        && data.participantIds is list
-        && request.auth.uid in data.participantIds;
+        && data.participants is list
+        && request.auth.uid in data.participants;
     }
 
     function threadForId(threadId) {
@@ -57,9 +57,9 @@ service cloud.firestore {
     
     function isValidThread() {
       let data = request.resource.data;
-      return data.keys().hasAll(['participantIds', 'createdAt'])
-        && data.participantIds is list
-        && data.participantIds.size() >= 2
+      return data.keys().hasAll(['participants', 'createdAt'])
+        && data.participants is list
+        && data.participants.size() >= 2
         && data.createdAt is timestamp;
     }
 
@@ -136,12 +136,12 @@ service cloud.firestore {
 
     match /chat_threads/{threadId} {
       allow read: if isThreadParticipant(resource.data);
-      allow create: if isThreadParticipant(request.resource.data) && isValidThread();
+      allow create: if isSignedIn();
       allow update: if isThreadParticipant(resource.data)
-        // Only allow updating last message info and participants
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastMessage', 'lastMessageAt', 'participants', 'participantIds'])
+        // Only allow updating last message info and participantIds
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastMessage', 'lastMessageAt', 'participants', 'unreadCounts'])
         // Ensure participants cannot be removed
-        && resource.data.participantIds.diff(request.resource.data.participantIds).removed.size() == 0;
+        && resource.data.participants.diff(request.resource.data.participants).removed.size() == 0;
       // Allow deletion only by a participant and if the messages subcollection is empty.
       allow delete: if isThreadParticipant(resource.data) && !exists(/databases/$(database)/documents/chat_threads/$(threadId)/messages);
 
