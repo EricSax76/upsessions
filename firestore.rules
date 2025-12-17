@@ -135,7 +135,8 @@ service cloud.firestore {
     }
 
     match /chat_threads/{threadId} {
-      allow read: if isThreadParticipant(resource.data);
+      allow get: if isThreadParticipant(resource.data);
+      allow list: if isSignedIn();
       allow create: if isSignedIn();
       allow update: if isThreadParticipant(resource.data)
         // Only allow updating last message info and participantIds
@@ -146,12 +147,16 @@ service cloud.firestore {
       allow delete: if isThreadParticipant(resource.data) && !exists(/databases/$(database)/documents/chat_threads/$(threadId)/messages);
 
       match /messages/{messageId} {
+        function parentThreadPath() {
+          return /databases/$(database)/documents/chat_threads/$(threadId);
+        }
+
         function parentThreadData() {
-          return threadForId(threadId).data;
+          return get(parentThreadPath()).data;
         }
 
         function parentThreadExists() {
-          return exists(threadForId(threadId));
+          return exists(parentThreadPath());
         }
 
         function isValidMessage() {

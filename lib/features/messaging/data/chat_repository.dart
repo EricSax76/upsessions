@@ -255,8 +255,8 @@ class ChatRepository {
     String? id,
   }) {
     final senderId = (data['senderId'] ?? '') as String;
-    final messageId = id ?? data['id'] as String?;
-    if (messageId == null || messageId.isEmpty) {
+    final messageId = _messageIdFrom(data, id);
+    if (messageId.isEmpty) {
       return ChatMessage.placeholder();
     }
     return ChatMessage(
@@ -302,5 +302,27 @@ class ChatRepository {
       }
     }
     return 0;
+  }
+
+  static String _messageIdFrom(Map<String, dynamic> data, String? fallbackId) {
+    if (fallbackId != null && fallbackId.isNotEmpty) {
+      return fallbackId;
+    }
+    final mapId = data['id'];
+    if (mapId is String && mapId.isNotEmpty) {
+      return mapId;
+    }
+    final sentAt = data['sentAt'];
+    if (sentAt is Timestamp) {
+      return '${sentAt.seconds}_${sentAt.nanoseconds}';
+    }
+    if (sentAt is DateTime) {
+      return sentAt.millisecondsSinceEpoch.toString();
+    }
+    final senderId = data['senderId'];
+    if (senderId is String && senderId.isNotEmpty) {
+      return '${senderId}_${DateTime.now().microsecondsSinceEpoch}';
+    }
+    return '';
   }
 }
