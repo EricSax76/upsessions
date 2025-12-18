@@ -107,7 +107,16 @@ service cloud.firestore {
 
     match /musicians/{musicianId} {
       allow read: if true;
-      allow write: if isOwner(musicianId);
+      allow create: if isSignedIn()
+        && (
+          request.resource.data.ownerId == request.auth.uid
+          || musicianId == request.auth.uid
+        );
+      allow update, delete: if isSignedIn()
+        && (
+          resource.data.ownerId == request.auth.uid
+          || musicianId == request.auth.uid
+        );
     }
 
     match /announcements/{announcementId} {
@@ -135,7 +144,10 @@ service cloud.firestore {
     }
 
     match /chat_threads/{threadId} {
-      allow get: if isThreadParticipant(resource.data);
+      // Allow fetching non-existent threads so clients can determine whether they need to
+      // create a new one. Existing threads are still restricted to participants.
+      allow get: if (resource != null && isThreadParticipant(resource.data))
+        || (resource == null && isSignedIn());
       allow list: if isSignedIn();
       allow create: if isSignedIn();
       allow update: if isThreadParticipant(resource.data)

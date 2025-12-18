@@ -13,15 +13,21 @@ class MusiciansGrid extends StatelessWidget {
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 600;
         final crossAxisCount = isCompact ? 1 : 2;
-        final aspectRatio = isCompact ? 4.0 : 3.0;
+        const crossAxisSpacing = 12.0;
+        const mainAxisSpacing = 12.0;
+        final availableWidth =
+            constraints.maxWidth - crossAxisSpacing * (crossAxisCount - 1);
+        final tileWidth = availableWidth / crossAxisCount;
+        final tileHeight = isCompact ? 112.0 : 128.0;
+        final aspectRatio = tileWidth / tileHeight;
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
             childAspectRatio: aspectRatio,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
+            crossAxisSpacing: crossAxisSpacing,
+            mainAxisSpacing: mainAxisSpacing,
           ),
           itemCount: musicians.length,
           itemBuilder: (context, index) {

@@ -15,25 +15,45 @@ class UpcomingEventsSection extends StatelessWidget {
             'Aún no hay eventos publicados. Sé el primero en crear uno desde la sección Eventos.',
       );
     }
-    return SizedBox(
-      height: 300,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: events.length,
-        separatorBuilder: (context, _) => const SizedBox(width: 16),
-        itemBuilder: (context, index) {
-          final event = events[index];
-          return _EventCard(event: event);
-        },
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 600;
+        final listHeight = isCompact ? 360.0 : 300.0;
+        final availableWidth = constraints.maxWidth == double.infinity
+            ? 320.0
+            : constraints.maxWidth;
+        final cardWidth = isCompact
+            ? (availableWidth * 0.85).clamp(220.0, 320.0)
+            : 280.0;
+
+        return SizedBox(
+          height: listHeight,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: events.length,
+            separatorBuilder: (context, _) => const SizedBox(width: 16),
+            itemBuilder: (context, index) {
+              final event = events[index];
+              return SizedBox(
+                width: cardWidth,
+                child: _EventCard(
+                  event: event,
+                  isCompact: isCompact,
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
 
 class _EventCard extends StatelessWidget {
-  const _EventCard({required this.event});
+  const _EventCard({required this.event, required this.isCompact});
 
   final HomeEventModel event;
+  final bool isCompact;
 
   @override
   Widget build(BuildContext context) {
@@ -42,69 +62,69 @@ class _EventCard extends StatelessWidget {
     final dateLabel = loc.formatMediumDate(event.start);
     final timeLabel = loc.formatTimeOfDay(TimeOfDay.fromDateTime(event.start));
     final tags = event.tags.take(2).toList();
-    return SizedBox(
-      width: 280,
-      child: Card(
-        clipBehavior: Clip.hardEdge,
-        child: InkWell(
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.event, color: theme.colorScheme.primary),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        '$dateLabel · $timeLabel',
-                        style: theme.textTheme.bodyMedium,
-                      ),
+    return Card(
+      clipBehavior: Clip.hardEdge,
+      child: InkWell(
+        onTap: () {},
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.event, color: theme.colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '$dateLabel · $timeLabel',
+                      style: theme.textTheme.bodyMedium,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  event.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
                   ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                event.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                Text(
-                  '${event.venue} · ${event.city}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.primary,
-                  ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${event.venue} · ${event.city}',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.primary,
                 ),
-                const SizedBox(height: 8),
-                Text(
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Text(
                   event.description,
-                  maxLines: 3,
+                  maxLines: isCompact ? 2 : 3,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _InfoChip(
-                      icon: Icons.people_alt_outlined,
-                      label: '${event.capacity} personas',
-                    ),
-                    _InfoChip(
-                      icon: Icons.confirmation_num_outlined,
-                      label: event.ticketInfo,
-                    ),
-                    for (final tag in tags)
-                      _InfoChip(icon: Icons.sell_outlined, label: tag),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _InfoChip(
+                    icon: Icons.people_alt_outlined,
+                    label: '${event.capacity} personas',
+                  ),
+                  _InfoChip(
+                    icon: Icons.confirmation_num_outlined,
+                    label: event.ticketInfo,
+                  ),
+                  for (final tag in tags)
+                    _InfoChip(icon: Icons.sell_outlined, label: tag),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -132,7 +152,13 @@ class _InfoChip extends StatelessWidget {
         children: [
           Icon(icon, size: 14),
           const SizedBox(width: 4),
-          Text(label, style: theme.textTheme.bodySmall),
+          Flexible(
+            child: Text(
+              label,
+              style: theme.textTheme.bodySmall,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );

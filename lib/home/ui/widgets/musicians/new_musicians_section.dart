@@ -9,44 +9,85 @@ class NewMusiciansSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 180,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: musicians.length,
-        separatorBuilder: (context, _) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final musician = musicians[index];
-          return Container(
-            width: 220,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  musician.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 600;
+        final listHeight = isCompact ? 220.0 : 180.0;
+        final availableWidth = constraints.maxWidth == double.infinity
+            ? 260.0
+            : constraints.maxWidth;
+        final cardWidth = isCompact
+            ? (availableWidth * 0.7).clamp(180.0, 260.0)
+            : 220.0;
+
+        return SizedBox(
+          height: listHeight,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: musicians.length,
+            separatorBuilder: (context, _) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final musician = musicians[index];
+              return SizedBox(
+                width: cardWidth,
+                child: _NewMusicianCard(musician: musician),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _NewMusicianCard extends StatelessWidget {
+  const _NewMusicianCard({required this.musician});
+
+  final MusicianCardModel musician;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            musician.name,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            musician.instrument,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: colorScheme.onSurfaceVariant),
+          ),
+          const Spacer(),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  musician.location,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                Text(musician.instrument),
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(musician.location),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.favorite_border),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        },
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.favorite_border),
+                visualDensity: VisualDensity.compact,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -5,7 +5,7 @@
     "indexes": "firestore.indexes.json"
   },
   "storage": {
-    "rules": "firebase/storage.rules"
+    "rules": "storage.rules"
   },
   "flutter": {
     "platforms": {
