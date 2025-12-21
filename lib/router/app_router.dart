@@ -7,6 +7,7 @@ import '../features/announcements/presentation/pages/announcement_detail_page.da
 import '../features/announcements/presentation/pages/announcement_form_page.dart';
 import '../features/announcements/presentation/pages/announcements_hub_page.dart';
 import '../features/media/ui/pages/media_gallery_page.dart';
+import '../features/calendar/presentation/pages/calendar_page.dart';
 import '../features/events/domain/event_entity.dart';
 import '../features/events/presentation/pages/event_detail_page.dart';
 import '../features/events/presentation/pages/events_page.dart';
@@ -29,6 +30,7 @@ import '../modules/profile/presentation/pages/account_page.dart';
 import '../modules/profile/presentation/pages/profile_edit_page.dart';
 import '../modules/profile/presentation/pages/profile_overview_page.dart';
 import 'package:upsessions/core/locator/locator.dart';
+import '../features/contacts/presentation/pages/contacts_page.dart';
 
 class AppRouter {
   AppRouter() {
@@ -131,6 +133,14 @@ class AppRouter {
             }
             return const MessagesPage();
           },
+        ),
+        GoRoute(
+          path: AppRoutes.contacts,
+          builder: (context, state) => const ContactsPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.calendar,
+          builder: (context, state) => const CalendarPage(),
         ),
         GoRoute(
           path: AppRoutes.events,

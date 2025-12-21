@@ -11,6 +11,8 @@ import 'package:upsessions/features/messaging/data/chat_repository.dart';
 import 'package:upsessions/features/events/data/events_repository.dart';
 import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
 import 'package:upsessions/home/data/repositories/user_home_repository.dart';
+import 'package:upsessions/features/contacts/application/liked_musicians_controller.dart';
+import 'package:upsessions/features/contacts/data/contacts_repository.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -39,6 +41,13 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<MediaRepository>(() => MediaRepository())
     ..registerLazySingleton<EventsRepository>(
       () => EventsRepository(authRepository: getIt<AuthRepository>()),
+    )
+    ..registerLazySingleton<ContactsRepository>(() => ContactsRepository())
+    ..registerLazySingleton<LikedMusiciansController>(
+      () => LikedMusiciansController(
+        contactsRepository: getIt<ContactsRepository>(),
+        authRepository: getIt<AuthRepository>(),
+      ),
     );
 }
 

@@ -318,14 +318,15 @@ class _EventHighlightCard extends StatelessWidget {
             const SizedBox(height: 16),
             Text(event.description),
             const SizedBox(height: 20),
-            Row(
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
               children: [
                 FilledButton.icon(
                   onPressed: () => onSelect(event),
                   icon: const Icon(Icons.description_outlined),
                   label: const Text('Ver ficha en texto'),
                 ),
-                const SizedBox(width: 12),
                 TextButton.icon(
                   onPressed: () => onSelect(event),
                   icon: const Icon(Icons.copy_all_outlined),

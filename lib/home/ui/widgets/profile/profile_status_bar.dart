@@ -9,6 +9,9 @@ class ProfileStatusBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
         final profile = state.profile;
@@ -19,54 +22,74 @@ class ProfileStatusBar extends StatelessWidget {
 
         return LayoutBuilder(
           builder: (context, constraints) {
-            final avatar = CircleAvatar(
-              radius: 24,
-              backgroundImage: avatarUrl != null
-                  ? NetworkImage(avatarUrl)
-                  : null,
-              child: avatarUrl == null
-                  ? Icon(
-                      Icons.person,
-                      color: Theme.of(context).colorScheme.primary,
-                    )
-                  : null,
+            final isCompact = constraints.maxWidth < 600;
+            final padding = EdgeInsets.symmetric(
+              horizontal: isCompact ? 20 : 28,
+              vertical: isCompact ? 20 : 24,
             );
-            final info = Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+
+            Widget buildUserInfo() {
+              final avatar = CircleAvatar(
+                radius: isCompact ? 28 : 32,
+                backgroundImage:
+                    avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                backgroundColor: colorScheme.onPrimary.withValues(alpha: 0.1),
+                child: avatarUrl == null
+                    ? Icon(
+                        Icons.person,
+                        color: colorScheme.primary,
+                      )
+                    : null,
+              );
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    displayName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  avatar,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          displayName,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          subtitle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onPrimary
+                                .withValues(alpha: 0.85),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
-                  ),
                 ],
-              ),
-            );
-            final rowChildren = <Widget>[
-              avatar,
-              const SizedBox(width: 16),
-              info,
-            ];
+              );
+            }
 
             return Container(
-              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(36),
+                gradient: LinearGradient(
+                  colors: [
+                    colorScheme.primary,
+                    colorScheme.primaryContainer,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Row(children: rowChildren)],
+              child: Padding(
+                padding: padding,
+                child: buildUserInfo(),
               ),
             );
           },

@@ -110,12 +110,15 @@ class UserHomeRepository {
     final styles = _stringList(data['styles']);
     return MusicianCardModel(
       id: doc.id,
+      ownerId: (data['ownerId'] ?? '') as String,
       name: (data['name'] ?? '') as String,
       instrument: (data['instrument'] ?? '') as String,
       location: (data['city'] ?? '') as String,
       style: styles.isNotEmpty ? styles.first : '',
       avatarUrl: data['photoUrl'] as String?,
       rating: (data['rating'] as num?)?.toDouble() ?? 0,
+      experienceYears: (data['experienceYears'] as num?)?.toInt() ?? 0,
+      styles: styles,
     );
   }
 

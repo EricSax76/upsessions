@@ -9,7 +9,6 @@ import 'package:upsessions/home/ui/widgets/announcements/new_announcements_secti
 import 'package:upsessions/home/ui/widgets/events/upcoming_events_section.dart';
 import 'package:upsessions/home/ui/widgets/footer/bottom_cookie_bar.dart';
 import 'package:upsessions/home/ui/widgets/footer/provinces_list_section.dart';
-import 'package:upsessions/home/ui/widgets/home_hero_banner.dart';
 import 'package:upsessions/home/ui/widgets/home_section_card.dart';
 import 'package:upsessions/home/ui/widgets/musicians/musicians_by_instrument_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/new_musicians_section.dart';
@@ -56,25 +55,6 @@ class _UserHomePageState extends State<UserHomePage> {
   }
 
   Widget _buildMainContent() {
-    final stats = [
-      HeroStatData(
-        label: 'Eventos activos',
-        value: '${_controller.events.length}',
-        icon: Icons.event_available,
-      ),
-      HeroStatData(
-        label: 'Nuevos anuncios',
-        value: '${_controller.announcements.length}',
-        icon: Icons.campaign_outlined,
-      ),
-      HeroStatData(
-        label: 'Músicos conectados',
-        value:
-            '${_controller.recommended.length + _controller.newMusicians.length}',
-        icon: Icons.people_alt,
-      ),
-    ];
-
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 1024;
@@ -90,27 +70,7 @@ class _UserHomePageState extends State<UserHomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    HomeHeroBanner(
-                      title: 'Pasión por la música',
-                      description:
-                          'Conecta con artistas, agenda shows y comparte tus proyectos.',
-                      primaryActionLabel: 'Crear evento',
-                      onPrimaryAction: () => context.push(AppRoutes.events),
-                      secondaryActionLabel: 'Explorar músicos',
-                      onSecondaryAction: () =>
-                          context.push(AppRoutes.musicians),
-                      stats: stats,
-                    ),
-                    const SizedBox(height: 24),
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(24),
-                        child: ProfileStatusBar(),
-                      ),
-                    ),
+                    const ProfileStatusBar(),
                     const SizedBox(height: 32),
                     ..._buildResponsiveRow(
                       isWide,

@@ -4,6 +4,8 @@ import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/features/messaging/data/chat_repository.dart';
 import 'package:upsessions/features/messaging/presentation/pages/messages_page.dart';
+import 'package:upsessions/features/contacts/domain/liked_musician.dart';
+import 'package:upsessions/features/contacts/presentation/widgets/musician_like_button.dart';
 
 import '../../domain/musician_entity.dart';
 
@@ -52,12 +54,20 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
   @override
   Widget build(BuildContext context) {
     final musician = widget.musician;
-    final theme = Theme.of(context);
+    final likedMusician = _mapToLikedMusician(musician);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: MusicianLikeButton(
+              musician: likedMusician,
+              iconSize: 28,
+              padding: const EdgeInsets.all(4),
+            ),
+          ),
           _ProfileHeader(musician: musician),
           const SizedBox(height: 24),
           _HighlightsGrid(musician: musician),
@@ -70,6 +80,19 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
           ),
         ],
       ),
+    );
+  }
+
+  LikedMusician _mapToLikedMusician(MusicianEntity musician) {
+    return LikedMusician(
+      id: musician.id,
+      ownerId: musician.ownerId,
+      name: musician.name,
+      instrument: musician.instrument,
+      city: musician.city,
+      styles: musician.styles,
+      photoUrl: musician.photoUrl,
+      experienceYears: musician.experienceYears,
     );
   }
 }

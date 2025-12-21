@@ -32,7 +32,7 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
             borderRadius: BorderRadius.circular(8),
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: Text('Upsessions'),
+              child: Icon(Icons.home_outlined),
             ),
           ),
           bottom: bottom,

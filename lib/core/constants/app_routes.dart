@@ -16,6 +16,8 @@ class AppRoutes {
   static const announcementForm = '/announcements/form';
   static const media = '/media';
   static const messages = '/messages';
+  static const contacts = '/contacts';
+  static const calendar = '/calendar';
   static const events = '/events';
   static const eventDetail = '/events/detail';
   static const profile = '/profile';

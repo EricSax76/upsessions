@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../data/models/musician_card_model.dart';
+import '../../../../features/contacts/domain/liked_musician.dart';
+import '../../../../features/contacts/presentation/widgets/musician_like_button.dart';
 
 class MusiciansGrid extends StatelessWidget {
   const MusiciansGrid({super.key, required this.musicians});
@@ -47,6 +49,7 @@ class _MusicianTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final likedMusician = _mapToLiked();
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -80,14 +83,35 @@ class _MusicianTile extends StatelessWidget {
             ),
           ),
           Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.star, size: 16, color: Colors.amber),
+              const Icon(Icons.star, size: 11, color: Colors.amber),
               Text(musician.rating.toStringAsFixed(1)),
+              const SizedBox(height: 4),
+              MusicianLikeButton(
+                musician: likedMusician,
+                iconSize: 20,
+                constraints: const BoxConstraints(minHeight: 28, minWidth: 28),
+              ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  LikedMusician _mapToLiked() {
+    return LikedMusician(
+      id: musician.id,
+      ownerId: musician.ownerId,
+      name: musician.name,
+      instrument: musician.instrument,
+      city: musician.location,
+      styles: musician.styles,
+      highlightStyle: musician.style,
+      photoUrl: musician.avatarUrl,
+      experienceYears: musician.experienceYears,
+      rating: musician.rating,
     );
   }
 }

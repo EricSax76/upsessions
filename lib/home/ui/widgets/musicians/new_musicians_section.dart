@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../data/models/musician_card_model.dart';
+import '../../../../features/contacts/domain/liked_musician.dart';
+import '../../../../features/contacts/presentation/widgets/musician_like_button.dart';
 
 class NewMusiciansSection extends StatelessWidget {
   const NewMusiciansSection({super.key, required this.musicians});
@@ -48,6 +50,7 @@ class _NewMusicianCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final likedMusician = _mapToLiked();
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -80,15 +83,26 @@ class _NewMusicianCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.favorite_border),
-                visualDensity: VisualDensity.compact,
-              ),
+              MusicianLikeButton(musician: likedMusician, iconSize: 20),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  LikedMusician _mapToLiked() {
+    return LikedMusician(
+      id: musician.id,
+      ownerId: musician.ownerId,
+      name: musician.name,
+      instrument: musician.instrument,
+      city: musician.location,
+      styles: musician.styles,
+      highlightStyle: musician.style,
+      photoUrl: musician.avatarUrl,
+      experienceYears: musician.experienceYears,
+      rating: musician.rating,
     );
   }
 }
