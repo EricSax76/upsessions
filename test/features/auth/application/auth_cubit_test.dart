@@ -46,6 +46,10 @@ void main() {
     photoUrl: 'https://example.com/photo.jpg',
   );
 
+  setUpAll(() {
+    registerFallbackValue(user);
+  });
+
   setUp(() {
     authRepository = _MockAuthRepository();
     profileRepository = _MockProfileRepository();

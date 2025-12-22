@@ -18,6 +18,10 @@ import '../features/onboarding/presentation/pages/onboarding_story_pages.dart';
 import '../features/settings/presentation/pages/help_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/splash/presentation/splash_page.dart';
+import '../features/rehearsals/presentation/pages/group_rehearsals_page.dart';
+import '../features/rehearsals/presentation/pages/invite_accept_page.dart';
+import '../features/rehearsals/presentation/pages/rehearsal_detail_page.dart';
+import '../features/rehearsals/presentation/pages/rehearsals_groups_page.dart';
 import '../home/ui/pages/user_home_page.dart';
 import '../modules/auth/ui/pages/forgot_password_page.dart';
 import '../modules/auth/ui/pages/login_page.dart';
@@ -145,6 +149,33 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.events,
           builder: (context, state) => const EventsPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.rehearsals,
+          builder: (context, state) => const RehearsalsGroupsPage(),
+        ),
+        GoRoute(
+          path: '/rehearsals/groups/:groupId',
+          builder: (context, state) {
+            final groupId = state.pathParameters['groupId'] ?? '';
+            return GroupRehearsalsPage(groupId: groupId);
+          },
+        ),
+        GoRoute(
+          path: '/rehearsals/groups/:groupId/rehearsals/:rehearsalId',
+          builder: (context, state) {
+            final groupId = state.pathParameters['groupId'] ?? '';
+            final rehearsalId = state.pathParameters['rehearsalId'] ?? '';
+            return RehearsalDetailPage(groupId: groupId, rehearsalId: rehearsalId);
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.invite,
+          builder: (context, state) {
+            final groupId = state.uri.queryParameters['groupId'] ?? '';
+            final inviteId = state.uri.queryParameters['inviteId'] ?? '';
+            return InviteAcceptPage(groupId: groupId, inviteId: inviteId);
+          },
         ),
         GoRoute(
           path: AppRoutes.eventDetail,

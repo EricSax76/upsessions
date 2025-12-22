@@ -235,6 +235,129 @@ service cloud.firestore {
       }
     }
 
+    // `users` is deprecated: the app uses `musicians` for profiles/lookup.
+    // Keep the path blocked to avoid accidental user-doc creation from clients.
+    match /users/{uid} {
+      allow read, write: if false;
+    }
+
+    function groupDocPath(groupId) {
+      return /databases/$(database)/documents/groups/$(groupId);
+    }
+
+    function memberDocPath(groupId, uid) {
+      return /databases/$(database)/documents/groups/$(groupId)/members/$(uid);
+    }
+
+    function inviteDocPath(groupId, inviteId) {
+      return /databases/$(database)/documents/groups/$(groupId)/invites/$(inviteId);
+    }
+
+    // Groups are managed by authenticated musicians (profile stored at /musicians/{uid}).
+    function isMusician() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/musicians/$(request.auth.uid));
+    }
+
+    function isActiveMember(groupId) {
+      return isMusician()
+        && exists(memberDocPath(groupId, request.auth.uid))
+        && get(memberDocPath(groupId, request.auth.uid)).data.status == 'active';
+    }
+
+    function isAdminOrOwner(groupId) {
+      return isActiveMember(groupId)
+        && get(memberDocPath(groupId, request.auth.uid)).data.role in ['owner', 'admin'];
+    }
+
+    function canAcceptInvite(groupId, inviteId) {
+      return isSignedIn() && canAcceptInviteData(get(inviteDocPath(groupId, inviteId)).data);
+    }
+
+    function canAcceptInviteData(invite) {
+      return invite != null
+        && invite.targetUid == request.auth.uid
+        && invite.status == 'active'
+        && invite.expiresAt is timestamp
+        && invite.expiresAt > request.time;
+    }
+
+    function isOwnerMembershipCreate(groupId, uid) {
+      return isMusician()
+        && uid == request.auth.uid
+        && request.resource.data.userId == uid
+        && existsAfter(groupDocPath(groupId))
+        && getAfter(groupDocPath(groupId)).data.ownerId == request.auth.uid
+        && request.resource.data.role == 'owner'
+        && request.resource.data.status == 'active';
+    }
+
+    function isInviteMembershipCreate(groupId, uid) {
+      return isMusician()
+        && uid == request.auth.uid
+        && request.resource.data.userId == uid
+        && request.resource.data.role == 'member'
+        && request.resource.data.status == 'active'
+        && request.resource.data.inviteId is string
+        && canAcceptInvite(groupId, request.resource.data.inviteId);
+    }
+
+    function isInviteMarkUsed(groupId, inviteId) {
+      return isSignedIn()
+        && canAcceptInviteData(resource.data)
+        && request.resource.data.status == 'used'
+        && request.resource.data.usedBy == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'usedBy', 'usedAt']);
+    }
+
+    match /groups/{groupId} {
+      allow read: if isActiveMember(groupId);
+      allow create: if isMusician()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.name is string;
+      allow update: if isAdminOrOwner(groupId);
+      allow delete: if false;
+
+      match /members/{uid} {
+        allow read: if isSignedIn()
+          && (
+            uid == request.auth.uid
+            || (resource != null && resource.data.userId == request.auth.uid)
+            || isActiveMember(groupId)
+          );
+        allow create: if isOwnerMembershipCreate(groupId, uid)
+          || isInviteMembershipCreate(groupId, uid)
+          || (isAdminOrOwner(groupId)
+            && request.resource.data.userId == uid
+            && request.resource.data.role in ['owner', 'admin', 'member']
+            && request.resource.data.status == 'active');
+        allow update: if isAdminOrOwner(groupId) && request.resource.data.userId == uid;
+        allow delete: if isAdminOrOwner(groupId);
+      }
+
+      match /rehearsals/{rehearsalId} {
+        allow read: if isActiveMember(groupId);
+        allow create, update: if isActiveMember(groupId);
+        allow delete: if isAdminOrOwner(groupId);
+
+        match /setlist/{itemId} {
+          allow read, write: if isActiveMember(groupId);
+        }
+      }
+
+      match /invites/{inviteId} {
+        allow get: if isAdminOrOwner(groupId)
+          || (isSignedIn() && canAcceptInviteData(resource.data));
+        allow list: if isAdminOrOwner(groupId);
+        allow create: if isAdminOrOwner(groupId)
+          && request.resource.data.targetUid is string
+          && request.resource.data.status == 'active'
+          && request.resource.data.expiresAt is timestamp;
+        allow update: if isAdminOrOwner(groupId) || isInviteMarkUsed(groupId, inviteId);
+        allow delete: if false;
+      }
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

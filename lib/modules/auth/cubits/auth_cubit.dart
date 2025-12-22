@@ -13,7 +13,10 @@ import '../domain/user_entity.dart';
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit({required AuthRepository authRepository, required ProfileRepository profileRepository})
+  AuthCubit({
+    required AuthRepository authRepository,
+    required ProfileRepository profileRepository,
+  })
       : _authRepository = authRepository,
         _profileRepository = profileRepository,
         super(const AuthState()) {

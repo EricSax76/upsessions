@@ -20,9 +20,19 @@ class AppRoutes {
   static const calendar = '/calendar';
   static const events = '/events';
   static const eventDetail = '/events/detail';
+  static const rehearsals = '/rehearsals';
+  static const invite = '/invite';
   static const profile = '/profile';
   static const profileEdit = '/profile/edit';
   static const account = '/profile/account';
   static const settings = '/settings';
   static const help = '/settings/help';
+
+  static String rehearsalsGroup(String groupId) => '/rehearsals/groups/$groupId';
+
+  static String rehearsalDetail({
+    required String groupId,
+    required String rehearsalId,
+  }) =>
+      '/rehearsals/groups/$groupId/rehearsals/$rehearsalId';
 }

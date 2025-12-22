@@ -9,6 +9,7 @@ import '../../../modules/auth/data/profile_repository.dart';
 import '../../../modules/musicians/data/musicians_repository.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import '../../../router/app_router.dart';
+import '../../../core/services/app_links_service.dart';
 
 class UpsessionsApp extends StatelessWidget {
   UpsessionsApp({super.key});
@@ -33,11 +34,14 @@ class UpsessionsApp extends StatelessWidget {
             ),
           ),
         ],
-        child: MaterialApp.router(
-          title: 'UPSESSIONS',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light,
-          routerConfig: _appRouter.router,
+        child: AppLinksListener(
+          router: _appRouter.router,
+          child: MaterialApp.router(
+            title: 'UPSESSIONS',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            routerConfig: _appRouter.router,
+          ),
         ),
       ),
     );

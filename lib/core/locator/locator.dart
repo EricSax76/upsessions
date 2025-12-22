@@ -13,6 +13,9 @@ import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
 import 'package:upsessions/home/data/repositories/user_home_repository.dart';
 import 'package:upsessions/features/contacts/application/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/data/contacts_repository.dart';
+import 'package:upsessions/features/rehearsals/data/groups_repository.dart';
+import 'package:upsessions/features/rehearsals/data/rehearsals_repository.dart';
+import 'package:upsessions/features/rehearsals/data/setlist_repository.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -43,6 +46,15 @@ Future<void> setupServiceLocator() async {
       () => EventsRepository(authRepository: getIt<AuthRepository>()),
     )
     ..registerLazySingleton<ContactsRepository>(() => ContactsRepository())
+    ..registerLazySingleton<GroupsRepository>(
+      () => GroupsRepository(),
+    )
+    ..registerLazySingleton<RehearsalsRepository>(
+      () => RehearsalsRepository(),
+    )
+    ..registerLazySingleton<SetlistRepository>(
+      () => SetlistRepository(),
+    )
     ..registerLazySingleton<LikedMusiciansController>(
       () => LikedMusiciansController(
         contactsRepository: getIt<ContactsRepository>(),

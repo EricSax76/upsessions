@@ -10,6 +10,7 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
     _NavItem(label: 'Músicos', path: AppRoutes.musicians),
     _NavItem(label: 'Anuncios', path: AppRoutes.announcements),
     _NavItem(label: 'Eventos', path: AppRoutes.events),
+    _NavItem(label: 'Ensayos', path: AppRoutes.rehearsals),
   ];
 
   @override
