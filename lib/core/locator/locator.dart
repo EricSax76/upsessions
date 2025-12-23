@@ -13,6 +13,7 @@ import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
 import 'package:upsessions/home/data/repositories/user_home_repository.dart';
 import 'package:upsessions/features/contacts/application/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/data/contacts_repository.dart';
+import 'package:upsessions/features/rehearsals/application/create_rehearsal_use_case.dart';
 import 'package:upsessions/features/rehearsals/data/groups_repository.dart';
 import 'package:upsessions/features/rehearsals/data/rehearsals_repository.dart';
 import 'package:upsessions/features/rehearsals/data/setlist_repository.dart';
@@ -51,6 +52,12 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<RehearsalsRepository>(
       () => RehearsalsRepository(),
+    )
+    ..registerLazySingleton<CreateRehearsalUseCase>(
+      () => CreateRehearsalUseCase(
+        groupsRepository: getIt<GroupsRepository>(),
+        rehearsalsRepository: getIt<RehearsalsRepository>(),
+      ),
     )
     ..registerLazySingleton<SetlistRepository>(
       () => SetlistRepository(),

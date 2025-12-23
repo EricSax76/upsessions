@@ -90,7 +90,7 @@ class RehearsalsSidebarSection extends StatelessWidget {
                   ),
                   subtitle: Text('Rol: ${group.role}'),
                   onTap: () =>
-                      _go(context, AppRoutes.rehearsalsGroup(group.groupId)),
+                      _go(context, AppRoutes.groupPage(group.groupId)),
                 ),
           ],
         );
@@ -135,7 +135,7 @@ class RehearsalsSidebarSection extends StatelessWidget {
       if (result == null || result.trim().isEmpty) return;
       final groupId = await repository.createGroup(name: result);
       if (!context.mounted) return;
-      GoRouter.of(context).go(AppRoutes.rehearsalsGroup(groupId));
+      GoRouter.of(context).go(AppRoutes.groupPage(groupId));
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -175,7 +175,7 @@ class RehearsalsSidebarSection extends StatelessWidget {
     );
     if (groupId == null || groupId.trim().isEmpty) return;
     if (!context.mounted) return;
-    _go(context, AppRoutes.rehearsalsGroup(groupId.trim()));
+    _go(context, AppRoutes.groupPage(groupId.trim()));
   }
 
   void _go(BuildContext context, String route) {

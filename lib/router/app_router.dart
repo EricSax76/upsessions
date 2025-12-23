@@ -19,6 +19,7 @@ import '../features/settings/presentation/pages/help_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/splash/presentation/splash_page.dart';
 import '../features/rehearsals/presentation/pages/group_rehearsals_page.dart';
+import '../features/rehearsals/presentation/pages/group_page.dart';
 import '../features/rehearsals/presentation/pages/invite_accept_page.dart';
 import '../features/rehearsals/presentation/pages/rehearsal_detail_page.dart';
 import '../features/rehearsals/presentation/pages/rehearsals_groups_page.dart';
@@ -156,6 +157,13 @@ class AppRouter {
         ),
         GoRoute(
           path: '/rehearsals/groups/:groupId',
+          builder: (context, state) {
+            final groupId = state.pathParameters['groupId'] ?? '';
+            return GroupPage(groupId: groupId);
+          },
+        ),
+        GoRoute(
+          path: '/rehearsals/groups/:groupId/rehearsals',
           builder: (context, state) {
             final groupId = state.pathParameters['groupId'] ?? '';
             return GroupRehearsalsPage(groupId: groupId);

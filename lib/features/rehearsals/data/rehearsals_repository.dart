@@ -6,10 +6,12 @@ import 'rehearsals_repository_base.dart';
 class RehearsalsRepository extends RehearsalsRepositoryBase {
   Stream<List<RehearsalEntity>> watchRehearsals(String groupId) async* {
     await requireMusicianUid();
-    yield* rehearsals(groupId)
+    logFirestore('watchRehearsals groupId=$groupId');
+    final stream = rehearsals(groupId)
         .orderBy('startsAt', descending: false)
         .snapshots()
         .map((snapshot) => snapshot.docs.map(_mapRehearsal).toList());
+    yield* logStream('watchRehearsals snapshots', stream);
   }
 
   Stream<RehearsalEntity?> watchRehearsal({
@@ -17,11 +19,14 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     required String rehearsalId,
   }) {
     return Stream.fromFuture(requireMusicianUid()).asyncExpand((_) {
-      return rehearsals(groupId).doc(rehearsalId).snapshots().map((doc) {
+      logFirestore('watchRehearsal groupId=$groupId rehearsalId=$rehearsalId');
+      final stream =
+          rehearsals(groupId).doc(rehearsalId).snapshots().map((doc) {
         if (!doc.exists) return null;
         final data = doc.data() ?? <String, dynamic>{};
         return _mapRehearsalFromMap(doc.id, data);
       });
+      return logStream('watchRehearsal snapshots', stream);
     });
   }
 
@@ -33,15 +38,19 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     String notes = '',
   }) async {
     final uid = await requireMusicianUid();
+    logFirestore('createRehearsal groupId=$groupId uid=$uid');
     final doc = rehearsals(groupId).doc();
-    await doc.set({
-      'startsAt': Timestamp.fromDate(startsAt),
-      'endsAt': endsAt == null ? null : Timestamp.fromDate(endsAt),
-      'location': location.trim(),
-      'notes': notes.trim(),
-      'createdBy': uid,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+    await logFuture(
+      'createRehearsal set',
+      doc.set({
+        'startsAt': Timestamp.fromDate(startsAt),
+        'endsAt': endsAt == null ? null : Timestamp.fromDate(endsAt),
+        'location': location.trim(),
+        'notes': notes.trim(),
+        'createdBy': uid,
+        'createdAt': FieldValue.serverTimestamp(),
+      }),
+    );
     return doc.id;
   }
 

@@ -305,12 +305,6 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'usedBy', 'usedAt']);
     }
 
-    function isMyMembershipListQuery() {
-      return request.query != null
-        && request.query.where('ownerId', '==', request.auth.uid)
-        && request.query.where('status', '==', 'active');
-    }
-
     match /groups/{groupId} {
       allow read: if isActiveMember(groupId);
       allow create: if isMusician()
@@ -326,14 +320,7 @@ service cloud.firestore {
             || (resource != null && resource.data.ownerId == request.auth.uid)
             || isActiveMember(groupId)
           );
-        allow list: if isSignedIn()
-          && (
-            isMyMembershipListQuery()
-            || (resource != null
-              && resource.data.ownerId == request.auth.uid
-              && resource.data.status == 'active')
-            || isAdminOrOwner(groupId)
-          );
+        allow list: if isActiveMember(groupId);
         allow create: if isOwnerMembershipCreate(groupId, uid)
           || isInviteMembershipCreate(groupId, uid)
           || (isAdminOrOwner(groupId)
@@ -369,7 +356,7 @@ service cloud.firestore {
 
     // Support collectionGroup('members') queries across all groups.
     match /{path=**}/members/{uid} {
-      allow read: if isSignedIn() && isMyMembershipListQuery();
+      allow read: if isSignedIn() && request.auth.uid == resource.data.ownerId;
     }
 
     match /{document=**} {

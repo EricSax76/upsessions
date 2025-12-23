@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../modules/auth/data/auth_repository.dart';
 
@@ -13,6 +14,33 @@ class RehearsalsRepositoryBase {
   final AuthRepository _authRepository;
 
   FirebaseFirestore get firestore => _firestore;
+  AuthRepository get authRepository => _authRepository;
+
+  void logFirestore(String message) {
+    if (!kDebugMode) return;
+    debugPrint('[Firestore] $message');
+  }
+
+  Stream<T> logStream<T>(String label, Stream<T> stream) {
+    return stream.handleError((error, stackTrace) {
+      logFirestore('$label error: $error');
+      if (kDebugMode) {
+        debugPrintStack(stackTrace: stackTrace);
+      }
+    });
+  }
+
+  Future<T> logFuture<T>(String label, Future<T> future) async {
+    try {
+      return await future;
+    } catch (error, stackTrace) {
+      logFirestore('$label error: $error');
+      if (kDebugMode) {
+        debugPrintStack(stackTrace: stackTrace);
+      }
+      rethrow;
+    }
+  }
 
   String requireUid() {
     final uid = _authRepository.currentUser?.id;

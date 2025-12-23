@@ -78,7 +78,7 @@ class _InviteAcceptPageState extends State<InviteAcceptPage> {
     try {
       await _groupsRepository.acceptInvite(groupId: widget.groupId, inviteId: widget.inviteId);
       if (!context.mounted) return;
-      context.go(AppRoutes.rehearsalsGroup(widget.groupId));
+      context.go(AppRoutes.groupPage(widget.groupId));
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -89,4 +89,3 @@ class _InviteAcceptPageState extends State<InviteAcceptPage> {
     }
   }
 }
-

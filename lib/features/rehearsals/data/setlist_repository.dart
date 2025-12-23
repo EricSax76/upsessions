@@ -9,10 +9,12 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     required String rehearsalId,
   }) {
     requireUid();
-    return setlist(groupId, rehearsalId)
+    logFirestore('watchSetlist groupId=$groupId rehearsalId=$rehearsalId');
+    final stream = setlist(groupId, rehearsalId)
         .orderBy('order', descending: false)
         .snapshots()
         .map((snapshot) => snapshot.docs.map(_mapSetlistItem).toList());
+    return logStream('watchSetlist snapshots', stream);
   }
 
   Future<String> addSetlistItem({
@@ -26,15 +28,19 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     String notes = '',
   }) async {
     requireUid();
+    logFirestore('addSetlistItem groupId=$groupId rehearsalId=$rehearsalId');
     final doc = setlist(groupId, rehearsalId).doc();
-    await doc.set({
-      'order': order,
-      'songId': songId,
-      'songTitle': songTitle?.trim(),
-      'key': keySignature.trim(),
-      'tempoBpm': tempoBpm,
-      'notes': notes.trim(),
-    });
+    await logFuture(
+      'addSetlistItem set',
+      doc.set({
+        'order': order,
+        'songId': songId,
+        'songTitle': songTitle?.trim(),
+        'key': keySignature.trim(),
+        'tempoBpm': tempoBpm,
+        'notes': notes.trim(),
+      }),
+    );
     return doc.id;
   }
 
@@ -44,7 +50,11 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     required String itemId,
   }) async {
     requireUid();
-    await setlist(groupId, rehearsalId).doc(itemId).delete();
+    logFirestore('deleteSetlistItem groupId=$groupId rehearsalId=$rehearsalId itemId=$itemId');
+    await logFuture(
+      'deleteSetlistItem delete',
+      setlist(groupId, rehearsalId).doc(itemId).delete(),
+    );
   }
 
   SetlistItemEntity _mapSetlistItem(

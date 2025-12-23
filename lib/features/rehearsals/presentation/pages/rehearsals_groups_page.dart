@@ -69,7 +69,7 @@ class _RehearsalsGroupsView extends StatelessWidget {
                     subtitle: Text('Rol: ${group.role}'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () =>
-                        context.go(AppRoutes.rehearsalsGroup(group.groupId)),
+                        context.go(AppRoutes.groupPage(group.groupId)),
                   ),
                 ),
               ),
@@ -100,7 +100,7 @@ class _RehearsalsGroupsView extends StatelessWidget {
         photoFileExtension: result.photoFileExtension,
       );
       if (!context.mounted) return;
-      context.go(AppRoutes.rehearsalsGroup(groupId));
+      context.go(AppRoutes.groupPage(groupId));
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -138,7 +138,7 @@ class _RehearsalsGroupsView extends StatelessWidget {
     );
     if (groupId == null || groupId.trim().isEmpty) return;
     if (!context.mounted) return;
-    context.go(AppRoutes.rehearsalsGroup(groupId.trim()));
+    context.go(AppRoutes.groupPage(groupId.trim()));
   }
 }
 

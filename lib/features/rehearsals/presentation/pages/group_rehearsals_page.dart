@@ -7,6 +7,7 @@ import '../../../../core/locator/locator.dart';
 import '../../../../core/widgets/loading_indicator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
 import 'package:upsessions/features/rehearsals/data/rehearsals_repository.dart';
+import 'package:upsessions/features/rehearsals/application/create_rehearsal_use_case.dart';
 import '../../../../modules/auth/data/auth_repository.dart';
 import '../../../../modules/musicians/data/musicians_repository.dart';
 import '../../../../modules/musicians/domain/musician_entity.dart';
@@ -33,6 +34,7 @@ class _GroupRehearsalsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final groupsRepository = locate<GroupsRepository>();
     final rehearsalsRepository = locate<RehearsalsRepository>();
+    final createRehearsalUseCase = locate<CreateRehearsalUseCase>();
 
     return StreamBuilder<String>(
       stream: groupsRepository.watchGroupName(groupId),
@@ -78,7 +80,7 @@ class _GroupRehearsalsView extends StatelessWidget {
                         IconButton(
                           tooltip: 'Crear ensayo',
                           onPressed: () =>
-                              _createRehearsal(context, rehearsalsRepository),
+                              _createRehearsal(context, createRehearsalUseCase),
                           icon: const Icon(Icons.add_circle_outline),
                         ),
                         IconButton(
@@ -126,7 +128,7 @@ class _GroupRehearsalsView extends StatelessWidget {
 
   Future<void> _createRehearsal(
     BuildContext context,
-    RehearsalsRepository repository,
+    CreateRehearsalUseCase createRehearsal,
   ) async {
     final result = await showDialog<_RehearsalDraft>(
       context: context,
@@ -134,12 +136,13 @@ class _GroupRehearsalsView extends StatelessWidget {
     );
     if (result == null) return;
     try {
-      final rehearsalId = await repository.createRehearsal(
+      final rehearsalId = await createRehearsal(
         groupId: groupId,
         startsAt: result.startsAt,
         endsAt: result.endsAt,
         location: result.location,
         notes: result.notes,
+        ensureActiveMember: true,
       );
       if (!context.mounted) return;
       context.go(

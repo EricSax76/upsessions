@@ -28,7 +28,12 @@ class AppRoutes {
   static const settings = '/settings';
   static const help = '/settings/help';
 
+  static String groupPage(String groupId) => '/rehearsals/groups/$groupId';
+
   static String rehearsalsGroup(String groupId) => '/rehearsals/groups/$groupId';
+
+  static String rehearsalsGroupRehearsals(String groupId) =>
+      '/rehearsals/groups/$groupId/rehearsals';
 
   static String rehearsalDetail({
     required String groupId,

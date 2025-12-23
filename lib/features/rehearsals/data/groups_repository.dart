@@ -14,44 +14,53 @@ class GroupsRepository extends RehearsalsRepositoryBase {
   final FirebaseStorage _storage;
 
   Stream<List<GroupMembershipEntity>> watchMyGroups() async* {
-    final uid = await requireMusicianUid();
-    yield* firestore
-        .collectionGroup('members')
-        .where('ownerId', isEqualTo: uid)
-        .where('status', isEqualTo: 'active')
-        .snapshots()
-        .asyncMap((snapshot) async {
-          final rawMemberships = snapshot.docs
-              .map((doc) => _MembershipDoc.fromMemberDoc(doc))
-              .where((m) => m.groupId.isNotEmpty)
-              .toList();
+    yield* authRepository.authStateChanges.asyncExpand((user) {
+      if (user == null) {
+        logFirestore('watchMyGroups skipped (no auth)');
+        return Stream.value(const <GroupMembershipEntity>[]);
+      }
+      return Stream.fromFuture(requireMusicianUid()).asyncExpand((uid) {
+        logFirestore('watchMyGroups query ownerId=$uid status=active');
+        final stream = firestore
+            .collectionGroup('members')
+            .where('ownerId', isEqualTo: uid)
+            .where('status', isEqualTo: 'active')
+            .snapshots()
+            .asyncMap((snapshot) async {
+              final rawMemberships = snapshot.docs
+                  .map((doc) => _MembershipDoc.fromMemberDoc(doc))
+                  .where((m) => m.groupId.isNotEmpty)
+                  .toList();
 
-          await _ensureCanonicalOwnerMemberships(uid, rawMemberships);
+              await _ensureCanonicalOwnerMemberships(uid, rawMemberships);
 
-          final groupIds = rawMemberships.map((m) => m.groupId).toSet().toList()
-            ..sort();
-          if (groupIds.isEmpty) {
-            return const <GroupMembershipEntity>[];
-          }
+              final groupIds =
+                  rawMemberships.map((m) => m.groupId).toSet().toList()..sort();
+              if (groupIds.isEmpty) {
+                return const <GroupMembershipEntity>[];
+              }
 
-          final groupsById = await _fetchGroupsById(groupIds);
+              final groupsById = await _fetchGroupsById(groupIds);
 
-          final memberships = <GroupMembershipEntity>[];
-          for (final membership in rawMemberships) {
-            final group = groupsById[membership.groupId];
-            if (group == null) continue;
-            memberships.add(
-              GroupMembershipEntity(
-                groupId: membership.groupId,
-                groupName: group.name,
-                groupOwnerId: group.ownerId,
-                role: membership.role,
-              ),
-            );
-          }
-          memberships.sort((a, b) => a.groupName.compareTo(b.groupName));
-          return memberships;
-        });
+              final memberships = <GroupMembershipEntity>[];
+              for (final membership in rawMemberships) {
+                final group = groupsById[membership.groupId];
+                if (group == null) continue;
+                memberships.add(
+                  GroupMembershipEntity(
+                    groupId: membership.groupId,
+                    groupName: group.name,
+                    groupOwnerId: group.ownerId,
+                    role: membership.role,
+                  ),
+                );
+              }
+              memberships.sort((a, b) => a.groupName.compareTo(b.groupName));
+              return memberships;
+            });
+        return logStream('watchMyGroups snapshots', stream);
+      });
+    });
   }
 
   Stream<String?> watchMyRole(String groupId) {
@@ -73,6 +82,15 @@ class GroupsRepository extends RehearsalsRepositoryBase {
     });
   }
 
+  Future<bool> isActiveMember(String groupId) async {
+    final uid = await requireMusicianUid();
+    logFirestore('isActiveMember groupId=$groupId uid=$uid');
+    final doc = await members(groupId).doc(uid).get();
+    if (!doc.exists) return false;
+    final data = doc.data() ?? <String, dynamic>{};
+    return (data['status'] ?? '').toString() == 'active';
+  }
+
   Future<String> createGroup({
     required String name,
     String? genre,
@@ -82,6 +100,7 @@ class GroupsRepository extends RehearsalsRepositoryBase {
     String? photoFileExtension,
   }) async {
     final uid = await requireMusicianUid();
+    logFirestore('createGroup ownerId=$uid name="${name.trim()}"');
     final trimmedName = name.trim();
     if (trimmedName.isEmpty) {
       throw Exception('El nombre del grupo es obligatorio.');
@@ -107,7 +126,7 @@ class GroupsRepository extends RehearsalsRepositoryBase {
       'createdAt': FieldValue.serverTimestamp(),
       'addedBy': uid,
     });
-    await batch.commit();
+    await logFuture('createGroup commit', batch.commit());
 
     final bytes = photoBytes;
     if (bytes != null && bytes.isNotEmpty) {
@@ -128,6 +147,7 @@ class GroupsRepository extends RehearsalsRepositoryBase {
 
   Future<void> deleteGroup({required String groupId}) async {
     final uid = requireUid();
+    logFirestore('deleteGroup groupId=$groupId uid=$uid');
     final groupRef = groupDoc(groupId);
     final groupSnap = await groupRef.get();
     final group = groupSnap.data() ?? <String, dynamic>{};
@@ -139,7 +159,7 @@ class GroupsRepository extends RehearsalsRepositoryBase {
     final batch = firestore.batch();
     batch.delete(groupRef);
     // TODO: delete members and other subcollections
-    await batch.commit();
+    await logFuture('deleteGroup commit', batch.commit());
   }
 
   Future<String> createInvite({
@@ -148,19 +168,23 @@ class GroupsRepository extends RehearsalsRepositoryBase {
     Duration ttl = const Duration(days: 7),
   }) async {
     final uid = await requireMusicianUid();
+    logFirestore('createInvite groupId=$groupId targetUid=$targetUid uid=$uid');
     if (targetUid.trim().isEmpty) {
       throw Exception('El usuario destino no es válido.');
     }
     final doc = invites(groupId).doc();
-    await doc.set({
-      'targetUid': targetUid.trim(),
-      'createdBy': uid,
-      'createdAt': FieldValue.serverTimestamp(),
-      'expiresAt': Timestamp.fromDate(DateTime.now().add(ttl)),
-      'status': 'active',
-      'usedBy': null,
-      'usedAt': null,
-    });
+    await logFuture(
+      'createInvite set',
+      doc.set({
+        'targetUid': targetUid.trim(),
+        'createdBy': uid,
+        'createdAt': FieldValue.serverTimestamp(),
+        'expiresAt': Timestamp.fromDate(DateTime.now().add(ttl)),
+        'status': 'active',
+        'usedBy': null,
+        'usedAt': null,
+      }),
+    );
     return doc.id;
   }
 
@@ -169,14 +193,17 @@ class GroupsRepository extends RehearsalsRepositoryBase {
     required String inviteId,
   }) async {
     final uid = await requireMusicianUid();
+    logFirestore('acceptInvite groupId=$groupId inviteId=$inviteId uid=$uid');
     final inviteRef = invites(groupId).doc(inviteId);
     final memberRef = members(groupId).doc(uid);
 
-    await firestore.runTransaction((tx) async {
-      final inviteSnap = await tx.get(inviteRef);
-      if (!inviteSnap.exists) {
-        throw Exception('La invitación no existe.');
-      }
+    await logFuture(
+      'acceptInvite transaction',
+      firestore.runTransaction((tx) async {
+        final inviteSnap = await tx.get(inviteRef);
+        if (!inviteSnap.exists) {
+          throw Exception('La invitación no existe.');
+        }
       final invite = inviteSnap.data() ?? <String, dynamic>{};
       final targetUid = (invite['targetUid'] ?? '').toString();
       final status = (invite['status'] ?? '').toString();
@@ -219,7 +246,8 @@ class GroupsRepository extends RehearsalsRepositoryBase {
         'usedBy': uid,
         'usedAt': FieldValue.serverTimestamp(),
       });
-    });
+      }),
+    );
   }
 
   Future<Map<String, _GroupDoc>> _fetchGroupsById(List<String> groupIds) async {
