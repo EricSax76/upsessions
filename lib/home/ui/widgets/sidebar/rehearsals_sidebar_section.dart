@@ -34,6 +34,11 @@ class RehearsalsSidebarSection extends StatelessWidget {
                 title: const Text('Nuevo grupo'),
                 onTap: () => _createGroup(context, repository),
               ),
+              ListTile(
+                leading: const Icon(Icons.login_outlined),
+                title: const Text('Ir a un grupo'),
+                onTap: () => _goToGroupById(context),
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                 child: Text(
@@ -59,6 +64,11 @@ class RehearsalsSidebarSection extends StatelessWidget {
               leading: const Icon(Icons.group_add_outlined),
               title: const Text('Nuevo grupo'),
               onTap: () => _createGroup(context, repository),
+            ),
+            ListTile(
+              leading: const Icon(Icons.login_outlined),
+              title: const Text('Ir a un grupo'),
+              onTap: () => _goToGroupById(context),
             ),
             if (groups.isEmpty)
               Padding(
@@ -134,6 +144,38 @@ class RehearsalsSidebarSection extends StatelessWidget {
     } finally {
       controller.dispose();
     }
+  }
+
+  Future<void> _goToGroupById(BuildContext context) async {
+    final controller = TextEditingController();
+    final groupId = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ir a un grupo'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'ID del grupo',
+            hintText: 'Ej. 6qDBI5b0LnybgBSF5KHU',
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.of(context).pop(controller.text.trim()),
+            child: const Text('Ir'),
+          ),
+        ],
+      ),
+    );
+    if (groupId == null || groupId.trim().isEmpty) return;
+    if (!context.mounted) return;
+    _go(context, AppRoutes.rehearsalsGroup(groupId.trim()));
   }
 
   void _go(BuildContext context, String route) {

@@ -235,12 +235,7 @@ service cloud.firestore {
       }
     }
 
-    // `users` is deprecated: the app uses `musicians` for profiles/lookup.
-    // Keep the path blocked to avoid accidental user-doc creation from clients.
-    match /users/{uid} {
-      allow read, write: if false;
-    }
-
+    
     function groupDocPath(groupId) {
       return /databases/$(database)/documents/groups/$(groupId);
     }
@@ -285,7 +280,7 @@ service cloud.firestore {
     function isOwnerMembershipCreate(groupId, uid) {
       return isMusician()
         && uid == request.auth.uid
-        && request.resource.data.userId == uid
+        && request.resource.data.ownerId == uid
         && existsAfter(groupDocPath(groupId))
         && getAfter(groupDocPath(groupId)).data.ownerId == request.auth.uid
         && request.resource.data.role == 'owner'
@@ -295,7 +290,7 @@ service cloud.firestore {
     function isInviteMembershipCreate(groupId, uid) {
       return isMusician()
         && uid == request.auth.uid
-        && request.resource.data.userId == uid
+        && request.resource.data.ownerId == uid
         && request.resource.data.role == 'member'
         && request.resource.data.status == 'active'
         && request.resource.data.inviteId is string
@@ -310,6 +305,12 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'usedBy', 'usedAt']);
     }
 
+    function isMyMembershipListQuery() {
+      return request.query != null
+        && request.query.where('ownerId', '==', request.auth.uid)
+        && request.query.where('status', '==', 'active');
+    }
+
     match /groups/{groupId} {
       allow read: if isActiveMember(groupId);
       allow create: if isMusician()
@@ -319,19 +320,27 @@ service cloud.firestore {
       allow delete: if false;
 
       match /members/{uid} {
-        allow read: if isSignedIn()
+        allow get: if isSignedIn()
           && (
             uid == request.auth.uid
-            || (resource != null && resource.data.userId == request.auth.uid)
+            || (resource != null && resource.data.ownerId == request.auth.uid)
             || isActiveMember(groupId)
+          );
+        allow list: if isSignedIn()
+          && (
+            isMyMembershipListQuery()
+            || (resource != null
+              && resource.data.ownerId == request.auth.uid
+              && resource.data.status == 'active')
+            || isAdminOrOwner(groupId)
           );
         allow create: if isOwnerMembershipCreate(groupId, uid)
           || isInviteMembershipCreate(groupId, uid)
           || (isAdminOrOwner(groupId)
-            && request.resource.data.userId == uid
+            && request.resource.data.ownerId == uid
             && request.resource.data.role in ['owner', 'admin', 'member']
             && request.resource.data.status == 'active');
-        allow update: if isAdminOrOwner(groupId) && request.resource.data.userId == uid;
+        allow update: if isAdminOrOwner(groupId) && request.resource.data.ownerId == uid;
         allow delete: if isAdminOrOwner(groupId);
       }
 
@@ -356,6 +365,11 @@ service cloud.firestore {
         allow update: if isAdminOrOwner(groupId) || isInviteMarkUsed(groupId, inviteId);
         allow delete: if false;
       }
+    }
+
+    // Support collectionGroup('members') queries across all groups.
+    match /{path=**}/members/{uid} {
+      allow read: if isSignedIn() && isMyMembershipListQuery();
     }
 
     match /{document=**} {

@@ -1,15 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:typed_data';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../domain/group_membership_entity.dart';
 import 'rehearsals_repository_base.dart';
 
 class GroupsRepository extends RehearsalsRepositoryBase {
-  GroupsRepository({super.firestore, super.authRepository});
+  GroupsRepository({
+    super.firestore,
+    super.authRepository,
+    FirebaseStorage? storage,
+  }) : _storage = storage ?? FirebaseStorage.instance;
+
+  final FirebaseStorage _storage;
 
   Stream<List<GroupMembershipEntity>> watchMyGroups() async* {
     final uid = await requireMusicianUid();
     yield* firestore
         .collectionGroup('members')
-        .where('userId', isEqualTo: uid)
+        .where('ownerId', isEqualTo: uid)
         .where('status', isEqualTo: 'active')
         .snapshots()
         .asyncMap((snapshot) async {
@@ -17,6 +25,8 @@ class GroupsRepository extends RehearsalsRepositoryBase {
               .map((doc) => _MembershipDoc.fromMemberDoc(doc))
               .where((m) => m.groupId.isNotEmpty)
               .toList();
+
+          await _ensureCanonicalOwnerMemberships(uid, rawMemberships);
 
           final groupIds = rawMemberships.map((m) => m.groupId).toSet().toList()
             ..sort();
@@ -63,7 +73,14 @@ class GroupsRepository extends RehearsalsRepositoryBase {
     });
   }
 
-  Future<String> createGroup({required String name}) async {
+  Future<String> createGroup({
+    required String name,
+    String? genre,
+    String? link1,
+    String? link2,
+    Uint8List? photoBytes,
+    String? photoFileExtension,
+  }) async {
     final uid = await requireMusicianUid();
     final trimmedName = name.trim();
     if (trimmedName.isEmpty) {
@@ -74,18 +91,38 @@ class GroupsRepository extends RehearsalsRepositoryBase {
     final memberDoc = members(newGroupDoc.id).doc(uid);
     final batch = firestore.batch();
     batch.set(newGroupDoc, {
+      'groupId': newGroupDoc.id,
       'name': trimmedName,
       'ownerId': uid,
+      'genre': (genre ?? '').trim(),
+      'link1': (link1 ?? '').trim(),
+      'link2': (link2 ?? '').trim(),
       'createdAt': FieldValue.serverTimestamp(),
     });
     batch.set(memberDoc, {
       'userId': uid,
+      'ownerId': uid,
       'role': 'owner',
       'status': 'active',
       'createdAt': FieldValue.serverTimestamp(),
       'addedBy': uid,
     });
     await batch.commit();
+
+    final bytes = photoBytes;
+    if (bytes != null && bytes.isNotEmpty) {
+      final ext = _normalizeImageExtension(photoFileExtension);
+      final ref = _storage
+          .ref()
+          .child('groups')
+          .child(newGroupDoc.id)
+          .child('photo.$ext');
+      final metadata = SettableMetadata(contentType: 'image/$ext');
+      await ref.putData(bytes, metadata);
+      final photoUrl = await ref.getDownloadURL();
+      await newGroupDoc.set({'photoUrl': photoUrl}, SetOptions(merge: true));
+    }
+
     return newGroupDoc.id;
   }
 
@@ -110,7 +147,7 @@ class GroupsRepository extends RehearsalsRepositoryBase {
     required String targetUid,
     Duration ttl = const Duration(days: 7),
   }) async {
-    final uid = requireUid();
+    final uid = await requireMusicianUid();
     if (targetUid.trim().isEmpty) {
       throw Exception('El usuario destino no es válido.');
     }
@@ -162,6 +199,7 @@ class GroupsRepository extends RehearsalsRepositoryBase {
       if (!memberSnap.exists) {
         tx.set(memberRef, {
           'userId': uid,
+          'ownerId': uid,
           'role': 'member',
           'status': 'active',
           'createdAt': FieldValue.serverTimestamp(),
@@ -172,7 +210,7 @@ class GroupsRepository extends RehearsalsRepositoryBase {
         final existing = memberSnap.data() ?? <String, dynamic>{};
         final existingUserId = (existing['userId'] ?? '').toString();
         if (existingUserId != uid) {
-          tx.update(memberRef, {'userId': uid});
+          tx.update(memberRef, {'userId': uid, 'ownerId': uid});
         }
       }
 
@@ -185,28 +223,72 @@ class GroupsRepository extends RehearsalsRepositoryBase {
   }
 
   Future<Map<String, _GroupDoc>> _fetchGroupsById(List<String> groupIds) async {
-    final chunks = <List<String>>[];
-    for (var i = 0; i < groupIds.length; i += 10) {
-      chunks.add(groupIds.sublist(i, (i + 10).clamp(0, groupIds.length)));
-    }
-    final futures = chunks.map((chunk) async {
-      final snapshot = await groups()
-          .where(FieldPath.documentId, whereIn: chunk)
-          .get();
-      return snapshot.docs
-          .map((doc) => _GroupDoc.fromGroupDoc(doc))
-          .where((g) => g.id.isNotEmpty)
-          .toList();
-    }).toList();
-
+    // Fetching with a `whereIn(documentId)` query can fail the whole request if
+    // any single group is not readable due to security rules. Fetching
+    // individually lets us keep the readable ones.
+    final futures = groupIds.map((groupId) async {
+      try {
+        final snap = await groupDoc(groupId).get();
+        if (!snap.exists) return null;
+        return _GroupDoc.fromGroupDoc(snap);
+      } catch (_) {
+        return null;
+      }
+    });
     final results = await Future.wait(futures);
     final map = <String, _GroupDoc>{};
-    for (final list in results) {
-      for (final group in list) {
-        map[group.id] = group;
-      }
+    for (final group in results) {
+      if (group == null || group.id.isEmpty) continue;
+      map[group.id] = group;
     }
     return map;
+  }
+
+  Future<void> _ensureCanonicalOwnerMemberships(
+    String uid,
+    List<_MembershipDoc> memberships,
+  ) async {
+    final ownerGroupIds =
+        memberships
+            .where((membership) => membership.role == 'owner')
+            .map((membership) => membership.groupId)
+            .where((groupId) => groupId.trim().isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
+    if (ownerGroupIds.isEmpty) return;
+
+    await Future.wait(
+      ownerGroupIds.map((groupId) async {
+        final ref = members(groupId).doc(uid);
+        final snap = await ref.get();
+        if (snap.exists) return;
+        await ref.set({
+          'userId': uid,
+          'ownerId': uid,
+          'role': 'owner',
+          'status': 'active',
+          'createdAt': FieldValue.serverTimestamp(),
+          'addedBy': uid,
+        });
+      }),
+    );
+  }
+}
+
+String _normalizeImageExtension(String? input) {
+  final normalized = (input ?? '').toLowerCase().replaceAll('.', '');
+  if (normalized.isEmpty) return 'jpeg';
+  switch (normalized) {
+    case 'jpg':
+    case 'jpeg':
+      return 'jpeg';
+    case 'png':
+    case 'gif':
+    case 'webp':
+      return normalized;
+    default:
+      return 'jpeg';
   }
 }
 

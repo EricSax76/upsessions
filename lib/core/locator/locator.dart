@@ -47,7 +47,7 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<ContactsRepository>(() => ContactsRepository())
     ..registerLazySingleton<GroupsRepository>(
-      () => GroupsRepository(),
+      () => GroupsRepository(authRepository: getIt<AuthRepository>()),
     )
     ..registerLazySingleton<RehearsalsRepository>(
       () => RehearsalsRepository(),

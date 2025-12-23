@@ -17,6 +17,7 @@ class _UserMenuListState extends State<UserMenuList> {
     _MenuItem(label: 'Mensajes', route: AppRoutes.messages),
     _MenuItem(label: 'Calendario', route: AppRoutes.calendar),
     _MenuItem(label: 'Contactos', route: AppRoutes.contacts),
+    _MenuItem(label: 'Mis grupos', route: AppRoutes.rehearsals),
   ];
   late final LikedMusiciansController _likedController;
   int _selectedIndex = 0;
