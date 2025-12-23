@@ -46,7 +46,7 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
               : null,
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () => context.push(AppRoutes.notifications),
               icon: const Icon(Icons.notifications_none),
             ),
             Padding(

@@ -11,8 +11,15 @@ class AuthRepository {
   final FirebaseAuth _firebaseAuth;
 
   Stream<UserEntity?> get authStateChanges => _firebaseAuth.authStateChanges().map(_mapUser);
+  Stream<UserEntity?> get idTokenChanges => _firebaseAuth.idTokenChanges().map(_mapUser);
 
   UserEntity? get currentUser => _mapUser(_firebaseAuth.currentUser);
+
+  Future<void> refreshIdToken() async {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) return;
+    await user.getIdToken(true);
+  }
 
   Future<UserEntity> signIn(String email, String password) async {
     try {

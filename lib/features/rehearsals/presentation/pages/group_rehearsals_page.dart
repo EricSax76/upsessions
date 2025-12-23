@@ -390,18 +390,22 @@ class _InviteMusicianDialogState extends State<_InviteMusicianDialog> {
             else
               SizedBox(
                 height: 320,
-                child: ListView.separated(
-                  itemCount: _results.length,
-                  separatorBuilder: (_, index) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final user = _results[index];
-                    return ListTile(
-                      title: Text(user.name),
-                      subtitle: Text(user.ownerId),
-                      trailing: const Icon(Icons.link),
-                      onTap: () => _createInvite(context, user),
-                    );
-                  },
+                width: double.infinity,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      for (var i = 0; i < _results.length; i++) ...[
+                        ListTile(
+                          title: Text(_results[i].name),
+                          subtitle: Text(_results[i].ownerId),
+                          trailing: const Icon(Icons.link),
+                          onTap: () => _createInvite(context, _results[i]),
+                        ),
+                        if (i < _results.length - 1)
+                          const Divider(height: 1),
+                      ],
+                    ],
+                  ),
                 ),
               ),
           ],

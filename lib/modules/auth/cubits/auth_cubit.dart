@@ -9,6 +9,7 @@ import '../data/auth_repository.dart';
 import '../data/profile_repository.dart';
 import '../domain/profile_entity.dart';
 import '../domain/user_entity.dart';
+import '../../../core/services/push_notifications_service.dart';
 
 part 'auth_state.dart';
 
@@ -16,14 +17,23 @@ class AuthCubit extends Cubit<AuthState> {
   AuthCubit({
     required AuthRepository authRepository,
     required ProfileRepository profileRepository,
-  })
-      : _authRepository = authRepository,
-        _profileRepository = profileRepository,
-        super(const AuthState()) {
-    _authSubscription = _authRepository.authStateChanges.listen(_handleUserChanged);
+    PushNotificationsService? pushNotificationsService,
+  }) : _authRepository = authRepository,
+       _profileRepository = profileRepository,
+       _pushNotificationsService = pushNotificationsService,
+       super(const AuthState()) {
+    _authSubscription = _authRepository.authStateChanges.listen(
+      _handleUserChanged,
+    );
     final user = _authRepository.currentUser;
     if (user != null) {
-      emit(state.copyWith(status: AuthStatus.authenticated, user: user, profile: null));
+      emit(
+        state.copyWith(
+          status: AuthStatus.authenticated,
+          user: user,
+          profile: null,
+        ),
+      );
       unawaited(refreshProfile(profileId: user.id));
     } else {
       emit(state.copyWith(status: AuthStatus.unauthenticated));
@@ -32,15 +42,19 @@ class AuthCubit extends Cubit<AuthState> {
 
   final AuthRepository _authRepository;
   final ProfileRepository _profileRepository;
+  final PushNotificationsService? _pushNotificationsService;
   StreamSubscription<UserEntity?>? _authSubscription;
+  String? _lastUserId;
 
   Future<void> signIn(String email, String password) async {
-    emit(state.copyWith(
-      isLoading: true,
-      errorMessage: null,
-      lastAction: AuthAction.login,
-      passwordResetEmailSent: false,
-    ));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        errorMessage: null,
+        lastAction: AuthAction.login,
+        passwordResetEmailSent: false,
+      ),
+    );
     try {
       await _authRepository.signIn(email.trim(), password.trim());
       if (state.lastAction == AuthAction.login) {
@@ -49,43 +63,70 @@ class AuthCubit extends Cubit<AuthState> {
     } on AuthException catch (error) {
       emit(state.copyWith(isLoading: false, errorMessage: error.message));
     } catch (error) {
-      emit(state.copyWith(isLoading: false, errorMessage: 'Error inesperado: $error'));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'Error inesperado: $error',
+        ),
+      );
     }
   }
 
-  Future<void> register({required String email, required String password, required String displayName}) async {
-    emit(state.copyWith(
-      isLoading: true,
-      errorMessage: null,
-      lastAction: AuthAction.register,
-      passwordResetEmailSent: false,
-    ));
+  Future<void> register({
+    required String email,
+    required String password,
+    required String displayName,
+  }) async {
+    emit(
+      state.copyWith(
+        isLoading: true,
+        errorMessage: null,
+        lastAction: AuthAction.register,
+        passwordResetEmailSent: false,
+      ),
+    );
     try {
-      await _authRepository.register(email: email.trim(), password: password.trim(), displayName: displayName.trim());
+      await _authRepository.register(
+        email: email.trim(),
+        password: password.trim(),
+        displayName: displayName.trim(),
+      );
       if (state.lastAction == AuthAction.register) {
         emit(state.copyWith(isLoading: false));
       }
     } on AuthException catch (error) {
       emit(state.copyWith(isLoading: false, errorMessage: error.message));
     } catch (error) {
-      emit(state.copyWith(isLoading: false, errorMessage: 'Error inesperado: $error'));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'Error inesperado: $error',
+        ),
+      );
     }
   }
 
   Future<void> sendPasswordReset(String email) async {
-    emit(state.copyWith(
-      isLoading: true,
-      errorMessage: null,
-      lastAction: AuthAction.resetPassword,
-      passwordResetEmailSent: false,
-    ));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        errorMessage: null,
+        lastAction: AuthAction.resetPassword,
+        passwordResetEmailSent: false,
+      ),
+    );
     try {
       await _authRepository.sendPasswordReset(email.trim());
       emit(state.copyWith(isLoading: false, passwordResetEmailSent: true));
     } on AuthException catch (error) {
       emit(state.copyWith(isLoading: false, errorMessage: error.message));
     } catch (error) {
-      emit(state.copyWith(isLoading: false, errorMessage: 'Error inesperado: $error'));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'Error inesperado: $error',
+        ),
+      );
     }
   }
 
@@ -98,89 +139,135 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> refreshProfile({String? profileId}) async {
     final id = profileId ?? state.user?.id;
     if (id == null) {
-      emit(state.copyWith(
-        lastAction: AuthAction.loadProfile,
-        errorMessage: 'Debes iniciar sesión para cargar el perfil.',
-      ));
+      emit(
+        state.copyWith(
+          lastAction: AuthAction.loadProfile,
+          errorMessage: 'Debes iniciar sesión para cargar el perfil.',
+        ),
+      );
       return;
     }
-    emit(state.copyWith(
-      isLoading: true,
-      errorMessage: null,
-      lastAction: AuthAction.loadProfile,
-    ));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        errorMessage: null,
+        lastAction: AuthAction.loadProfile,
+      ),
+    );
     try {
       final dto = await _profileRepository.fetchProfile(profileId: id);
-      emit(state.copyWith(
-        profile: dto.toEntity(),
-        isLoading: false,
-        lastAction: AuthAction.none,
-      ));
+      emit(
+        state.copyWith(
+          profile: dto.toEntity(),
+          isLoading: false,
+          lastAction: AuthAction.none,
+        ),
+      );
     } on AuthException catch (error) {
-      emit(state.copyWith(isLoading: false, errorMessage: error.message, lastAction: AuthAction.loadProfile));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: error.message,
+          lastAction: AuthAction.loadProfile,
+        ),
+      );
     } catch (error) {
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: 'No se pudo cargar el perfil: $error',
-        lastAction: AuthAction.loadProfile,
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'No se pudo cargar el perfil: $error',
+          lastAction: AuthAction.loadProfile,
+        ),
+      );
     }
   }
 
   Future<void> updateProfile(ProfileEntity profile) async {
-    emit(state.copyWith(
-      isLoading: true,
-      errorMessage: null,
-      lastAction: AuthAction.updateProfile,
-    ));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        errorMessage: null,
+        lastAction: AuthAction.updateProfile,
+      ),
+    );
     try {
       final dto = await _profileRepository.updateProfile(profile);
-      emit(state.copyWith(
-        profile: dto.toEntity(),
-        isLoading: false,
-        lastAction: AuthAction.none,
-      ));
+      emit(
+        state.copyWith(
+          profile: dto.toEntity(),
+          isLoading: false,
+          lastAction: AuthAction.none,
+        ),
+      );
     } on AuthException catch (error) {
-      emit(state.copyWith(isLoading: false, errorMessage: error.message, lastAction: AuthAction.updateProfile));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: error.message,
+          lastAction: AuthAction.updateProfile,
+        ),
+      );
     } catch (error) {
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: 'No se pudo actualizar el perfil: $error',
-        lastAction: AuthAction.updateProfile,
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'No se pudo actualizar el perfil: $error',
+          lastAction: AuthAction.updateProfile,
+        ),
+      );
     }
   }
 
-  Future<void> updateProfilePhoto(Uint8List bytes, {required String fileExtension}) async {
+  Future<void> updateProfilePhoto(
+    Uint8List bytes, {
+    required String fileExtension,
+  }) async {
     final user = state.user;
     if (user == null) {
-      emit(state.copyWith(errorMessage: 'Debes iniciar sesión para actualizar tu foto.', lastAction: AuthAction.updateProfilePhoto));
+      emit(
+        state.copyWith(
+          errorMessage: 'Debes iniciar sesión para actualizar tu foto.',
+          lastAction: AuthAction.updateProfilePhoto,
+        ),
+      );
       return;
     }
-    emit(state.copyWith(
-      isLoading: true,
-      errorMessage: null,
-      lastAction: AuthAction.updateProfilePhoto,
-    ));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        errorMessage: null,
+        lastAction: AuthAction.updateProfilePhoto,
+      ),
+    );
     try {
       final dto = await _profileRepository.uploadProfilePhoto(
         userId: user.id,
         bytes: bytes,
         fileExtension: fileExtension,
       );
-      emit(state.copyWith(
-        profile: dto.toEntity(),
-        isLoading: false,
-        lastAction: AuthAction.none,
-      ));
+      emit(
+        state.copyWith(
+          profile: dto.toEntity(),
+          isLoading: false,
+          lastAction: AuthAction.none,
+        ),
+      );
     } on AuthException catch (error) {
-      emit(state.copyWith(isLoading: false, errorMessage: error.message, lastAction: AuthAction.updateProfilePhoto));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: error.message,
+          lastAction: AuthAction.updateProfilePhoto,
+        ),
+      );
     } catch (error) {
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: 'No se pudo actualizar la foto: $error',
-        lastAction: AuthAction.updateProfilePhoto,
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'No se pudo actualizar la foto: $error',
+          lastAction: AuthAction.updateProfilePhoto,
+        ),
+      );
     }
   }
 
@@ -188,24 +275,45 @@ class AuthCubit extends Cubit<AuthState> {
     if (state.errorMessage == null && !state.passwordResetEmailSent) {
       return;
     }
-    emit(state.copyWith(errorMessage: null, passwordResetEmailSent: false, lastAction: AuthAction.none));
+    emit(
+      state.copyWith(
+        errorMessage: null,
+        passwordResetEmailSent: false,
+        lastAction: AuthAction.none,
+      ),
+    );
   }
 
   void _handleUserChanged(UserEntity? user) {
-    print('[AuthCubit] User state changed: ${user != null ? 'Authenticated' : 'Unauthenticated'} (user ID: ${user?.id})');
-    emit(state.copyWith(
-      status: user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated,
-      user: user,
-      profile: user == null
-          ? null
-          : (state.profile != null && state.profile!.id == user.id ? state.profile : null),
-      isLoading: false,
-      errorMessage: null,
-      lastAction: AuthAction.none,
-      passwordResetEmailSent: false,
-    ));
+    print(
+      '[AuthCubit] User state changed: ${user != null ? 'Authenticated' : 'Unauthenticated'} (user ID: ${user?.id})',
+    );
+    final previousUserId = _lastUserId;
+    _lastUserId = user?.id;
+    emit(
+      state.copyWith(
+        status: user != null
+            ? AuthStatus.authenticated
+            : AuthStatus.unauthenticated,
+        user: user,
+        profile: user == null
+            ? null
+            : (state.profile != null && state.profile!.id == user.id
+                  ? state.profile
+                  : null),
+        isLoading: false,
+        errorMessage: null,
+        lastAction: AuthAction.none,
+        passwordResetEmailSent: false,
+      ),
+    );
     if (user != null) {
       unawaited(refreshProfile(profileId: user.id));
+      if (_pushNotificationsService != null) {
+        unawaited(_pushNotificationsService.registerForUser(user.id));
+      }
+    } else if (previousUserId != null && _pushNotificationsService != null) {
+      unawaited(_pushNotificationsService.unregisterUser(previousUserId));
     }
   }
 

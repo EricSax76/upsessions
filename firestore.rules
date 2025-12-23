@@ -160,6 +160,18 @@ service cloud.firestore {
         allow update: if isOwner(musicianId) && isValidContact(contactId);
         allow delete: if isOwner(musicianId);
       }
+
+      match /invites/{inviteId} {
+        allow read: if isOwner(musicianId);
+        allow update: if isOwner(musicianId)
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['read', 'status', 'updatedAt']);
+        allow create, delete: if false;
+      }
+
+      match /fcmTokens/{tokenId} {
+        allow read, write: if isOwner(musicianId);
+      }
     }
 
     match /announcements/{announcementId} {
@@ -314,13 +326,12 @@ service cloud.firestore {
       allow delete: if false;
 
       match /members/{uid} {
-        allow get: if isSignedIn()
+        allow read: if isSignedIn()
           && (
             uid == request.auth.uid
             || (resource != null && resource.data.ownerId == request.auth.uid)
             || isActiveMember(groupId)
           );
-        allow list: if isActiveMember(groupId);
         allow create: if isOwnerMembershipCreate(groupId, uid)
           || isInviteMembershipCreate(groupId, uid)
           || (isAdminOrOwner(groupId)

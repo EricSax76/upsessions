@@ -6,6 +6,7 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../modules/auth/cubits/auth_cubit.dart';
 import '../../../../modules/auth/data/auth_repository.dart';
+import '../../../notifications/data/invite_notifications_repository.dart';
 import '../../data/groups_repository.dart';
 
 class InviteAcceptPage extends StatefulWidget {
@@ -20,6 +21,7 @@ class InviteAcceptPage extends StatefulWidget {
 
 class _InviteAcceptPageState extends State<InviteAcceptPage> {
   final _groupsRepository = locate<GroupsRepository>();
+  final _inviteNotificationsRepository = locate<InviteNotificationsRepository>();
   bool _loading = false;
 
   @override
@@ -77,6 +79,7 @@ class _InviteAcceptPageState extends State<InviteAcceptPage> {
     setState(() => _loading = true);
     try {
       await _groupsRepository.acceptInvite(groupId: widget.groupId, inviteId: widget.inviteId);
+      await _inviteNotificationsRepository.updateStatus(widget.inviteId, 'accepted');
       if (!context.mounted) return;
       context.go(AppRoutes.groupPage(widget.groupId));
     } catch (error) {

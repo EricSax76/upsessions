@@ -27,6 +27,7 @@ class AppRoutes {
   static const account = '/profile/account';
   static const settings = '/settings';
   static const help = '/settings/help';
+  static const notifications = '/notifications';
 
   static String groupPage(String groupId) => '/rehearsals/groups/$groupId';
 

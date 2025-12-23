@@ -15,6 +15,7 @@ import '../features/messaging/presentation/pages/messages_page.dart';
 import '../features/onboarding/presentation/pages/app_welcome_page.dart';
 import '../features/onboarding/presentation/pages/musician_onboarding_page.dart';
 import '../features/onboarding/presentation/pages/onboarding_story_pages.dart';
+import '../features/notifications/presentation/pages/notifications_page.dart';
 import '../features/settings/presentation/pages/help_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/splash/presentation/splash_page.dart';
@@ -150,6 +151,10 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.events,
           builder: (context, state) => const EventsPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.notifications,
+          builder: (context, state) => const NotificationsPage(),
         ),
         GoRoute(
           path: AppRoutes.rehearsals,

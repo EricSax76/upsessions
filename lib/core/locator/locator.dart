@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 
 import 'package:upsessions/core/services/cloud_functions_service.dart';
 import 'package:upsessions/core/services/firebase_initializer.dart';
+import 'package:upsessions/core/services/push_notifications_service.dart';
 import 'package:upsessions/features/announcements/data/announcements_repository.dart';
 import 'package:upsessions/modules/auth/data/auth_repository.dart';
 import 'package:upsessions/modules/auth/data/profile_repository.dart';
@@ -17,6 +18,7 @@ import 'package:upsessions/features/rehearsals/application/create_rehearsal_use_
 import 'package:upsessions/features/rehearsals/data/groups_repository.dart';
 import 'package:upsessions/features/rehearsals/data/rehearsals_repository.dart';
 import 'package:upsessions/features/rehearsals/data/setlist_repository.dart';
+import 'package:upsessions/features/notifications/data/invite_notifications_repository.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -32,6 +34,9 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<AuthRepository>(() => AuthRepository())
     ..registerLazySingleton<CloudFunctionsService>(
       () => CloudFunctionsService(),
+    )
+    ..registerLazySingleton<PushNotificationsService>(
+      () => PushNotificationsService(),
     )
     ..registerLazySingleton<MusiciansRepository>(() => MusiciansRepository())
     ..registerLazySingleton<AnnouncementsRepository>(
@@ -50,8 +55,9 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<GroupsRepository>(
       () => GroupsRepository(authRepository: getIt<AuthRepository>()),
     )
-    ..registerLazySingleton<RehearsalsRepository>(
-      () => RehearsalsRepository(),
+    ..registerLazySingleton<RehearsalsRepository>(() => RehearsalsRepository())
+    ..registerLazySingleton<InviteNotificationsRepository>(
+      () => InviteNotificationsRepository(authRepository: getIt<AuthRepository>()),
     )
     ..registerLazySingleton<CreateRehearsalUseCase>(
       () => CreateRehearsalUseCase(
@@ -59,9 +65,7 @@ Future<void> setupServiceLocator() async {
         rehearsalsRepository: getIt<RehearsalsRepository>(),
       ),
     )
-    ..registerLazySingleton<SetlistRepository>(
-      () => SetlistRepository(),
-    )
+    ..registerLazySingleton<SetlistRepository>(() => SetlistRepository())
     ..registerLazySingleton<LikedMusiciansController>(
       () => LikedMusiciansController(
         contactsRepository: getIt<ContactsRepository>(),

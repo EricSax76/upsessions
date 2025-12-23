@@ -14,12 +14,22 @@ class GroupsRepository extends RehearsalsRepositoryBase {
   final FirebaseStorage _storage;
 
   Stream<List<GroupMembershipEntity>> watchMyGroups() async* {
-    yield* authRepository.authStateChanges.asyncExpand((user) {
+    yield* authRepository.idTokenChanges.asyncExpand((user) {
       if (user == null) {
         logFirestore('watchMyGroups skipped (no auth)');
         return Stream.value(const <GroupMembershipEntity>[]);
       }
       return Stream.fromFuture(requireMusicianUid()).asyncExpand((uid) {
+        return _watchMyGroupsWithRetry(uid);
+      });
+    });
+  }
+
+  Stream<List<GroupMembershipEntity>> _watchMyGroupsWithRetry(String uid) async* {
+    const maxAttempts = 5;
+    var attempt = 0;
+    while (true) {
+      try {
         logFirestore('watchMyGroups query ownerId=$uid status=active');
         final stream = firestore
             .collectionGroup('members')
@@ -58,9 +68,25 @@ class GroupsRepository extends RehearsalsRepositoryBase {
               memberships.sort((a, b) => a.groupName.compareTo(b.groupName));
               return memberships;
             });
-        return logStream('watchMyGroups snapshots', stream);
-      });
-    });
+        await for (final value
+            in logStream('watchMyGroups snapshots', stream)) {
+          yield value;
+        }
+        return;
+      } catch (error) {
+        attempt += 1;
+        logFirestore('watchMyGroups retry $attempt after error: $error');
+        if (attempt >= maxAttempts || !_isPermissionDenied(error)) {
+          rethrow;
+        }
+        await authRepository.refreshIdToken();
+        await Future.delayed(Duration(milliseconds: 400 * attempt));
+      }
+    }
+  }
+
+  bool _isPermissionDenied(Object error) {
+    return error is FirebaseException && error.code == 'permission-denied';
   }
 
   Stream<String?> watchMyRole(String groupId) {
