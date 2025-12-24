@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../domain/group_membership_entity.dart';
+import 'group_dtos.dart';
 import 'rehearsals_repository_base.dart';
 
 class GroupsRepository extends RehearsalsRepositoryBase {
@@ -36,38 +37,7 @@ class GroupsRepository extends RehearsalsRepositoryBase {
             .where('ownerId', isEqualTo: uid)
             .where('status', isEqualTo: 'active')
             .snapshots()
-            .asyncMap((snapshot) async {
-              final rawMemberships = snapshot.docs
-                  .map((doc) => _MembershipDoc.fromMemberDoc(doc))
-                  .where((m) => m.groupId.isNotEmpty)
-                  .toList();
-
-              await _ensureCanonicalOwnerMemberships(uid, rawMemberships);
-
-              final groupIds =
-                  rawMemberships.map((m) => m.groupId).toSet().toList()..sort();
-              if (groupIds.isEmpty) {
-                return const <GroupMembershipEntity>[];
-              }
-
-              final groupsById = await _fetchGroupsById(groupIds);
-
-              final memberships = <GroupMembershipEntity>[];
-              for (final membership in rawMemberships) {
-                final group = groupsById[membership.groupId];
-                if (group == null) continue;
-                memberships.add(
-                  GroupMembershipEntity(
-                    groupId: membership.groupId,
-                    groupName: group.name,
-                    groupOwnerId: group.ownerId,
-                    role: membership.role,
-                  ),
-                );
-              }
-              memberships.sort((a, b) => a.groupName.compareTo(b.groupName));
-              return memberships;
-            });
+            .asyncMap((snapshot) => _processMembershipSnapshot(uid, snapshot));
         await for (final value
             in logStream('watchMyGroups snapshots', stream)) {
           yield value;
@@ -83,6 +53,42 @@ class GroupsRepository extends RehearsalsRepositoryBase {
         await Future.delayed(Duration(milliseconds: 400 * attempt));
       }
     }
+  }
+
+  Future<List<GroupMembershipEntity>> _processMembershipSnapshot(
+    String uid,
+    QuerySnapshot<Map<String, dynamic>> snapshot,
+  ) async {
+    final rawMemberships = snapshot.docs
+        .map((doc) => MembershipDoc.fromMemberDoc(doc))
+        .where((m) => m.groupId.isNotEmpty)
+        .toList();
+
+    await _ensureCanonicalOwnerMemberships(uid, rawMemberships);
+
+    final groupIds =
+        rawMemberships.map((m) => m.groupId).toSet().toList()..sort();
+    if (groupIds.isEmpty) {
+      return const <GroupMembershipEntity>[];
+    }
+
+    final groupsById = await _fetchGroupsById(groupIds);
+
+    final memberships = <GroupMembershipEntity>[];
+    for (final membership in rawMemberships) {
+      final group = groupsById[membership.groupId];
+      if (group == null) continue;
+      memberships.add(
+        GroupMembershipEntity(
+          groupId: membership.groupId,
+          groupName: group.name,
+          groupOwnerId: group.ownerId,
+          role: membership.role,
+        ),
+      );
+    }
+    memberships.sort((a, b) => a.groupName.compareTo(b.groupName));
+    return memberships;
   }
 
   bool _isPermissionDenied(Object error) {
@@ -144,14 +150,10 @@ class GroupsRepository extends RehearsalsRepositoryBase {
       'link2': (link2 ?? '').trim(),
       'createdAt': FieldValue.serverTimestamp(),
     });
-    batch.set(memberDoc, {
-      'userId': uid,
-      'ownerId': uid,
-      'role': 'owner',
-      'status': 'active',
-      'createdAt': FieldValue.serverTimestamp(),
-      'addedBy': uid,
-    });
+    batch.set(
+      memberDoc,
+      _memberData(uid: uid, role: 'owner', addedBy: uid),
+    );
     await logFuture('createGroup commit', batch.commit());
 
     final bytes = photoBytes;
@@ -183,8 +185,16 @@ class GroupsRepository extends RehearsalsRepositoryBase {
     }
 
     final batch = firestore.batch();
+
+    // Delete all members of the group
+    final membersSnap = await members(groupId).get();
+    for (final doc in membersSnap.docs) {
+      batch.delete(doc.reference);
+    }
+
+    // Delete the group itself
     batch.delete(groupRef);
-    // TODO: delete members and other subcollections
+
     await logFuture('deleteGroup commit', batch.commit());
   }
 
@@ -230,53 +240,53 @@ class GroupsRepository extends RehearsalsRepositoryBase {
         if (!inviteSnap.exists) {
           throw Exception('La invitación no existe.');
         }
-      final invite = inviteSnap.data() ?? <String, dynamic>{};
-      final targetUid = (invite['targetUid'] ?? '').toString();
-      final status = (invite['status'] ?? '').toString();
-      final expiresAt = invite['expiresAt'];
-      final isExpired = expiresAt is Timestamp
-          ? expiresAt.toDate().isBefore(DateTime.now())
-          : true;
+        final invite = inviteSnap.data() ?? <String, dynamic>{};
+        final targetUid = (invite['targetUid'] ?? '').toString();
+        final status = (invite['status'] ?? '').toString();
+        final expiresAt = invite['expiresAt'];
+        final isExpired = expiresAt is Timestamp
+            ? expiresAt.toDate().isBefore(DateTime.now())
+            : true;
 
-      if (targetUid != uid) {
-        throw Exception('Esta invitación no es para tu cuenta.');
-      }
-      if (status != 'active') {
-        throw Exception('La invitación ya fue utilizada o revocada.');
-      }
-      if (isExpired) {
-        throw Exception('La invitación está vencida.');
-      }
-
-      final memberSnap = await tx.get(memberRef);
-      if (!memberSnap.exists) {
-        tx.set(memberRef, {
-          'userId': uid,
-          'ownerId': uid,
-          'role': 'member',
-          'status': 'active',
-          'createdAt': FieldValue.serverTimestamp(),
-          'addedBy': (invite['createdBy'] ?? '').toString(),
-          'inviteId': inviteId,
-        });
-      } else {
-        final existing = memberSnap.data() ?? <String, dynamic>{};
-        final existingUserId = (existing['userId'] ?? '').toString();
-        if (existingUserId != uid) {
-          tx.update(memberRef, {'userId': uid, 'ownerId': uid});
+        if (targetUid != uid) {
+          throw Exception('Esta invitación no es para tu cuenta.');
         }
-      }
+        if (status != 'active') {
+          throw Exception('La invitación ya fue utilizada o revocada.');
+        }
+        if (isExpired) {
+          throw Exception('La invitación está vencida.');
+        }
 
-      tx.update(inviteRef, {
-        'status': 'used',
-        'usedBy': uid,
-        'usedAt': FieldValue.serverTimestamp(),
-      });
+        final memberSnap = await tx.get(memberRef);
+        if (!memberSnap.exists) {
+          tx.set(
+            memberRef,
+            _memberData(
+              uid: uid,
+              role: 'member',
+              addedBy: (invite['createdBy'] ?? '').toString(),
+              inviteId: inviteId,
+            ),
+          );
+        } else {
+          final existing = memberSnap.data() ?? <String, dynamic>{};
+          final existingUserId = (existing['userId'] ?? '').toString();
+          if (existingUserId != uid) {
+            tx.update(memberRef, {'userId': uid, 'ownerId': uid});
+          }
+        }
+
+        tx.update(inviteRef, {
+          'status': 'used',
+          'usedBy': uid,
+          'usedAt': FieldValue.serverTimestamp(),
+        });
       }),
     );
   }
 
-  Future<Map<String, _GroupDoc>> _fetchGroupsById(List<String> groupIds) async {
+  Future<Map<String, GroupDoc>> _fetchGroupsById(List<String> groupIds) async {
     // Fetching with a `whereIn(documentId)` query can fail the whole request if
     // any single group is not readable due to security rules. Fetching
     // individually lets us keep the readable ones.
@@ -284,13 +294,13 @@ class GroupsRepository extends RehearsalsRepositoryBase {
       try {
         final snap = await groupDoc(groupId).get();
         if (!snap.exists) return null;
-        return _GroupDoc.fromGroupDoc(snap);
+        return GroupDoc.fromGroupDoc(snap);
       } catch (_) {
         return null;
       }
     });
     final results = await Future.wait(futures);
-    final map = <String, _GroupDoc>{};
+    final map = <String, GroupDoc>{};
     for (final group in results) {
       if (group == null || group.id.isEmpty) continue;
       map[group.id] = group;
@@ -300,7 +310,7 @@ class GroupsRepository extends RehearsalsRepositoryBase {
 
   Future<void> _ensureCanonicalOwnerMemberships(
     String uid,
-    List<_MembershipDoc> memberships,
+    List<MembershipDoc> memberships,
   ) async {
     final ownerGroupIds =
         memberships
@@ -317,17 +327,27 @@ class GroupsRepository extends RehearsalsRepositoryBase {
         final ref = members(groupId).doc(uid);
         final snap = await ref.get();
         if (snap.exists) return;
-        await ref.set({
-          'userId': uid,
-          'ownerId': uid,
-          'role': 'owner',
-          'status': 'active',
-          'createdAt': FieldValue.serverTimestamp(),
-          'addedBy': uid,
-        });
+        await ref.set(_memberData(uid: uid, role: 'owner', addedBy: uid));
       }),
     );
   }
+}
+
+Map<String, dynamic> _memberData({
+  required String uid,
+  required String role,
+  required String addedBy,
+  String? inviteId,
+}) {
+  return {
+    'userId': uid,
+    'ownerId': uid,
+    'role': role,
+    'status': 'active',
+    'createdAt': FieldValue.serverTimestamp(),
+    'addedBy': addedBy,
+    if (inviteId != null) 'inviteId': inviteId,
+  };
 }
 
 String _normalizeImageExtension(String? input) {
@@ -343,44 +363,5 @@ String _normalizeImageExtension(String? input) {
       return normalized;
     default:
       return 'jpeg';
-  }
-}
-
-class _GroupDoc {
-  const _GroupDoc({
-    required this.id,
-    required this.name,
-    required this.ownerId,
-  });
-
-  final String id;
-  final String name;
-  final String ownerId;
-
-  factory _GroupDoc.fromGroupDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
-    final data = doc.data() ?? <String, dynamic>{};
-    return _GroupDoc(
-      id: doc.id,
-      name: (data['name'] ?? '').toString(),
-      ownerId: (data['ownerId'] ?? '').toString(),
-    );
-  }
-}
-
-class _MembershipDoc {
-  const _MembershipDoc({required this.groupId, required this.role});
-
-  final String groupId;
-  final String role;
-
-  factory _MembershipDoc.fromMemberDoc(
-    QueryDocumentSnapshot<Map<String, dynamic>> doc,
-  ) {
-    final groupId = doc.reference.parent.parent?.id ?? '';
-    final data = doc.data();
-    return _MembershipDoc(
-      groupId: groupId,
-      role: (data['role'] ?? 'member').toString(),
-    );
   }
 }

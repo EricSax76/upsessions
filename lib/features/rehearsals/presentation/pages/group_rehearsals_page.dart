@@ -55,63 +55,89 @@ class _GroupRehearsalsView extends StatelessWidget {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 final rehearsals = snapshot.data ?? const [];
+                final nextRehearsal = _nextRehearsal(rehearsals);
                 return ListView(
                   padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
                   children: [
-                    Row(
+                    Text(
+                      groupName,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Ensayos',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                groupName,
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Ensayos',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                            ],
+                        FilledButton.icon(
+                          style: FilledButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onSurface,
                           ),
-                        ),
-                        IconButton(
-                          tooltip: 'Crear ensayo',
-                          onPressed: () =>
-                              _createRehearsal(context, createRehearsalUseCase),
+                          onPressed: () => _createRehearsal(
+                            context,
+                            createRehearsalUseCase,
+                          ),
                           icon: const Icon(Icons.add_circle_outline),
+                          label: const Text('Nuevo ensayo'),
                         ),
-                        IconButton(
-                          tooltip: canManageMembers
-                              ? 'Agregar músico'
-                              : 'Solo owner/admin',
+                        OutlinedButton.icon(
                           onPressed: canManageMembers
                               ? () => _openInviteDialog(context)
                               : null,
                           icon: const Icon(Icons.person_add_alt_1_outlined),
+                          label: Text(
+                            canManageMembers
+                                ? 'Agregar musico'
+                                : 'Solo owner/admin',
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
+                    _SummaryCard(
+                      totalCount: rehearsals.length,
+                      nextRehearsal: nextRehearsal,
+                    ),
+                    const SizedBox(height: 8),
                     if (rehearsals.isEmpty)
-                      const Text('Todavía no hay ensayos. Crea el primero.')
+                      Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.event_available_outlined),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'Todavia no hay ensayos. Crea el primero.',
+                                  style:
+                                      Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
                     else
                       ...rehearsals.map(
-                        (rehearsal) => Card(
-                          child: ListTile(
-                            leading: const Icon(Icons.event_available_outlined),
-                            title: Text(_formatDateTime(rehearsal.startsAt)),
-                            subtitle: rehearsal.location.trim().isEmpty
-                                ? null
-                                : Text(rehearsal.location),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () => context.go(
-                              AppRoutes.rehearsalDetail(
-                                groupId: groupId,
-                                rehearsalId: rehearsal.id,
-                              ),
+                        (rehearsal) => _RehearsalCard(
+                          rehearsal: rehearsal,
+                          onTap: () => context.go(
+                            AppRoutes.rehearsalDetail(
+                              groupId: groupId,
+                              rehearsalId: rehearsal.id,
                             ),
                           ),
                         ),
@@ -167,6 +193,185 @@ class _GroupRehearsalsView extends StatelessWidget {
     String two(int v) => v.toString().padLeft(2, '0');
     return '${value.day}/${value.month}/${value.year} ${two(value.hour)}:${two(value.minute)}';
   }
+}
+
+class _SummaryCard extends StatelessWidget {
+  const _SummaryCard({
+    required this.totalCount,
+    required this.nextRehearsal,
+  });
+
+  final int totalCount;
+  final RehearsalEntity? nextRehearsal;
+
+  @override
+  Widget build(BuildContext context) {
+    final totalLabel = totalCount == 1
+        ? '1 ensayo programado'
+        : '$totalCount ensayos programados';
+    final nextLabel = nextRehearsal == null
+        ? 'Sin proximo ensayo'
+        : _GroupRehearsalsView._formatDateTime(nextRehearsal!.startsAt);
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              height: 44,
+              width: 44,
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .secondary
+                    .withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.event_note_outlined),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    totalLabel,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Proximo: $nextLabel',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RehearsalCard extends StatelessWidget {
+  const _RehearsalCard({required this.rehearsal, required this.onTap});
+
+  final RehearsalEntity rehearsal;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final month = _monthLabel(rehearsal.startsAt.month);
+    final time = _timeLabel(rehearsal.startsAt);
+    final location = rehearsal.location.trim();
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 56,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      month,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      rehearsal.startsAt.day.toString(),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      time,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    if (location.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.place_outlined, size: 16),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              location,
+                              style: Theme.of(context).textTheme.bodySmall,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+RehearsalEntity? _nextRehearsal(List<RehearsalEntity> rehearsals) {
+  final now = DateTime.now();
+  final upcoming = rehearsals
+      .where((rehearsal) => rehearsal.startsAt.isAfter(now))
+      .toList()
+    ..sort((a, b) => a.startsAt.compareTo(b.startsAt));
+  if (upcoming.isEmpty) return null;
+  return upcoming.first;
+}
+
+String _monthLabel(int month) {
+  const months = [
+    'Ene',
+    'Feb',
+    'Mar',
+    'Abr',
+    'May',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dic',
+  ];
+  if (month < 1 || month > 12) return '';
+  return months[month - 1];
+}
+
+String _timeLabel(DateTime date) {
+  String two(int v) => v.toString().padLeft(2, '0');
+  return '${two(date.hour)}:${two(date.minute)}';
 }
 
 class _RehearsalDraft {
