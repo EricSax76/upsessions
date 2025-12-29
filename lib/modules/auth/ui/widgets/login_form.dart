@@ -12,8 +12,9 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'solista@example.com');
-  final _passwordController = TextEditingController(text: 'token');
+  final _emailController = TextEditingController(text: '');
+  final _passwordController = TextEditingController(text: '');
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -46,8 +47,13 @@ class _LoginFormState extends State<LoginForm> {
             children: [
               TextFormField(
                 controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                autofillHints: const [
+                  AutofillHints.username,
+                  AutofillHints.email,
+                ],
                 decoration: const InputDecoration(
-                  labelText: 'Correo electrónico',
+                  hintText: 'Correo electrónico',
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -62,22 +68,57 @@ class _LoginFormState extends State<LoginForm> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Contraseña'),
-                obscureText: true,
+                autofillHints: const [AutofillHints.password],
+                decoration: InputDecoration(
+                  hintText: 'Contraseña',
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    tooltip: _obscurePassword
+                        ? 'Mostrar contraseña'
+                        : 'Ocultar contraseña',
+                  ),
+                ),
+                obscureText: _obscurePassword,
                 validator: (value) => value != null && value.length >= 4
                     ? null
                     : 'Contraseña demasiado corta',
               ),
               const SizedBox(height: 16),
               if (error != null)
-                Text(error, style: const TextStyle(color: Colors.redAccent)),
-              const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(
+                    error,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: isLoading ? null : _login,
                   child: isLoading
-                      ? const CircularProgressIndicator()
+                      ? const SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
                       : const Text('Ingresar'),
                 ),
               ),

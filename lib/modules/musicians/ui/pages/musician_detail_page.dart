@@ -7,8 +7,8 @@ import 'package:upsessions/features/messaging/data/chat_repository.dart';
 import 'package:upsessions/features/messaging/presentation/pages/messages_page.dart';
 import 'package:upsessions/features/contacts/domain/liked_musician.dart';
 import 'package:upsessions/features/contacts/presentation/widgets/musician_like_button.dart';
-import 'package:upsessions/features/rehearsals/data/groups_repository.dart';
-import 'package:upsessions/features/rehearsals/domain/group_membership_entity.dart';
+import 'package:upsessions/modules/rehearsals/data/groups_repository.dart';
+import 'package:upsessions/modules/rehearsals/domain/group_membership_entity.dart';
 
 import '../../domain/musician_entity.dart';
 
@@ -144,7 +144,7 @@ class _ProfileHeader extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [colors.primaryContainer, colors.primary.withOpacity(0.8)],
+          colors: [colors.primaryContainer, colors.primary.withValues()],
         ),
       ),
       child: Column(
@@ -157,7 +157,7 @@ class _ProfileHeader extends StatelessWidget {
                 foregroundImage: musician.photoUrl?.isNotEmpty == true
                     ? NetworkImage(musician.photoUrl!)
                     : null,
-                backgroundColor: colors.onPrimary.withOpacity(0.12),
+                backgroundColor: colors.onPrimary.withValues(),
                 child: musician.photoUrl?.isNotEmpty == true
                     ? null
                     : Text(
@@ -204,7 +204,7 @@ class _ProfileHeader extends StatelessWidget {
           Text(
             'Disponible para eventos y colaboraciones',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: colors.onPrimary.withOpacity(0.9),
+              color: colors.onPrimary.withValues(),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -227,7 +227,7 @@ class _HeaderPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(40),
-        color: colors.onPrimary.withOpacity(0.1),
+        color: colors.onPrimary.withValues(),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -376,7 +376,7 @@ class _StylesSection extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(32),
-                          color: colors.primary.withOpacity(0.08),
+                          color: colors.primary.withValues(),
                         ),
                         child: Text(
                           style,

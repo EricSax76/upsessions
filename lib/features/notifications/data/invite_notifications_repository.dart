@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../rehearsals/data/rehearsals_repository_base.dart';
+import '../../../modules/rehearsals/data/rehearsals_repository_base.dart';
 import '../domain/invite_notification_entity.dart';
 
 class InviteNotificationsRepository extends RehearsalsRepositoryBase {
@@ -33,13 +33,10 @@ class InviteNotificationsRepository extends RehearsalsRepositoryBase {
     final uid = requireUid();
     await logFuture(
       'markInviteRead',
-      _invitesRef(uid).doc(inviteId).set(
-        {
-          'read': true,
-          'updatedAt': FieldValue.serverTimestamp(),
-        },
-        SetOptions(merge: true),
-      ),
+      _invitesRef(uid).doc(inviteId).set({
+        'read': true,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true)),
     );
   }
 
@@ -47,14 +44,11 @@ class InviteNotificationsRepository extends RehearsalsRepositoryBase {
     final uid = requireUid();
     await logFuture(
       'updateInviteStatus',
-      _invitesRef(uid).doc(inviteId).set(
-        {
-          'status': status,
-          'read': true,
-          'updatedAt': FieldValue.serverTimestamp(),
-        },
-        SetOptions(merge: true),
-      ),
+      _invitesRef(uid).doc(inviteId).set({
+        'status': status,
+        'read': true,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true)),
     );
   }
 }

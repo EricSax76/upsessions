@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_routes.dart';
-import '../features/announcements/domain/announcement_entity.dart';
-import '../features/announcements/presentation/pages/announcement_detail_page.dart';
-import '../features/announcements/presentation/pages/announcement_form_page.dart';
-import '../features/announcements/presentation/pages/announcements_hub_page.dart';
+import '../modules/announcements/domain/announcement_entity.dart';
+import '../modules/announcements/presentation/pages/announcement_detail_page.dart';
+import '../modules/announcements/presentation/pages/announcement_form_page.dart';
+import '../modules/announcements/presentation/pages/announcements_hub_page.dart';
 import '../features/media/ui/pages/media_gallery_page.dart';
 import '../features/calendar/presentation/pages/calendar_page.dart';
-import '../features/events/domain/event_entity.dart';
-import '../features/events/presentation/pages/event_detail_page.dart';
-import '../features/events/presentation/pages/events_page.dart';
+import '../modules/events/domain/event_entity.dart';
+import '../modules/events/presentation/pages/event_detail_page.dart';
+import '../modules/events/presentation/pages/events_page.dart';
 import '../features/messaging/presentation/pages/messages_page.dart';
 import '../features/onboarding/presentation/pages/app_welcome_page.dart';
 import '../features/onboarding/presentation/pages/musician_onboarding_page.dart';
@@ -19,11 +19,11 @@ import '../features/notifications/presentation/pages/notifications_page.dart';
 import '../features/settings/presentation/pages/help_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/splash/presentation/splash_page.dart';
-import '../features/rehearsals/presentation/pages/group_rehearsals_page.dart';
-import '../features/rehearsals/presentation/pages/group_page.dart';
-import '../features/rehearsals/presentation/pages/invite_accept_page.dart';
-import '../features/rehearsals/presentation/pages/rehearsal_detail_page.dart';
-import '../features/rehearsals/presentation/pages/rehearsals_groups_page.dart';
+import '../modules/rehearsals/presentation/pages/group_rehearsals_page.dart';
+import '../modules/rehearsals/presentation/pages/group_page.dart';
+import '../modules/rehearsals/presentation/pages/invite_accept_page.dart';
+import '../modules/rehearsals/presentation/pages/rehearsal_detail_page.dart';
+import '../modules/rehearsals/presentation/pages/rehearsals_groups_page.dart';
 import '../home/ui/pages/user_home_page.dart';
 import '../modules/auth/ui/pages/forgot_password_page.dart';
 import '../modules/auth/ui/pages/login_page.dart';
@@ -179,7 +179,10 @@ class AppRouter {
           builder: (context, state) {
             final groupId = state.pathParameters['groupId'] ?? '';
             final rehearsalId = state.pathParameters['rehearsalId'] ?? '';
-            return RehearsalDetailPage(groupId: groupId, rehearsalId: rehearsalId);
+            return RehearsalDetailPage(
+              groupId: groupId,
+              rehearsalId: rehearsalId,
+            );
           },
         ),
         GoRoute(

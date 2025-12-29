@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
-import '../../../events/data/events_repository.dart';
-import '../../../events/domain/event_entity.dart';
+import '../../../../modules/events/data/events_repository.dart';
+import '../../../../modules/events/domain/event_entity.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});

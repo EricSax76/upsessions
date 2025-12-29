@@ -19,6 +19,27 @@ class ChatRepository {
   final AuthRepository _authRepository;
   final CloudFunctionsService _cloudFunctionsService;
 
+  Stream<List<ChatThread>> watchThreads() async* {
+    yield* _authRepository.idTokenChanges.asyncExpand((user) {
+      if (user == null) {
+        return Stream.value(const <ChatThread>[]);
+      }
+      final query = _firestore
+          .collection('chat_threads')
+          .where('participants', arrayContains: user.id)
+          .orderBy('lastMessageAt', descending: true);
+      return query.snapshots().map((snapshot) {
+        final threads = snapshot.docs
+            .map((doc) => _mapThread(doc, user.id))
+            .toList();
+        threads.sort(
+          (a, b) => b.lastMessage.sentAt.compareTo(a.lastMessage.sentAt),
+        );
+        return threads;
+      });
+    });
+  }
+
   Future<List<ChatThread>> fetchThreads() async {
     final currentUser = _authRepository.currentUser;
     if (currentUser == null) {
@@ -56,6 +77,30 @@ class ChatRepository {
       );
       if (error.code == 'permission-denied') {
         throw Exception('No tienes permisos para ver tus conversaciones.');
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> markThreadRead(String threadId) async {
+    final user = _authRepository.currentUser;
+    if (user == null || threadId.trim().isEmpty) return;
+    final docRef = _firestore.collection('chat_threads').doc(threadId);
+    try {
+      await docRef.update({'unreadCounts.${user.id}': 0});
+    } on FirebaseException catch (error) {
+      if (error.code == 'permission-denied') {
+        // Reading messages should still work even if unread tracking is blocked by rules.
+        return;
+      }
+      if (error.code == 'not-found') {
+        await docRef.set(
+          {
+            'unreadCounts': {user.id: 0},
+          },
+          SetOptions(merge: true),
+        );
+        return;
       }
       rethrow;
     }

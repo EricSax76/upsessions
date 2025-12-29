@@ -53,10 +53,11 @@ class UserHomeController extends ChangeNotifier {
     _categories = await _repository.fetchInstrumentCategories();
     _events = await _repository.fetchUpcomingEvents();
     _provinces = await _repository.fetchProvinces();
-    if (_provinces.isNotEmpty) {
-      _province = _provinces.first;
+    if (_provinces.isEmpty) {
+      _province = '';
+      _cities = const [];
+      _city = '';
     }
-    await _loadCitiesForProvince(_province);
     _setLoading(false);
   }
 
@@ -91,11 +92,30 @@ class UserHomeController extends ChangeNotifier {
     _safeNotify();
   }
 
+  void resetFilters() {
+    _instrument = '';
+    _style = '';
+    _profileType = '';
+    _gender = '';
+    _province = '';
+    _city = '';
+    _cities = const [];
+    _safeNotify();
+  }
+
   Future<void> _loadCitiesForProvince(String value) async {
+    if (value.trim().isEmpty) {
+      _cities = const [];
+      _city = '';
+      _safeNotify();
+      return;
+    }
     final cities = await _repository.fetchCitiesForProvince(value);
     _cities = cities;
     if (_cities.isNotEmpty) {
       _city = _cities.first;
+    } else {
+      _city = '';
     }
     _safeNotify();
   }

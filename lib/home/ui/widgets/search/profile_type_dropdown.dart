@@ -10,12 +10,12 @@ class ProfileTypeDropdown extends StatelessWidget {
   final String value;
   final ValueChanged<String> onChanged;
 
-  static const _types = ['Solista', 'Banda', 'Productor'];
+  static const _types = ['Sin asignar', 'Solista', 'Banda', 'Productor'];
 
   @override
   Widget build(BuildContext context) {
     final selectedValue =
-        value.isNotEmpty && _types.contains(value) ? value : null;
+        value.isNotEmpty && _types.contains(value) ? value : _types.first;
     return DropdownButtonFormField<String>(
       initialValue: selectedValue,
       decoration: const InputDecoration(labelText: 'Tipo de perfil'),
@@ -26,7 +26,7 @@ class ProfileTypeDropdown extends StatelessWidget {
           .toList(),
       onChanged: (selected) {
         if (selected != null) {
-          onChanged(selected);
+          onChanged(selected == _types.first ? '' : selected);
         }
       },
     );

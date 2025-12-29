@@ -76,6 +76,7 @@ class _ChatPageState extends State<ChatPage> {
       final messages = await _repository.fetchMessages(threadId);
       if (!mounted) return;
       setState(() => _messages = messages);
+      _repository.markThreadRead(threadId);
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

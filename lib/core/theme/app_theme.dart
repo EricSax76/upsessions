@@ -13,16 +13,16 @@ class AppTheme {
       onSecondary: AppColors.onSecondary,
       tertiary: AppColors.tertiary,
       onTertiary: AppColors.onPrimary,
-      error: Color(0xFFB3261E),
+      error: AppColors.danger,
       onError: Colors.white,
       surface: AppColors.surface,
       onSurface: AppColors.onSurface,
       surfaceContainerHighest: AppColors.surfaceVariant,
-      onSurfaceVariant: AppColors.textSecondary,
+      onSurfaceVariant: AppColors.textTertiary,
       outline: AppColors.outline,
       shadow: Color(0x331C1B19),
       inverseSurface: Color(0xFF2A2B2C),
-      onInverseSurface: Color(0xFFF6F1E7),
+      onInverseSurface: Color(0xFFF7F8FA),
       inversePrimary: Color(0xFF9CB5D1),
       scrim: Color(0x801C1B19),
     ),
@@ -33,11 +33,19 @@ class AppTheme {
       elevation: 0,
       centerTitle: false,
     ),
-    cardTheme: const CardThemeData(
+    dividerTheme: const DividerThemeData(
+      color: AppColors.outline,
+      thickness: 1,
+    ),
+    cardTheme: CardThemeData(
       color: AppColors.surface,
-      shadowColor: Color(0x1A1C1B19),
-      elevation: 2,
+      shadowColor: Colors.transparent,
+      elevation: 0,
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: AppColors.outline),
+      ),
     ),
     textTheme: AppFonts.textTheme.apply(
       bodyColor: AppColors.textPrimary,
@@ -46,20 +54,29 @@ class AppTheme {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.surface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: AppColors.outline),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: AppColors.outline),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.outlineFocus),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.danger),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.danger),
       ),
       hintStyle: const TextStyle(
-        color: AppColors.textSecondary,
+        color: AppColors.textTertiary,
         fontWeight: FontWeight.w500,
       ),
     ),
@@ -67,15 +84,32 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.onPrimary,
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
-        textStyle: const TextStyle(
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.2,
-        ),
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
       ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.icon,
+        side: const BorderSide(color: AppColors.outline),
+        minimumSize: const Size(0, 54),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: AppColors.textSecondary,
+        textStyle: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: AppColors.primary,
+      foregroundColor: AppColors.onPrimary,
+      elevation: 0,
+      shape: CircleBorder(),
     ),
     useMaterial3: true,
   );

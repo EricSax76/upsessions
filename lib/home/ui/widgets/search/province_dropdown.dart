@@ -14,9 +14,14 @@ class ProvinceDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasProvinces = provinces.isNotEmpty;
-    final dropdownItems = provinces.map((province) => DropdownMenuItem(value: province, child: Text(province))).toList();
-    final selectedValue = hasProvinces && provinces.contains(value) ? value : null;
+    final dropdownItems = [
+      const DropdownMenuItem(value: 'Sin asignar', child: Text('Sin asignar')),
+      ...provinces.map(
+        (province) => DropdownMenuItem(value: province, child: Text(province)),
+      ),
+    ];
+    final selectedValue =
+        value.isNotEmpty && provinces.contains(value) ? value : 'Sin asignar';
 
     return DropdownButtonFormField<String>(
       initialValue: selectedValue,
@@ -24,13 +29,11 @@ class ProvinceDropdown extends StatelessWidget {
       hint: const Text('Selecciona provincia'),
       isExpanded: true,
       items: dropdownItems,
-      onChanged: hasProvinces
-          ? (selected) {
-              if (selected != null) {
-                onChanged(selected);
-              }
-            }
-          : null,
+      onChanged: (selected) {
+        if (selected != null) {
+          onChanged(selected == 'Sin asignar' ? '' : selected);
+        }
+      },
     );
   }
 }

@@ -13,11 +13,27 @@ class MusicianSearchCubit extends Cubit<MusicianSearchState> {
 
   final MusiciansRepository _repository;
 
-  Future<void> search({String? query}) async {
+  Future<void> search({
+    String? query,
+    String instrument = '',
+    String style = '',
+    String province = '',
+    String city = '',
+    String profileType = '',
+    String gender = '',
+  }) async {
     final normalizedQuery = query ?? state.query;
     emit(state.copyWith(isLoading: true, query: normalizedQuery, errorMessage: null));
     try {
-      final results = await _repository.search(query: normalizedQuery);
+      final results = await _repository.search(
+        query: normalizedQuery,
+        instrument: instrument,
+        style: style,
+        province: province,
+        city: city,
+        profileType: profileType,
+        gender: gender,
+      );
       emit(state.copyWith(isLoading: false, results: results));
     } catch (error) {
       emit(state.copyWith(isLoading: false, errorMessage: 'No pudimos cargar los músicos. Intenta más tarde.')); 

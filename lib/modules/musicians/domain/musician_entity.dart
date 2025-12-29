@@ -11,6 +11,9 @@ class MusicianEntity {
     required this.styles,
     required this.experienceYears,
     this.photoUrl,
+    this.province,
+    this.profileType,
+    this.gender,
   });
 
   final String id;
@@ -21,4 +24,7 @@ class MusicianEntity {
   final List<String> styles;
   final int experienceYears;
   final String? photoUrl;
+  final String? province;
+  final String? profileType;
+  final String? gender;
 }

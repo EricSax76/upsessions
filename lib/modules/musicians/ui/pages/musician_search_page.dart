@@ -58,7 +58,19 @@ class _MusicianSearchViewState extends State<MusicianSearchView> {
   void _search() {
     context.read<MusicianSearchCubit>().search(
       query: _searchController.text.trim(),
+      instrument: _filters.instrument,
+      style: _filters.style,
+      province: _filters.province,
+      city: _filters.city,
+      profileType: _filters.profileType,
+      gender: _filters.gender,
     );
+  }
+
+  void _clearFilters() {
+    _searchController.clear();
+    _filters.resetFilters();
+    _search();
   }
 
   void _onFiltersChanged() {
@@ -107,6 +119,7 @@ class _MusicianSearchViewState extends State<MusicianSearchView> {
                     onProvinceChanged: _filters.selectProvince,
                     onCityChanged: _filters.selectCity,
                     onSearch: filtersReady ? _search : null,
+                    onClear: filtersReady ? _clearFilters : null,
                   );
 
                   if (isWide) {

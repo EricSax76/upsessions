@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
-import '../../../../features/rehearsals/data/groups_repository.dart';
+import '../../../../modules/rehearsals/data/groups_repository.dart';
 
 class RehearsalsSidebarSection extends StatelessWidget {
   const RehearsalsSidebarSection({super.key});
@@ -89,8 +89,7 @@ class RehearsalsSidebarSection extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text('Rol: ${group.role}'),
-                  onTap: () =>
-                      _go(context, AppRoutes.groupPage(group.groupId)),
+                  onTap: () => _go(context, AppRoutes.groupPage(group.groupId)),
                 ),
           ],
         );
@@ -166,8 +165,7 @@ class RehearsalsSidebarSection extends StatelessWidget {
             child: const Text('Cancelar'),
           ),
           FilledButton(
-            onPressed: () =>
-                Navigator.of(context).pop(controller.text.trim()),
+            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
             child: const Text('Ir'),
           ),
         ],

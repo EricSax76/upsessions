@@ -19,6 +19,7 @@ class AdvancedSearchBox extends StatelessWidget {
     required this.provinces,
     required this.cities,
     this.onSearch,
+    this.onClear,
     required this.onInstrumentChanged,
     required this.onStyleChanged,
     required this.onProfileTypeChanged,
@@ -36,6 +37,7 @@ class AdvancedSearchBox extends StatelessWidget {
   final List<String> provinces;
   final List<String> cities;
   final VoidCallback? onSearch;
+  final VoidCallback? onClear;
   final ValueChanged<String> onInstrumentChanged;
   final ValueChanged<String> onStyleChanged;
   final ValueChanged<String> onProfileTypeChanged;
@@ -102,11 +104,40 @@ class AdvancedSearchBox extends StatelessWidget {
                 const SizedBox(height: 12),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: FilledButton.icon(
-                    onPressed: onSearch,
-                    icon: const Icon(Icons.search),
-                    label: const Text('Buscar'),
-                  ),
+                  child: isCompact
+                      ? Wrap(
+                          alignment: WrapAlignment.end,
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            TextButton.icon(
+                              onPressed: onClear,
+                              icon: const Icon(Icons.filter_alt_off),
+                              label: const Text('Quitar filtros'),
+                            ),
+                            FilledButton.icon(
+                              onPressed: onSearch,
+                              icon: const Icon(Icons.search),
+                              label: const Text('Buscar'),
+                            ),
+                          ],
+                        )
+                      : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextButton.icon(
+                              onPressed: onClear,
+                              icon: const Icon(Icons.filter_alt_off),
+                              label: const Text('Quitar filtros'),
+                            ),
+                            const SizedBox(width: 8),
+                            FilledButton.icon(
+                              onPressed: onSearch,
+                              icon: const Icon(Icons.search),
+                              label: const Text('Buscar'),
+                            ),
+                          ],
+                        ),
                 ),
               ],
             ),

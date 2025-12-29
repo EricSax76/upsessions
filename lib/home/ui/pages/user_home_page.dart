@@ -8,12 +8,10 @@ import 'package:upsessions/home/ui/widgets/announcements/announcement_card.dart'
 import 'package:upsessions/home/ui/widgets/announcements/new_announcements_section.dart';
 import 'package:upsessions/home/ui/widgets/events/upcoming_events_section.dart';
 import 'package:upsessions/home/ui/widgets/footer/bottom_cookie_bar.dart';
-import 'package:upsessions/home/ui/widgets/footer/provinces_list_section.dart';
 import 'package:upsessions/home/ui/widgets/home_section_card.dart';
 import 'package:upsessions/home/ui/widgets/musicians/musicians_by_instrument_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/new_musicians_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/recommended_users_section.dart';
-import 'package:upsessions/home/ui/widgets/profile/profile_status_bar.dart';
 import 'package:upsessions/home/ui/pages/user_shell_page.dart';
 
 class UserHomePage extends StatefulWidget {
@@ -70,8 +68,6 @@ class _UserHomePageState extends State<UserHomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const ProfileStatusBar(),
-                    const SizedBox(height: 32),
                     ..._buildResponsiveRow(
                       isWide,
                       HomeSectionCard(
@@ -108,6 +104,11 @@ class _UserHomePageState extends State<UserHomePage> {
                       HomeSectionCard(
                         title: 'Nuevos talentos',
                         subtitle: 'Músicos recién llegados a la comunidad',
+                        action: TextButton.icon(
+                          onPressed: () => context.push(AppRoutes.musicians),
+                          icon: const Icon(Icons.arrow_outward),
+                          label: const Text('Ver todos'),
+                        ),
                         child: NewMusiciansSection(
                           musicians: _controller.newMusicians,
                         ),
@@ -115,22 +116,18 @@ class _UserHomePageState extends State<UserHomePage> {
                     ),
                     const SizedBox(height: 32),
                     HomeSectionCard(
-                      title: 'Explora por instrumento y región',
+                      title: 'Explora por instrumento',
                       subtitle:
-                          'Filtra por instrumento o provincia para encontrar a tu próximo colaborador.',
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          MusiciansByInstrumentSection(
-                            categories: _controller.categories,
-                            musicians: _controller.recommended,
-                            onInstrumentSelected: _controller.selectInstrument,
-                          ),
-                          const SizedBox(height: 24),
-                          ProvincesListSection(
-                            provinces: _controller.provinces,
-                          ),
-                        ],
+                          'Filtra por instrumento para encontrar a tu próximo colaborador.',
+                      action: TextButton.icon(
+                        onPressed: () => context.push(AppRoutes.musicians),
+                        icon: const Icon(Icons.arrow_outward),
+                        label: const Text('Ver todos'),
+                      ),
+                      child: MusiciansByInstrumentSection(
+                        categories: _controller.categories,
+                        musicians: _controller.recommended,
+                        onInstrumentSelected: _controller.selectInstrument,
                       ),
                     ),
                     const SizedBox(height: 32),

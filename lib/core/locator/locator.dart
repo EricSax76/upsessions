@@ -4,20 +4,20 @@ import 'package:get_it/get_it.dart';
 import 'package:upsessions/core/services/cloud_functions_service.dart';
 import 'package:upsessions/core/services/firebase_initializer.dart';
 import 'package:upsessions/core/services/push_notifications_service.dart';
-import 'package:upsessions/features/announcements/data/announcements_repository.dart';
+import 'package:upsessions/modules/announcements/data/announcements_repository.dart';
 import 'package:upsessions/modules/auth/data/auth_repository.dart';
 import 'package:upsessions/modules/auth/data/profile_repository.dart';
 import 'package:upsessions/features/media/data/repositories/media_repository.dart';
 import 'package:upsessions/features/messaging/data/chat_repository.dart';
-import 'package:upsessions/features/events/data/events_repository.dart';
+import 'package:upsessions/modules/events/data/events_repository.dart';
 import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
 import 'package:upsessions/home/data/repositories/user_home_repository.dart';
 import 'package:upsessions/features/contacts/application/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/data/contacts_repository.dart';
-import 'package:upsessions/features/rehearsals/application/create_rehearsal_use_case.dart';
-import 'package:upsessions/features/rehearsals/data/groups_repository.dart';
-import 'package:upsessions/features/rehearsals/data/rehearsals_repository.dart';
-import 'package:upsessions/features/rehearsals/data/setlist_repository.dart';
+import 'package:upsessions/modules/rehearsals/application/create_rehearsal_use_case.dart';
+import 'package:upsessions/modules/rehearsals/data/groups_repository.dart';
+import 'package:upsessions/modules/rehearsals/data/rehearsals_repository.dart';
+import 'package:upsessions/modules/rehearsals/data/setlist_repository.dart';
 import 'package:upsessions/features/notifications/data/invite_notifications_repository.dart';
 
 final GetIt getIt = GetIt.instance;
@@ -57,7 +57,9 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<RehearsalsRepository>(() => RehearsalsRepository())
     ..registerLazySingleton<InviteNotificationsRepository>(
-      () => InviteNotificationsRepository(authRepository: getIt<AuthRepository>()),
+      () => InviteNotificationsRepository(
+        authRepository: getIt<AuthRepository>(),
+      ),
     )
     ..registerLazySingleton<CreateRehearsalUseCase>(
       () => CreateRehearsalUseCase(
@@ -65,7 +67,9 @@ Future<void> setupServiceLocator() async {
         rehearsalsRepository: getIt<RehearsalsRepository>(),
       ),
     )
-    ..registerLazySingleton<SetlistRepository>(() => SetlistRepository())
+    ..registerLazySingleton<SetlistRepository>(
+      () => SetlistRepository(authRepository: getIt<AuthRepository>()),
+    )
     ..registerLazySingleton<LikedMusiciansController>(
       () => LikedMusiciansController(
         contactsRepository: getIt<ContactsRepository>(),

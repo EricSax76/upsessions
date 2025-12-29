@@ -10,13 +10,32 @@ class InstrumentDropdown extends StatelessWidget {
   final String value;
   final ValueChanged<String> onChanged;
 
-  static const _options = ['Voz', 'Guitarra', 'Bajo', 'Batería', 'Teclado'];
+  static const _options = [
+    'Sin asignar',
+    'Voz',
+    'Guitarra',
+    'Bajo',
+    'Batería',
+    'Teclado',
+    'Piano',
+    'Saxofón',
+    'Trompeta',
+    'Violín',
+    'Viola',
+    'Violonchelo',
+    'Contrabajo',
+    'Flauta',
+    'Clarinete',
+    'Percusión',
+    'DJ',
+    'Producción',
+  ];
 
   @override
   Widget build(BuildContext context) {
     final selectedValue = value.isNotEmpty && _options.contains(value)
         ? value
-        : null;
+        : _options.first;
     return DropdownButtonFormField<String>(
       initialValue: selectedValue,
       decoration: const InputDecoration(labelText: 'Instrumento'),
@@ -30,7 +49,7 @@ class InstrumentDropdown extends StatelessWidget {
           .toList(),
       onChanged: (selected) {
         if (selected != null) {
-          onChanged(selected);
+          onChanged(selected == _options.first ? '' : selected);
         }
       },
     );

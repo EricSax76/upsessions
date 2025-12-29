@@ -9,13 +9,13 @@ import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/features/contacts/application/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/domain/liked_musician.dart';
-import 'package:upsessions/features/rehearsals/data/groups_repository.dart';
-import 'package:upsessions/features/rehearsals/presentation/pages/rehearsal_detail_page.dart';
-import 'package:upsessions/features/rehearsals/data/rehearsals_repository.dart';
-import 'package:upsessions/features/rehearsals/data/setlist_repository.dart';
-import 'package:upsessions/features/rehearsals/domain/rehearsal_entity.dart';
-import 'package:upsessions/features/rehearsals/domain/group_membership_entity.dart';
-import 'package:upsessions/features/rehearsals/domain/setlist_item_entity.dart';
+import 'package:upsessions/modules/rehearsals/data/groups_repository.dart';
+import 'package:upsessions/modules/rehearsals/presentation/pages/rehearsal_detail_page.dart';
+import 'package:upsessions/modules/rehearsals/data/rehearsals_repository.dart';
+import 'package:upsessions/modules/rehearsals/data/setlist_repository.dart';
+import 'package:upsessions/modules/rehearsals/domain/rehearsal_entity.dart';
+import 'package:upsessions/modules/rehearsals/domain/group_membership_entity.dart';
+import 'package:upsessions/modules/rehearsals/domain/setlist_item_entity.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import 'package:upsessions/modules/auth/domain/user_entity.dart';
 
@@ -65,7 +65,11 @@ void main() {
       ),
     );
     when(() => authCubit.state).thenReturn(authState);
-    whenListen(authCubit, const Stream<AuthState>.empty(), initialState: authState);
+    whenListen(
+      authCubit,
+      const Stream<AuthState>.empty(),
+      initialState: authState,
+    );
 
     rehearsalsRepository = MockRehearsalsRepository();
     when(
@@ -95,15 +99,18 @@ void main() {
     ).thenAnswer((_) => Stream.value(const <SetlistItemEntity>[]));
 
     groupsRepository = MockGroupsRepository();
-    when(() => groupsRepository.watchMyGroups())
-        .thenAnswer((_) => Stream.value(const <GroupMembershipEntity>[]));
+    when(
+      () => groupsRepository.watchMyGroups(),
+    ).thenAnswer((_) => Stream.value(const <GroupMembershipEntity>[]));
 
     await getIt.reset();
     getIt
       ..registerSingleton<RehearsalsRepository>(rehearsalsRepository)
       ..registerSingleton<SetlistRepository>(setlistRepository)
       ..registerSingleton<GroupsRepository>(groupsRepository)
-      ..registerSingleton<LikedMusiciansController>(FakeLikedMusiciansController());
+      ..registerSingleton<LikedMusiciansController>(
+        FakeLikedMusiciansController(),
+      );
   });
 
   tearDown(() async {
@@ -112,7 +119,10 @@ void main() {
 
   testWidgets('RehearsalDetailPage can be built', (WidgetTester tester) async {
     final router = GoRouter(
-      initialLocation: AppRoutes.rehearsalDetail(groupId: '1', rehearsalId: '1'),
+      initialLocation: AppRoutes.rehearsalDetail(
+        groupId: '1',
+        rehearsalId: '1',
+      ),
       routes: [
         GoRoute(
           path: AppRoutes.login,
@@ -123,7 +133,10 @@ void main() {
           builder: (context, state) {
             final groupId = state.pathParameters['groupId'] ?? '';
             final rehearsalId = state.pathParameters['rehearsalId'] ?? '';
-            return RehearsalDetailPage(groupId: groupId, rehearsalId: rehearsalId);
+            return RehearsalDetailPage(
+              groupId: groupId,
+              rehearsalId: rehearsalId,
+            );
           },
         ),
       ],

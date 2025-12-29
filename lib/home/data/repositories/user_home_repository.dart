@@ -4,6 +4,7 @@ import '../models/announcement_model.dart';
 import '../models/instrument_category_model.dart';
 import '../models/musician_card_model.dart';
 import '../models/home_event_model.dart';
+import '../../../core/constants/spanish_geography.dart';
 
 class UserHomeRepository {
   UserHomeRepository({FirebaseFirestore? firestore})
@@ -65,23 +66,26 @@ class UserHomeRepository {
   Future<List<String>> fetchProvinces() async {
     final doc = await _firestore.collection('metadata').doc('geography').get();
     if (!doc.exists) {
-      return const [];
+      return spanishProvinces;
     }
-    return _stringList(doc.data()?['provinces']);
+    final provinces = _stringList(doc.data()?['provinces']);
+    return provinces.isNotEmpty ? provinces : spanishProvinces;
   }
 
   Future<List<String>> fetchCitiesForProvince(String province) async {
     final doc = await _firestore.collection('metadata').doc('geography').get();
+    final fallback = spanishCitiesByProvince[province] ?? const [];
     if (!doc.exists) {
-      return const [];
+      return fallback;
     }
     final data = doc.data();
     final byProvince = data?['citiesByProvince'];
     if (byProvince is Map<String, dynamic>) {
       final cities = byProvince[province];
-      return _stringList(cities);
+      final resolved = _stringList(cities);
+      return resolved.isNotEmpty ? resolved : fallback;
     }
-    return const [];
+    return fallback;
   }
 
   Future<List<HomeEventModel>> fetchUpcomingEvents({int limit = 6}) async {

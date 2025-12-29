@@ -12,6 +12,9 @@ class MusicianDto {
     required this.styles,
     required this.experienceYears,
     this.photoUrl,
+    this.province,
+    this.profileType,
+    this.gender,
   });
 
   factory MusicianDto.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -26,6 +29,9 @@ class MusicianDto {
       styles: stylesDynamic is Iterable ? List<String>.from(stylesDynamic) : const <String>[],
       experienceYears: (data['experienceYears'] as num?)?.toInt() ?? 0,
       photoUrl: data['photoUrl'] as String?,
+      province: data['province'] as String?,
+      profileType: data['profileType'] as String?,
+      gender: data['gender'] as String?,
     );
   }
 
@@ -37,6 +43,9 @@ class MusicianDto {
   final List<String> styles;
   final int experienceYears;
   final String? photoUrl;
+  final String? province;
+  final String? profileType;
+  final String? gender;
 
   MusicianEntity toEntity() {
     return MusicianEntity(
@@ -48,6 +57,9 @@ class MusicianDto {
       styles: styles,
       experienceYears: experienceYears,
       photoUrl: photoUrl,
+      province: province,
+      profileType: profileType,
+      gender: gender,
     );
   }
 }
