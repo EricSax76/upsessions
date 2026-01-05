@@ -6,7 +6,7 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../auth/cubits/auth_cubit.dart';
 import '../../../auth/data/auth_repository.dart';
-import '../../../../features/notifications/data/invite_notifications_repository.dart';
+import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
 import '../../repositories/groups_repository.dart';
 
 class InviteAcceptPage extends StatefulWidget {

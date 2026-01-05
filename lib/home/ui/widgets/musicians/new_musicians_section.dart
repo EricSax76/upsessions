@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../models/musician_card_model.dart';
-import '../../../../features/contacts/domain/liked_musician.dart';
-import '../../../../features/contacts/presentation/widgets/musician_like_button.dart';
+import '../../../../features/contacts/models/liked_musician.dart';
+import '../../../../features/contacts/ui/widgets/musician_like_button.dart';
 
 class NewMusiciansSection extends StatelessWidget {
   const NewMusiciansSection({super.key, required this.musicians});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/media_item.dart';
+import '../../models/media_item.dart';
 
 class AudioPlayerWidget extends StatefulWidget {
   const AudioPlayerWidget({super.key, required this.item});
@@ -22,14 +22,19 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(widget.item.title, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              widget.item.title,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 12),
             IconButton(
               iconSize: 40,
               icon: Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
               onPressed: () => setState(() => _isPlaying = !_isPlaying),
             ),
-            Text('Duración ${widget.item.duration.inMinutes}:${(widget.item.duration.inSeconds % 60).toString().padLeft(2, '0')}'),
+            Text(
+              'Duración ${widget.item.duration.inMinutes}:${(widget.item.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+            ),
           ],
         ),
       ),

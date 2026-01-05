@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/media_item.dart';
+import '../../models/media_item.dart';
 
 class VideoPlayerWidget extends StatelessWidget {
   const VideoPlayerWidget({super.key, required this.item});
@@ -16,7 +16,9 @@ class VideoPlayerWidget extends StatelessWidget {
           const Icon(Icons.play_circle_outline, size: 48),
           const SizedBox(height: 12),
           Text(item.title, style: Theme.of(context).textTheme.titleMedium),
-          Text('Duración ${item.duration.inMinutes}:${(item.duration.inSeconds % 60).toString().padLeft(2, '0')}'),
+          Text(
+            'Duración ${item.duration.inMinutes}:${(item.duration.inSeconds % 60).toString().padLeft(2, '0')}',
+          ),
         ],
       ),
     );

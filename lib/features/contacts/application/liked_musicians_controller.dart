@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 
 import '../../../modules/auth/data/auth_repository.dart';
 import '../../../modules/auth/domain/user_entity.dart';
-import '../data/contacts_repository.dart';
-import '../domain/liked_musician.dart';
+import '../repositories/contacts_repository.dart';
+import '../models/liked_musician.dart';
 
 class LikedMusiciansController extends ChangeNotifier {
   LikedMusiciansController({

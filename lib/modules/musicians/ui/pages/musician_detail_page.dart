@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
-import 'package:upsessions/features/contacts/presentation/widgets/musician_like_button.dart';
+import 'package:upsessions/features/contacts/ui/widgets/musician_like_button.dart';
 import 'package:upsessions/features/messaging/presentation/pages/messages_page.dart';
 
 import '../../models/musician_entity.dart';

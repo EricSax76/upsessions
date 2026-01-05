@@ -6,8 +6,8 @@ import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/features/messaging/data/chat_repository.dart';
 import 'package:upsessions/features/messaging/domain/chat_thread.dart';
-import 'package:upsessions/features/notifications/data/invite_notifications_repository.dart';
-import 'package:upsessions/features/notifications/domain/invite_notification_entity.dart';
+import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
+import 'package:upsessions/features/notifications/models/invite_notification_entity.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 
 class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -112,8 +112,9 @@ class _NotificationsButton extends StatelessWidget {
               0,
               (total, thread) => total + thread.unreadCount,
             );
-            final unreadInvites =
-                invites.where((invite) => !invite.read).length;
+            final unreadInvites = invites
+                .where((invite) => !invite.read)
+                .length;
             final unreadTotal = unreadMessages + unreadInvites;
 
             return IconButton(
@@ -153,10 +154,7 @@ class _NotificationBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.error,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: theme.colorScheme.surface,
-          width: 1.5,
-        ),
+        border: Border.all(color: theme.colorScheme.surface, width: 1.5),
       ),
       alignment: Alignment.center,
       child: Text(

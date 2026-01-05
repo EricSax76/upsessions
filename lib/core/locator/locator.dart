@@ -7,18 +7,18 @@ import 'package:upsessions/core/services/push_notifications_service.dart';
 import 'package:upsessions/modules/announcements/data/announcements_repository.dart';
 import 'package:upsessions/modules/auth/data/auth_repository.dart';
 import 'package:upsessions/modules/auth/data/profile_repository.dart';
-import 'package:upsessions/features/media/data/repositories/media_repository.dart';
+import 'package:upsessions/features/media/repositories/media_repository.dart';
 import 'package:upsessions/features/messaging/data/chat_repository.dart';
 import 'package:upsessions/modules/events/repositories/events_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/home/repositories/user_home_repository.dart';
 import 'package:upsessions/features/contacts/application/liked_musicians_controller.dart';
-import 'package:upsessions/features/contacts/data/contacts_repository.dart';
+import 'package:upsessions/features/contacts/repositories/contacts_repository.dart';
 import 'package:upsessions/modules/rehearsals/models/create_rehearsal_use_case.dart';
 import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
-import 'package:upsessions/features/notifications/data/invite_notifications_repository.dart';
+import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
 
 final GetIt getIt = GetIt.instance;
 

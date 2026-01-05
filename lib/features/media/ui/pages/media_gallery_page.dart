@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:upsessions/core/locator/locator.dart';
-import '../../data/repositories/media_repository.dart';
-import '../../domain/media_item.dart';
+import '../../repositories/media_repository.dart';
+import '../../models/media_item.dart';
 import '../widgets/media_grid.dart';
 
 class MediaGalleryPage extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/media_item.dart';
+import '../../models/media_item.dart';
 import 'audio_player_widget.dart';
 import 'video_player_widget.dart';
 
@@ -16,7 +16,10 @@ class MediaGrid extends StatelessWidget {
     }
     return GridView.builder(
       padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1.2),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1.2,
+      ),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
@@ -26,9 +29,7 @@ class MediaGrid extends StatelessWidget {
           case MediaType.video:
             return VideoPlayerWidget(item: item);
           case MediaType.image:
-            return Card(
-              child: Center(child: Text(item.title)),
-            );
+            return Card(child: Center(child: Text(item.title)));
         }
       },
     );

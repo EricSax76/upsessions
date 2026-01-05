@@ -7,18 +7,18 @@ import '../modules/announcements/presentation/pages/announcement_detail_page.dar
 import '../modules/announcements/presentation/pages/announcement_form_page.dart';
 import '../modules/announcements/presentation/pages/announcements_hub_page.dart';
 import '../features/media/ui/pages/media_gallery_page.dart';
-import '../features/calendar/presentation/pages/calendar_page.dart';
+import '../features/calendar/ui/pages/calendar_page.dart';
 import '../modules/events/models/event_entity.dart';
 import '../modules/events/ui/pages/event_detail_page.dart';
 import '../modules/events/ui/pages/events_page.dart';
 import '../features/messaging/presentation/pages/messages_page.dart';
-import '../features/onboarding/presentation/pages/app_welcome_page.dart';
-import '../features/onboarding/presentation/pages/musician_onboarding_page.dart';
-import '../features/onboarding/presentation/pages/onboarding_story_pages.dart';
-import '../features/notifications/presentation/pages/notifications_page.dart';
-import '../features/settings/presentation/pages/help_page.dart';
-import '../features/settings/presentation/pages/settings_page.dart';
-import '../features/splash/presentation/splash_page.dart';
+import '../features/onboarding/ui/pages/app_welcome_page.dart';
+import '../features/onboarding/ui/pages/musician_onboarding_page.dart';
+import '../features/onboarding/ui/pages/onboarding_story_pages.dart';
+import '../features/notifications/ui/pages/notifications_page.dart';
+import '../features/settin/ui/pages/help_page.dart';
+import '../features/settin/ui/pages/settings_page.dart';
+import '../home/splash/presentation/splash_page.dart';
 import '../modules/rehearsals/ui/pages/group_rehearsals_page.dart';
 import '../modules/rehearsals/ui/pages/group_page.dart';
 import '../modules/rehearsals/ui/pages/invite_accept_page.dart';
@@ -36,7 +36,7 @@ import '../modules/profile/ui/pages/account_page.dart';
 import '../modules/profile/ui/pages/profile_edit_page.dart';
 import '../modules/profile/ui/pages/profile_overview_page.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import '../features/contacts/presentation/pages/contacts_page.dart';
+import '../features/contacts/ui/pages/contacts_page.dart';
 
 class AppRouter {
   AppRouter() {
