@@ -1,5 +1,6 @@
 # OS / tool artifacts
 .DS_Store
+.home/
 
 # Environment / secrets
 .env

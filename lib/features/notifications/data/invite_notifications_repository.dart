@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../modules/rehearsals/data/rehearsals_repository_base.dart';
+import '../../../modules/rehearsals/repositories/rehearsals_repository_base.dart';
 import '../domain/invite_notification_entity.dart';
 
 class InviteNotificationsRepository extends RehearsalsRepositoryBase {

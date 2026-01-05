@@ -7,7 +7,7 @@ import 'package:upsessions/features/messaging/data/chat_repository.dart';
 import 'package:upsessions/features/messaging/presentation/pages/messages_page.dart';
 import 'package:upsessions/features/contacts/domain/liked_musician.dart';
 import 'package:upsessions/features/contacts/presentation/widgets/musician_like_button.dart';
-import 'package:upsessions/modules/rehearsals/data/groups_repository.dart';
+import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dart';
 import 'package:upsessions/modules/rehearsals/domain/group_membership_entity.dart';
 
 import '../../domain/musician_entity.dart';

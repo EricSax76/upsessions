@@ -14,10 +14,10 @@ import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
 import 'package:upsessions/home/data/repositories/user_home_repository.dart';
 import 'package:upsessions/features/contacts/application/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/data/contacts_repository.dart';
-import 'package:upsessions/modules/rehearsals/application/create_rehearsal_use_case.dart';
-import 'package:upsessions/modules/rehearsals/data/groups_repository.dart';
-import 'package:upsessions/modules/rehearsals/data/rehearsals_repository.dart';
-import 'package:upsessions/modules/rehearsals/data/setlist_repository.dart';
+import 'package:upsessions/modules/rehearsals/models/create_rehearsal_use_case.dart';
+import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dart';
+import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
+import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
 import 'package:upsessions/features/notifications/data/invite_notifications_repository.dart';
 
 final GetIt getIt = GetIt.instance;

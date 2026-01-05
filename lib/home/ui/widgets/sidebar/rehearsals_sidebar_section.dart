@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
-import '../../../../modules/rehearsals/data/groups_repository.dart';
+import '../../../../modules/rehearsals/repositories/groups_repository.dart';
 
 class RehearsalsSidebarSection extends StatelessWidget {
   const RehearsalsSidebarSection({super.key});
