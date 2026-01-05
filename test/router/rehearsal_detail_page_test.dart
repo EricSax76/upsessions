@@ -7,7 +7,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/features/contacts/application/liked_musicians_controller.dart';
+import 'package:upsessions/features/contacts/controllers/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/models/liked_musician.dart';
 import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dart';
 import 'package:upsessions/modules/rehearsals/ui/pages/rehearsal_detail_page.dart';

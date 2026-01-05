@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
-import '../../../../features/contacts/application/liked_musicians_controller.dart';
+import '../../../../features/contacts/controllers/liked_musicians_controller.dart';
 
 class UserMenuList extends StatefulWidget {
   const UserMenuList({super.key});

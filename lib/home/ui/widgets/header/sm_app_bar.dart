@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/features/messaging/data/chat_repository.dart';
-import 'package:upsessions/features/messaging/domain/chat_thread.dart';
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/features/notifications/models/invite_notification_entity.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
@@ -95,30 +94,52 @@ class _NotificationsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chatRepository = locate<ChatRepository>();
-    final invitesRepository = locate<InviteNotificationsRepository>();
+    return _NotificationsButtonBody(onPressed: onPressed);
+  }
+}
 
-    return StreamBuilder<List<ChatThread>>(
-      stream: chatRepository.watchThreads(),
-      builder: (context, threadsSnapshot) {
+class _NotificationsButtonBody extends StatefulWidget {
+  const _NotificationsButtonBody({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  State<_NotificationsButtonBody> createState() =>
+      _NotificationsButtonBodyState();
+}
+
+class _NotificationsButtonBodyState extends State<_NotificationsButtonBody> {
+  late final ChatRepository _chatRepository;
+  late final InviteNotificationsRepository _invitesRepository;
+  late final Stream<int> _unreadChatsStream;
+  late final Stream<List<InviteNotificationEntity>> _invitesStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _chatRepository = locate<ChatRepository>();
+    _invitesRepository = locate<InviteNotificationsRepository>();
+    _unreadChatsStream = _chatRepository.watchUnreadTotal();
+    _invitesStream = _invitesRepository.watchMyInvites();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<int>(
+      stream: _unreadChatsStream,
+      builder: (context, unreadChatsSnapshot) {
         return StreamBuilder<List<InviteNotificationEntity>>(
-          stream: invitesRepository.watchMyInvites(),
+          stream: _invitesStream,
           builder: (context, invitesSnapshot) {
-            final threads = threadsSnapshot.data ?? const <ChatThread>[];
             final invites =
                 invitesSnapshot.data ?? const <InviteNotificationEntity>[];
 
-            final unreadMessages = threads.fold<int>(
-              0,
-              (total, thread) => total + thread.unreadCount,
-            );
-            final unreadInvites = invites
-                .where((invite) => !invite.read)
-                .length;
+            final unreadMessages = unreadChatsSnapshot.data ?? 0;
+            final unreadInvites = invites.where((invite) => !invite.read).length;
             final unreadTotal = unreadMessages + unreadInvites;
 
             return IconButton(
-              onPressed: onPressed,
+              onPressed: widget.onPressed,
               icon: Stack(
                 clipBehavior: Clip.none,
                 children: [

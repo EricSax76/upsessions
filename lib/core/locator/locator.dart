@@ -12,7 +12,7 @@ import 'package:upsessions/features/messaging/data/chat_repository.dart';
 import 'package:upsessions/modules/events/repositories/events_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/home/repositories/user_home_repository.dart';
-import 'package:upsessions/features/contacts/application/liked_musicians_controller.dart';
+import 'package:upsessions/features/contacts/controllers/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/repositories/contacts_repository.dart';
 import 'package:upsessions/modules/rehearsals/models/create_rehearsal_use_case.dart';
 import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dart';
@@ -21,6 +21,7 @@ import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.da
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
 
 final GetIt getIt = GetIt.instance;
+final Set<String> _loggedLocateTypes = <String>{};
 
 Future<void> setupServiceLocator() async {
   if (getIt.isRegistered<FirebaseInitializer>()) {
@@ -46,7 +47,12 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<ProfileRepository>(
       () => ProfileRepository(authRepository: getIt<AuthRepository>()),
     )
-    ..registerLazySingleton<ChatRepository>(() => ChatRepository())
+    ..registerLazySingleton<ChatRepository>(
+      () => ChatRepository(
+        authRepository: getIt<AuthRepository>(),
+        cloudFunctionsService: getIt<CloudFunctionsService>(),
+      ),
+    )
     ..registerLazySingleton<MediaRepository>(() => MediaRepository())
     ..registerLazySingleton<EventsRepository>(
       () => EventsRepository(authRepository: getIt<AuthRepository>()),
@@ -81,7 +87,10 @@ Future<void> setupServiceLocator() async {
 T locate<T extends Object>() {
   final instance = getIt<T>();
   assert(() {
-    debugPrintSynchronously('Locator -> ${T.toString()}');
+    final typeName = T.toString();
+    if (_loggedLocateTypes.add(typeName)) {
+      debugPrintSynchronously('Locator -> $typeName');
+    }
     return true;
   }());
   return instance;
