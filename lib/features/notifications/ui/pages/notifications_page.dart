@@ -3,9 +3,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
-import '../../../messaging/data/chat_repository.dart';
-import '../../../messaging/domain/chat_thread.dart';
-import '../../../messaging/presentation/pages/messages_page.dart';
+import '../../../messaging/repositories/chat_repository.dart';
+import '../../../messaging/models/chat_thread.dart';
+import '../../../messaging/ui/pages/messages_page.dart';
 import '../../../../modules/auth/data/auth_repository.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
 import '../../repositories/invite_notifications_repository.dart';

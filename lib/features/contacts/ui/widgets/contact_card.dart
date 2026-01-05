@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
-import '../../../messaging/presentation/pages/messages_page.dart';
+import '../../../messaging/ui/pages/messages_page.dart';
 import '../../controllers/contact_card_controller.dart';
 import '../../models/liked_musician.dart';
 import 'musician_like_button.dart';

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/features/messaging/data/chat_repository.dart';
-import 'package:upsessions/features/messaging/presentation/pages/messages_page.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/ui/pages/messages_page.dart';
 
 import '../../domain/announcement_entity.dart';
 

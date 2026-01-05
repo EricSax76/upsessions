@@ -4,6 +4,16 @@ import '../cubits/rehearsal_entity.dart';
 import 'rehearsals_repository_base.dart';
 
 class RehearsalsRepository extends RehearsalsRepositoryBase {
+  Future<List<RehearsalEntity>> getRehearsals(String groupId) async {
+    await requireMusicianUid();
+    logFirestore('getRehearsals groupId=$groupId');
+    final snapshot = await logFuture(
+      'getRehearsals get',
+      rehearsals(groupId).orderBy('startsAt', descending: false).get(),
+    );
+    return snapshot.docs.map(_mapRehearsal).toList();
+  }
+
   Stream<List<RehearsalEntity>> watchRehearsals(String groupId) async* {
     await requireMusicianUid();
     logFirestore('watchRehearsals groupId=$groupId');

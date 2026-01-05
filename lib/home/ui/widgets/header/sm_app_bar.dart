@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/features/messaging/data/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/features/notifications/models/invite_notification_entity.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
@@ -135,7 +135,9 @@ class _NotificationsButtonBodyState extends State<_NotificationsButtonBody> {
                 invitesSnapshot.data ?? const <InviteNotificationEntity>[];
 
             final unreadMessages = unreadChatsSnapshot.data ?? 0;
-            final unreadInvites = invites.where((invite) => !invite.read).length;
+            final unreadInvites = invites
+                .where((invite) => !invite.read)
+                .length;
             final unreadTotal = unreadMessages + unreadInvites;
 
             return IconButton(

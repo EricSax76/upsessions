@@ -1,5 +1,5 @@
 import '../../../core/locator/locator.dart';
-import '../../messaging/data/chat_repository.dart';
+import '../../messaging/repositories/chat_repository.dart';
 import '../../../modules/musicians/models/musician_entity.dart';
 import '../models/liked_musician.dart';
 

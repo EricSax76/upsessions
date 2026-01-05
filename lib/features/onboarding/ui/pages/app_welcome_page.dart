@@ -22,7 +22,7 @@ class AppWelcomePage extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [_wineRed, Color(0xFF24040A)],
+              colors: [Color.fromARGB(255, 23, 113, 151), Color(0xFF24040A)],
             ),
           ),
           child: SafeArea(

@@ -11,7 +11,7 @@ import '../features/calendar/ui/pages/calendar_page.dart';
 import '../modules/events/models/event_entity.dart';
 import '../modules/events/ui/pages/event_detail_page.dart';
 import '../modules/events/ui/pages/events_page.dart';
-import '../features/messaging/presentation/pages/messages_page.dart';
+import '../features/messaging/ui/pages/messages_page.dart';
 import '../features/onboarding/ui/pages/app_welcome_page.dart';
 import '../features/onboarding/ui/pages/musician_onboarding_page.dart';
 import '../features/onboarding/ui/pages/onboarding_story_pages.dart';

@@ -27,6 +27,105 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     return logStream('watchSetlist snapshots', stream);
   }
 
+  Future<List<SetlistItemEntity>> getSetlistOnce({
+    required String groupId,
+    required String rehearsalId,
+  }) async {
+    requireUid();
+    logFirestore('getSetlistOnce groupId=$groupId rehearsalId=$rehearsalId');
+    final snapshot = await logFuture(
+      'getSetlistOnce get',
+      setlist(groupId, rehearsalId).orderBy('order', descending: false).get(),
+    );
+    return snapshot.docs.map(_mapSetlistItem).toList();
+  }
+
+  Future<void> setSetlistOrders({
+    required String groupId,
+    required String rehearsalId,
+    required List<String> itemIdsInOrder,
+  }) async {
+    requireUid();
+    logFirestore(
+      'setSetlistOrders groupId=$groupId rehearsalId=$rehearsalId count=${itemIdsInOrder.length}',
+    );
+    final batch = firestore.batch();
+    for (var i = 0; i < itemIdsInOrder.length; i++) {
+      batch.set(
+        setlist(groupId, rehearsalId).doc(itemIdsInOrder[i]),
+        {'order': i},
+        SetOptions(merge: true),
+      );
+    }
+    await logFuture('setSetlistOrders commit', batch.commit());
+  }
+
+  Future<void> clearSetlist({
+    required String groupId,
+    required String rehearsalId,
+  }) async {
+    requireUid();
+    logFirestore('clearSetlist groupId=$groupId rehearsalId=$rehearsalId');
+    final snapshot = await logFuture(
+      'clearSetlist get',
+      setlist(groupId, rehearsalId).get(),
+    );
+    if (snapshot.docs.isEmpty) return;
+    final batch = firestore.batch();
+    for (final doc in snapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    await logFuture('clearSetlist commit', batch.commit());
+  }
+
+  Future<void> copySetlist({
+    required String groupId,
+    required String fromRehearsalId,
+    required String toRehearsalId,
+    bool replaceExisting = true,
+  }) async {
+    requireUid();
+    logFirestore(
+      'copySetlist groupId=$groupId from=$fromRehearsalId to=$toRehearsalId replaceExisting=$replaceExisting',
+    );
+
+    final source = await getSetlistOnce(
+      groupId: groupId,
+      rehearsalId: fromRehearsalId,
+    );
+    if (source.isEmpty) return;
+
+    var orderOffset = 0;
+    if (replaceExisting) {
+      await clearSetlist(groupId: groupId, rehearsalId: toRehearsalId);
+    } else {
+      final existing = await getSetlistOnce(
+        groupId: groupId,
+        rehearsalId: toRehearsalId,
+      );
+      final maxOrder = existing.isEmpty
+          ? -1
+          : existing.map((e) => e.order).reduce((a, b) => a > b ? a : b);
+      orderOffset = maxOrder + 1;
+    }
+
+    final batch = firestore.batch();
+    for (final item in source) {
+      final doc = setlist(groupId, toRehearsalId).doc();
+      batch.set(doc, {
+        'order': item.order + orderOffset,
+        'songId': item.songId,
+        'songTitle': item.songTitle,
+        'key': item.keySignature,
+        'tempoBpm': item.tempoBpm,
+        'notes': item.notes,
+        'linkUrl': item.linkUrl,
+        // Intencional: no copiamos `sheetUrl/sheetPath` porque dependen del itemId en Storage.
+      });
+    }
+    await logFuture('copySetlist commit', batch.commit());
+  }
+
   Future<String> addSetlistItem({
     required String groupId,
     required String rehearsalId,

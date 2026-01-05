@@ -1,5 +1,5 @@
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/features/messaging/data/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dart';
 
 import 'musician_entity.dart';

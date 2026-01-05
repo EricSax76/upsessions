@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../cubits/rehearsal_entity.dart';
-import 'rehearsal_helpers.dart';
+import '../../controllers/rehearsal_helpers.dart';
 
 class SummaryCard extends StatelessWidget {
   const SummaryCard({
