@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:upsessions/core/locator/locator.dart';
-import '../data/models/announcement_model.dart';
-import '../data/models/instrument_category_model.dart';
-import '../data/models/musician_card_model.dart';
-import '../data/models/home_event_model.dart';
-import '../data/repositories/user_home_repository.dart';
+import '../models/announcement_model.dart';
+import '../models/instrument_category_model.dart';
+import '../models/musician_card_model.dart';
+import '../models/home_event_model.dart';
+import '../repositories/user_home_repository.dart';
 
 class UserHomeController extends ChangeNotifier {
   UserHomeController({UserHomeRepository? repository})

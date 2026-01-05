@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 import '../../core/services/firebase_initializer.dart';
 import 'package:upsessions/modules/auth/data/auth_repository.dart';
 import 'package:upsessions/modules/auth/domain/user_entity.dart';
-import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 
 part 'bootstrap_state.dart';
 

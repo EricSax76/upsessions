@@ -4,8 +4,8 @@ import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.da
 
 import '../../../../core/locator/locator.dart';
 import '../../../../core/widgets/loading_indicator.dart';
-import '../../domain/rehearsal_entity.dart';
-import '../../domain/setlist_item_entity.dart';
+import '../../cubits/rehearsal_entity.dart';
+import '../../cubits/setlist_item_entity.dart';
 import 'rehearsal_detail_widgets.dart';
 import 'setlist_actions.dart';
 

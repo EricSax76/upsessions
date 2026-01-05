@@ -13,9 +13,9 @@ import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dar
 import 'package:upsessions/modules/rehearsals/ui/pages/rehearsal_detail_page.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
-import 'package:upsessions/modules/rehearsals/domain/rehearsal_entity.dart';
-import 'package:upsessions/modules/rehearsals/domain/group_membership_entity.dart';
-import 'package:upsessions/modules/rehearsals/domain/setlist_item_entity.dart';
+import 'package:upsessions/modules/rehearsals/cubits/rehearsal_entity.dart';
+import 'package:upsessions/modules/rehearsals/cubits/group_membership_entity.dart';
+import 'package:upsessions/modules/rehearsals/cubits/setlist_item_entity.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import 'package:upsessions/modules/auth/domain/user_entity.dart';
 

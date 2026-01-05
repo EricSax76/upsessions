@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
-import '../../../../modules/musicians/domain/musician_entity.dart';
+import '../../../../modules/musicians/models/musician_entity.dart';
 import '../../../messaging/data/chat_repository.dart';
 import '../../../messaging/presentation/pages/messages_page.dart';
 import '../../application/liked_musicians_controller.dart';

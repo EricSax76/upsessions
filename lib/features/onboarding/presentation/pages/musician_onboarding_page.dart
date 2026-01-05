@@ -4,7 +4,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import 'package:upsessions/modules/auth/data/auth_repository.dart';
-import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
+import '../controllers/musician_onboarding_controller.dart';
+import '../widgets/musician_onboarding_missing_session_view.dart';
+import '../widgets/steps/musician_basic_info_step.dart';
+import '../widgets/steps/musician_experience_step.dart';
+import '../widgets/steps/musician_extras_step.dart';
 
 class MusicianOnboardingPage extends StatefulWidget {
   const MusicianOnboardingPage({super.key});
@@ -14,30 +19,17 @@ class MusicianOnboardingPage extends StatefulWidget {
 }
 
 class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
-  final _basicInfoKey = GlobalKey<FormState>();
-  final _experienceKey = GlobalKey<FormState>();
-  final _extrasKey = GlobalKey<FormState>();
+  late final MusicianOnboardingController _controller;
 
-  final _nameController = TextEditingController();
-  final _instrumentController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _stylesController = TextEditingController();
-  final _yearsController = TextEditingController(text: '0');
-  final _photoUrlController = TextEditingController();
-  final _bioController = TextEditingController();
-
-  int _currentStep = 0;
-  bool _isSaving = false;
+  @override
+  void initState() {
+    super.initState();
+    _controller = MusicianOnboardingController();
+  }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _instrumentController.dispose();
-    _cityController.dispose();
-    _stylesController.dispose();
-    _yearsController.dispose();
-    _photoUrlController.dispose();
-    _bioController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -47,243 +39,95 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
     final user = authRepository.currentUser;
 
     if (user == null) {
-      return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.error_outline,
-                size: 48,
-                color: Colors.redAccent,
-              ),
-              const SizedBox(height: 12),
-              const Text('No pudimos encontrar tu sesión.'),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () => context.go(AppRoutes.login),
-                child: const Text('Volver a iniciar sesión'),
-              ),
-            ],
-          ),
-        ),
-      );
+      return const MusicianOnboardingMissingSessionView();
     }
 
-    final steps = _buildSteps();
-    final progress = (_currentStep + 1) / steps.length;
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        final steps = _buildSteps();
+        final progress = (_controller.currentStep + 1) / steps.length;
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('Cuéntanos sobre ti y tu pasión por la música'),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              LinearProgressIndicator(value: progress),
-              const SizedBox(height: 16),
-              Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  child: steps[_currentStep],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
+        return Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: const Text('Cuéntanos sobre ti y tu pasión por la música'),
+          ),
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (_currentStep > 0)
-                    OutlinedButton(
-                      onPressed: _isSaving
-                          ? null
-                          : () => setState(() => _currentStep -= 1),
-                      child: const Text('Atrás'),
-                    ),
-                  if (_currentStep > 0) const SizedBox(width: 12),
+                  LinearProgressIndicator(value: progress),
+                  const SizedBox(height: 16),
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: _isSaving
-                          ? null
-                          : () {
-                              if (_validateCurrentStep()) {
-                                if (_currentStep == steps.length - 1) {
-                                  _submit(user.id);
-                                } else {
-                                  setState(() => _currentStep += 1);
-                                }
-                              }
-                            },
-                      child: Text(
-                        _currentStep == steps.length - 1
-                            ? 'Finalizar'
-                            : 'Continuar',
-                      ),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      child: steps[_controller.currentStep],
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      if (_controller.currentStep > 0)
+                        OutlinedButton(
+                          onPressed: _controller.isSaving
+                              ? null
+                              : _controller.previousStep,
+                          child: const Text('Atrás'),
+                        ),
+                      if (_controller.currentStep > 0)
+                        const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _controller.isSaving
+                              ? null
+                              : () => _handleContinue(steps.length, user.id),
+                          child: Text(
+                            _controller.currentStep == steps.length - 1
+                                ? 'Finalizar'
+                                : 'Continuar',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_controller.isSaving) ...[
+                    const SizedBox(height: 12),
+                    const Center(child: CircularProgressIndicator()),
+                  ],
                 ],
               ),
-              if (_isSaving) ...[
-                const SizedBox(height: 12),
-                const Center(child: CircularProgressIndicator()),
-              ],
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   List<Widget> _buildSteps() {
     return [
-      Form(
-        key: _basicInfoKey,
-        child: _StepCard(
-          title: 'Tu identidad musical',
-          description:
-              'Comparte tu nombre artístico y el/los instrumento/S que tocas.',
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre artístico',
-                ),
-                validator: (value) => (value == null || value.trim().isEmpty)
-                    ? 'Ingresa tu nombre'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _instrumentController,
-                decoration: const InputDecoration(
-                  labelText: 'Instrumento principal',
-                ),
-                validator: (value) => (value == null || value.trim().isEmpty)
-                    ? 'Indica tu instrumento'
-                    : null,
-              ),
-            ],
-          ),
-        ),
-      ),
-      Form(
-        key: _experienceKey,
-        child: _StepCard(
-          title: 'Tu trayectoria musical',
-          description:
-              '¿Qué estilos te definen? Usa comas para separar varios estilos.',
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _cityController,
-                decoration: const InputDecoration(labelText: 'Ciudad'),
-                validator: (value) => (value == null || value.trim().isEmpty)
-                    ? 'Ingresa tu ciudad'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _stylesController,
-                decoration: const InputDecoration(
-                  labelText: 'Estilos (ej: Rock, Blues)',
-                ),
-                validator: (value) => (value == null || value.trim().isEmpty)
-                    ? 'Al menos un estilo'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _yearsController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Años de experiencia',
-                ),
-                validator: (value) {
-                  final parsed = int.tryParse(value ?? '');
-                  if (parsed == null || parsed < 0) {
-                    return 'Ingresa un número válido';
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      Form(
-        key: _extrasKey,
-        child: _StepCard(
-          title: 'Tu sello personal',
-          description:
-              'Añade una foto o breve descripción para destacar en la comunidad.',
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _photoUrlController,
-                decoration: const InputDecoration(
-                  labelText: 'URL de tu foto (opcional)',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _bioController,
-                minLines: 3,
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: 'Breve bio (opcional)',
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      MusicianBasicInfoStep(controller: _controller),
+      MusicianExperienceStep(controller: _controller),
+      MusicianExtrasStep(controller: _controller),
     ];
   }
 
-  bool _validateCurrentStep() {
-    switch (_currentStep) {
-      case 0:
-        return _basicInfoKey.currentState?.validate() ?? false;
-      case 1:
-        return _experienceKey.currentState?.validate() ?? false;
-      case 2:
-        return _extrasKey.currentState?.validate() ?? true;
-      default:
-        return true;
-    }
-  }
-
-  Future<void> _submit(String musicianId) async {
-    if (!(_extrasKey.currentState?.validate() ?? true)) {
+  Future<void> _handleContinue(int totalSteps, String musicianId) async {
+    if (!_controller.validateCurrentStep()) {
       return;
     }
-    setState(() => _isSaving = true);
+
+    if (_controller.currentStep < totalSteps - 1) {
+      _controller.nextStep();
+      return;
+    }
+
     final repository = context.read<MusiciansRepository>();
-    final styles = _stylesController.text
-        .split(',')
-        .map((style) => style.trim())
-        .where((style) => style.isNotEmpty)
-        .toList();
-    final experience = int.tryParse(_yearsController.text) ?? 0;
 
     try {
-      await repository.saveProfile(
-        musicianId: musicianId,
-        name: _nameController.text.trim(),
-        instrument: _instrumentController.text.trim(),
-        city: _cityController.text.trim(),
-        styles: styles,
-        experienceYears: experience,
-        photoUrl: _photoUrlController.text.trim().isEmpty
-            ? null
-            : _photoUrlController.text.trim(),
-        bio: _bioController.text.trim().isEmpty
-            ? null
-            : _bioController.text.trim(),
-      );
+      await _controller.submit(repository: repository, musicianId: musicianId);
       if (!mounted) return;
       context.go(AppRoutes.userHome);
     } catch (error) {
@@ -291,43 +135,6 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('No pudimos guardar tu perfil: $error')),
       );
-    } finally {
-      if (mounted) {
-        setState(() => _isSaving = false);
-      }
     }
-  }
-}
-
-class _StepCard extends StatelessWidget {
-  const _StepCard({
-    required this.title,
-    required this.description,
-    required this.child,
-  });
-
-  final String title;
-  final String description;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      key: ValueKey(title),
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            Text(description, style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: 24),
-            child,
-          ],
-        ),
-      ),
-    );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../data/models/announcement_model.dart';
+import '../../../models/announcement_model.dart';
 
 class NewAnnouncementsSection extends StatelessWidget {
   const NewAnnouncementsSection({

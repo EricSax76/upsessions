@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../domain/rehearsal_entity.dart';
-import '../../domain/setlist_item_entity.dart';
+import '../../cubits/rehearsal_entity.dart';
+import '../../cubits/setlist_item_entity.dart';
 
 class RehearsalInfoCard extends StatelessWidget {
   const RehearsalInfoCard({super.key, required this.rehearsal});
@@ -33,10 +33,7 @@ class RehearsalInfoCard extends StatelessWidget {
             ],
             const SizedBox(height: 12),
             if (rehearsal.location.trim().isNotEmpty) ...[
-              InfoRow(
-                icon: Icons.place_outlined,
-                text: rehearsal.location,
-              ),
+              InfoRow(icon: Icons.place_outlined, text: rehearsal.location),
               const SizedBox(height: 8),
             ],
             if (rehearsal.notes.trim().isNotEmpty)
@@ -44,8 +41,7 @@ class RehearsalInfoCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color:
-                      Theme.of(context).colorScheme.surfaceContainerHighest,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Column(
@@ -105,9 +101,7 @@ class SetlistHeader extends StatelessWidget {
         final title = Text('Setlist', style: theme.textTheme.titleLarge);
 
         if (!hasAction) {
-          return Row(
-            children: [title, const Spacer(), countLabel],
-          );
+          return Row(children: [title, const Spacer(), countLabel]);
         }
 
         final addButton = FilledButton.icon(
@@ -178,8 +172,7 @@ class SetlistItemCard extends StatelessWidget {
                 width: 32,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color:
-                      Theme.of(context).colorScheme.surfaceContainerHighest,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -199,7 +192,8 @@ class SetlistItemCard extends StatelessWidget {
                     if (subtitle != null) ...[
                       const SizedBox(height: 4),
                       DefaultTextStyle(
-                        style: Theme.of(context).textTheme.bodySmall ??
+                        style:
+                            Theme.of(context).textTheme.bodySmall ??
                             const TextStyle(),
                         child: subtitle!,
                       ),
@@ -449,7 +443,9 @@ class _SheetPickerRow extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: onPick,
             icon: const Icon(Icons.upload_file_outlined),
-            label: Text(hasSelection ? 'Partitura seleccionada' : 'Subir partitura'),
+            label: Text(
+              hasSelection ? 'Partitura seleccionada' : 'Subir partitura',
+            ),
           ),
         ),
         if (hasSelection) ...[

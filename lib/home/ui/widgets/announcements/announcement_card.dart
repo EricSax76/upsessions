@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:upsessions/home/data/models/announcement_model.dart';
+import 'package:upsessions/home/models/announcement_model.dart';
 
 class AnnouncementCard extends StatelessWidget {
   const AnnouncementCard({super.key, required this.announcement});

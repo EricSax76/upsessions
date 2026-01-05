@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../data/models/home_event_model.dart';
+import '../../../models/home_event_model.dart';
 
 class UpcomingEventsSection extends StatelessWidget {
   const UpcomingEventsSection({super.key, required this.events});
@@ -36,10 +36,7 @@ class UpcomingEventsSection extends StatelessWidget {
               final event = events[index];
               return SizedBox(
                 width: cardWidth,
-                child: _EventCard(
-                  event: event,
-                  isCompact: isCompact,
-                ),
+                child: _EventCard(event: event, isCompact: isCompact),
               );
             },
           ),

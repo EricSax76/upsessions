@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../data/models/musician_card_model.dart';
+import '../../../models/musician_card_model.dart';
 import '../../../../features/contacts/domain/liked_musician.dart';
 import '../../../../features/contacts/presentation/widgets/musician_like_button.dart';
 

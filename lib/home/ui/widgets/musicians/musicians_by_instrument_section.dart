@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../data/models/instrument_category_model.dart';
-import '../../../data/models/musician_card_model.dart';
+import '../../../models/instrument_category_model.dart';
+import '../../../models/musician_card_model.dart';
 import 'musicians_grid.dart';
 
 class MusiciansByInstrumentSection extends StatefulWidget {

@@ -1,11 +1,11 @@
 import '../../../../core/locator/locator.dart';
 import '../../../auth/data/auth_repository.dart';
-import '../../../musicians/data/musicians_repository.dart';
-import '../../../musicians/domain/musician_entity.dart';
+import '../../../musicians/repositories/musicians_repository.dart';
+import '../../../musicians/models/musician_entity.dart';
 import '../../models/create_rehearsal_use_case.dart';
 import '../../repositories/groups_repository.dart';
 import '../../repositories/rehearsals_repository.dart';
-import '../../domain/rehearsal_entity.dart';
+import '../../cubits/rehearsal_entity.dart';
 
 class GroupRehearsalsController {
   GroupRehearsalsController({

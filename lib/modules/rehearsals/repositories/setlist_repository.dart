@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 
-import '../domain/setlist_item_entity.dart';
+import '../cubits/setlist_item_entity.dart';
 import 'rehearsals_repository_base.dart';
 
 class SetlistRepository extends RehearsalsRepositoryBase {
@@ -70,15 +70,16 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     final ref = _storage.ref().child(sheetPath);
     final metadata = SettableMetadata(contentType: 'image/$ext');
     await logFuture('uploadSetlistSheet putData', ref.putData(bytes, metadata));
-    final url = await logFuture('uploadSetlistSheet getDownloadURL', ref.getDownloadURL());
+    final url = await logFuture(
+      'uploadSetlistSheet getDownloadURL',
+      ref.getDownloadURL(),
+    );
     await logFuture(
       'uploadSetlistSheet merge sheetUrl',
-      setlist(groupId, rehearsalId)
-          .doc(itemId)
-          .set(
-            {'sheetUrl': url, 'sheetPath': sheetPath},
-            SetOptions(merge: true),
-          ),
+      setlist(groupId, rehearsalId).doc(itemId).set({
+        'sheetUrl': url,
+        'sheetPath': sheetPath,
+      }, SetOptions(merge: true)),
     );
     return url;
   }
@@ -95,7 +96,9 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     required String linkUrl,
   }) async {
     requireUid();
-    logFirestore('updateSetlistItem groupId=$groupId rehearsalId=$rehearsalId itemId=$itemId');
+    logFirestore(
+      'updateSetlistItem groupId=$groupId rehearsalId=$rehearsalId itemId=$itemId',
+    );
     await logFuture(
       'updateSetlistItem set',
       setlist(groupId, rehearsalId).doc(itemId).set({
@@ -116,11 +119,16 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     String sheetPath = '',
   }) async {
     requireUid();
-    logFirestore('clearSetlistSheet groupId=$groupId rehearsalId=$rehearsalId itemId=$itemId');
+    logFirestore(
+      'clearSetlistSheet groupId=$groupId rehearsalId=$rehearsalId itemId=$itemId',
+    );
     final path = sheetPath.trim();
     if (path.isNotEmpty) {
       try {
-        await logFuture('clearSetlistSheet delete', _storage.ref().child(path).delete());
+        await logFuture(
+          'clearSetlistSheet delete',
+          _storage.ref().child(path).delete(),
+        );
       } catch (_) {
         // Ignore missing file or permission mismatch; we still clear the doc.
       }
@@ -140,7 +148,9 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     required String itemId,
   }) async {
     requireUid();
-    logFirestore('deleteSetlistItem groupId=$groupId rehearsalId=$rehearsalId itemId=$itemId');
+    logFirestore(
+      'deleteSetlistItem groupId=$groupId rehearsalId=$rehearsalId itemId=$itemId',
+    );
     await logFuture(
       'deleteSetlistItem delete',
       setlist(groupId, rehearsalId).doc(itemId).delete(),

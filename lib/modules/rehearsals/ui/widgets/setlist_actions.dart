@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../domain/setlist_item_entity.dart';
+import '../../cubits/setlist_item_entity.dart';
 import 'rehearsal_detail_widgets.dart';
 
 Future<void> addSetlistItem({

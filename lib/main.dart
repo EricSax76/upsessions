@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'home/data/repositories/app.dart';
+import 'home/repositories/app.dart';
 import 'core/services/firebase_initializer.dart';
 import 'package:upsessions/core/locator/locator.dart';
 

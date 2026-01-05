@@ -1,4 +1,4 @@
-import '../../domain/rehearsal_entity.dart';
+import '../../cubits/rehearsal_entity.dart';
 
 RehearsalEntity? nextUpcomingRehearsal(List<RehearsalEntity> rehearsals) {
   final now = DateTime.now();

@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/widgets/loading_indicator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
-import '../../domain/rehearsal_entity.dart';
+import '../../cubits/rehearsal_entity.dart';
 import 'group_rehearsals_controller.dart';
 import '../widgets/invite_musician_dialog.dart';
 import '../widgets/rehearsal_card.dart';

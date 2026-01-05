@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../musicians/domain/musician_entity.dart';
+import '../../../musicians/models/musician_entity.dart';
 import '../pages/group_rehearsals_controller.dart';
 
 class InviteMusicianDialog extends StatefulWidget {

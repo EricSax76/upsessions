@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:upsessions/home/data/models/musician_card_model.dart';
+import 'package:upsessions/home/models/musician_card_model.dart';
 import 'musicians_grid.dart';
 
 class RecommendedUsersSection extends StatelessWidget {

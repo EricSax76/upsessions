@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:upsessions/modules/musicians/cubits/musician_search_cubit.dart';
-import 'package:upsessions/modules/musicians/data/musicians_repository.dart';
-import 'package:upsessions/modules/musicians/domain/musician_entity.dart';
+import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
+import 'package:upsessions/modules/musicians/models/musician_entity.dart';
 
 class _MockMusiciansRepository extends Mock implements MusiciansRepository {}
 
