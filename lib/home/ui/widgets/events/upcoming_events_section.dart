@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../models/home_event_model.dart';
 
@@ -9,10 +10,10 @@ class UpcomingEventsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     if (events.isEmpty) {
       return _EventsEmptyState(
-        message:
-            'Aún no hay eventos publicados. Sé el primero en crear uno desde la sección Eventos.',
+        message: loc.eventsEmptyMessage,
       );
     }
     return LayoutBuilder(
@@ -55,9 +56,11 @@ class _EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final loc = MaterialLocalizations.of(context);
-    final dateLabel = loc.formatMediumDate(event.start);
-    final timeLabel = loc.formatTimeOfDay(TimeOfDay.fromDateTime(event.start));
+    final appLoc = AppLocalizations.of(context);
+    final materialLoc = MaterialLocalizations.of(context);
+    final dateLabel = materialLoc.formatMediumDate(event.start);
+    final timeLabel =
+        materialLoc.formatTimeOfDay(TimeOfDay.fromDateTime(event.start));
     final tags = event.tags.take(2).toList();
     return Card(
       clipBehavior: Clip.hardEdge,
@@ -111,7 +114,7 @@ class _EventCard extends StatelessWidget {
                 children: [
                   _InfoChip(
                     icon: Icons.people_alt_outlined,
-                    label: '${event.capacity} personas',
+                    label: appLoc.eventsPeopleCount(event.capacity),
                   ),
                   _InfoChip(
                     icon: Icons.confirmation_num_outlined,

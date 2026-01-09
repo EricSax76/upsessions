@@ -1,0 +1,51 @@
+{
+  "appName": "UPSESSIONS",
+  "welcome": "Bienvenido a la comunidad musical.",
+  "searchMusicians": "Busca músicos y bandas por todo el país.",
+  "announcements": "Anuncios recientes",
+  "profile": "Tu perfil musical",
+  "appBrandName": "UPSESSIONS",
+  "appWelcomeTagline": "Conecta tu música\nsin limite.",
+  "startButton": "Comenzar",
+  "skip": "Saltar",
+  "next": "Siguiente",
+  "login": "Iniciar sesión",
+  "onboardingCollaborateTitle": "Conecta con músicos reales",
+  "onboardingCollaborateDescription": "Descubre instrumentistas y productores disponibles para sesiones en vivo o remotas.",
+  "onboardingShowcaseTitle": "Muestra tu talento",
+  "onboardingShowcaseDescription": "Comparte tu música",
+  "onboardingBookTitle": "Tu centro de reservas musical",
+  "onboardingBookDescription": "Coordina disponibilidad, contratos y pagos en pocos clicks.",
+  "eventsShowcasesTitle": "Eventos y showcases",
+  "eventsShowcasesDescription": "Planifica tus sesiones. Genera una ficha en formato texto para compartirla por correo o chat.",
+  "eventsActiveLabel": "Eventos activos",
+  "eventsThisWeekLabel": "Esta semana",
+  "eventsTotalCapacityLabel": "Capacidad total",
+  "eventsEmptyMessage": "Aún no hay eventos publicados. Sé el primero en crear uno desde la sección Eventos.",
+  "noEventsOnDate": "No hay eventos registrados en esta fecha.",
+  "navMusicians": "Músicos",
+  "navAnnouncements": "Anuncios",
+  "navEvents": "Eventos",
+  "navRehearsals": "Ensayos",
+  "musicianContactTitle": "¿Te interesa colaborar?",
+  "musicianContactDescription": "Conecta por chat para coordinar detalles y disponibilidad.",
+  "musicianContactLoading": "Abriendo...",
+  "musicianContactButton": "Contactar",
+  "musicianInviteButton": "Invitar",
+  "eventsForDate": "Eventos para {dateLabel}",
+  "@eventsForDate": {
+    "placeholders": {
+      "dateLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "eventsPeopleCount": "{count, plural, one{# persona} other{# personas}}",
+  "@eventsPeopleCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

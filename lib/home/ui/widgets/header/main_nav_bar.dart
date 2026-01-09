@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_routes.dart';
 
 class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
   const MainNavBar({super.key});
 
-  static const _items = [
-    _NavItem(label: 'Músicos', path: AppRoutes.musicians),
-    _NavItem(label: 'Anuncios', path: AppRoutes.announcements),
-    _NavItem(label: 'Eventos', path: AppRoutes.events),
-    _NavItem(label: 'Ensayos', path: AppRoutes.rehearsals),
-  ];
-
   @override
   Size get preferredSize => const Size.fromHeight(64);
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final items = [
+      _NavItem(label: loc.navMusicians, path: AppRoutes.musicians),
+      _NavItem(label: loc.navAnnouncements, path: AppRoutes.announcements),
+      _NavItem(label: loc.navEvents, path: AppRoutes.events),
+      _NavItem(label: loc.navRehearsals, path: AppRoutes.rehearsals),
+    ];
     final colorScheme = Theme.of(context).colorScheme;
     final location = GoRouterState.of(context).uri.path;
 
@@ -76,7 +77,7 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
                 child: isCompact
                     ? Row(
                         children: [
-                          for (final item in _items)
+                          for (final item in items)
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -99,7 +100,7 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         itemBuilder: (context, index) {
-                          final item = _items[index];
+                          final item = items[index];
                           return buildButton(
                             item,
                             selected: _isCurrent(location, item.path),
@@ -107,7 +108,7 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
                         },
                         separatorBuilder: (context, index) =>
                             const SizedBox(width: 8),
-                        itemCount: _items.length,
+                        itemCount: items.length,
                       ),
               ),
             ],

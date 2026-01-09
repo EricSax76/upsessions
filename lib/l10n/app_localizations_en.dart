@@ -1,0 +1,130 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appName => 'UPSESSIONS';
+
+  @override
+  String get welcome => 'Welcome to the music community.';
+
+  @override
+  String get searchMusicians => 'Find musicians and bands across the country.';
+
+  @override
+  String get announcements => 'Recent announcements';
+
+  @override
+  String get profile => 'Your musical profile';
+
+  @override
+  String get appBrandName => 'UPSESSIONS';
+
+  @override
+  String get appWelcomeTagline => 'Connect your music\nwithout limits.';
+
+  @override
+  String get startButton => 'Get started';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get login => 'Sign in';
+
+  @override
+  String get onboardingCollaborateTitle => 'Connect with real musicians';
+
+  @override
+  String get onboardingCollaborateDescription =>
+      'Discover instrumentalists and producers available for live or remote sessions.';
+
+  @override
+  String get onboardingShowcaseTitle => 'Showcase your talent';
+
+  @override
+  String get onboardingShowcaseDescription => 'Share your music';
+
+  @override
+  String get onboardingBookTitle => 'Your music booking hub';
+
+  @override
+  String get onboardingBookDescription =>
+      'Coordinate availability, contracts, and payments in a few clicks.';
+
+  @override
+  String get eventsShowcasesTitle => 'Events and showcases';
+
+  @override
+  String get eventsShowcasesDescription =>
+      'Plan your sessions. Generate a text sheet to share by email or chat.';
+
+  @override
+  String get eventsActiveLabel => 'Active events';
+
+  @override
+  String get eventsThisWeekLabel => 'This week';
+
+  @override
+  String get eventsTotalCapacityLabel => 'Total capacity';
+
+  @override
+  String get eventsEmptyMessage =>
+      'There are no events yet. Be the first to create one from the Events section.';
+
+  @override
+  String get noEventsOnDate => 'There are no events scheduled for this date.';
+
+  @override
+  String get navMusicians => 'Musicians';
+
+  @override
+  String get navAnnouncements => 'Announcements';
+
+  @override
+  String get navEvents => 'Events';
+
+  @override
+  String get navRehearsals => 'Rehearsals';
+
+  @override
+  String get musicianContactTitle => 'Interested in collaborating?';
+
+  @override
+  String get musicianContactDescription =>
+      'Connect by chat to coordinate details and availability.';
+
+  @override
+  String get musicianContactLoading => 'Opening...';
+
+  @override
+  String get musicianContactButton => 'Contact';
+
+  @override
+  String get musicianInviteButton => 'Invite';
+
+  @override
+  String eventsForDate(String dateLabel) {
+    return 'Events for $dateLabel';
+  }
+
+  @override
+  String eventsPeopleCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# people',
+      one: '# person',
+    );
+    return '$_temp0';
+  }
+}

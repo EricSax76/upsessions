@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
-import '../../../../core/constants/app_routes.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class AppWelcomePage extends StatelessWidget {
-  const AppWelcomePage({super.key});
+  const AppWelcomePage({
+    super.key,
+    required this.onContinue,
+    this.onSkip,
+  });
 
   static const Color _wineRed = Color(0xFF5A0A16);
 
-  void _continue(BuildContext context) {
-    context.go(AppRoutes.onboardingStoryOne);
-  }
+  final VoidCallback onContinue;
+  final VoidCallback? onSkip;
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       body: GestureDetector(
-        onTap: () => _continue(context),
+        onTap: onContinue,
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -26,38 +28,51 @@ class AppWelcomePage extends StatelessWidget {
             ),
           ),
           child: SafeArea(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'UPSESSIONS',
-                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      color: Colors.white,
-                      letterSpacing: 4,
-                      fontWeight: FontWeight.bold,
+            child: Stack(
+              children: [
+                if (onSkip != null)
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: TextButton(
+                      onPressed: onSkip,
+                      child: Text(loc.skip),
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Conecta tu música\nsin limite.',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleMedium?.copyWith(color: Colors.white70),
-                    textAlign: TextAlign.center,
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        loc.appBrandName,
+                        style:
+                            Theme.of(context).textTheme.displaySmall?.copyWith(
+                                  color: Colors.white,
+                                  letterSpacing: 4,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        loc.appWelcomeTagline,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleMedium?.copyWith(color: Colors.white70),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 40),
+                      FilledButton(
+                        onPressed: onContinue,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: _wineRed,
+                        ),
+                        child: Text(loc.startButton),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 40),
-                  FilledButton(
-                    onPressed: () => _continue(context),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: _wineRed,
-                    ),
-                    child: const Text('Comenzar'),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

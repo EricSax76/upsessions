@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'event_entity.dart';
+import '../domain/event_entity.dart';
 
 class EventDto {
   EventDto({

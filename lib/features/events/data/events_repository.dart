@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:upsessions/modules/auth/data/auth_repository.dart';
 
-import '../models/event_entity.dart';
-import '../models/event_dto.dart';
+import '../domain/event_entity.dart';
+import 'event_dto.dart';
 
 class EventsRepository {
   EventsRepository({

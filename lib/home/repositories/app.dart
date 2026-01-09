@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/services/firebase_initializer.dart';
@@ -41,9 +42,11 @@ class UpsessionsApp extends StatelessWidget {
         child: AppLinksListener(
           router: _appRouter.router,
           child: MaterialApp.router(
-            title: 'UPSESSIONS',
+            onGenerateTitle: (context) => AppLocalizations.of(context).appName,
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             routerConfig: _appRouter.router,
           ),
         ),

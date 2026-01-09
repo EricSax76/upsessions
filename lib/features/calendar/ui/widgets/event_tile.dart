@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../modules/events/models/event_entity.dart';
+import '../../../events/domain/event_entity.dart';
 
 class EventTile extends StatelessWidget {
   const EventTile({super.key, required this.event, required this.onViewEvent});

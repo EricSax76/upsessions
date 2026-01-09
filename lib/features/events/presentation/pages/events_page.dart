@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
-import '../../../auth/data/auth_repository.dart';
-import '../../repositories/events_repository.dart';
-import '../../cubit/events_page_cubit.dart';
+import '../../../../modules/auth/data/auth_repository.dart';
+import '../../data/events_repository.dart';
+import '../cubit/events_page_cubit.dart';
 import '../widgets/events_dashboard.dart';
 
 class EventsPage extends StatelessWidget {
@@ -37,6 +37,9 @@ class EventsPage extends StatelessWidget {
                 events: state.events,
                 preview: state.preview,
                 loading: state.loading || state.savingDraft,
+                eventsCount: state.events.length,
+                thisWeekCount: state.thisWeekCount,
+                totalCapacity: state.totalCapacity,
                 ownerId: ownerId,
                 onRefresh: cubit.load,
                 onGenerateDraft: cubit.generateDraft,

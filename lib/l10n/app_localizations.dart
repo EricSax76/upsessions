@@ -1,0 +1,344 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
+
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppLocalizations of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
+
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('es'),
+  ];
+
+  /// No description provided for @appName.
+  ///
+  /// In es, this message translates to:
+  /// **'UPSESSIONS'**
+  String get appName;
+
+  /// No description provided for @welcome.
+  ///
+  /// In es, this message translates to:
+  /// **'Bienvenido a la comunidad musical.'**
+  String get welcome;
+
+  /// No description provided for @searchMusicians.
+  ///
+  /// In es, this message translates to:
+  /// **'Busca músicos y bandas por todo el país.'**
+  String get searchMusicians;
+
+  /// No description provided for @announcements.
+  ///
+  /// In es, this message translates to:
+  /// **'Anuncios recientes'**
+  String get announcements;
+
+  /// No description provided for @profile.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu perfil musical'**
+  String get profile;
+
+  /// No description provided for @appBrandName.
+  ///
+  /// In es, this message translates to:
+  /// **'UPSESSIONS'**
+  String get appBrandName;
+
+  /// No description provided for @appWelcomeTagline.
+  ///
+  /// In es, this message translates to:
+  /// **'Conecta tu música\nsin limite.'**
+  String get appWelcomeTagline;
+
+  /// No description provided for @startButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Comenzar'**
+  String get startButton;
+
+  /// No description provided for @skip.
+  ///
+  /// In es, this message translates to:
+  /// **'Saltar'**
+  String get skip;
+
+  /// No description provided for @next.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiente'**
+  String get next;
+
+  /// No description provided for @login.
+  ///
+  /// In es, this message translates to:
+  /// **'Iniciar sesión'**
+  String get login;
+
+  /// No description provided for @onboardingCollaborateTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Conecta con músicos reales'**
+  String get onboardingCollaborateTitle;
+
+  /// No description provided for @onboardingCollaborateDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Descubre instrumentistas y productores disponibles para sesiones en vivo o remotas.'**
+  String get onboardingCollaborateDescription;
+
+  /// No description provided for @onboardingShowcaseTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Muestra tu talento'**
+  String get onboardingShowcaseTitle;
+
+  /// No description provided for @onboardingShowcaseDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Comparte tu música'**
+  String get onboardingShowcaseDescription;
+
+  /// No description provided for @onboardingBookTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu centro de reservas musical'**
+  String get onboardingBookTitle;
+
+  /// No description provided for @onboardingBookDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Coordina disponibilidad, contratos y pagos en pocos clicks.'**
+  String get onboardingBookDescription;
+
+  /// No description provided for @eventsShowcasesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Eventos y showcases'**
+  String get eventsShowcasesTitle;
+
+  /// No description provided for @eventsShowcasesDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Planifica tus sesiones. Genera una ficha en formato texto para compartirla por correo o chat.'**
+  String get eventsShowcasesDescription;
+
+  /// No description provided for @eventsActiveLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Eventos activos'**
+  String get eventsActiveLabel;
+
+  /// No description provided for @eventsThisWeekLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta semana'**
+  String get eventsThisWeekLabel;
+
+  /// No description provided for @eventsTotalCapacityLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Capacidad total'**
+  String get eventsTotalCapacityLabel;
+
+  /// No description provided for @eventsEmptyMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay eventos publicados. Sé el primero en crear uno desde la sección Eventos.'**
+  String get eventsEmptyMessage;
+
+  /// No description provided for @noEventsOnDate.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay eventos registrados en esta fecha.'**
+  String get noEventsOnDate;
+
+  /// No description provided for @navMusicians.
+  ///
+  /// In es, this message translates to:
+  /// **'Músicos'**
+  String get navMusicians;
+
+  /// No description provided for @navAnnouncements.
+  ///
+  /// In es, this message translates to:
+  /// **'Anuncios'**
+  String get navAnnouncements;
+
+  /// No description provided for @navEvents.
+  ///
+  /// In es, this message translates to:
+  /// **'Eventos'**
+  String get navEvents;
+
+  /// No description provided for @navRehearsals.
+  ///
+  /// In es, this message translates to:
+  /// **'Ensayos'**
+  String get navRehearsals;
+
+  /// No description provided for @musicianContactTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Te interesa colaborar?'**
+  String get musicianContactTitle;
+
+  /// No description provided for @musicianContactDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Conecta por chat para coordinar detalles y disponibilidad.'**
+  String get musicianContactDescription;
+
+  /// No description provided for @musicianContactLoading.
+  ///
+  /// In es, this message translates to:
+  /// **'Abriendo...'**
+  String get musicianContactLoading;
+
+  /// No description provided for @musicianContactButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Contactar'**
+  String get musicianContactButton;
+
+  /// No description provided for @musicianInviteButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitar'**
+  String get musicianInviteButton;
+
+  /// No description provided for @eventsForDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Eventos para {dateLabel}'**
+  String eventsForDate(String dateLabel);
+
+  /// No description provided for @eventsPeopleCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{# persona} other{# personas}}'**
+  String eventsPeopleCount(int count);
+}
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
+  }
+
+  @override
+  bool isSupported(Locale locale) =>
+      <String>['en', 'es'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
+  }
+
+  throw FlutterError(
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
+}

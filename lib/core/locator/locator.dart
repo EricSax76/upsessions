@@ -9,7 +9,7 @@ import 'package:upsessions/modules/auth/data/auth_repository.dart';
 import 'package:upsessions/modules/auth/data/profile_repository.dart';
 import 'package:upsessions/features/media/repositories/media_repository.dart';
 import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
-import 'package:upsessions/modules/events/repositories/events_repository.dart';
+import 'package:upsessions/features/events/data/events_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/home/repositories/user_home_repository.dart';
 import 'package:upsessions/features/contacts/controllers/liked_musicians_controller.dart';

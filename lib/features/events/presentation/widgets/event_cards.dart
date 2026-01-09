@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../models/event_entity.dart';
+import '../../domain/event_entity.dart';
 
 class EventHighlightCard extends StatelessWidget {
   const EventHighlightCard({

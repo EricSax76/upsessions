@@ -18,14 +18,41 @@ class RehearsalsGroupsPage extends StatelessWidget {
   }
 }
 
-class _RehearsalsGroupsView extends StatefulWidget {
+class _RehearsalsGroupsView extends StatelessWidget {
   const _RehearsalsGroupsView();
 
   @override
-  State<_RehearsalsGroupsView> createState() => _RehearsalsGroupsViewState();
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          Material(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: const TabBar(
+              tabs: [
+                Tab(text: 'Mis Grupos'),
+                Tab(text: 'Agenda'),
+              ],
+            ),
+          ),
+          const Expanded(
+            child: TabBarView(children: [_GroupsTab(), _AgendaTab()]),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _RehearsalsGroupsViewState extends State<_RehearsalsGroupsView> {
+class _GroupsTab extends StatefulWidget {
+  const _GroupsTab();
+
+  @override
+  State<_GroupsTab> createState() => _GroupsTabState();
+}
+
+class _GroupsTabState extends State<_GroupsTab> {
   late final TextEditingController _searchController;
   String _query = '';
 
@@ -68,94 +95,116 @@ class _RehearsalsGroupsViewState extends State<_RehearsalsGroupsView> {
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
             physics: const AlwaysScrollableScrollPhysics(),
             children: [
-              RehearsalsGroupsHeader(
-                groupCount: groups.length,
-                visibleCount: visibleGroups.length,
+              _StaggeredEntry(
+                index: 0,
+                child: RehearsalsGroupsHeader(
+                  groupCount: groups.length,
+                  visibleCount: visibleGroups.length,
+                ),
               ),
               const SizedBox(height: 16),
-              RehearsalsGroupsActions(
-                onGoToGroup: () => _showGoToGroupDialog(context),
-                onCreateGroup: () =>
-                    _showCreateGroupDialog(context, repository),
+              _StaggeredEntry(
+                index: 1,
+                child: RehearsalsGroupsActions(
+                  onGoToGroup: () => _showGoToGroupDialog(context),
+                  onCreateGroup: () =>
+                      _showCreateGroupDialog(context, repository),
+                ),
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: _searchController,
-                textInputAction: TextInputAction.search,
-                decoration: InputDecoration(
-                  labelText: 'Buscar grupos',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: _query.trim().isEmpty
-                      ? null
-                      : IconButton(
-                          onPressed: _searchController.clear,
-                          tooltip: 'Limpiar búsqueda',
-                          icon: const Icon(Icons.clear),
-                        ),
+              _StaggeredEntry(
+                index: 2,
+                child: TextField(
+                  controller: _searchController,
+                  textInputAction: TextInputAction.search,
+                  decoration: InputDecoration(
+                    labelText: 'Buscar grupos',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _query.trim().isEmpty
+                        ? null
+                        : IconButton(
+                            onPressed: _searchController.clear,
+                            tooltip: 'Limpiar búsqueda',
+                            icon: const Icon(Icons.clear),
+                          ),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               if (snapshot.hasError)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.cloud_off_outlined,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'No pudimos cargar tus grupos.',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${snapshot.error}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            FilledButton.icon(
-                              onPressed: () async {
-                                await repository.authRepository
-                                    .refreshIdToken();
-                              },
-                              icon: const Icon(Icons.refresh),
-                              label: const Text('Reintentar'),
-                            ),
-                          ],
-                        ),
-                      ],
+                _StaggeredEntry(
+                  index: 3,
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.cloud_off_outlined,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'No pudimos cargar tus grupos.',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${snapshot.error}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              FilledButton.icon(
+                                onPressed: () async {
+                                  await repository.authRepository
+                                      .refreshIdToken();
+                                },
+                                icon: const Icon(Icons.refresh),
+                                label: const Text('Reintentar'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 )
               else if (groups.isEmpty)
-                const RehearsalsGroupsEmptyState()
+                const _StaggeredEntry(
+                  index: 3,
+                  child: RehearsalsGroupsEmptyState(),
+                )
               else if (visibleGroups.isEmpty)
-                EmptyStateCard(
-                  icon: Icons.search_off_outlined,
-                  title: 'No hay resultados',
-                  subtitle: 'Prueba con otro nombre o limpia la búsqueda.',
-                  trailing: TextButton(
-                    onPressed: _searchController.clear,
-                    child: const Text('Limpiar'),
+                _StaggeredEntry(
+                  index: 3,
+                  child: EmptyStateCard(
+                    icon: Icons.search_off_outlined,
+                    title: 'No hay resultados',
+                    subtitle: 'Prueba con otro nombre o limpia la búsqueda.',
+                    trailing: TextButton(
+                      onPressed: _searchController.clear,
+                      child: const Text('Limpiar'),
+                    ),
                   ),
                 )
               else
-                ...visibleGroups.map(
-                  (group) => GroupCard(
-                    groupId: group.groupId,
-                    groupName: group.groupName,
-                    role: group.role,
-                    onTap: () => context.go(AppRoutes.groupPage(group.groupId)),
+                ...visibleGroups.asMap().entries.map(
+                  (entry) => _StaggeredEntry(
+                    index: 3 + entry.key,
+                    child: GroupCard(
+                      groupId: entry.value.groupId,
+                      groupName: entry.value.groupName,
+                      role: entry.value.role,
+                      onTap: () =>
+                          context.go(AppRoutes.groupPage(entry.value.groupId)),
+                    ),
                   ),
                 ),
             ],
@@ -253,5 +302,68 @@ int _rolePriority(String role) {
       return 1;
     default:
       return 2;
+  }
+}
+
+class _AgendaTab extends StatelessWidget {
+  const _AgendaTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: EmptyStateCard(
+        icon: Icons.calendar_today_outlined,
+        title: 'Tu Agenda',
+        subtitle: 'Aquí verás tus próximos ensayos de todos tus grupos.',
+      ),
+    );
+  }
+}
+
+class _StaggeredEntry extends StatefulWidget {
+  final int index;
+  final Widget child;
+  const _StaggeredEntry({required this.index, required this.child});
+
+  @override
+  State<_StaggeredEntry> createState() => _StaggeredEntryState();
+}
+
+class _StaggeredEntryState extends State<_StaggeredEntry>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _opacity;
+  late final Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _opacity = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    Future.delayed(Duration(milliseconds: widget.index * 50), () {
+      if (mounted) _controller.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _opacity,
+      child: SlideTransition(position: _slide, child: widget.child),
+    );
   }
 }

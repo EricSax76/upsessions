@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../models/event_entity.dart';
+import '../../domain/event_entity.dart';
 import 'event_form_card.dart';
 import 'event_text_template_card.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../models/event_entity.dart';
+import '../../domain/event_entity.dart';
 
 class EventTextTemplateCard extends StatelessWidget {
   const EventTextTemplateCard({super.key, required this.event});

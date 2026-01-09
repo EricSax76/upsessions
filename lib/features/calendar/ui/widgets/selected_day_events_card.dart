@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
-import '../../../../modules/events/models/event_entity.dart';
+import '../../../events/domain/event_entity.dart';
 import 'event_tile.dart';
 
 class SelectedDayEventsCard extends StatelessWidget {
@@ -19,6 +20,7 @@ class SelectedDayEventsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final loc = MaterialLocalizations.of(context);
     final label = loc.formatFullDate(selectedDay);
+    final appLoc = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -26,7 +28,7 @@ class SelectedDayEventsCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Eventos para $label',
+              appLoc.eventsForDate(label),
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -34,7 +36,7 @@ class SelectedDayEventsCard extends StatelessWidget {
             const SizedBox(height: 12),
             if (events.isEmpty)
               Text(
-                'No hay eventos registrados en esta fecha.',
+                appLoc.noEventsOnDate,
                 style: Theme.of(context).textTheme.bodyMedium,
               )
             else

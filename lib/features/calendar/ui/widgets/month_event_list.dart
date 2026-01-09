@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../modules/events/models/event_entity.dart';
+import '../../../events/domain/event_entity.dart';
 import 'event_tile.dart';
 
 class MonthEventList extends StatelessWidget {

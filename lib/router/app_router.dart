@@ -8,9 +8,9 @@ import '../modules/announcements/presentation/pages/announcement_form_page.dart'
 import '../modules/announcements/presentation/pages/announcements_hub_page.dart';
 import '../features/media/ui/pages/media_gallery_page.dart';
 import '../features/calendar/ui/pages/calendar_page.dart';
-import '../modules/events/models/event_entity.dart';
-import '../modules/events/ui/pages/event_detail_page.dart';
-import '../modules/events/ui/pages/events_page.dart';
+import '../features/events/domain/event_entity.dart';
+import '../features/events/presentation/pages/event_detail_page.dart';
+import '../features/events/presentation/pages/events_page.dart';
 import '../features/messaging/ui/pages/messages_page.dart';
 import '../features/onboarding/ui/pages/app_welcome_page.dart';
 import '../features/onboarding/ui/pages/musician_onboarding_page.dart';
@@ -49,19 +49,30 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.welcome,
-          builder: (context, state) => const AppWelcomePage(),
+          builder: (context, state) => AppWelcomePage(
+            onContinue: () => context.go(AppRoutes.onboardingStoryOne),
+          ),
         ),
         GoRoute(
           path: AppRoutes.onboardingStoryOne,
-          builder: (context, state) => const CollaborateOnboardingPage(),
+          builder: (context, state) => CollaborateOnboardingPage(
+            onContinue: () => context.go(AppRoutes.onboardingStoryTwo),
+            onSkip: () => context.go(AppRoutes.login),
+          ),
         ),
         GoRoute(
           path: AppRoutes.onboardingStoryTwo,
-          builder: (context, state) => const ShowcaseOnboardingPage(),
+          builder: (context, state) => ShowcaseOnboardingPage(
+            onContinue: () => context.go(AppRoutes.onboardingStoryThree),
+            onSkip: () => context.go(AppRoutes.login),
+          ),
         ),
         GoRoute(
           path: AppRoutes.onboardingStoryThree,
-          builder: (context, state) => const BookOnboardingPage(),
+          builder: (context, state) => BookOnboardingPage(
+            onContinue: () => context.go(AppRoutes.login),
+            onSkip: () => context.go(AppRoutes.login),
+          ),
         ),
         GoRoute(
           path: AppRoutes.login,
@@ -142,7 +153,7 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.contacts,
-          builder: (context, state) => const ContactsPage(),
+          builder: (context, state) => ContactsPage(controller: locate()),
         ),
         GoRoute(
           path: AppRoutes.calendar,

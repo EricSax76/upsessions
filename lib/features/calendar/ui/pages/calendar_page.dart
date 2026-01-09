@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
-import '../../../../modules/events/models/event_entity.dart';
+import '../../../events/domain/event_entity.dart';
 import '../../models/calendar_controller.dart';
 import 'calendar_dashboard.dart';
 

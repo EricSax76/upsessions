@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class MusicianContactCard extends StatelessWidget {
   const MusicianContactCard({
@@ -16,6 +17,7 @@ class MusicianContactCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final loc = AppLocalizations.of(context);
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       color: colors.primaryContainer,
@@ -25,7 +27,7 @@ class MusicianContactCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '¿Te interesa colaborar?',
+              loc.musicianContactTitle,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colors.onPrimaryContainer,
@@ -33,7 +35,7 @@ class MusicianContactCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Conecta por chat para coordinar detalles y disponibilidad.',
+              loc.musicianContactDescription,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colors.onPrimaryContainer,
               ),
@@ -52,12 +54,14 @@ class MusicianContactCard extends StatelessWidget {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.message_rounded),
-                  label: Text(isLoading ? 'Abriendo...' : 'Contactar'),
+                  label: Text(isLoading
+                      ? loc.musicianContactLoading
+                      : loc.musicianContactButton),
                 ),
                 OutlinedButton.icon(
                   onPressed: onInvite,
                   icon: const Icon(Icons.group_add_outlined),
-                  label: const Text('Invitar'),
+                  label: Text(loc.musicianInviteButton),
                 ),
               ],
             ),

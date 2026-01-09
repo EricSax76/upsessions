@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../modules/events/models/event_entity.dart';
+import '../../../events/domain/event_entity.dart';
 import '../../models/calendar_controller.dart';
 import '../widgets/calendar_intro.dart';
 import '../widgets/month_calendar_card.dart';

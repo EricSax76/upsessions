@@ -1,55 +1,78 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
-import '../../../../core/constants/app_routes.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class CollaborateOnboardingPage extends StatelessWidget {
-  const CollaborateOnboardingPage({super.key});
+  const CollaborateOnboardingPage({
+    super.key,
+    required this.onContinue,
+    required this.onSkip,
+  });
+
+  final VoidCallback onContinue;
+  final VoidCallback onSkip;
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return OnboardingStoryLayout(
-      title: 'Conecta con músicos reales',
-      description:
-          'Descubre instrumentistas y productores disponibles para sesiones en vivo o remotas.',
+      title: loc.onboardingCollaborateTitle,
+      description: loc.onboardingCollaborateDescription,
       icon: Icons.group_work_outlined,
       step: 1,
       totalSteps: 3,
-      onContinue: () => context.go(AppRoutes.onboardingStoryTwo),
+      onContinue: onContinue,
+      onSkip: onSkip,
     );
   }
 }
 
 class ShowcaseOnboardingPage extends StatelessWidget {
-  const ShowcaseOnboardingPage({super.key});
+  const ShowcaseOnboardingPage({
+    super.key,
+    required this.onContinue,
+    required this.onSkip,
+  });
+
+  final VoidCallback onContinue;
+  final VoidCallback onSkip;
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return OnboardingStoryLayout(
-      title: 'Muestra tu talento',
-      description: 'Comparte tu música',
+      title: loc.onboardingShowcaseTitle,
+      description: loc.onboardingShowcaseDescription,
       icon: Icons.mic_none_outlined,
       step: 2,
       totalSteps: 3,
-      onContinue: () => context.go(AppRoutes.onboardingStoryThree),
+      onContinue: onContinue,
+      onSkip: onSkip,
     );
   }
 }
 
 class BookOnboardingPage extends StatelessWidget {
-  const BookOnboardingPage({super.key});
+  const BookOnboardingPage({
+    super.key,
+    required this.onContinue,
+    required this.onSkip,
+  });
+
+  final VoidCallback onContinue;
+  final VoidCallback onSkip;
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return OnboardingStoryLayout(
-      title: 'Tu centro de reservas musical',
-      description:
-          'Coordina disponibilidad, contratos y pagos en pocos clicks.',
+      title: loc.onboardingBookTitle,
+      description: loc.onboardingBookDescription,
       icon: Icons.calendar_today_outlined,
       step: 3,
       totalSteps: 3,
-      primaryLabel: 'Iniciar sesión',
-      onContinue: () => context.go(AppRoutes.login),
+      primaryLabel: loc.login,
+      onContinue: onContinue,
+      onSkip: onSkip,
     );
   }
 }
@@ -63,7 +86,8 @@ class OnboardingStoryLayout extends StatelessWidget {
     required this.step,
     required this.totalSteps,
     required this.onContinue,
-    this.primaryLabel = 'Siguiente',
+    required this.onSkip,
+    this.primaryLabel,
   });
 
   final String title;
@@ -72,15 +96,14 @@ class OnboardingStoryLayout extends StatelessWidget {
   final int step;
   final int totalSteps;
   final VoidCallback onContinue;
-  final String primaryLabel;
-
-  void _skip(BuildContext context) {
-    context.go(AppRoutes.login);
-  }
+  final VoidCallback onSkip;
+  final String? primaryLabel;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
+    final resolvedPrimaryLabel = primaryLabel ?? loc.next;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -91,8 +114,8 @@ class OnboardingStoryLayout extends StatelessWidget {
               Align(
                 alignment: Alignment.topRight,
                 child: TextButton(
-                  onPressed: () => _skip(context),
-                  child: const Text('Saltar'),
+                  onPressed: onSkip,
+                  child: Text(loc.skip),
                 ),
               ),
               const SizedBox(height: 24),
@@ -139,7 +162,10 @@ class OnboardingStoryLayout extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              FilledButton(onPressed: onContinue, child: Text(primaryLabel)),
+              FilledButton(
+                onPressed: onContinue,
+                child: Text(resolvedPrimaryLabel),
+              ),
             ],
           ),
         ),

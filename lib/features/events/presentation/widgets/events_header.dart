@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
-
-import '../../models/event_entity.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class EventsHeader extends StatelessWidget {
-  const EventsHeader({super.key, required this.events});
+  const EventsHeader({
+    super.key,
+    required this.eventsCount,
+    required this.thisWeekCount,
+    required this.totalCapacity,
+  });
 
-  final List<EventEntity> events;
+  final int eventsCount;
+  final int thisWeekCount;
+  final int totalCapacity;
 
   @override
   Widget build(BuildContext context) {
-    final totalCapacity = events.fold<int>(
-      0,
-      (sum, event) => sum + event.capacity,
-    );
-    final weekLimit = DateTime.now().add(const Duration(days: 7));
-    final thisWeek = events
-        .where((event) => event.start.isBefore(weekLimit))
-        .length;
-
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Eventos y showcases',
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+        Text(
+          loc.eventsShowcasesTitle,
+          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(
-          'Planifica tus sesiones. Genera una ficha en formato texto para compartirla por correo o chat.',
+          loc.eventsShowcasesDescription,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: 24),
@@ -36,18 +34,18 @@ class EventsHeader extends StatelessWidget {
           runSpacing: 16,
           children: [
             SummaryChip(
-              label: 'Eventos activos',
-              value: events.length.toString(),
+              label: loc.eventsActiveLabel,
+              value: eventsCount.toString(),
               icon: Icons.event_available,
             ),
             SummaryChip(
-              label: 'Esta semana',
-              value: thisWeek.toString(),
+              label: loc.eventsThisWeekLabel,
+              value: thisWeekCount.toString(),
               icon: Icons.calendar_month,
             ),
             SummaryChip(
-              label: 'Capacidad total',
-              value: '$totalCapacity personas',
+              label: loc.eventsTotalCapacityLabel,
+              value: loc.eventsPeopleCount(totalCapacity),
               icon: Icons.people_alt_outlined,
             ),
           ],

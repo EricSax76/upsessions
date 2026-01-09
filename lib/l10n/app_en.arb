@@ -1,0 +1,51 @@
+{
+  "appName": "UPSESSIONS",
+  "welcome": "Welcome to the music community.",
+  "searchMusicians": "Find musicians and bands across the country.",
+  "announcements": "Recent announcements",
+  "profile": "Your musical profile",
+  "appBrandName": "UPSESSIONS",
+  "appWelcomeTagline": "Connect your music\nwithout limits.",
+  "startButton": "Get started",
+  "skip": "Skip",
+  "next": "Next",
+  "login": "Sign in",
+  "onboardingCollaborateTitle": "Connect with real musicians",
+  "onboardingCollaborateDescription": "Discover instrumentalists and producers available for live or remote sessions.",
+  "onboardingShowcaseTitle": "Showcase your talent",
+  "onboardingShowcaseDescription": "Share your music",
+  "onboardingBookTitle": "Your music booking hub",
+  "onboardingBookDescription": "Coordinate availability, contracts, and payments in a few clicks.",
+  "eventsShowcasesTitle": "Events and showcases",
+  "eventsShowcasesDescription": "Plan your sessions. Generate a text sheet to share by email or chat.",
+  "eventsActiveLabel": "Active events",
+  "eventsThisWeekLabel": "This week",
+  "eventsTotalCapacityLabel": "Total capacity",
+  "eventsEmptyMessage": "There are no events yet. Be the first to create one from the Events section.",
+  "noEventsOnDate": "There are no events scheduled for this date.",
+  "navMusicians": "Musicians",
+  "navAnnouncements": "Announcements",
+  "navEvents": "Events",
+  "navRehearsals": "Rehearsals",
+  "musicianContactTitle": "Interested in collaborating?",
+  "musicianContactDescription": "Connect by chat to coordinate details and availability.",
+  "musicianContactLoading": "Opening...",
+  "musicianContactButton": "Contact",
+  "musicianInviteButton": "Invite",
+  "eventsForDate": "Events for {dateLabel}",
+  "@eventsForDate": {
+    "placeholders": {
+      "dateLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "eventsPeopleCount": "{count, plural, one{# person} other{# people}}",
+  "@eventsPeopleCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}
