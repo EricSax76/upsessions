@@ -12,6 +12,7 @@ import '../../modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import '../../router/app_router.dart';
 import '../../core/services/app_links_service.dart';
+import '../../modules/profile/cubit/profile_cubit.dart';
 
 class UpsessionsApp extends StatelessWidget {
   UpsessionsApp({super.key});
@@ -33,9 +34,14 @@ class UpsessionsApp extends StatelessWidget {
           BlocProvider(
             create: (context) => AuthCubit(
               authRepository: context.read<AuthRepository>(),
+              pushNotificationsService:
+                  context.read<PushNotificationsService>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => ProfileCubit(
               profileRepository: context.read<ProfileRepository>(),
-              pushNotificationsService: context
-                  .read<PushNotificationsService>(),
+              authCubit: context.read<AuthCubit>(),
             ),
           ),
         ],

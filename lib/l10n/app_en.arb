@@ -76,5 +76,30 @@
         "type": "int"
       }
     }
-  }
+  },
+  "rehearsalsGroupsMyGroupsTab": "My Groups",
+  "rehearsalsGroupsAgendaTab": "Agenda",
+  "rehearsalsGroupsSearchLabel": "Search groups",
+  "rehearsalsGroupsClearSearchTooltip": "Clear search",
+  "rehearsalsGroupsErrorLoading": "We could not load your groups.",
+  "rehearsalsGroupsRetryButton": "Retry",
+  "rehearsalsGroupsNoResultsTitle": "No results",
+  "rehearsalsGroupsNoResultsSubtitle": "Try another name or clear the search.",
+  "rehearsalsGroupsClearSearchButton": "Clear",
+  "rehearsalsGroupsCreateGroupError": "Could not create group: {error}",
+  "@rehearsalsGroupsCreateGroupError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rehearsalsGroupsGoToGroupTitle": "Go to a group",
+  "rehearsalsGroupsGroupIdLabel": "Group ID",
+  "rehearsalsGroupsGroupIdHint": "e.g. 6qDBI5b0LnybgBSF5KHU",
+  "rehearsalsGroupsGoButton": "Go",
+  "cancel": "Cancel",
+  "error": "Error",
+  "rehearsalsGroupsAgendaNoRehearsalsTitle": "No rehearsals yet",
+  "rehearsalsGroupsAgendaNoRehearsalsSubtitle": "Here you will see your upcoming rehearsals from all your groups."
 }

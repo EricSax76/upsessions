@@ -9,6 +9,10 @@ import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/features/contacts/controllers/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/models/liked_musician.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/notifications/models/invite_notification_entity.dart';
+import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dart';
 import 'package:upsessions/modules/rehearsals/ui/pages/rehearsal_detail_page.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
@@ -26,6 +30,12 @@ class MockRehearsalsRepository extends Mock implements RehearsalsRepository {}
 class MockSetlistRepository extends Mock implements SetlistRepository {}
 
 class MockGroupsRepository extends Mock implements GroupsRepository {}
+
+class MockChatRepository extends Mock implements ChatRepository {}
+
+class MockInviteNotificationsRepository
+    extends Mock
+    implements InviteNotificationsRepository {}
 
 class FakeLikedMusiciansController extends ChangeNotifier
     implements LikedMusiciansController {
@@ -53,6 +63,8 @@ void main() {
   late MockRehearsalsRepository rehearsalsRepository;
   late MockSetlistRepository setlistRepository;
   late MockGroupsRepository groupsRepository;
+  late MockChatRepository chatRepository;
+  late MockInviteNotificationsRepository invitesRepository;
 
   setUp(() async {
     authCubit = MockAuthCubit();
@@ -103,11 +115,24 @@ void main() {
       () => groupsRepository.watchMyGroups(),
     ).thenAnswer((_) => Stream.value(const <GroupMembershipEntity>[]));
 
+    chatRepository = MockChatRepository();
+    when(() => chatRepository.watchUnreadTotal())
+        .thenAnswer((_) => Stream.value(0));
+
+    invitesRepository = MockInviteNotificationsRepository();
+    when(() => invitesRepository.watchMyInvites()).thenAnswer(
+      (_) => Stream<List<InviteNotificationEntity>>.value(
+        const <InviteNotificationEntity>[],
+      ),
+    );
+
     await getIt.reset();
     getIt
       ..registerSingleton<RehearsalsRepository>(rehearsalsRepository)
       ..registerSingleton<SetlistRepository>(setlistRepository)
       ..registerSingleton<GroupsRepository>(groupsRepository)
+      ..registerSingleton<ChatRepository>(chatRepository)
+      ..registerSingleton<InviteNotificationsRepository>(invitesRepository)
       ..registerSingleton<LikedMusiciansController>(
         FakeLikedMusiciansController(),
       );
@@ -145,7 +170,11 @@ void main() {
     await tester.pumpWidget(
       BlocProvider<AuthCubit>.value(
         value: authCubit,
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
       ),
     );
 

@@ -41,7 +41,9 @@ class _ChatThreadDetailPageState extends State<ChatThreadDetailPage> {
         _messages = messages;
         _isLoading = false;
       });
-      _repository.markThreadRead(widget.thread.id);
+      if (widget.thread.unreadCount > 0) {
+        _repository.markThreadRead(widget.thread.id);
+      }
     } catch (error) {
       if (!mounted) return;
       setState(() => _isLoading = false);

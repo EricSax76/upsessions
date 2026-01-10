@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../auth/cubits/auth_cubit.dart';
+import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 import '../widgets/profile/profile_header.dart';
 import '../widgets/profile/profile_stats_row.dart';
 
@@ -10,53 +10,62 @@ class ProfileOverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        final isLoading =
-            state.isLoading && state.lastAction == AuthAction.loadProfile;
-        final error = state.lastAction == AuthAction.loadProfile
-            ? state.errorMessage
-            : null;
-        final profile = state.profile;
-
-        Widget body;
-        if (isLoading) {
-          body = const Center(child: CircularProgressIndicator());
-        } else if (profile == null) {
-          body = _ProfileEmptyState(
-            error: error,
-            onRetry: () => context.read<AuthCubit>().refreshProfile(),
-          );
-        } else {
-          body = Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ProfileHeader(profile: profile),
-                const SizedBox(height: 16),
-                Text(profile.bio),
-                const SizedBox(height: 16),
-                ProfileStatsRow(profile: profile),
-              ],
-            ),
-          );
-        }
-
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Perfil'),
-            actions: [
-              IconButton(
-                onPressed: () => context.read<AuthCubit>().refreshProfile(),
-                icon: const Icon(Icons.refresh),
-                tooltip: 'Actualizar perfil',
-              ),
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Perfil'),
+        actions: [
+          IconButton(
+            onPressed: () => context.read<ProfileCubit>().refreshProfile(),
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Actualizar perfil',
           ),
-          body: body,
-        );
-      },
+        ],
+      ),
+      body: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) {
+          switch (state.status) {
+            case ProfileStatus.initial:
+            case ProfileStatus.loading:
+              return const Center(child: CircularProgressIndicator());
+            case ProfileStatus.failure:
+              return _ProfileEmptyState(
+                error: state.errorMessage,
+                onRetry: () => context.read<ProfileCubit>().refreshProfile(),
+              );
+            case ProfileStatus.success:
+              final profile = state.profile;
+              if (profile == null) {
+                return _ProfileEmptyState(
+                  onRetry: () => context.read<ProfileCubit>().refreshProfile(),
+                );
+              }
+              return _ProfileContentView(profile: profile);
+          }
+        },
+      ),
+    );
+  }
+}
+
+class _ProfileContentView extends StatelessWidget {
+  const _ProfileContentView({required this.profile});
+
+  final profile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ProfileHeader(profile: profile),
+          const SizedBox(height: 16),
+          Text(profile.bio),
+          const SizedBox(height: 16),
+          ProfileStatsRow(profile: profile),
+        ],
+      ),
     );
   }
 }

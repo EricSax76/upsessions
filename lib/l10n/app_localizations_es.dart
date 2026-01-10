@@ -48,6 +48,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get createAccount => 'Crear cuenta';
 
   @override
+  String get registerPageSubtitle => 'Únete a la red de Solo Músicos';
+
+  @override
+  String get registerPageLoginPrompt => '¿Ya tienes cuenta? Inicia sesión';
+
+  @override
   String get loginContinueWith => 'O continúa con';
 
   @override
@@ -177,4 +183,62 @@ class AppLocalizationsEs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get rehearsalsGroupsMyGroupsTab => 'Mis Grupos';
+
+  @override
+  String get rehearsalsGroupsAgendaTab => 'Agenda';
+
+  @override
+  String get rehearsalsGroupsSearchLabel => 'Buscar grupos';
+
+  @override
+  String get rehearsalsGroupsClearSearchTooltip => 'Limpiar búsqueda';
+
+  @override
+  String get rehearsalsGroupsErrorLoading => 'No pudimos cargar tus grupos.';
+
+  @override
+  String get rehearsalsGroupsRetryButton => 'Reintentar';
+
+  @override
+  String get rehearsalsGroupsNoResultsTitle => 'No hay resultados';
+
+  @override
+  String get rehearsalsGroupsNoResultsSubtitle =>
+      'Prueba con otro nombre o limpia la búsqueda.';
+
+  @override
+  String get rehearsalsGroupsClearSearchButton => 'Limpiar';
+
+  @override
+  String rehearsalsGroupsCreateGroupError(String error) {
+    return 'No se pudo crear el grupo: $error';
+  }
+
+  @override
+  String get rehearsalsGroupsGoToGroupTitle => 'Ir a un grupo';
+
+  @override
+  String get rehearsalsGroupsGroupIdLabel => 'ID del grupo';
+
+  @override
+  String get rehearsalsGroupsGroupIdHint => 'Ej. 6qDBI5b0LnybgBSF5KHU';
+
+  @override
+  String get rehearsalsGroupsGoButton => 'Ir';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get rehearsalsGroupsAgendaNoRehearsalsTitle => 'No hay ensayos';
+
+  @override
+  String get rehearsalsGroupsAgendaNoRehearsalsSubtitle =>
+      'Aquí verás tus próximos ensayos de todos tus grupos.';
 }

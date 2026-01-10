@@ -18,41 +18,14 @@ class RehearsalsGroupsPage extends StatelessWidget {
   }
 }
 
-class _RehearsalsGroupsView extends StatelessWidget {
+class _RehearsalsGroupsView extends StatefulWidget {
   const _RehearsalsGroupsView();
 
   @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          Material(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: const TabBar(
-              tabs: [
-                Tab(text: 'Mis Grupos'),
-                Tab(text: 'Agenda'),
-              ],
-            ),
-          ),
-          const Expanded(
-            child: TabBarView(children: [_GroupsTab(), _AgendaTab()]),
-          ),
-        ],
-      ),
-    );
-  }
+  State<_RehearsalsGroupsView> createState() => _RehearsalsGroupsViewState();
 }
 
-class _GroupsTab extends StatefulWidget {
-  const _GroupsTab();
-
-  @override
-  State<_GroupsTab> createState() => _GroupsTabState();
-}
-
-class _GroupsTabState extends State<_GroupsTab> {
+class _RehearsalsGroupsViewState extends State<_RehearsalsGroupsView> {
   late final TextEditingController _searchController;
   String _query = '';
 
@@ -302,21 +275,6 @@ int _rolePriority(String role) {
       return 1;
     default:
       return 2;
-  }
-}
-
-class _AgendaTab extends StatelessWidget {
-  const _AgendaTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: EmptyStateCard(
-        icon: Icons.calendar_today_outlined,
-        title: 'Tu Agenda',
-        subtitle: 'Aquí verás tus próximos ensayos de todos tus grupos.',
-      ),
-    );
   }
 }
 

@@ -107,9 +107,12 @@ class LoginPage extends StatelessWidget {
                                   ),
                                   child: Text(
                                     localizations.createAccount,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelLarge
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                   ),
                                 ),
                               ],
@@ -152,7 +155,7 @@ class LoginPage extends StatelessWidget {
                 if (isSubmitting)
                   Positioned.fill(
                     child: Container(
-                      color: Colors.black26,
+                      color: Theme.of(context).colorScheme.scrim,
                       child: const Center(
                         child: LoadingIndicator(),
                       ),

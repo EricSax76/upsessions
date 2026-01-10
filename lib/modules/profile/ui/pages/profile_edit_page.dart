@@ -1,63 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 
-import '../../../auth/cubits/auth_cubit.dart';
-import 'package:upsessions/modules/auth/domain/profile_entity.dart';
 import '../widgets/profile/profile_form.dart';
 
 class ProfileEditPage extends StatelessWidget {
   const ProfileEditPage({super.key});
 
-  Future<void> _save(BuildContext context, ProfileEntity profile) async {
-    final cubit = context.read<AuthCubit>();
-    await cubit.updateProfile(profile);
-    if (!context.mounted) return;
-    final state = cubit.state;
-    final isError =
-        state.lastAction == AuthAction.updateProfile &&
-        state.errorMessage != null;
-    if (isError) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
-      cubit.clearMessages();
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Perfil actualizado')));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
+    return BlocConsumer<ProfileCubit, ProfileState>(
+      listener: (context, state) {
+        if (state.status == ProfileStatus.failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage ?? 'Error al actualizar el perfil'),
+            ),
+          );
+        }
+        if (state.status == ProfileStatus.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Perfil actualizado')),
+          );
+        }
+      },
       builder: (context, state) {
         final profile = state.profile;
-        final updating =
-            state.isLoading && state.lastAction == AuthAction.updateProfile;
 
         Widget body;
-        if (profile == null) {
-          final isLoadingProfile =
-              state.isLoading && state.lastAction == AuthAction.loadProfile;
-          final error = state.lastAction == AuthAction.loadProfile
-              ? state.errorMessage
-              : null;
+        if (state.status == ProfileStatus.loading && profile == null) {
+          body = const Center(child: CircularProgressIndicator());
+        } else if (profile == null) {
           body = Center(
-            child: isLoadingProfile
-                ? const CircularProgressIndicator()
-                : Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(error ?? 'No pudimos cargar tu perfil.'),
-                      const SizedBox(height: 12),
-                      FilledButton(
-                        onPressed: () =>
-                            context.read<AuthCubit>().refreshProfile(),
-                        child: const Text('Reintentar'),
-                      ),
-                    ],
-                  ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(state.errorMessage ?? 'No pudimos cargar tu perfil.'),
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: () => context.read<ProfileCubit>().refreshProfile(),
+                  child: const Text('Reintentar'),
+                ),
+              ],
+            ),
           );
         } else {
           body = Stack(
@@ -66,10 +51,11 @@ class ProfileEditPage extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: ProfileForm(
                   profile: profile,
-                  onSave: (updated) => _save(context, updated),
+                  onSave: (updated) =>
+                      context.read<ProfileCubit>().updateProfile(updated),
                 ),
               ),
-              if (updating)
+              if (state.status == ProfileStatus.loading)
                 const Positioned.fill(
                   child: ColoredBox(
                     color: Colors.black26,
@@ -85,7 +71,7 @@ class ProfileEditPage extends StatelessWidget {
             title: const Text('Editar perfil'),
             actions: [
               IconButton(
-                onPressed: () => context.read<AuthCubit>().refreshProfile(),
+                onPressed: () => context.read<ProfileCubit>().refreshProfile(),
                 icon: const Icon(Icons.refresh),
                 tooltip: 'Recargar perfil',
               ),

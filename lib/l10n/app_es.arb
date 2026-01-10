@@ -12,6 +12,8 @@
   "login": "Iniciar sesión",
   "forgotPassword": "¿Olvidaste tu contraseña?",
   "createAccount": "Crear cuenta",
+  "registerPageSubtitle": "Únete a la red de Solo Músicos",
+  "registerPageLoginPrompt": "¿Ya tienes cuenta? Inicia sesión",
   "loginContinueWith": "O continúa con",
   "continueWithProvider": "Continuar con {provider}",
   "@continueWithProvider": {
@@ -76,5 +78,30 @@
         "type": "int"
       }
     }
-  }
+  },
+  "rehearsalsGroupsMyGroupsTab": "Mis Grupos",
+  "rehearsalsGroupsAgendaTab": "Agenda",
+  "rehearsalsGroupsSearchLabel": "Buscar grupos",
+  "rehearsalsGroupsClearSearchTooltip": "Limpiar búsqueda",
+  "rehearsalsGroupsErrorLoading": "No pudimos cargar tus grupos.",
+  "rehearsalsGroupsRetryButton": "Reintentar",
+  "rehearsalsGroupsNoResultsTitle": "No hay resultados",
+  "rehearsalsGroupsNoResultsSubtitle": "Prueba con otro nombre o limpia la búsqueda.",
+  "rehearsalsGroupsClearSearchButton": "Limpiar",
+  "rehearsalsGroupsCreateGroupError": "No se pudo crear el grupo: {error}",
+  "@rehearsalsGroupsCreateGroupError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rehearsalsGroupsGoToGroupTitle": "Ir a un grupo",
+  "rehearsalsGroupsGroupIdLabel": "ID del grupo",
+  "rehearsalsGroupsGroupIdHint": "Ej. 6qDBI5b0LnybgBSF5KHU",
+  "rehearsalsGroupsGoButton": "Ir",
+  "cancel": "Cancelar",
+  "error": "Error",
+  "rehearsalsGroupsAgendaNoRehearsalsTitle": "No hay ensayos",
+  "rehearsalsGroupsAgendaNoRehearsalsSubtitle": "Aquí verás tus próximos ensayos de todos tus grupos."
 }

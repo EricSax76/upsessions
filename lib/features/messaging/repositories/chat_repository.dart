@@ -111,16 +111,18 @@ class ChatRepository extends ChatRepositoryBase {
     if (user == null || threadId.trim().isEmpty) return;
     final docRef = threadDoc(threadId);
     try {
+      log('markThreadRead: Setting unreadCounts.${user.id}=0 for $threadId');
       await docRef.update({'unreadCounts.${user.id}': 0});
     } on FirebaseException catch (error) {
       if (error.code == 'permission-denied') {
         // Reading messages should still work even if unread tracking is blocked by rules.
+        log('markThreadRead: permission-denied for $threadId (${error.message})');
         return;
       }
       if (error.code == 'not-found') {
-        await docRef.set({
-          'unreadCounts': {user.id: 0},
-        }, SetOptions(merge: true));
+        // Avoid creating incomplete thread documents; thread creation requires
+        // participants + createdAt and is handled elsewhere.
+        log('markThreadRead: thread not found for $threadId');
         return;
       }
       rethrow;
@@ -174,10 +176,20 @@ class ChatRepository extends ChatRepositoryBase {
       await docRef.set(payload);
 
       final lastMessage = {'id': docRef.id, ...payload};
-      await threadDoc(threadId).update({
-        'lastMessage': lastMessage,
-        'lastMessageAt': Timestamp.fromDate(now),
-      });
+      try {
+        await threadDoc(threadId).update({
+          'lastMessage': lastMessage,
+          'lastMessageAt': Timestamp.fromDate(now),
+        });
+      } on FirebaseException catch (error) {
+        if (error.code == 'permission-denied' || error.code == 'not-found') {
+          log(
+            'sendMessage: Skipping thread update ($threadId) - ${error.code}: ${error.message}',
+          );
+        } else {
+          rethrow;
+        }
+      }
       await cloudFunctionsService.notifyChatMessage(
         threadId: threadId,
         sender: user.id,
@@ -226,11 +238,6 @@ class ChatRepository extends ChatRepositoryBase {
       final docRef = threadDoc(threadId);
       final existingDoc = await docRef.get();
 
-      if (existingDoc.exists) {
-        log('ensureThreadWithParticipant: Thread $threadId already exists.');
-        return _mapper.threadFromDoc(existingDoc, currentUserId: user.id);
-      }
-
       final myName = user.displayName.trim().isEmpty
           ? 'Tú'
           : user.displayName.trim();
@@ -241,9 +248,6 @@ class ChatRepository extends ChatRepositoryBase {
       final now = DateTime.now();
       final timestamp = Timestamp.fromDate(now);
       final participantLabels = {user.id: myName, participantId: otherName};
-      log(
-        'ensureThreadWithParticipant: Creating new thread $threadId. My name: "$myName", other name: "$otherName"',
-      );
       final payload = {
         'participants': participantIds,
         'participantLabels': participantLabels,
@@ -252,6 +256,29 @@ class ChatRepository extends ChatRepositoryBase {
         'unreadCounts': {user.id: 0, participantId: 0},
       };
 
+      if (existingDoc.exists) {
+        final data = existingDoc.data();
+        final participants = data?['participants'];
+        final isParticipantList =
+            participants is List && participants.isNotEmpty;
+        final includesCurrentUser =
+            isParticipantList && participants.contains(user.id);
+        if (includesCurrentUser) {
+          log('ensureThreadWithParticipant: Thread $threadId already exists.');
+          return _mapper.threadFromDoc(existingDoc, currentUserId: user.id);
+        }
+
+        log(
+          'ensureThreadWithParticipant: Thread $threadId exists but is incomplete. Repairing.',
+        );
+        await docRef.set(payload, SetOptions(merge: true));
+        final repaired = await docRef.get();
+        return _mapper.threadFromDoc(repaired, currentUserId: user.id);
+      }
+
+      log(
+        'ensureThreadWithParticipant: Creating new thread $threadId. My name: "$myName", other name: "$otherName"',
+      );
       await docRef.set(payload);
       return _mapper.threadFromMap(threadId, payload, currentUserId: user.id);
     } on FirebaseException catch (error) {

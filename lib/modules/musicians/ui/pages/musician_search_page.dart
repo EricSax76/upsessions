@@ -12,32 +12,16 @@ import '../widgets/search/musician_search_results_list.dart';
 import '../widgets/search/musician_search_top_bar.dart';
 import '../../../../core/constants/app_routes.dart';
 
-class MusicianSearchPage extends StatelessWidget {
+class MusicianSearchPage extends StatefulWidget {
   const MusicianSearchPage({super.key, this.showAppBar = true});
 
   final bool showAppBar;
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          MusicianSearchCubit(repository: context.read<MusiciansRepository>())
-            ..search(),
-      child: MusicianSearchView(showAppBar: showAppBar),
-    );
-  }
+  State<MusicianSearchPage> createState() => _MusicianSearchPageState();
 }
 
-class MusicianSearchView extends StatefulWidget {
-  const MusicianSearchView({super.key, this.showAppBar = true});
-
-  final bool showAppBar;
-
-  @override
-  State<MusicianSearchView> createState() => _MusicianSearchViewState();
-}
-
-class _MusicianSearchViewState extends State<MusicianSearchView> {
+class _MusicianSearchPageState extends State<MusicianSearchPage> {
   final _searchController = TextEditingController();
   late final MusicianSearchFiltersController _filters;
 
@@ -54,39 +38,74 @@ class _MusicianSearchViewState extends State<MusicianSearchView> {
     _filters = MusicianSearchFiltersController()..load();
   }
 
-  void _search() {
+  void _search(BuildContext context) {
     FocusScope.of(context).unfocus();
     context.read<MusicianSearchCubit>().search(
-      query: _searchController.text.trim(),
-      instrument: _filters.instrument,
-      style: _filters.style,
-      province: _filters.province,
-      city: _filters.city,
-      profileType: _filters.profileType,
-      gender: _filters.gender,
-    );
+          query: _searchController.text.trim(),
+          instrument: _filters.instrument,
+          style: _filters.style,
+          province: _filters.province,
+          city: _filters.city,
+          profileType: _filters.profileType,
+          gender: _filters.gender,
+        );
   }
 
-  void _clearFilters() {
+  void _clearFilters(BuildContext context) {
     _searchController.clear();
     _filters.resetFilters();
-    _search();
+    _search(context);
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) =>
+          MusicianSearchCubit(repository: context.read<MusiciansRepository>())
+            ..search(),
+      child: Builder(builder: (context) {
+        return MusicianSearchView(
+          showAppBar: widget.showAppBar,
+          searchController: _searchController,
+          filters: _filters,
+          onSearch: () => _search(context),
+          onClearFilters: () => _clearFilters(context),
+        );
+      }),
+    );
+  }
+}
+
+class MusicianSearchView extends StatelessWidget {
+  const MusicianSearchView({
+    super.key,
+    this.showAppBar = true,
+    required this.searchController,
+    required this.filters,
+    required this.onSearch,
+    required this.onClearFilters,
+  });
+
+  final bool showAppBar;
+  final TextEditingController searchController;
+  final MusicianSearchFiltersController filters;
+  final VoidCallback onSearch;
+  final VoidCallback onClearFilters;
 
   @override
   Widget build(BuildContext context) {
     final body = MusicianSearchLayout(
       topBar: MusicianSearchTopBar(
-        controller: _searchController,
-        onSubmitted: (_) => _search(),
-        onPressed: _search,
+        controller: searchController,
+        onSubmitted: (_) => onSearch(),
+        onPressed: onSearch,
       ),
       filterPanelBuilder: (context, isWide) {
         return MusicianSearchFilterPanel(
-          filters: _filters,
+          filters: filters,
           isWide: isWide,
-          onSearch: _search,
-          onClear: _clearFilters,
+          onSearch: onSearch,
+          onClear: onClearFilters,
         );
       },
       results: MusicianSearchResultsList(
@@ -95,7 +114,7 @@ class _MusicianSearchViewState extends State<MusicianSearchView> {
       ),
     );
 
-    if (!widget.showAppBar) {
+    if (!showAppBar) {
       return SafeArea(child: body);
     }
 

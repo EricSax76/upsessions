@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../modules/auth/cubits/auth_cubit.dart';
 import '../../../../modules/auth/domain/profile_entity.dart';
+import '../../../../modules/profile/cubit/profile_cubit.dart';
 
 class ProfileStatusBar extends StatelessWidget {
   const ProfileStatusBar({super.key});
@@ -12,10 +13,10 @@ class ProfileStatusBar extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return BlocBuilder<AuthCubit, AuthState>(
+    return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         final profile = state.profile;
-        final user = state.user;
+        final user = context.select((AuthCubit cubit) => cubit.state.user);
         final avatarUrl = profile?.photoUrl ?? user?.photoUrl;
         final displayName = profile?.name ?? user?.displayName ?? 'Tu perfil';
         final subtitle = _buildSubtitle(profile);

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/announcements_repository.dart';
 import '../../domain/announcement_entity.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
+import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 import '../widgets/announcement_form.dart';
 
 class AnnouncementFormPage extends StatelessWidget {
@@ -14,7 +15,7 @@ class AnnouncementFormPage extends StatelessWidget {
   Future<void> _submit(BuildContext context, AnnouncementEntity entity) async {
     final authState = context.read<AuthCubit>().state;
     final user = authState.user;
-    final profile = authState.profile;
+    final profile = context.read<ProfileCubit>().state.profile;
     final authorId = user?.id ?? '';
     final authorName = profile?.name ?? user?.displayName ?? 'Autor';
 

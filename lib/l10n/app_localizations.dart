@@ -176,6 +176,18 @@ abstract class AppLocalizations {
   /// **'Crear cuenta'**
   String get createAccount;
 
+  /// No description provided for @registerPageSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Únete a la red de Solo Músicos'**
+  String get registerPageSubtitle;
+
+  /// No description provided for @registerPageLoginPrompt.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Ya tienes cuenta? Inicia sesión'**
+  String get registerPageLoginPrompt;
+
   /// No description provided for @loginContinueWith.
   ///
   /// In es, this message translates to:
@@ -397,6 +409,114 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'{count, plural, one{# persona} other{# personas}}'**
   String eventsPeopleCount(int count);
+
+  /// No description provided for @rehearsalsGroupsMyGroupsTab.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis Grupos'**
+  String get rehearsalsGroupsMyGroupsTab;
+
+  /// No description provided for @rehearsalsGroupsAgendaTab.
+  ///
+  /// In es, this message translates to:
+  /// **'Agenda'**
+  String get rehearsalsGroupsAgendaTab;
+
+  /// No description provided for @rehearsalsGroupsSearchLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar grupos'**
+  String get rehearsalsGroupsSearchLabel;
+
+  /// No description provided for @rehearsalsGroupsClearSearchTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Limpiar búsqueda'**
+  String get rehearsalsGroupsClearSearchTooltip;
+
+  /// No description provided for @rehearsalsGroupsErrorLoading.
+  ///
+  /// In es, this message translates to:
+  /// **'No pudimos cargar tus grupos.'**
+  String get rehearsalsGroupsErrorLoading;
+
+  /// No description provided for @rehearsalsGroupsRetryButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Reintentar'**
+  String get rehearsalsGroupsRetryButton;
+
+  /// No description provided for @rehearsalsGroupsNoResultsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay resultados'**
+  String get rehearsalsGroupsNoResultsTitle;
+
+  /// No description provided for @rehearsalsGroupsNoResultsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Prueba con otro nombre o limpia la búsqueda.'**
+  String get rehearsalsGroupsNoResultsSubtitle;
+
+  /// No description provided for @rehearsalsGroupsClearSearchButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Limpiar'**
+  String get rehearsalsGroupsClearSearchButton;
+
+  /// No description provided for @rehearsalsGroupsCreateGroupError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo crear el grupo: {error}'**
+  String rehearsalsGroupsCreateGroupError(String error);
+
+  /// No description provided for @rehearsalsGroupsGoToGroupTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ir a un grupo'**
+  String get rehearsalsGroupsGoToGroupTitle;
+
+  /// No description provided for @rehearsalsGroupsGroupIdLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'ID del grupo'**
+  String get rehearsalsGroupsGroupIdLabel;
+
+  /// No description provided for @rehearsalsGroupsGroupIdHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej. 6qDBI5b0LnybgBSF5KHU'**
+  String get rehearsalsGroupsGroupIdHint;
+
+  /// No description provided for @rehearsalsGroupsGoButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Ir'**
+  String get rehearsalsGroupsGoButton;
+
+  /// No description provided for @cancel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get cancel;
+
+  /// No description provided for @error.
+  ///
+  /// In es, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @rehearsalsGroupsAgendaNoRehearsalsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay ensayos'**
+  String get rehearsalsGroupsAgendaNoRehearsalsTitle;
+
+  /// No description provided for @rehearsalsGroupsAgendaNoRehearsalsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí verás tus próximos ensayos de todos tus grupos.'**
+  String get rehearsalsGroupsAgendaNoRehearsalsSubtitle;
 }
 
 class _AppLocalizationsDelegate

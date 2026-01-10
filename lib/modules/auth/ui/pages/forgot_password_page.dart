@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/validators.dart';
 import '../../cubits/auth_cubit.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -14,10 +15,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
 
+  static const double _maxWidth = 420;
+
   @override
   void initState() {
     super.initState();
-    context.read<AuthCubit>().clearMessages();
+    // The cubit should be responsible for clearing its state
+    context.read<AuthCubit>().clearPasswordResetState();
   }
 
   @override
@@ -33,13 +37,24 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Localization constants
+    const pageTitle = 'Recuperar contraseña';
+    const instructionsText = 'Ingresa el correo con el que te registraste';
+    const emailLabel = 'Correo';
+    const sendButtonText = 'Enviar instrucciones';
+    const successMessage = 'Te enviamos las instrucciones por correo.';
+
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Recuperar contraseña')),
+      appBar: AppBar(title: const Text(pageTitle)),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
+            constraints: const BoxConstraints(maxWidth: _maxWidth),
             child: BlocBuilder<AuthCubit, AuthState>(
               builder: (context, state) {
                 final isResetFlow =
@@ -47,39 +62,43 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 final isLoading = state.isLoading && isResetFlow;
                 final success = state.passwordResetEmailSent && isResetFlow;
                 final message = isResetFlow
-                    ? (success
-                          ? 'Te enviamos las instrucciones por correo.'
-                          : state.errorMessage)
+                    ? (success ? successMessage : state.errorMessage)
                     : null;
+
                 return Form(
                   key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Ingresa el correo con el que te registraste'),
+                      const Text(instructionsText),
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _emailController,
-                        decoration: const InputDecoration(labelText: 'Correo'),
-                        validator: (value) =>
-                            value != null && value.contains('@')
-                            ? null
-                            : 'Correo inválido',
+                        decoration: const InputDecoration(labelText: emailLabel),
+                        validator: AppValidators.isValidEmail,
                       ),
                       const SizedBox(height: 16),
                       if (message != null)
                         Text(
                           message,
                           style: TextStyle(
-                            color: success ? Colors.green : Colors.redAccent,
+                            color: success
+                                ? colorScheme.primary
+                                : colorScheme.error,
                           ),
                         ),
                       const SizedBox(height: 8),
                       ElevatedButton(
                         onPressed: isLoading ? null : _reset,
                         child: isLoading
-                            ? const CircularProgressIndicator()
-                            : const Text('Enviar instrucciones'),
+                            ? SizedBox.square(
+                                dimension: textTheme.bodyLarge?.fontSize,
+                                child: const CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(sendButtonText),
                       ),
                     ],
                   ),

@@ -12,6 +12,7 @@ import '../../account/account_photo_options_sheet.dart';
 import '../../account/account_profile_details_card.dart';
 import '../../account/account_profile_header_card.dart';
 import '../../account/account_settings_card.dart';
+import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -24,9 +25,6 @@ class _AccountPageState extends State<AccountPage> {
   final AccountPhotoFlow _photoFlow = AccountPhotoFlow();
   bool _twoFactor = false;
   bool _newsletter = true;
-  bool _uploadingPhoto = false;
-  bool _profileRequested = false;
-  String? _lastUserId;
 
   Future<void> _pickAndUploadPhoto(ImageSource source) async {
     try {
@@ -34,12 +32,12 @@ class _AccountPageState extends State<AccountPage> {
       if (file == null) {
         return;
       }
-      setState(() => _uploadingPhoto = true);
       final bytes = await file.readAsBytes();
       final extension = AccountPhotoFlow.extensionFromName(file.name);
       if (!mounted) return;
-      final authCubit = context.read<AuthCubit>();
-      await authCubit.updateProfilePhoto(bytes, fileExtension: extension);
+      await context
+          .read<ProfileCubit>()
+          .updateProfilePhoto(bytes, fileExtension: extension);
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -50,10 +48,6 @@ class _AccountPageState extends State<AccountPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('No se pudo actualizar la foto: $error')),
       );
-    } finally {
-      if (mounted) {
-        setState(() => _uploadingPhoto = false);
-      }
     }
   }
 
@@ -68,105 +62,81 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthCubit, AuthState>(
-      listenWhen: (previous, current) =>
-          previous.status != current.status ||
-          previous.user != current.user ||
-          previous.profile != current.profile ||
-          previous.isLoading != current.isLoading ||
-          previous.lastAction != current.lastAction,
+    return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStatus.unauthenticated) {
           context.go(AppRoutes.login);
-          return;
-        }
-
-        final user = state.user;
-        final profile = state.profile;
-        if (user?.id != _lastUserId) {
-          _lastUserId = user?.id;
-          _profileRequested = false;
-        }
-        final isLoadingProfile =
-            state.isLoading && state.lastAction == AuthAction.loadProfile;
-        if (!_profileRequested &&
-            user != null &&
-            profile == null &&
-            !isLoadingProfile) {
-          _profileRequested = true;
-          context.read<AuthCubit>().refreshProfile();
         }
       },
-      builder: (context, state) {
-        final profile = state.profile;
-        final user = state.user;
-        final isLoadingProfile =
-            state.isLoading && state.lastAction == AuthAction.loadProfile;
-        final loadError = state.lastAction == AuthAction.loadProfile
-            ? state.errorMessage
-            : null;
-        if (profile == null || user == null) {
+      child: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, profileState) {
+          final authState = context.watch<AuthCubit>().state;
+          final user = authState.user;
+          final profile = profileState.profile;
+
+          final uploadingPhoto = profileState.status == ProfileStatus.loading;
+
+          if (profile == null || user == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Mi cuenta')),
+              body: AccountMissingProfileView(
+                isLoading: profileState.status == ProfileStatus.loading,
+                error: profileState.errorMessage,
+                onRetry: () =>
+                    context.read<ProfileCubit>().refreshProfile(),
+                onSignOut: () => context.read<AuthCubit>().signOut(),
+              ),
+            );
+          }
+          final avatarUrl = profile.photoUrl ?? user.photoUrl;
           return Scaffold(
             appBar: AppBar(title: const Text('Mi cuenta')),
-            body: AccountMissingProfileView(
-              isLoading: isLoadingProfile,
-              error: loadError,
-              onRetry: () {
-                _profileRequested = false;
-                context.read<AuthCubit>().refreshProfile();
-              },
-              onSignOut: () => context.read<AuthCubit>().signOut(),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AccountProfileHeaderCard(
+                    avatarUrl: avatarUrl,
+                    name: profile.name,
+                    email: user.email,
+                    uploadingPhoto: uploadingPhoto,
+                    onChangePhoto: _openPhotoOptions,
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () => context.push(AppRoutes.profileEdit),
+                      icon: const Icon(Icons.edit_outlined),
+                      label: const Text('Actualizar perfil'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const ProfileLinkBox(),
+                  const SizedBox(height: 16),
+                  AccountProfileDetailsCard(
+                    bio: profile.bio,
+                    location: profile.location,
+                    skills: profile.skills,
+                    links: profile.links,
+                  ),
+                  const SizedBox(height: 16),
+                  AccountSettingsCard(
+                    twoFactor: _twoFactor,
+                    newsletter: _newsletter,
+                    onTwoFactorChanged: (value) =>
+                        setState(() => _twoFactor = value),
+                    onNewsletterChanged: (value) =>
+                        setState(() => _newsletter = value),
+                    onSignOut: () => context.read<AuthCubit>().signOut(),
+                  ),
+                ],
+              ),
             ),
           );
-        }
-        final avatarUrl = profile.photoUrl ?? user.photoUrl;
-        return Scaffold(
-          appBar: AppBar(title: const Text('Mi cuenta')),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AccountProfileHeaderCard(
-                  avatarUrl: avatarUrl,
-                  name: profile.name,
-                  email: user.email,
-                  uploadingPhoto: _uploadingPhoto,
-                  onChangePhoto: _openPhotoOptions,
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: () => context.push(AppRoutes.profileEdit),
-                    icon: const Icon(Icons.edit_outlined),
-                    label: const Text('Actualizar perfil'),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const ProfileLinkBox(),
-                const SizedBox(height: 16),
-                AccountProfileDetailsCard(
-                  bio: profile.bio,
-                  location: profile.location,
-                  skills: profile.skills,
-                  links: profile.links,
-                ),
-                const SizedBox(height: 16),
-                AccountSettingsCard(
-                  twoFactor: _twoFactor,
-                  newsletter: _newsletter,
-                  onTwoFactorChanged: (value) =>
-                      setState(() => _twoFactor = value),
-                  onNewsletterChanged: (value) =>
-                      setState(() => _newsletter = value),
-                  onSignOut: () => context.read<AuthCubit>().signOut(),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 }

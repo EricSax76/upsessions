@@ -8,6 +8,7 @@ import 'package:upsessions/features/messaging/repositories/chat_repository.dart'
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/features/notifications/models/invite_notification_entity.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
+import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 
 class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SmAppBar({super.key, this.bottom, this.showMenuButton = false});
@@ -17,70 +18,72 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(
-    kToolbarHeight + 12 + (bottom?.preferredSize.height ?? 0),
-  );
+        kToolbarHeight + 12 + (bottom?.preferredSize.height ?? 0),
+      );
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        final user = state.user;
-        final profile = state.profile;
-        final avatarUrl = profile?.photoUrl ?? user?.photoUrl;
-        final displayName = user?.displayName ?? '';
-        return AppBar(
-          automaticallyImplyLeading: false,
-          title: InkWell(
-            onTap: () => context.go(AppRoutes.userHome),
-            borderRadius: BorderRadius.circular(8),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: Icon(Icons.home_outlined),
-            ),
-          ),
-          bottom: bottom,
-          leading: showMenuButton
-              ? Builder(
-                  builder: (context) => IconButton(
-                    icon: const Icon(Icons.menu),
-                    onPressed: () => Scaffold.of(context).openDrawer(),
-                  ),
-                )
-              : null,
-          actions: [
-            _NotificationsButton(
-              onPressed: () => context.push(AppRoutes.notifications),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: InkWell(
-                onTap: () => context.push(AppRoutes.account),
-                borderRadius: BorderRadius.circular(24),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundImage: avatarUrl != null
-                          ? NetworkImage(avatarUrl)
-                          : null,
-                      child: avatarUrl == null
-                          ? Text(
-                              displayName.isNotEmpty
-                                  ? displayName[0].toUpperCase()
-                                  : '',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
-                          : null,
-                    ),
-                  ],
+      builder: (context, authState) {
+        return BlocBuilder<ProfileCubit, ProfileState>(
+          builder: (context, profileState) {
+            final user = authState.user;
+            final profile = profileState.profile;
+            final avatarUrl = profile?.photoUrl ?? user?.photoUrl;
+            final displayName = user?.displayName ?? '';
+            return AppBar(
+              automaticallyImplyLeading: false,
+              title: InkWell(
+                onTap: () => context.go(AppRoutes.userHome),
+                borderRadius: BorderRadius.circular(8),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  child: Icon(Icons.home_outlined),
                 ),
               ),
-            ),
-
-            const SizedBox(width: 8),
-          ],
+              bottom: bottom,
+              leading: showMenuButton
+                  ? Builder(
+                      builder: (context) => IconButton(
+                        icon: const Icon(Icons.menu),
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                      ),
+                    )
+                  : null,
+              actions: [
+                _NotificationsButton(
+                  onPressed: () => context.push(AppRoutes.notifications),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: InkWell(
+                    onTap: () => context.push(AppRoutes.account),
+                    borderRadius: BorderRadius.circular(24),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundImage:
+                              avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                          child: avatarUrl == null
+                              ? Text(
+                                  displayName.isNotEmpty
+                                      ? displayName[0].toUpperCase()
+                                      : '',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+            );
+          },
         );
       },
     );
@@ -135,9 +138,8 @@ class _NotificationsButtonBodyState extends State<_NotificationsButtonBody> {
                 invitesSnapshot.data ?? const <InviteNotificationEntity>[];
 
             final unreadMessages = unreadChatsSnapshot.data ?? 0;
-            final unreadInvites = invites
-                .where((invite) => !invite.read)
-                .length;
+            final unreadInvites =
+                invites.where((invite) => !invite.read).length;
             final unreadTotal = unreadMessages + unreadInvites;
 
             return IconButton(

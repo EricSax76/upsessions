@@ -203,11 +203,55 @@ service cloud.firestore {
     }
 
     match /chat_threads/{threadId} {
+      function isOwnUnreadCountUpdateOnly() {
+        let before =
+          (resource.data.unreadCounts is map) ? resource.data.unreadCounts : {};
+        let after =
+          (request.resource.data.unreadCounts is map)
+            ? request.resource.data.unreadCounts
+            : {};
+        let changedKeys = after.diff(before).affectedKeys();
+        return changedKeys.hasOnly([request.auth.uid])
+          && after[request.auth.uid] is number
+          && after[request.auth.uid] >= 0;
+      }
+
+      function isOwnUnreadWriteFieldsOnly() {
+        let fields = request.writeFields;
+        let uid = request.auth.uid;
+        return fields.hasOnly(['unreadCounts.' + uid])
+          || fields.hasOnly(['unreadCounts', 'unreadCounts.' + uid])
+          || (fields.hasOnly(['unreadCounts']) && isOwnUnreadCountUpdateOnly());
+      }
+
       function isAllowedThreadUpdate() {
+        // Use diff().affectedKeys() to avoid SDK-specific writeFields behavior.
         let keys = request.resource.data.diff(resource.data).affectedKeys();
-        return keys.hasOnly(['lastMessage', 'lastMessageAt', 'participants', 'unreadCounts'])
-          || keys.hasOnly(['unreadCounts.' + request.auth.uid])
-          || keys.hasOnly(['lastMessage', 'lastMessageAt', 'unreadCounts.' + request.auth.uid]);
+        return keys.hasOnly(['lastMessage', 'lastMessageAt'])
+          || keys.hasOnly(['participants'])
+          || keys.hasOnly(['participantLabels'])
+          || (keys.hasOnly(['unreadCounts']) && isOwnUnreadCountUpdateOnly())
+          || (keys.hasOnly(['lastMessage', 'lastMessageAt', 'unreadCounts'])
+            && isOwnUnreadCountUpdateOnly())
+          || keys.hasOnly(['lastMessage', 'lastMessageAt', 'participantLabels'])
+          || keys.hasOnly(['lastMessage', 'lastMessageAt', 'participants']);
+      }
+
+      function isAllowedThreadRepair() {
+        let keys = request.resource.data.diff(resource.data).affectedKeys();
+        return isSignedIn()
+          // Only allow repairing legacy/incomplete thread docs that are missing participants.
+          && (!('participants' in resource.data) || !(resource.data.participants is list))
+          && isValidThread()
+          && request.auth.uid in request.resource.data.participants
+          && keys.hasOnly([
+            'participants',
+            'participantLabels',
+            'createdAt',
+            'lastMessage',
+            'lastMessageAt',
+            'unreadCounts',
+          ]);
       }
 
       function participantsNotRemoved() {
@@ -222,12 +266,16 @@ service cloud.firestore {
       allow get: if (resource != null && isThreadParticipant(resource.data))
         || (resource == null && isSignedIn());
       allow list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isThreadParticipant(resource.data)
-        // Only allow updating last message info and participantIds
-        && isAllowedThreadUpdate()
-        // Ensure participants cannot be removed (when provided).
-        && participantsNotRemoved();
+      allow create: if isSignedIn()
+        && isValidThread()
+        && request.auth.uid in request.resource.data.participants;
+      allow update: if (
+        isThreadParticipant(resource.data)
+          // Only allow updating last message info and participantIds
+          && isAllowedThreadUpdate()
+          // Ensure participants cannot be removed (when provided).
+          && participantsNotRemoved()
+      ) || isAllowedThreadRepair();
       // Allow deletion only by a participant and if the messages subcollection is empty.
       allow delete: if isThreadParticipant(resource.data) && !exists(/databases/$(database)/documents/chat_threads/$(threadId)/messages);
 
