@@ -172,6 +172,10 @@ service cloud.firestore {
       match /fcmTokens/{tokenId} {
         allow read, write: if isOwner(musicianId);
       }
+      
+      match /counters/{counterId} {
+        allow read, write: if isOwner(musicianId);
+      }
     }
 
     match /announcements/{announcementId} {

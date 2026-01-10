@@ -90,7 +90,13 @@ class PushNotificationsService {
         .doc(uid)
         .collection('fcmTokens')
         .doc(token);
-    await ref.delete();
+    try {
+      await ref.delete();
+    } on FirebaseException catch (error) {
+      if (error.code != 'permission-denied') {
+        rethrow;
+      }
+    }
   }
 
   String _platformLabel() {

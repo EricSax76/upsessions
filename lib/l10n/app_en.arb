@@ -10,6 +10,35 @@
   "skip": "Skip",
   "next": "Next",
   "login": "Sign in",
+  "forgotPassword": "Forgot your password?",
+  "createAccount": "Create account",
+  "loginContinueWith": "Or continue with",
+  "continueWithProvider": "Continue with {provider}",
+  "@continueWithProvider": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "socialLoginPlaceholder": "{provider} login is coming soon.",
+  "@socialLoginPlaceholder": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "providerEmail": "Email",
+  "providerFacebook": "Facebook",
+  "providerApple": "Apple",
+  "emailHint": "Email address",
+  "emailRequired": "Enter your email",
+  "emailInvalid": "Enter a valid email address",
+  "passwordHint": "Password",
+  "passwordToggleShow": "Show password",
+  "passwordToggleHide": "Hide password",
+  "passwordTooShort": "Password must have at least 4 characters",
   "onboardingCollaborateTitle": "Connect with real musicians",
   "onboardingCollaborateDescription": "Discover instrumentalists and producers available for live or remote sessions.",
   "onboardingShowcaseTitle": "Showcase your talent",

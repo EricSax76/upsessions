@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -44,7 +45,6 @@ class AuthCubit extends Cubit<AuthState> {
   final ProfileRepository _profileRepository;
   final PushNotificationsService? _pushNotificationsService;
   StreamSubscription<UserEntity?>? _authSubscription;
-  String? _lastUserId;
 
   Future<void> signIn(String email, String password) async {
     emit(
@@ -131,7 +131,11 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> signOut() async {
-    print('[AuthCubit] Signing out...');
+    log('[AuthCubit] Signing out...');
+    final userId = state.user?.id;
+    if (userId != null && _pushNotificationsService != null) {
+      unawaited(_pushNotificationsService.unregisterUser(userId));
+    }
     emit(state.copyWith(lastAction: AuthAction.signOut));
     await _authRepository.signOut();
   }
@@ -285,11 +289,9 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   void _handleUserChanged(UserEntity? user) {
-    print(
+    log(
       '[AuthCubit] User state changed: ${user != null ? 'Authenticated' : 'Unauthenticated'} (user ID: ${user?.id})',
     );
-    final previousUserId = _lastUserId;
-    _lastUserId = user?.id;
     emit(
       state.copyWith(
         status: user != null
@@ -312,8 +314,6 @@ class AuthCubit extends Cubit<AuthState> {
       if (_pushNotificationsService != null) {
         unawaited(_pushNotificationsService.registerForUser(user.id));
       }
-    } else if (previousUserId != null && _pushNotificationsService != null) {
-      unawaited(_pushNotificationsService.unregisterUser(previousUserId));
     }
   }
 

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
+
+import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/widgets/gap.dart';
 
 import '../../cubits/auth_cubit.dart';
 
@@ -40,6 +44,7 @@ class _LoginFormState extends State<LoginForm> {
         final error = state.lastAction == AuthAction.login
             ? state.errorMessage
             : null;
+        final localization = AppLocalizations.of(context);
         return Form(
           key: _formKey,
           child: Column(
@@ -52,25 +57,25 @@ class _LoginFormState extends State<LoginForm> {
                   AutofillHints.username,
                   AutofillHints.email,
                 ],
-                decoration: const InputDecoration(
-                  hintText: 'Correo electrónico',
+                decoration: InputDecoration(
+                  hintText: localization.emailHint,
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Ingresa tu correo';
+                    return localization.emailRequired;
                   }
                   if (!value.contains('@')) {
-                    return 'Correo inválido';
+                    return localization.emailInvalid;
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: 12),
+              const VSpace(AppSpacing.md),
               TextFormField(
                 controller: _passwordController,
                 autofillHints: const [AutofillHints.password],
                 decoration: InputDecoration(
-                  hintText: 'Contraseña',
+                  hintText: localization.passwordHint,
                   suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
@@ -84,19 +89,19 @@ class _LoginFormState extends State<LoginForm> {
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     tooltip: _obscurePassword
-                        ? 'Mostrar contraseña'
-                        : 'Ocultar contraseña',
+                        ? localization.passwordToggleShow
+                        : localization.passwordToggleHide,
                   ),
                 ),
                 obscureText: _obscurePassword,
                 validator: (value) => value != null && value.length >= 4
                     ? null
-                    : 'Contraseña demasiado corta',
+                    : localization.passwordTooShort,
               ),
-              const SizedBox(height: 16),
+              const VSpace(AppSpacing.md),
               if (error != null)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                   child: Text(
                     error,
                     style: TextStyle(
@@ -119,7 +124,7 @@ class _LoginFormState extends State<LoginForm> {
                             ),
                           ),
                         )
-                      : const Text('Ingresar'),
+                      : Text(localization.login),
                 ),
               ),
             ],

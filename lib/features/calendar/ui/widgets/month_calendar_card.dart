@@ -101,7 +101,6 @@ class CalendarGrid extends StatelessWidget {
     final leadingEmpty = (firstWeekday + 6) % 7;
     final totalCells = leadingEmpty + daysInMonth;
     final trailingEmpty = (totalCells % 7) == 0 ? 0 : 7 - (totalCells % 7);
-    final theme = Theme.of(context);
 
     final cells = <DateTime?>[
       ...List<DateTime?>.filled(leadingEmpty, null),

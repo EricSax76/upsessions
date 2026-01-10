@@ -10,6 +10,35 @@
   "skip": "Saltar",
   "next": "Siguiente",
   "login": "Iniciar sesión",
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "createAccount": "Crear cuenta",
+  "loginContinueWith": "O continúa con",
+  "continueWithProvider": "Continuar con {provider}",
+  "@continueWithProvider": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "socialLoginPlaceholder": "El inicio de sesión con {provider} estará disponible pronto.",
+  "@socialLoginPlaceholder": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "providerEmail": "Correo",
+  "providerFacebook": "Facebook",
+  "providerApple": "Apple",
+  "emailHint": "Correo electrónico",
+  "emailRequired": "Ingresa tu correo",
+  "emailInvalid": "Ingresa un correo válido",
+  "passwordHint": "Contraseña",
+  "passwordToggleShow": "Mostrar contraseña",
+  "passwordToggleHide": "Ocultar contraseña",
+  "passwordTooShort": "La contraseña debe tener al menos 4 caracteres",
   "onboardingCollaborateTitle": "Conecta con músicos reales",
   "onboardingCollaborateDescription": "Descubre instrumentistas y productores disponibles para sesiones en vivo o remotas.",
   "onboardingShowcaseTitle": "Muestra tu talento",

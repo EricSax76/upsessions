@@ -42,6 +42,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get login => 'Sign in';
 
   @override
+  String get forgotPassword => 'Forgot your password?';
+
+  @override
+  String get createAccount => 'Create account';
+
+  @override
+  String get loginContinueWith => 'Or continue with';
+
+  @override
+  String continueWithProvider(String provider) {
+    return 'Continue with $provider';
+  }
+
+  @override
+  String socialLoginPlaceholder(String provider) {
+    return '$provider login is coming soon.';
+  }
+
+  @override
+  String get providerEmail => 'Email';
+
+  @override
+  String get providerFacebook => 'Facebook';
+
+  @override
+  String get providerApple => 'Apple';
+
+  @override
+  String get emailHint => 'Email address';
+
+  @override
+  String get emailRequired => 'Enter your email';
+
+  @override
+  String get emailInvalid => 'Enter a valid email address';
+
+  @override
+  String get passwordHint => 'Password';
+
+  @override
+  String get passwordToggleShow => 'Show password';
+
+  @override
+  String get passwordToggleHide => 'Hide password';
+
+  @override
+  String get passwordTooShort => 'Password must have at least 4 characters';
+
+  @override
   String get onboardingCollaborateTitle => 'Connect with real musicians';
 
   @override

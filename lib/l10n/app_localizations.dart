@@ -164,6 +164,96 @@ abstract class AppLocalizations {
   /// **'Iniciar sesión'**
   String get login;
 
+  /// No description provided for @forgotPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Olvidaste tu contraseña?'**
+  String get forgotPassword;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear cuenta'**
+  String get createAccount;
+
+  /// No description provided for @loginContinueWith.
+  ///
+  /// In es, this message translates to:
+  /// **'O continúa con'**
+  String get loginContinueWith;
+
+  /// No description provided for @continueWithProvider.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar con {provider}'**
+  String continueWithProvider(String provider);
+
+  /// No description provided for @socialLoginPlaceholder.
+  ///
+  /// In es, this message translates to:
+  /// **'El inicio de sesión con {provider} estará disponible pronto.'**
+  String socialLoginPlaceholder(String provider);
+
+  /// No description provided for @providerEmail.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo'**
+  String get providerEmail;
+
+  /// No description provided for @providerFacebook.
+  ///
+  /// In es, this message translates to:
+  /// **'Facebook'**
+  String get providerFacebook;
+
+  /// No description provided for @providerApple.
+  ///
+  /// In es, this message translates to:
+  /// **'Apple'**
+  String get providerApple;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo electrónico'**
+  String get emailHint;
+
+  /// No description provided for @emailRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingresa tu correo'**
+  String get emailRequired;
+
+  /// No description provided for @emailInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingresa un correo válido'**
+  String get emailInvalid;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña'**
+  String get passwordHint;
+
+  /// No description provided for @passwordToggleShow.
+  ///
+  /// In es, this message translates to:
+  /// **'Mostrar contraseña'**
+  String get passwordToggleShow;
+
+  /// No description provided for @passwordToggleHide.
+  ///
+  /// In es, this message translates to:
+  /// **'Ocultar contraseña'**
+  String get passwordToggleHide;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In es, this message translates to:
+  /// **'La contraseña debe tener al menos 4 caracteres'**
+  String get passwordTooShort;
+
   /// No description provided for @onboardingCollaborateTitle.
   ///
   /// In es, this message translates to:
