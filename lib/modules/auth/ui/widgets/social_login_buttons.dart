@@ -72,15 +72,32 @@ class _SocialButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SizedBox(
-      height: 54,
+      height: 72,
       child: Tooltip(
         message: tooltip,
-        child: OutlinedButton.icon(
+        child: OutlinedButton(
           onPressed: onPressed,
-          icon: Icon(icon, color: theme.colorScheme.primary),
-          label: Text(label),
           style: OutlinedButton.styleFrom(
             foregroundColor: theme.colorScheme.onSurface,
+            padding: const EdgeInsets.symmetric(
+              vertical: AppSpacing.sm,
+              horizontal: AppSpacing.sm,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: theme.colorScheme.primary, size: 22),
+              const VSpace(AppSpacing.xxs),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelMedium?.copyWith(fontSize: 12),
+              ),
+            ],
           ),
         ),
       ),

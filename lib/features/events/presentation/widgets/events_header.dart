@@ -16,39 +16,73 @@ class EventsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           loc.eventsShowcasesTitle,
-          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Text(
           loc.eventsShowcasesDescription,
-          style: Theme.of(context).textTheme.bodyLarge,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            height: 1.35,
+          ),
         ),
-        const SizedBox(height: 24),
-        Wrap(
-          spacing: 16,
-          runSpacing: 16,
-          children: [
-            SummaryChip(
+        const SizedBox(height: 20),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final maxWidth = constraints.maxWidth;
+            final isWide = maxWidth >= 720;
+
+            final active = SummaryChip(
               label: loc.eventsActiveLabel,
               value: eventsCount.toString(),
               icon: Icons.event_available,
-            ),
-            SummaryChip(
+            );
+            final thisWeek = SummaryChip(
               label: loc.eventsThisWeekLabel,
               value: thisWeekCount.toString(),
               icon: Icons.calendar_month,
-            ),
-            SummaryChip(
+            );
+            final capacity = SummaryChip(
               label: loc.eventsTotalCapacityLabel,
               value: loc.eventsPeopleCount(totalCapacity),
               icon: Icons.people_alt_outlined,
-            ),
-          ],
+            );
+
+            if (isWide) {
+              return Row(
+                children: [
+                  Expanded(child: active),
+                  const SizedBox(width: 12),
+                  Expanded(child: thisWeek),
+                  const SizedBox(width: 12),
+                  Expanded(child: capacity),
+                ],
+              );
+            }
+
+            return Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: active),
+                    const SizedBox(width: 12),
+                    Expanded(child: thisWeek),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                capacity,
+              ],
+            );
+          },
         ),
       ],
     );
@@ -70,28 +104,55 @@ class SummaryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.dividerColor),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+        ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: theme.colorScheme.primary),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              Text(
-                value,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
-              Text(label),
+              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  color: colorScheme.primary,
+                  size: 20,
+                ),
+              ),
             ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),

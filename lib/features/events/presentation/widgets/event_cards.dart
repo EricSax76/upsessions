@@ -17,37 +17,63 @@ class EventHighlightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final loc = MaterialLocalizations.of(context);
     final startTime = loc.formatTimeOfDay(TimeOfDay.fromDateTime(event.start));
     final endTime = loc.formatTimeOfDay(TimeOfDay.fromDateTime(event.end));
 
     return Card(
       elevation: 0,
-      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.2),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              event.title,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        event.title,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${loc.formatFullDate(event.start)} · $startTime - $endTime',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      Text(
+                        '${event.venue} · ${event.city}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Ver detalles',
+                  onPressed: () => onViewDetails(event),
+                  icon: const Icon(Icons.open_in_new),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              '${loc.formatFullDate(event.start)} · $startTime - $endTime',
-              style: theme.textTheme.titleMedium,
-            ),
-            Text(
-              '${event.venue} · ${event.city}',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -55,37 +81,39 @@ class EventHighlightCard extends StatelessWidget {
                   .map(
                     (tag) => Chip(
                       label: Text(tag),
-                      backgroundColor: theme.colorScheme.surface,
+                      visualDensity: VisualDensity.compact,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      backgroundColor: colorScheme.surface,
                     ),
                   )
                   .toList(),
             ),
+            const SizedBox(height: 14),
+            Text(
+              event.description,
+              style: theme.textTheme.bodyMedium?.copyWith(height: 1.35),
+            ),
             const SizedBox(height: 16),
-            Text(event.description),
-            const SizedBox(height: 20),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                FilledButton.icon(
-                  onPressed: () => onSelect(event),
-                  icon: const Icon(Icons.description_outlined),
-                  label: const Text('Ver ficha en texto'),
-                ),
-                TextButton.icon(
-                  onPressed: () => onSelect(event),
-                  icon: const Icon(Icons.copy_all_outlined),
-                  label: const Text('Copiar formato'),
-                ),
-              ],
+            Divider(
+              height: 1,
+              color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () => onSelect(event),
+                icon: const Icon(Icons.description_outlined),
+                label: const Text('Ver ficha en texto'),
+              ),
             ),
             const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                onPressed: () => onViewDetails(event),
-                icon: const Icon(Icons.open_in_new),
-                label: const Text('Ver detalles'),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => onSelect(event),
+                icon: const Icon(Icons.copy_all_outlined),
+                label: const Text('Copiar formato'),
               ),
             ),
           ],
@@ -155,10 +183,18 @@ class EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final loc = MaterialLocalizations.of(context);
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final duration =
         '${loc.formatTimeOfDay(TimeOfDay.fromDateTime(event.start))} · ${event.venue}';
 
     return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.6),
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -167,10 +203,10 @@ class EventCard extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: theme.colorScheme.primary.withValues(
+                  backgroundColor: colorScheme.primary.withValues(
                     alpha: 0.12,
                   ),
-                  child: Icon(Icons.event, color: theme.colorScheme.primary),
+                  child: Icon(Icons.event, color: colorScheme.primary),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -180,10 +216,15 @@ class EventCard extends StatelessWidget {
                       Text(
                         event.title,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
-                      Text('${loc.formatMediumDate(event.start)} · $duration'),
+                      Text(
+                        '${loc.formatMediumDate(event.start)} · $duration',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -199,6 +240,7 @@ class EventCard extends StatelessWidget {
               event.description,
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(height: 1.35),
             ),
             const SizedBox(height: 12),
             Wrap(
@@ -240,15 +282,27 @@ class InfoChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        color: theme.colorScheme.surfaceContainerHighest,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: [Icon(icon, size: 16), const SizedBox(width: 6), Text(label)],
+        children: [
+          Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelMedium,
+            ),
+          ),
+        ],
       ),
     );
   }

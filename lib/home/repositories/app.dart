@@ -19,6 +19,20 @@ class UpsessionsApp extends StatelessWidget {
 
   final AppRouter _appRouter = AppRouter();
 
+  static const Locale _fallbackLocale = Locale('es');
+
+  static Locale _resolveLocale(List<Locale>? preferredLocales) {
+    final supportedLocales = AppLocalizations.supportedLocales;
+    for (final preferredLocale in preferredLocales ?? const <Locale>[]) {
+      for (final supportedLocale in supportedLocales) {
+        if (supportedLocale.languageCode == preferredLocale.languageCode) {
+          return supportedLocale;
+        }
+      }
+    }
+    return _fallbackLocale;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
@@ -52,7 +66,8 @@ class UpsessionsApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
+            supportedLocales: const <Locale>[Locale('es'), Locale('en')],
+            localeListResolutionCallback: (locales, _) => _resolveLocale(locales),
             routerConfig: _appRouter.router,
           ),
         ),

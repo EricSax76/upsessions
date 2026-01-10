@@ -18,19 +18,53 @@ class EventPlannerSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Crea una ficha utilitaria',
-          style: Theme.of(
-            context,
-          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Completa los campos clave y obtén un texto que puedes pegar en un archivo plano o enviar por WhatsApp/Email.',
-          style: Theme.of(context).textTheme.bodyLarge,
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.edit_calendar_rounded,
+                size: 32,
+                color: colorScheme.primary,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Crea un evento tipo plantilla',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Completa los campos clave y obtén un texto que puedes pegar en un archivo plano o enviar por WhatsApp/Email.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 24),
         LayoutBuilder(
