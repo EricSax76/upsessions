@@ -1,8 +1,9 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
+import { region } from './region';
+
 admin.initializeApp();
-const region = functions.region('europe-west3');
 
 export const ping = region.https.onRequest(
   (request: functions.https.Request, response: functions.Response) => {
@@ -98,3 +99,5 @@ export const onGroupInviteCreated = region.firestore
       ),
     );
   });
+
+export { seedChatThreads } from './chatSeeder';
