@@ -107,6 +107,33 @@ class ChatRepository extends ChatRepositoryBase {
     }
   }
 
+  Future<ChatThread?> fetchThread(String threadId) async {
+    final currentUser = authRepository.currentUser;
+    if (currentUser == null) {
+      log('fetchThread: No current user. Returning null.');
+      return null;
+    }
+    final normalizedId = threadId.trim();
+    if (normalizedId.isEmpty) {
+      return null;
+    }
+    try {
+      log('fetchThread: Fetching thread $normalizedId');
+      final doc = await threadDoc(normalizedId).get();
+      if (!doc.exists) {
+        log('fetchThread: Thread $normalizedId not found.');
+        return null;
+      }
+      return _mapper.threadFromDoc(doc, currentUserId: currentUser.id);
+    } on FirebaseException catch (error) {
+      log('fetchThread: FirebaseException - ${error.code}: ${error.message}');
+      if (error.code == 'permission-denied') {
+        throw Exception('No tienes permisos para abrir este chat.');
+      }
+      rethrow;
+    }
+  }
+
   Future<void> markThreadRead(String threadId) async {
     final user = authRepository.currentUser;
     if (user == null || threadId.trim().isEmpty) return;

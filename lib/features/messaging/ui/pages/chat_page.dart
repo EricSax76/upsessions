@@ -25,6 +25,7 @@ class _ChatPageState extends State<ChatPage> {
   List<ChatThread> _threads = const [];
   List<ChatMessage> _messages = const [];
   ChatThread? _selectedThread;
+  bool _didAutoOpenInitialThread = false;
 
   @override
   void initState() {
@@ -34,7 +35,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _loadThreads({String? preferThreadId}) async {
     try {
-      final threads = await _repository.fetchThreads();
+      var threads = await _repository.fetchThreads();
       ChatThread? selected;
       final targetThreadId = preferThreadId ?? _selectedThread?.id;
       if (targetThreadId != null) {
@@ -45,6 +46,16 @@ class _ChatPageState extends State<ChatPage> {
           }
         }
       }
+      if (selected == null && targetThreadId != null) {
+        final thread = await _repository.fetchThread(targetThreadId);
+        if (thread != null) {
+          threads = [
+            thread,
+            ...threads.where((existing) => existing.id != thread.id),
+          ];
+          selected = thread;
+        }
+      }
       selected ??= threads.isNotEmpty ? threads.first : null;
       if (!mounted) return;
       setState(() {
@@ -53,6 +64,18 @@ class _ChatPageState extends State<ChatPage> {
       });
       if (selected != null) {
         await _loadMessages(selected.id);
+        if (!_didAutoOpenInitialThread && preferThreadId != null) {
+          _didAutoOpenInitialThread = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            final isCompact = MediaQuery.sizeOf(context).width < 720;
+            final thread = _selectedThread;
+            final currentUserId = _authRepository.currentUser?.id ?? '';
+            if (isCompact && thread != null) {
+              _openThreadDetail(thread, currentUserId);
+            }
+          });
+        }
       } else {
         if (mounted) {
           setState(() => _messages = const []);
