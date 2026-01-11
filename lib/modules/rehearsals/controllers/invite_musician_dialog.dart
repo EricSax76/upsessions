@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:upsessions/core/constants/app_link_scheme.dart';
 
 import '../../musicians/models/musician_entity.dart';
 import 'group_rehearsals_controller.dart';
@@ -178,7 +179,7 @@ class _InviteMusicianDialogState extends State<InviteMusicianDialog> {
         targetUid: target.ownerId,
       );
       final link =
-          'myapp:///invite?groupId=${widget.groupId}&inviteId=$inviteId';
+          '$appLinkScheme:///invite?groupId=${widget.groupId}&inviteId=$inviteId';
       if (!context.mounted) return;
 
       await showDialog<void>(

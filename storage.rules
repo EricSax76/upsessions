@@ -1,15 +1,51 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function groupDocPath(groupId) {
+      return /databases/(default)/documents/groups/$(groupId);
+    }
+
+    function memberDocPath(groupId, uid) {
+      return /databases/(default)/documents/groups/$(groupId)/members/$(uid);
+    }
+
+    function musicianDocPath(uid) {
+      return /databases/(default)/documents/musicians/$(uid);
+    }
+
+    function isMusician() {
+      return isSignedIn() && firestore.exists(musicianDocPath(request.auth.uid));
+    }
+
+    function isGroupOwner(groupId) {
+      return isSignedIn()
+        && firestore.exists(groupDocPath(groupId))
+        && firestore.get(groupDocPath(groupId)).data.ownerId == request.auth.uid;
+    }
+
+    function isActiveMember(groupId) {
+      return isMusician()
+        && firestore.exists(memberDocPath(groupId, request.auth.uid))
+        && firestore.get(memberDocPath(groupId, request.auth.uid)).data.status == 'active';
+    }
+
+    function isAdminOrOwner(groupId) {
+      return isActiveMember(groupId)
+        && firestore.get(memberDocPath(groupId, request.auth.uid)).data.role in ['owner', 'admin'];
+    }
+
     match /profiles/{userId}/{allPaths=**} {
       allow read: if true;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
 
     match /groups/{groupId}/{allPaths=**} {
-      allow read: if true;
-      allow write: if request.auth != null
-        && firestore.get(/databases/(default)/documents/groups/$(groupId)).data.ownerId == request.auth.uid;
+      allow read: if isActiveMember(groupId) || isGroupOwner(groupId);
+      allow write: if isAdminOrOwner(groupId) || isGroupOwner(groupId);
     }
 
     match /{allPaths=**} {

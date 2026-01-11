@@ -52,7 +52,7 @@
 			<string>upsessions</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>myapp</string>
+				<string>com.example.musicintouch</string>
 			</array>
 		</dict>
 	</array>

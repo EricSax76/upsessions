@@ -193,7 +193,7 @@ service cloud.firestore {
     }
 
     match /events/{eventId} {
-      allow read: if true;
+      allow read: if isSignedIn();
       allow create: if isSignedIn() && isValidEvent();
       allow update: if isSignedIn()
         && isValidEvent()

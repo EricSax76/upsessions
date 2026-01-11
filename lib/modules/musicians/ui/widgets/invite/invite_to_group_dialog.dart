@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/core/constants/app_link_scheme.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/modules/rehearsals/cubits/group_membership_entity.dart';
 import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dart';
@@ -112,7 +113,7 @@ class _InviteToGroupDialogState extends State<InviteToGroupDialog> {
         groupId: groupId,
         targetUid: widget.targetUid,
       );
-      final link = 'myapp:///invite?groupId=$groupId&inviteId=$inviteId';
+      final link = '$appLinkScheme:///invite?groupId=$groupId&inviteId=$inviteId';
       if (!context.mounted) return;
 
       await showDialog<void>(

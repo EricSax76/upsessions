@@ -4,6 +4,8 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../constants/app_link_scheme.dart';
+
 class AppLinksListener extends StatefulWidget {
   const AppLinksListener({super.key, required this.router, required this.child});
 
@@ -42,11 +44,11 @@ class _AppLinksListenerState extends State<AppLinksListener> {
 
   String? _locationFromUri(Uri? uri) {
     if (uri == null) return null;
-    if (uri.scheme != 'myapp') return null;
+    if (uri.scheme != appLinkScheme) return null;
 
     // Support both:
-    // - myapp:///invite?groupId=...&inviteId=...
-    // - myapp://invite?groupId=...&inviteId=...
+    // - com.example.musicintouch:///invite?groupId=...&inviteId=...
+    // - com.example.musicintouch://invite?groupId=...&inviteId=...
     final path = uri.path.isNotEmpty ? uri.path : '/${uri.host}';
     if (path.isEmpty || path == '/') return null;
 
@@ -63,4 +65,3 @@ class _AppLinksListenerState extends State<AppLinksListener> {
   @override
   Widget build(BuildContext context) => widget.child;
 }
-
