@@ -45,8 +45,7 @@ class ChatRepositoryBase {
       .collection('counters')
       .doc('chat');
 
-  CollectionReference<Map<String, dynamic>> threadIndex(String uid) => firestore
-      .collection('musicians')
-      .doc(uid)
-      .collection('threads');
+  Query<Map<String, dynamic>> threadsForUser(String uid) => threads()
+      .where('participants', arrayContains: uid)
+      .orderBy('lastMessageAt', descending: true);
 }

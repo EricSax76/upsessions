@@ -68,20 +68,29 @@ class PushNotificationsService {
   }
 
   Future<void> _saveToken(String uid, String token) async {
+    if (uid.trim().isEmpty) return;
     final ref = _firestore
         .collection('musicians')
         .doc(uid)
         .collection('fcmTokens')
         .doc(token);
-    await ref.set(
-      {
-        'token': token,
-        'platform': _platformLabel(),
-        'updatedAt': FieldValue.serverTimestamp(),
-        'createdAt': FieldValue.serverTimestamp(),
-      },
-      SetOptions(merge: true),
-    );
+    try {
+      await ref.set(
+        {
+          'token': token,
+          'platform': _platformLabel(),
+          'updatedAt': FieldValue.serverTimestamp(),
+          'createdAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    } on FirebaseException catch (error) {
+      if (error.code == 'permission-denied' || error.code == 'unauthenticated') {
+        // Token registration is best-effort; don't crash the app if rules reject it.
+        return;
+      }
+      rethrow;
+    }
   }
 
   Future<void> _deleteToken(String uid, String token) async {

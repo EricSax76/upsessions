@@ -272,9 +272,9 @@ service cloud.firestore {
 	      // create a new one. Existing threads are still restricted to participants.
 	      allow get: if (resource != null && isThreadParticipant(resource.data))
 	        || (resource == null && isSignedIn());
-	      // Prevent authenticated users from enumerating all threads.
-	      // Clients must list via /musicians/{uid}/threads/{threadId}.
-	      allow list: if false;
+	      // Allow listing threads, but only if every returned thread includes the caller.
+	      // Queries that could match non-participant threads will be rejected by Firestore.
+	      allow list: if isThreadParticipant(resource.data);
 	      allow create: if isSignedIn()
 	        && isValidThread()
 	        && request.auth.uid in request.resource.data.participants;
