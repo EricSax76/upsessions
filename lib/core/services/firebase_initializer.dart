@@ -12,6 +12,8 @@ class FirebaseInitializer {
 
   static Completer<void>? _initializing;
   static bool _appCheckActivated = false;
+  static const bool _useAppCheck =
+      bool.fromEnvironment('USE_FIREBASE_APP_CHECK', defaultValue: false);
   static const String _appCheckDebugToken =
       String.fromEnvironment('FIREBASE_APP_CHECK_DEBUG_TOKEN');
 
@@ -39,6 +41,9 @@ class FirebaseInitializer {
   }
 
   Future<void> _activateAppCheckIfNeeded() async {
+    if (!_useAppCheck) {
+      return;
+    }
     if (_appCheckActivated || kIsWeb) {
       return;
     }

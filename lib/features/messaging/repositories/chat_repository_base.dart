@@ -33,6 +33,9 @@ class ChatRepositoryBase {
   CollectionReference<Map<String, dynamic>> threads() =>
       firestore.collection('chat_threads');
 
+  CollectionReference<Map<String, dynamic>> userThreadIndex(String uid) =>
+      firestore.collection('musicians').doc(uid).collection('threads');
+
   DocumentReference<Map<String, dynamic>> threadDoc(String threadId) =>
       threads().doc(threadId);
 
