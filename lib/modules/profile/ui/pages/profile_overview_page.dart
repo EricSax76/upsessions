@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:upsessions/modules/auth/domain/profile_entity.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 import '../widgets/profile/profile_header.dart';
 import '../widgets/profile/profile_stats_row.dart';
@@ -50,7 +51,7 @@ class ProfileOverviewPage extends StatelessWidget {
 class _ProfileContentView extends StatelessWidget {
   const _ProfileContentView({required this.profile});
 
-  final profile;
+  final ProfileEntity profile;
 
   @override
   Widget build(BuildContext context) {
