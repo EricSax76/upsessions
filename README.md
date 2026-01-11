@@ -16,27 +16,26 @@ Solomusicos Flutter app scaffold that centralizes musicians, announcements, and 
 - `chat_threads`: cada doc mantiene `participants`, `lastMessage`, `lastMessageAt` y la subcolección `messages` (`sender`, `body`, `sentAt`).
 - `media_items`: `title`, `type` (`audio`/`video`/`image`), `storagePath`, `thumbnailPath`, `durationSeconds`, `createdAt`. Sube los archivos a Firebase Storage en las rutas indicadas para que el repositorio construya los `downloadURL`.
 - Opcional: despliega una función HTTPS llamada `sendChatNotification` para que `CloudFunctionsService` envíe notificaciones cuando alguien mande un mensaje.
-- Usa la nueva función HTTPS `seedChatThreads` para poblar `chat_threads` + `messages` automáticamente en entornos de prueba. El cuerpo debe ser un JSON con una clave `threads` que describe cada hilo, por ejemplo:
+- **Poblado de chats (Seguro):** Usa el script CLI `scripts/seed-chat-threads.js` para poblar `chat_threads` + `messages`.
 
-  ```
+  > **ADVERTENCIA:** La función HTTPS `seedChatThreads` era insegura (endpoint público sin autenticación). Se recomienda usar este script local en su lugar; la función ya no se exporta en `functions/src/index.ts` y por lo tanto no se despliega.
+
+  El cuerpo del archivo JSON (ej. `scripts/seed-chat-threads.sample.json`) debe seguir esta estructura:
+
+  ```json
   {
     "threads": [
       {
         "participants": ["userA", "userB"],
         "messages": [
-          {
-            "sender": "userA",
-            "body": "¡Hola!"
-          }
+          { "sender": "userA", "body": "¡Hola!" }
         ]
       }
     ]
   }
   ```
 
-  Despliega primero las funciones (`firebase deploy --only functions`) y luego llama a `seedChatThreads` desde la URL generada (p.ej. `https://us-central1-upsessions-31987.cloudfunctions.net/seedChatThreads`) pasando el JSON anterior en el cuerpo con `Content-Type: application/json`. En el emulador puedes hacer `curl -X POST http://localhost:5001/upsessions-31987/us-central1/seedChatThreads -H "Content-Type: application/json" --data @payload.json`. La CLI `firebase functions:call` ya no existe, por eso da el error. También puedes proteger la función con autenticación si la vas a abrir fuera del entorno local. Ese JSON crea un documento en `chat_threads` con los campos mínimos (`participants`, `lastMessage`, etc.) y una subcolección `messages`. Cada thread puede añadir `participantLabels`, `lastMessage`, `unreadCounts` y más mensajes; si no se incluyen mensajes, la función genera un placeholder automático.
-
-Además de la función HTTPS, hay un script CLI en `scripts/seed-chat-threads.js` que ejecuta la misma lógica directamente contra Firestore usando las credenciales de servicio. Para usarlo:
+  Para ejecutarlo:
 
 1. Establece `GOOGLE_APPLICATION_CREDENTIALS=/ruta/a/tu/service-account.json`.
 2. Ejecuta `node scripts/seed-chat-threads.js` (usa la muestra `scripts/seed-chat-threads.sample.json` o pasa tu propio archivo).

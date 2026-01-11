@@ -2,8 +2,21 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 import { region } from './region';
+export { seedChatThreads } from './chatSeeder';
 
 admin.initializeApp();
+
+function stringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((entry) => String(entry)).filter(Boolean);
+}
+
+function record(value: unknown): Record<string, unknown> {
+  if (value == null) return {};
+  if (typeof value !== 'object') return {};
+  if (Array.isArray(value)) return {};
+  return value as Record<string, unknown>;
+}
 
 export const ping = region.https.onRequest(
   (request: functions.https.Request, response: functions.Response) => {
@@ -100,4 +113,62 @@ export const onGroupInviteCreated = region.firestore
     );
   });
 
-export { seedChatThreads } from './chatSeeder';
+export const onChatThreadWrite = region.firestore
+  .document('chat_threads/{threadId}')
+  .onWrite(async (change, context) => {
+    const threadId = String(context.params.threadId ?? '');
+    if (!threadId) {
+      return;
+    }
+
+    const db = admin.firestore();
+    const afterExists = change.after.exists;
+    const afterData = change.after.data() ?? {};
+    const beforeData = change.before.data() ?? {};
+    const sourceData = afterExists ? afterData : beforeData;
+
+    const participants = stringList((sourceData as Record<string, unknown>).participants);
+    if (!participants.length) {
+      return;
+    }
+
+    if (!afterExists) {
+      await Promise.all(
+        participants.map((uid) =>
+          db
+            .collection('musicians')
+            .doc(uid)
+            .collection('threads')
+            .doc(threadId)
+            .delete()
+            .catch(() => null),
+        ),
+      );
+      return;
+    }
+
+    const payload = {
+      participants: stringList((sourceData as Record<string, unknown>).participants),
+      participantLabels: record((sourceData as Record<string, unknown>).participantLabels),
+      lastMessage: record((sourceData as Record<string, unknown>).lastMessage),
+      lastMessageAt:
+        (sourceData as Record<string, unknown>).lastMessageAt
+          ?? (sourceData as Record<string, unknown>).createdAt
+          ?? admin.firestore.FieldValue.serverTimestamp(),
+      createdAt:
+        (sourceData as Record<string, unknown>).createdAt
+          ?? admin.firestore.FieldValue.serverTimestamp(),
+      unreadCounts: record((sourceData as Record<string, unknown>).unreadCounts),
+    };
+
+    await Promise.all(
+      participants.map((uid) =>
+        db
+          .collection('musicians')
+          .doc(uid)
+          .collection('threads')
+          .doc(threadId)
+          .set(payload, { merge: true }),
+      ),
+    );
+  });

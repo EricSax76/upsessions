@@ -21,9 +21,10 @@ class ChatRepository extends ChatRepositoryBase {
       if (user == null) {
         return Stream.value(const <ChatThread>[]);
       }
-      final query = threads()
-          .where('participants', arrayContains: user.id)
-          .orderBy('lastMessageAt', descending: true);
+      final query = threadIndex(user.id).orderBy(
+        'lastMessageAt',
+        descending: true,
+      );
       return query.snapshots().map((snapshot) {
         final threads = snapshot.docs
             .map((doc) => _mapper.threadFromDoc(doc, currentUserId: user.id))
@@ -77,9 +78,9 @@ class ChatRepository extends ChatRepositoryBase {
     }
     try {
       log('fetchThreads: Fetching for user ${currentUser.id}');
-      final query = threads().where(
-        'participants',
-        arrayContains: currentUser.id,
+      final query = threadIndex(currentUser.id).orderBy(
+        'lastMessageAt',
+        descending: true,
       );
 
       final snapshot = await query.get();

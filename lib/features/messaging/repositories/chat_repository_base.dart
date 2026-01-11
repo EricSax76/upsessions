@@ -44,4 +44,9 @@ class ChatRepositoryBase {
       .doc(uid)
       .collection('counters')
       .doc('chat');
+
+  CollectionReference<Map<String, dynamic>> threadIndex(String uid) => firestore
+      .collection('musicians')
+      .doc(uid)
+      .collection('threads');
 }
