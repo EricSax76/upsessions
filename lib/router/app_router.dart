@@ -9,6 +9,7 @@ import '../modules/announcements/presentation/pages/announcements_hub_page.dart'
 import '../features/media/ui/pages/media_gallery_page.dart';
 import '../features/calendar/ui/pages/calendar_page.dart';
 import '../features/events/domain/event_entity.dart';
+import '../features/events/presentation/pages/create_event_page.dart';
 import '../features/events/presentation/pages/event_detail_page.dart';
 import '../features/events/presentation/pages/events_page.dart';
 import '../features/messaging/ui/pages/messages_page.dart';
@@ -162,6 +163,10 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.events,
           builder: (context, state) => const EventsPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.createEvent,
+          builder: (context, state) => const CreateEventPage(),
         ),
         GoRoute(
           path: AppRoutes.notifications,

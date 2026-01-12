@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -30,71 +32,79 @@ class _InviteToGroupDialogState extends State<InviteToGroupDialog> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final dialogWidth = math.min(
+      520.0,
+      math.max(280.0, MediaQuery.sizeOf(context).width - 96),
+    );
     return AlertDialog(
       title: const Text('Invitar a un grupo'),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Para: ${widget.target.name}'),
-            const SizedBox(height: 12),
-            if (_loading) const LinearProgressIndicator(),
-            const SizedBox(height: 12),
-            StreamBuilder<List<GroupMembershipEntity>>(
-              stream: widget.groupsRepository.watchMyGroups(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Text(
-                    'No se pudieron cargar tus grupos: ${snapshot.error}',
-                    style: TextStyle(color: colors.error),
+        child: SizedBox(
+          width: dialogWidth,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Para: ${widget.target.name}'),
+              const SizedBox(height: 12),
+              if (_loading) const LinearProgressIndicator(),
+              const SizedBox(height: 12),
+              StreamBuilder<List<GroupMembershipEntity>>(
+                stream: widget.groupsRepository.watchMyGroups(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text(
+                      'No se pudieron cargar tus grupos: ${snapshot.error}',
+                      style: TextStyle(color: colors.error),
+                    );
+                  }
+                  final groups =
+                      (snapshot.data ?? const <GroupMembershipEntity>[])
+                          .where((g) => g.role == 'owner' || g.role == 'admin')
+                          .toList();
+                  if (groups.isEmpty) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('No tienes grupos donde puedas invitar.'),
+                        const SizedBox(height: 12),
+                        FilledButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            GoRouter.of(context).go(AppRoutes.rehearsals);
+                          },
+                          icon: const Icon(Icons.group_add_outlined),
+                          label: const Text('Crear grupo'),
+                        ),
+                      ],
+                    );
+                  }
+                  return SizedBox(
+                    width: dialogWidth,
+                    height: 280,
+                    child: ListView.separated(
+                      itemCount: groups.length,
+                      separatorBuilder: (context, index) =>
+                          const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        final group = groups[index];
+                        return ListTile(
+                          leading: const Icon(Icons.groups_outlined),
+                          title: Text(group.groupName),
+                          subtitle: Text('Rol: ${group.role}'),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: _loading
+                              ? null
+                              : () => _createInvite(context, group.groupId),
+                        );
+                      },
+                    ),
                   );
-                }
-                final groups =
-                    (snapshot.data ?? const <GroupMembershipEntity>[])
-                        .where((g) => g.role == 'owner' || g.role == 'admin')
-                        .toList();
-                if (groups.isEmpty) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('No tienes grupos donde puedas invitar.'),
-                      const SizedBox(height: 12),
-                      FilledButton.icon(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          GoRouter.of(context).go(AppRoutes.rehearsals);
-                        },
-                        icon: const Icon(Icons.group_add_outlined),
-                        label: const Text('Crear grupo'),
-                      ),
-                    ],
-                  );
-                }
-                return SizedBox(
-                  height: 280,
-                  child: ListView.separated(
-                    itemCount: groups.length,
-                    separatorBuilder: (context, index) =>
-                        const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final group = groups[index];
-                      return ListTile(
-                        leading: const Icon(Icons.groups_outlined),
-                        title: Text(group.groupName),
-                        subtitle: Text('Rol: ${group.role}'),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: _loading
-                            ? null
-                            : () => _createInvite(context, group.groupId),
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       ),
       actions: [
@@ -116,46 +126,53 @@ class _InviteToGroupDialogState extends State<InviteToGroupDialog> {
       final link = '$appLinkScheme:///invite?groupId=$groupId&inviteId=$inviteId';
       if (!context.mounted) return;
 
+      final dialogWidth = math.min(
+        520.0,
+        math.max(280.0, MediaQuery.sizeOf(context).width - 96),
+      );
       await showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Invitación creada'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Para: ${widget.target.name}'),
-              const SizedBox(height: 12),
-              SelectableText(link),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: [
-                  FilledButton.icon(
-                    onPressed: () async {
-                      await Clipboard.setData(ClipboardData(text: link));
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Link copiado.')),
-                      );
-                    },
-                    icon: const Icon(Icons.copy),
-                    label: const Text('Copiar link'),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      GoRouter.of(context).go(
-                        '${AppRoutes.invite}?groupId=$groupId&inviteId=$inviteId',
-                      );
-                    },
-                    icon: const Icon(Icons.open_in_new),
-                    label: const Text('Probar aquí'),
-                  ),
-                ],
-              ),
-            ],
+          content: SizedBox(
+            width: dialogWidth,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Para: ${widget.target.name}'),
+                const SizedBox(height: 12),
+                SelectableText(link),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: () async {
+                        await Clipboard.setData(ClipboardData(text: link));
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Link copiado.')),
+                        );
+                      },
+                      icon: const Icon(Icons.copy),
+                      label: const Text('Copiar link'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        GoRouter.of(context).go(
+                          '${AppRoutes.invite}?groupId=$groupId&inviteId=$inviteId',
+                        );
+                      },
+                      icon: const Icon(Icons.open_in_new),
+                      label: const Text('Probar aquí'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(

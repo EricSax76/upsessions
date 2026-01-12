@@ -11,6 +11,7 @@ class AnnouncementCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
+        dense: true,
         title: Text(announcement.title),
         subtitle: Text('${announcement.city} · ${announcement.description}'),
         trailing: Text('${announcement.date.day}/${announcement.date.month}'),

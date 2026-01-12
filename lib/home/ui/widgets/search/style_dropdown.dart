@@ -45,12 +45,17 @@ class StyleDropdown extends StatelessWidget {
     final selectedValue =
         value.isNotEmpty && _styles.contains(value) ? value : _styles.first;
     return DropdownButtonFormField<String>(
+      isExpanded: true,
       initialValue: selectedValue,
       decoration: const InputDecoration(labelText: 'Estilo'),
       hint: const Text('Selecciona estilo'),
-      isExpanded: true,
       items: _styles
-          .map((style) => DropdownMenuItem(value: style, child: Text(style)))
+          .map(
+            (style) => DropdownMenuItem(
+              value: style,
+              child: Text(style, overflow: TextOverflow.ellipsis),
+            ),
+          )
           .toList(),
       onChanged: (selected) {
         if (selected != null) {

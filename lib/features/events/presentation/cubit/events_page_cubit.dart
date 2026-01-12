@@ -9,25 +9,22 @@ class EventsPageState extends Equatable {
     required this.events,
     required this.loading,
     required this.savingDraft,
-    required this.preview,
     required this.draftSavedCount,
     required this.totalCapacity,
     required this.thisWeekCount,
   });
 
   const EventsPageState.initial()
-    : events = const [],
-      loading = true,
-      savingDraft = false,
-      preview = null,
-      draftSavedCount = 0,
-      totalCapacity = 0,
-      thisWeekCount = 0;
+      : events = const [],
+        loading = true,
+        savingDraft = false,
+        draftSavedCount = 0,
+        totalCapacity = 0,
+        thisWeekCount = 0;
 
   final List<EventEntity> events;
   final bool loading;
   final bool savingDraft;
-  final EventEntity? preview;
   final int draftSavedCount;
   final int totalCapacity;
   final int thisWeekCount;
@@ -36,7 +33,6 @@ class EventsPageState extends Equatable {
     List<EventEntity>? events,
     bool? loading,
     bool? savingDraft,
-    EventEntity? preview,
     int? draftSavedCount,
     int? totalCapacity,
     int? thisWeekCount,
@@ -45,7 +41,6 @@ class EventsPageState extends Equatable {
       events: events ?? this.events,
       loading: loading ?? this.loading,
       savingDraft: savingDraft ?? this.savingDraft,
-      preview: preview ?? this.preview,
       draftSavedCount: draftSavedCount ?? this.draftSavedCount,
       totalCapacity: totalCapacity ?? this.totalCapacity,
       thisWeekCount: thisWeekCount ?? this.thisWeekCount,
@@ -54,20 +49,19 @@ class EventsPageState extends Equatable {
 
   @override
   List<Object?> get props => [
-    events,
-    loading,
-    savingDraft,
-    preview,
-    draftSavedCount,
-    totalCapacity,
-    thisWeekCount,
-  ];
+        events,
+        loading,
+        savingDraft,
+        draftSavedCount,
+        totalCapacity,
+        thisWeekCount,
+      ];
 }
 
 class EventsPageCubit extends Cubit<EventsPageState> {
   EventsPageCubit({required EventsRepository repository})
-    : _repository = repository,
-      super(const EventsPageState.initial());
+      : _repository = repository,
+        super(const EventsPageState.initial());
 
   final EventsRepository _repository;
 
@@ -80,7 +74,6 @@ class EventsPageCubit extends Cubit<EventsPageState> {
       emit(
         state.copyWith(
           events: events,
-          preview: events.isNotEmpty ? events.first : null,
           loading: false,
           totalCapacity: summary.totalCapacity,
           thisWeekCount: summary.thisWeekCount,
@@ -94,24 +87,18 @@ class EventsPageCubit extends Cubit<EventsPageState> {
   }
 
   void selectPreview(EventEntity event) {
-    emit(state.copyWith(preview: event));
+    //
   }
 
   Future<void> generateDraft(EventEntity event) async {
     emit(state.copyWith(savingDraft: true));
     try {
-      final saved = await _repository.saveDraft(event);
+      await _repository.saveDraft(event);
       if (isClosed) return;
-      final updated = [saved, ...state.events.where((e) => e.id != saved.id)];
-      final summary = _summarize(updated);
       emit(
         state.copyWith(
-          events: updated,
-          preview: saved,
           savingDraft: false,
           draftSavedCount: state.draftSavedCount + 1,
-          totalCapacity: summary.totalCapacity,
-          thisWeekCount: summary.thisWeekCount,
         ),
       );
     } catch (_) {
@@ -127,9 +114,8 @@ class EventsPageCubit extends Cubit<EventsPageState> {
       (sum, event) => sum + event.capacity,
     );
     final weekLimit = DateTime.now().add(const Duration(days: 7));
-    final thisWeekCount = events
-        .where((event) => event.start.isBefore(weekLimit))
-        .length;
+    final thisWeekCount =
+        events.where((event) => event.start.isBefore(weekLimit)).length;
     return _EventsSummary(
       totalCapacity: totalCapacity,
       thisWeekCount: thisWeekCount,

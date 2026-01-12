@@ -29,25 +29,29 @@ class EventsPage extends StatelessWidget {
             ),
           );
         },
-        child: UserShellPage(
-          child: BlocBuilder<EventsPageCubit, EventsPageState>(
-            builder: (context, state) {
-              final cubit = context.read<EventsPageCubit>();
-              return EventsDashboard(
-                events: state.events,
-                preview: state.preview,
-                loading: state.loading || state.savingDraft,
-                eventsCount: state.events.length,
-                thisWeekCount: state.thisWeekCount,
-                totalCapacity: state.totalCapacity,
-                ownerId: ownerId,
-                onRefresh: cubit.load,
-                onGenerateDraft: cubit.generateDraft,
-                onSelectForPreview: cubit.selectPreview,
-                onViewDetails: (event) =>
-                    context.push(AppRoutes.eventDetail, extra: event),
-              );
-            },
+        child: Scaffold(
+          body: UserShellPage(
+            child: BlocBuilder<EventsPageCubit, EventsPageState>(
+              builder: (context, state) {
+                final cubit = context.read<EventsPageCubit>();
+                return EventsDashboard(
+                  events: state.events,
+                  loading: state.loading || state.savingDraft,
+                  eventsCount: state.events.length,
+                  thisWeekCount: state.thisWeekCount,
+                  totalCapacity: state.totalCapacity,
+                  ownerId: ownerId,
+                  onRefresh: cubit.load,
+                  onSelectForPreview: cubit.selectPreview,
+                  onViewDetails: (event) =>
+                      context.push(AppRoutes.eventDetail, extra: event),
+                );
+              },
+            ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => context.push(AppRoutes.createEvent),
+            child: const Icon(Icons.add),
           ),
         ),
       ),

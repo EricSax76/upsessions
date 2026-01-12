@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/widgets/sm_avatar.dart';
 import '../../../models/musician_entity.dart';
 
 class MusicianCard extends StatelessWidget {
@@ -28,21 +29,12 @@ class MusicianCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
+              SmAvatar(
                 radius: 26,
-                foregroundImage: musician.photoUrl?.isNotEmpty == true
-                    ? NetworkImage(musician.photoUrl!)
-                    : null,
+                imageUrl: musician.photoUrl,
+                initials: initials,
                 backgroundColor: colors.primaryContainer,
-                child: musician.photoUrl?.isNotEmpty == true
-                    ? null
-                    : Text(
-                        initials,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: colors.onPrimaryContainer,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                foregroundColor: colors.onPrimaryContainer,
               ),
               const SizedBox(width: 12),
               Expanded(

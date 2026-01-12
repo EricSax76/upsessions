@@ -2,33 +2,29 @@ import 'package:flutter/material.dart';
 
 import '../../domain/event_entity.dart';
 import 'event_cards.dart';
-import 'event_planner_section.dart';
+
 import 'events_header.dart';
 
 class EventsDashboard extends StatelessWidget {
   const EventsDashboard({
     super.key,
     required this.events,
-    required this.preview,
     required this.loading,
     required this.eventsCount,
     required this.thisWeekCount,
     required this.totalCapacity,
     required this.onRefresh,
-    required this.onGenerateDraft,
     required this.onSelectForPreview,
     required this.onViewDetails,
     required this.ownerId,
   });
 
   final List<EventEntity> events;
-  final EventEntity? preview;
   final bool loading;
   final int eventsCount;
   final int thisWeekCount;
   final int totalCapacity;
   final Future<void> Function() onRefresh;
-  final ValueChanged<EventEntity> onGenerateDraft;
   final ValueChanged<EventEntity> onSelectForPreview;
   final ValueChanged<EventEntity> onViewDetails;
   final String? ownerId;
@@ -62,12 +58,6 @@ class EventsDashboard extends StatelessWidget {
                     onSelect: onSelectForPreview,
                     onViewDetails: onViewDetails,
                   ),
-                if (events.isNotEmpty) const SizedBox(height: 32),
-                EventPlannerSection(
-                  preview: preview,
-                  onGenerateDraft: onGenerateDraft,
-                  ownerId: ownerId,
-                ),
               ],
             ),
           );

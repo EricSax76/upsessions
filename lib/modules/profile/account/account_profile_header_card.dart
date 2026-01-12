@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/widgets/sm_avatar.dart';
+
 class AccountProfileHeaderCard extends StatelessWidget {
   const AccountProfileHeaderCard({
     super.key,
@@ -18,6 +20,7 @@ class AccountProfileHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -26,14 +29,12 @@ class AccountProfileHeaderCard extends StatelessWidget {
             Stack(
               alignment: Alignment.center,
               children: [
-                CircleAvatar(
+                SmAvatar(
                   radius: 48,
-                  backgroundImage: avatarUrl != null
-                      ? NetworkImage(avatarUrl!)
-                      : null,
-                  child: avatarUrl == null
-                      ? const Icon(Icons.person, size: 48)
-                      : null,
+                  imageUrl: avatarUrl,
+                  fallbackIcon: Icons.person,
+                  backgroundColor: colorScheme.primaryContainer,
+                  foregroundColor: colorScheme.onPrimaryContainer,
                 ),
                 if (uploadingPhoto)
                   const Positioned.fill(

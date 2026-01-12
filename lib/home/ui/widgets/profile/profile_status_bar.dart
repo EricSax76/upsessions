@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:upsessions/core/widgets/sm_avatar.dart';
 import '../../../../modules/auth/cubits/auth_cubit.dart';
 import '../../../../modules/auth/domain/profile_entity.dart';
 import '../../../../modules/profile/cubit/profile_cubit.dart';
@@ -30,17 +31,12 @@ class ProfileStatusBar extends StatelessWidget {
             );
 
             Widget buildUserInfo() {
-              final avatar = CircleAvatar(
+              final avatar = SmAvatar(
                 radius: isCompact ? 28 : 32,
-                backgroundImage:
-                    avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                imageUrl: avatarUrl,
+                fallbackIcon: Icons.person,
                 backgroundColor: colorScheme.onPrimary.withValues(alpha: 0.1),
-                child: avatarUrl == null
-                    ? Icon(
-                        Icons.person,
-                        color: colorScheme.primary,
-                      )
-                    : null,
+                foregroundColor: colorScheme.primary,
               );
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 class GenderRadioGroup extends StatelessWidget {
-  const GenderRadioGroup({super.key, required this.value, required this.onChanged});
+  const GenderRadioGroup({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
 
   final String value;
   final ValueChanged<String> onChanged;
@@ -15,17 +19,26 @@ class GenderRadioGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 12,
-      children: [
-        for (final option in _options)
-          ChoiceChip(
-            label: Text(option),
-            selected: option == _options.first ? value.isEmpty : value == option,
-            onSelected: (_) =>
-                onChanged(option == _options.first ? '' : option),
-          ),
-      ],
+    final selectedValue =
+        value.isNotEmpty && _options.contains(value) ? value : _options.first;
+    return DropdownButtonFormField<String>(
+      isExpanded: true,
+      initialValue: selectedValue,
+      decoration: const InputDecoration(labelText: 'Género'),
+      hint: const Text('Selecciona género'),
+      items: _options
+          .map(
+            (option) => DropdownMenuItem(
+              value: option,
+              child: Text(option, overflow: TextOverflow.ellipsis),
+            ),
+          )
+          .toList(),
+      onChanged: (selected) {
+        if (selected != null) {
+          onChanged(selected == _options.first ? '' : selected);
+        }
+      },
     );
   }
 }

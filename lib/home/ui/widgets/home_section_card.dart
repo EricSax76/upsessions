@@ -20,7 +20,7 @@ class HomeSectionCard extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -51,7 +51,7 @@ class HomeSectionCard extends StatelessWidget {
                 if (action != null) action!,
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             child,
           ],
         ),

@@ -15,12 +15,12 @@ class MusiciansGrid extends StatelessWidget {
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 600;
         final crossAxisCount = isCompact ? 1 : 2;
-        const crossAxisSpacing = 12.0;
-        const mainAxisSpacing = 12.0;
+        const crossAxisSpacing = 8.0;
+        const mainAxisSpacing = 8.0;
         final availableWidth =
             constraints.maxWidth - crossAxisSpacing * (crossAxisCount - 1);
         final tileWidth = availableWidth / crossAxisCount;
-        final tileHeight = isCompact ? 112.0 : 128.0;
+        final tileHeight = isCompact ? 100.0 : 112.0;
         final aspectRatio = tileWidth / tileHeight;
         return GridView.builder(
           shrinkWrap: true,
@@ -51,7 +51,7 @@ class _MusicianTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final likedMusician = _mapToLiked();
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Theme.of(context).dividerColor),
@@ -60,9 +60,10 @@ class _MusicianTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CircleAvatar(
+            radius: 20,
             child: Text(musician.name.isNotEmpty ? musician.name[0] : '?'),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,9 +86,9 @@ class _MusicianTile extends StatelessWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.star, size: 11, color: Colors.amber),
+              const Icon(Icons.star, size: 10, color: Colors.amber),
               Text(musician.rating.toStringAsFixed(1)),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               MusicianLikeButton(
                 musician: likedMusician,
                 iconSize: 20,

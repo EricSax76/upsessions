@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:upsessions/core/constants/app_routes.dart';
+import 'package:upsessions/core/widgets/sm_avatar.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
@@ -61,20 +62,16 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
                     borderRadius: BorderRadius.circular(24),
                     child: Row(
                       children: [
-                        CircleAvatar(
+                        SmAvatar(
                           radius: 16,
-                          backgroundImage:
-                              avatarUrl != null ? NetworkImage(avatarUrl) : null,
-                          child: avatarUrl == null
-                              ? Text(
-                                  displayName.isNotEmpty
-                                      ? displayName[0].toUpperCase()
-                                      : '',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              : null,
+                          imageUrl: avatarUrl,
+                          initials: displayName.isNotEmpty
+                              ? displayName[0].toUpperCase()
+                              : '',
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primaryContainer,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.onPrimaryContainer,
                         ),
                       ],
                     ),

@@ -37,14 +37,17 @@ class InstrumentDropdown extends StatelessWidget {
         ? value
         : _options.first;
     return DropdownButtonFormField<String>(
+      isExpanded: true,
       initialValue: selectedValue,
       decoration: const InputDecoration(labelText: 'Instrumento'),
       hint: const Text('Selecciona instrumento'),
-      isExpanded: true,
       items: _options
           .map(
             (instrument) =>
-                DropdownMenuItem(value: instrument, child: Text(instrument)),
+                DropdownMenuItem(
+                  value: instrument,
+                  child: Text(instrument, overflow: TextOverflow.ellipsis),
+                ),
           )
           .toList(),
       onChanged: (selected) {

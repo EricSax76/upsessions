@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/widgets/sm_avatar.dart';
 import '../../../models/musician_entity.dart';
 
 class MusicianProfileHeader extends StatelessWidget {
@@ -30,21 +31,12 @@ class MusicianProfileHeader extends StatelessWidget {
         children: [
           Row(
             children: [
-              CircleAvatar(
+              SmAvatar(
                 radius: 40,
-                foregroundImage: musician.photoUrl?.isNotEmpty == true
-                    ? NetworkImage(musician.photoUrl!)
-                    : null,
+                imageUrl: musician.photoUrl,
+                initials: initials,
                 backgroundColor: colors.onPrimary.withValues(),
-                child: musician.photoUrl?.isNotEmpty == true
-                    ? null
-                    : Text(
-                        initials,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: colors.onPrimary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                foregroundColor: colors.onPrimary,
               ),
               const SizedBox(width: 20),
               Expanded(

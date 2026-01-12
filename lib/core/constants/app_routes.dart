@@ -20,6 +20,7 @@ class AppRoutes {
   static const calendar = '/calendar';
   static const events = '/events';
   static const eventDetail = '/events/detail';
+  static const createEvent = '/events/create';
   static const rehearsals = '/rehearsals';
   static const invite = '/invite';
   static const profile = '/profile';

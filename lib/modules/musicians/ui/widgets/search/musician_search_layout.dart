@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class MusicianSearchLayout extends StatelessWidget {
@@ -23,6 +24,13 @@ class MusicianSearchLayout extends StatelessWidget {
         Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
+              if (kIsWeb) {
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: results,
+                );
+              }
+
               final isWide = constraints.maxWidth >= 980;
               final filterPanel = filterPanelBuilder(context, isWide);
 

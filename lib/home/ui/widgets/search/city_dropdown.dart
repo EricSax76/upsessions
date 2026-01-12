@@ -15,19 +15,23 @@ class CityDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasCities = cities.isNotEmpty;
-    final dropdownItems = [
-      const DropdownMenuItem(value: 'Sin asignar', child: Text('Sin asignar')),
-      ...cities.map((city) => DropdownMenuItem(value: city, child: Text(city))),
-    ];
+    final options = ['Sin asignar', ...cities];
     final selectedValue =
         value.isNotEmpty && cities.contains(value) ? value : 'Sin asignar';
 
     return DropdownButtonFormField<String>(
+      isExpanded: true,
       initialValue: selectedValue,
       decoration: const InputDecoration(labelText: 'Ciudad'),
       hint: Text(hasCities ? 'Selecciona ciudad' : 'Sin ciudades disponibles'),
-      isExpanded: true,
-      items: dropdownItems,
+      items: options
+          .map(
+            (city) => DropdownMenuItem(
+              value: city,
+              child: Text(city, overflow: TextOverflow.ellipsis),
+            ),
+          )
+          .toList(),
       onChanged: (selected) {
         if (selected != null) {
           onChanged(selected == 'Sin asignar' ? '' : selected);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:upsessions/modules/auth/domain/profile_entity.dart';
+import 'package:upsessions/core/widgets/sm_avatar.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key, required this.profile});
@@ -9,12 +10,15 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
-        CircleAvatar(
+        SmAvatar(
           radius: 36,
-          backgroundImage: profile.photoUrl != null ? NetworkImage(profile.photoUrl!) : null,
-          child: profile.photoUrl == null ? const Icon(Icons.person) : null,
+          imageUrl: profile.photoUrl,
+          fallbackIcon: Icons.person,
+          backgroundColor: colorScheme.primaryContainer,
+          foregroundColor: colorScheme.onPrimaryContainer,
         ),
         const SizedBox(width: 16),
         Column(

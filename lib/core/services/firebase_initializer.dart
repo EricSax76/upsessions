@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform, kDebugMode, kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode;
 import '../../firebase_options.dart';
 
 class FirebaseInitializer {
@@ -14,8 +14,6 @@ class FirebaseInitializer {
   static bool _appCheckActivated = false;
   static const bool _useAppCheck =
       bool.fromEnvironment('USE_FIREBASE_APP_CHECK', defaultValue: false);
-  static const String _appCheckDebugToken =
-      String.fromEnvironment('FIREBASE_APP_CHECK_DEBUG_TOKEN');
 
   Future<void> init() async {
     if (Firebase.apps.isNotEmpty) {
@@ -44,36 +42,27 @@ class FirebaseInitializer {
     if (!_useAppCheck) {
       return;
     }
-    if (_appCheckActivated || kIsWeb) {
+    if (_appCheckActivated) {
       return;
     }
 
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      await FirebaseAppCheck.instance.activate(
-        providerAndroid: kDebugMode
-            ? (_appCheckDebugToken.isNotEmpty
-                ? AndroidDebugProvider(debugToken: _appCheckDebugToken)
-                : const AndroidDebugProvider())
-            : const AndroidPlayIntegrityProvider(),
-      );
-      _appCheckActivated = true;
+    // Use a placeholder for the reCAPTCHA V3 site key.
+    const reCaptchaKey = String.fromEnvironment('RECAPTCHA_V3_SITE_KEY', defaultValue: 'TU_SITE_KEY_AQUI');
 
-      if (kDebugMode && _appCheckDebugToken.isNotEmpty) {
-        print('[AppCheck] Using debug token: $_appCheckDebugToken');
-      }
-      return;
-    }
-
-    if (defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.macOS) {
-      await FirebaseAppCheck.instance.activate(
-        providerApple: kDebugMode
-            ? const AppleDebugProvider()
-            : const AppleDeviceCheckProvider(),
-      );
-      _appCheckActivated = true;
-      return;
-    }
+    // To get the debug token for Android, run your app in debug mode and check the logs.
+    // You will see a message like:
+    // D/DebugAppCheckProvider( 12345): Enter this debug secret into the allow list in the Firebase Console for your project: 123a4567-b89c-12d3-e456-789012345678
+    // For more information, see: https://firebase.google.com/docs/app-check/flutter/debug-provider
+    await FirebaseAppCheck.instance.activate(
+      providerAndroid: kDebugMode
+          ? const AndroidDebugProvider()
+          : const AndroidPlayIntegrityProvider(),
+      providerApple: kDebugMode
+          ? const AppleDebugProvider()
+          : const AppleAppAttestProvider(),
+      providerWeb: ReCaptchaV3Provider(reCaptchaKey),
+    );
+    _appCheckActivated = true;
   }
 
   void _logFirebaseContext() {

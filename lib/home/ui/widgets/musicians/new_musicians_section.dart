@@ -14,7 +14,7 @@ class NewMusiciansSection extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 600;
-        final listHeight = isCompact ? 220.0 : 180.0;
+        final listHeight = isCompact ? 200.0 : 160.0;
         final availableWidth = constraints.maxWidth == double.infinity
             ? 260.0
             : constraints.maxWidth;
@@ -52,7 +52,7 @@ class _NewMusicianCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final likedMusician = _mapToLiked();
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
@@ -66,7 +66,7 @@ class _NewMusicianCard extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             musician.instrument,
             maxLines: 1,

@@ -19,7 +19,7 @@ class UpcomingEventsSection extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 600;
-        final listHeight = isCompact ? 360.0 : 300.0;
+        final listHeight = isCompact ? 320.0 : 260.0;
         final availableWidth = constraints.maxWidth == double.infinity
             ? 320.0
             : constraints.maxWidth;
@@ -67,7 +67,7 @@ class _EventCard extends StatelessWidget {
       child: InkWell(
         onTap: () {},
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -83,7 +83,7 @@ class _EventCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Text(
                 event.title,
                 maxLines: 2,
@@ -99,15 +99,13 @@ class _EventCard extends StatelessWidget {
                   color: theme.colorScheme.primary,
                 ),
               ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: Text(
-                  event.description,
-                  maxLines: isCompact ? 2 : 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              const SizedBox(height: 2),
+              Text(
+                event.description,
+                maxLines: isCompact ? 2 : 3,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -142,7 +140,7 @@ class _InfoChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: theme.colorScheme.surfaceContainerHighest,
@@ -150,7 +148,7 @@ class _InfoChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14),
+          Icon(icon, size: 12),
           const SizedBox(width: 4),
           Flexible(
             child: Text(

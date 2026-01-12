@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/sm_avatar.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../messaging/ui/pages/messages_page.dart';
 import '../../controllers/contact_card_controller.dart';
@@ -61,14 +62,12 @@ class _ContactCardState extends State<ContactCard> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
+                SmAvatar(
                   radius: 28,
-                  backgroundImage: (musician.photoUrl?.isNotEmpty ?? false)
-                      ? NetworkImage(musician.photoUrl!)
-                      : null,
-                  child: (musician.photoUrl?.isNotEmpty ?? false)
-                      ? null
-                      : Text(musician.initials),
+                  imageUrl: musician.photoUrl,
+                  initials: musician.initials,
+                  backgroundColor: colorScheme.primaryContainer,
+                  foregroundColor: colorScheme.onPrimaryContainer,
                 ),
                 const SizedBox(width: 16),
                 Expanded(

@@ -99,6 +99,8 @@ class MusicianSearchView extends StatelessWidget {
         controller: searchController,
         onSubmitted: (_) => onSearch(),
         onPressed: onSearch,
+        filters: filters,
+        onClearFilters: onClearFilters,
       ),
       filterPanelBuilder: (context, isWide) {
         return MusicianSearchFilterPanel(

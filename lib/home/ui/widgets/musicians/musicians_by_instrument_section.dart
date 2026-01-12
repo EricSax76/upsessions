@@ -35,7 +35,7 @@ class _MusiciansByInstrumentSectionState
       chips.addAll(
         category.instruments.map(
           (instrument) => Padding(
-            padding: const EdgeInsets.only(right: 8, bottom: 8),
+            padding: const EdgeInsets.only(right: 4, bottom: 4),
             child: ChoiceChip(
               label: Text(instrument),
               selected: _selectedInstrument == instrument,
@@ -59,7 +59,7 @@ class _MusiciansByInstrumentSectionState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Wrap(children: chips),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         MusiciansGrid(musicians: filtered),
       ],
     );
