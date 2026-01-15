@@ -101,6 +101,10 @@ mixin GroupsRepositoryMemberships on RehearsalsRepositoryBase {
     });
   }
 
+  Stream<GroupDoc> watchGroup(String groupId) {
+    return groupDoc(groupId).snapshots().map((doc) => GroupDoc.fromGroupDoc(doc));
+  }
+
   Future<bool> isActiveMember(String groupId) async {
     final uid = await requireMusicianUid();
     logFirestore('isActiveMember groupId=$groupId uid=$uid');

@@ -36,17 +36,26 @@ class GroupRehearsalsView extends StatelessWidget {
     super.key,
     required this.groupId,
     this.controller,
+    this.showHeader = true,
+    this.padding,
   });
 
   final String groupId;
   final GroupRehearsalsController? controller;
+  final bool showHeader;
+  final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {
     final controller =
         this.controller ?? GroupRehearsalsController.fromLocator();
 
-    return _GroupRehearsalsBody(groupId: groupId, controller: controller);
+    return _GroupRehearsalsBody(
+      groupId: groupId,
+      controller: controller,
+      showHeader: showHeader,
+      padding: padding,
+    );
   }
 }
 
@@ -66,10 +75,17 @@ class EmptyRehearsalsCard extends StatelessWidget {
 enum _RehearsalFilter { upcoming, all, past }
 
 class _GroupRehearsalsBody extends StatefulWidget {
-  const _GroupRehearsalsBody({required this.groupId, required this.controller});
+  const _GroupRehearsalsBody({
+    required this.groupId,
+    required this.controller,
+    this.showHeader = true,
+    this.padding,
+  });
 
   final String groupId;
   final GroupRehearsalsController controller;
+  final bool showHeader;
+  final EdgeInsets? padding;
 
   @override
   State<_GroupRehearsalsBody> createState() => _GroupRehearsalsBodyState();
@@ -120,24 +136,26 @@ class _GroupRehearsalsBodyState extends State<_GroupRehearsalsBody> {
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 860),
                         child: ListView(
-                          padding: EdgeInsets.fromLTRB(
+                          padding: widget.padding ?? EdgeInsets.fromLTRB(
                             horizontalPadding,
                             16,
                             horizontalPadding,
                             32,
                           ),
                           children: [
-                            Text(
-                              groupName,
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Ensayos',
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: scheme.onSurfaceVariant),
-                            ),
-                            const SizedBox(height: 16),
+                            if (widget.showHeader) ...[
+                              Text(
+                                groupName,
+                                style: Theme.of(context).textTheme.headlineSmall,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Ensayos',
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: scheme.onSurfaceVariant),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
                             Wrap(
                               spacing: 12,
                               runSpacing: 12,

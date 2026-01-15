@@ -11,6 +11,8 @@ class AppTheme {
       onPrimary: AppColors.onPrimary,
       secondary: AppColors.secondary,
       onSecondary: AppColors.onSecondary,
+      primaryContainer: AppColors.primaryContainer,
+      onPrimaryContainer: AppColors.onPrimaryContainer,
       tertiary: AppColors.tertiary,
       onTertiary: AppColors.onPrimary,
       error: AppColors.danger,
@@ -23,7 +25,7 @@ class AppTheme {
       shadow: Color(0x331C1B19),
       inverseSurface: Color(0xFF2A2B2C),
       onInverseSurface: Color(0xFFF7F8FA),
-      inversePrimary: Color(0xFF9CB5D1),
+      inversePrimary: Color(0xFFA5B4FC),
       scrim: Color(0x801C1B19),
     ),
     dialogTheme: DialogThemeData(

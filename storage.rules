@@ -45,7 +45,9 @@ service firebase.storage {
 
     match /groups/{groupId}/{allPaths=**} {
       allow read: if isActiveMember(groupId) || isGroupOwner(groupId);
-      allow write: if isAdminOrOwner(groupId) || isGroupOwner(groupId);
+      allow write: if (isAdminOrOwner(groupId) || isGroupOwner(groupId))
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
     }
 
     match /{allPaths=**} {

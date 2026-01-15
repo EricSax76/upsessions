@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
+import 'package:upsessions/core/theme/app_colors.dart';
 
 class AppWelcomePage extends StatelessWidget {
   const AppWelcomePage({
@@ -8,7 +9,7 @@ class AppWelcomePage extends StatelessWidget {
     this.onSkip,
   });
 
-  static const Color _wineRed = Color(0xFF5A0A16);
+  // Se eliminó _wineRed para usar los colores globales de AppColors
 
   final VoidCallback onContinue;
   final VoidCallback? onSkip;
@@ -24,7 +25,10 @@ class AppWelcomePage extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color.fromARGB(255, 23, 113, 151), Color(0xFF24040A)],
+              colors: [
+                AppColors.primary,
+                AppColors.secondary,
+              ],
             ),
           ),
           child: SafeArea(
@@ -65,7 +69,7 @@ class AppWelcomePage extends StatelessWidget {
                         onPressed: onContinue,
                         style: FilledButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: _wineRed,
+                          foregroundColor: AppColors.primary,
                         ),
                         child: Text(loc.startButton),
                       ),

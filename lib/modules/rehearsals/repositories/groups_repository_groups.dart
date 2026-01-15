@@ -72,4 +72,30 @@ mixin GroupsRepositoryGroups on RehearsalsRepositoryBase {
 
     await logFuture('deleteGroup commit', batch.commit());
   }
+
+  Future<void> updateGroupPhoto({
+    required String groupId,
+    required Uint8List photoBytes,
+    required String photoFileExtension,
+  }) async {
+    final uid = await requireMusicianUid();
+    logFirestore('updateGroupPhoto groupId=$groupId uid=$uid');
+
+    // Verificar permisos (solo owner o admin)
+    final memberDoc = await members(groupId).doc(uid).get();
+    if (!memberDoc.exists) throw Exception('No eres miembro de este grupo.');
+    final role = (memberDoc.data()?['role'] ?? '').toString();
+    if (role != 'owner' && role != 'admin') {
+      throw Exception('No tienes permisos para cambiar la foto del grupo.');
+    }
+
+    final ext = _normalizeImageExtension(photoFileExtension);
+    final ref = storage.ref().child('groups').child(groupId).child('photo.$ext');
+    final metadata = SettableMetadata(contentType: 'image/$ext');
+
+    await ref.putData(photoBytes, metadata);
+    final photoUrl = await ref.getDownloadURL();
+
+    await groupDoc(groupId).set({'photoUrl': photoUrl}, SetOptions(merge: true));
+  }
 }
