@@ -179,6 +179,29 @@ class ChatRepository extends ChatRepositoryBase {
     }
   }
 
+  Future<ChatMessage?> fetchLastMessage(String threadId) async {
+    final currentUser = authRepository.currentUser;
+    try {
+      log('fetchLastMessage: Fetching last message for thread $threadId');
+      final snapshot = await messages(
+        threadId,
+      ).orderBy('sentAt', descending: true).limit(1).get();
+      if (snapshot.docs.isEmpty) {
+        return null;
+      }
+      return _mapper.messageFromQueryDoc(
+        snapshot.docs.first,
+        currentUserId: currentUser?.id,
+      );
+    } on FirebaseException catch (error) {
+      log('fetchLastMessage: FirebaseException - ${error.code}: ${error.message}');
+      if (error.code == 'permission-denied') {
+        return null;
+      }
+      rethrow;
+    }
+  }
+
   Future<ChatMessage> sendMessage(String threadId, String body) async {
     final user = authRepository.currentUser;
     if (user == null) {

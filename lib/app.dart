@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:upsessions/l10n/app_localizations.dart';
-import 'package:upsessions/l10n/cubit/locale_cubit.dart';
-
-import '../../core/theme/app_theme.dart';
-import '../../core/services/firebase_initializer.dart';
-import '../../core/services/push_notifications_service.dart';
-import '../../modules/auth/cubits/auth_cubit.dart';
-import '../../modules/auth/data/auth_repository.dart';
-import '../../modules/auth/data/profile_repository.dart';
-import '../../modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import '../../router/app_router.dart';
-import '../../core/services/app_links_service.dart';
-import '../../modules/profile/cubit/profile_cubit.dart';
+import 'package:upsessions/core/services/app_links_service.dart';
+import 'package:upsessions/core/services/firebase_initializer.dart';
+import 'package:upsessions/core/services/push_notifications_service.dart';
+import 'package:upsessions/core/theme/app_theme.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
+import 'package:upsessions/l10n/locale_cubit.dart';
+import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
+import 'package:upsessions/modules/auth/data/auth_repository.dart';
+import 'package:upsessions/modules/auth/data/profile_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
+import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
+import 'package:upsessions/router/app_router.dart';
 
 class UpsessionsApp extends StatelessWidget {
   UpsessionsApp({super.key});
@@ -35,8 +34,8 @@ class UpsessionsApp extends StatelessWidget {
           BlocProvider(
             create: (context) => AuthCubit(
               authRepository: context.read<AuthRepository>(),
-              pushNotificationsService:
-                  context.read<PushNotificationsService>(),
+              pushNotificationsService: context
+                  .read<PushNotificationsService>(),
             ),
           ),
           BlocProvider(
@@ -45,18 +44,18 @@ class UpsessionsApp extends StatelessWidget {
               authCubit: context.read<AuthCubit>(),
             ),
           ),
-          BlocProvider(create: (context) => LocaleCubit()),
         ],
         child: BlocBuilder<LocaleCubit, Locale>(
           builder: (context, locale) {
             return AppLinksListener(
               router: _appRouter.router,
               child: MaterialApp.router(
-                onGenerateTitle: (context) => AppLocalizations.of(context).appName,
+                onGenerateTitle: (context) =>
+                    AppLocalizations.of(context).appName,
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.light,
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: const <Locale>[Locale('es'), Locale('en')],
+                supportedLocales: AppLocalizations.supportedLocales,
                 locale: locale,
                 routerConfig: _appRouter.router,
               ),

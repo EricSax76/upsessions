@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/modules/auth/data/auth_repository.dart';
+import 'package:upsessions/modules/auth/data/profile_repository.dart';
 
 import '../../repositories/chat_repository.dart';
 import '../../models/chat_message.dart';
 import '../../models/chat_thread.dart';
 import '../widgets/chat_input_field.dart';
+import '../widgets/chat_thread_list_item.dart';
 import '../widgets/message_bubble.dart';
 import 'chat_thread_detail_page.dart';
 
@@ -22,10 +24,14 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final ChatRepository _repository = locate();
   final AuthRepository _authRepository = locate();
+  final ProfileRepository _profileRepository = locate();
   List<ChatThread> _threads = const [];
   List<ChatMessage> _messages = const [];
   ChatThread? _selectedThread;
   bool _didAutoOpenInitialThread = false;
+  final Map<String, String?> _avatarUrlsByUserId = <String, String?>{};
+  final Map<String, ChatMessage?> _lastMessageByThreadId =
+      <String, ChatMessage?>{};
 
   @override
   void initState() {
@@ -62,6 +68,8 @@ class _ChatPageState extends State<ChatPage> {
         _threads = threads;
         _selectedThread = selected;
       });
+      await _prefetchParticipantAvatars(threads);
+      await _prefetchThreadLastMessages(threads);
       if (selected != null) {
         await _loadMessages(selected.id);
         if (!_didAutoOpenInitialThread && preferThreadId != null) {
@@ -92,6 +100,79 @@ class _ChatPageState extends State<ChatPage> {
         SnackBar(content: Text('No se pudieron cargar los chats: $error')),
       );
     }
+  }
+
+  bool _isNoMessagesPlaceholder(ChatMessage message) {
+    return message.id.isEmpty ||
+        message.body.trim().toLowerCase() == 'aún no hay mensajes.';
+  }
+
+  String? _otherParticipantId(ChatThread thread, String currentUserId) {
+    for (final participantId in thread.participants) {
+      if (participantId != currentUserId) {
+        return participantId;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _prefetchParticipantAvatars(List<ChatThread> threads) async {
+    final currentUserId = _authRepository.currentUser?.id;
+    if (currentUserId == null || currentUserId.trim().isEmpty) return;
+
+    final idsToFetch = <String>{};
+    for (final thread in threads) {
+      final otherId = _otherParticipantId(thread, currentUserId);
+      if (otherId == null) continue;
+      if (_avatarUrlsByUserId.containsKey(otherId)) continue;
+      idsToFetch.add(otherId);
+    }
+    if (idsToFetch.isEmpty) return;
+
+    final results = await Future.wait(
+      idsToFetch.map((id) async {
+        try {
+          final profile = await _profileRepository.fetchProfile(profileId: id);
+          return MapEntry(id, profile.photoUrl);
+        } catch (_) {
+          return MapEntry(id, null);
+        }
+      }),
+    );
+
+    if (!mounted) return;
+    setState(() {
+      for (final entry in results) {
+        _avatarUrlsByUserId[entry.key] = entry.value;
+      }
+    });
+  }
+
+  Future<void> _prefetchThreadLastMessages(List<ChatThread> threads) async {
+    final idsToFetch = <String>{};
+    for (final thread in threads) {
+      if (_lastMessageByThreadId.containsKey(thread.id)) continue;
+      if (_isNoMessagesPlaceholder(thread.lastMessage)) {
+        idsToFetch.add(thread.id);
+      } else {
+        _lastMessageByThreadId[thread.id] = thread.lastMessage;
+      }
+    }
+    if (idsToFetch.isEmpty) return;
+
+    final results = await Future.wait(
+      idsToFetch.map((threadId) async {
+        final message = await _repository.fetchLastMessage(threadId);
+        return MapEntry(threadId, message);
+      }),
+    );
+
+    if (!mounted) return;
+    setState(() {
+      for (final entry in results) {
+        _lastMessageByThreadId[entry.key] = entry.value;
+      }
+    });
   }
 
   Future<void> _loadMessages(String threadId) async {
@@ -192,17 +273,26 @@ class _ChatPageState extends State<ChatPage> {
           ),
         );
       }
-      return ListView.builder(
+      return ListView.separated(
+        padding: const EdgeInsets.all(12),
         itemCount: _threads.length,
+        separatorBuilder: (_, index) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
           final thread = _threads[index];
-          return ListTile(
-            title: Text(thread.titleFor(currentUserId)),
-            subtitle: Text(
-              thread.lastMessage.body,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+          final title = thread.titleFor(currentUserId);
+          final otherId = _otherParticipantId(thread, currentUserId);
+          final avatarUrl =
+              otherId == null ? null : _avatarUrlsByUserId[otherId];
+          final lastMessage =
+              _lastMessageByThreadId[thread.id] ?? thread.lastMessage;
+          final subtitle = _isNoMessagesPlaceholder(lastMessage)
+              ? ''
+              : lastMessage.body;
+          return ChatThreadListItem(
+            title: title,
+            subtitle: subtitle,
+            avatarUrl: avatarUrl,
+            unreadCount: thread.unreadCount,
             selected: !isCompact && thread.id == _selectedThread?.id,
             onTap: () {
               if (isCompact) {
