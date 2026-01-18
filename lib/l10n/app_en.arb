@@ -102,6 +102,36 @@
   "@navEvents": {},
   "navRehearsals": "Rehearsals",
   "@navRehearsals": {},
+  "rehearsalsPageSubtitle": "Manage your group rehearsals",
+  "@rehearsalsPageSubtitle": {},
+  "rehearsalsSummaryTitle": "Summary",
+  "@rehearsalsSummaryTitle": {},
+  "rehearsalsTotalCount": "{count, plural, one{1 scheduled rehearsal} other{# scheduled rehearsals}}",
+  "@rehearsalsTotalCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rehearsalsNextLabel": "Next",
+  "@rehearsalsNextLabel": {},
+  "rehearsalsTotalStat": "Total Rehearsals",
+  "@rehearsalsTotalStat": {},
+  "rehearsalsNoUpcoming": "Not scheduled",
+  "@rehearsalsNoUpcoming": {},
+  "rehearsalsNewButton": "New Rehearsal",
+  "@rehearsalsNewButton": {},
+  "rehearsalsAddMusicianButton": "Add Musician",
+  "@rehearsalsAddMusicianButton": {},
+  "rehearsalsOnlyAdmin": "Only Admin",
+  "@rehearsalsOnlyAdmin": {},
+  "rehearsalsFilterUpcoming": "Upcoming",
+  "@rehearsalsFilterUpcoming": {},
+  "rehearsalsFilterPast": "Past",
+  "@rehearsalsFilterPast": {},
+  "rehearsalsFilterAll": "All",
+  "@rehearsalsFilterAll": {},
   "musicianContactTitle": "Interested in collaborating?",
   "@musicianContactTitle": {},
   "musicianContactDescription": "Connect by chat to coordinate details and availability.",

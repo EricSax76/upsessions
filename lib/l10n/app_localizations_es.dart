@@ -153,6 +153,50 @@ class AppLocalizationsEs extends AppLocalizations {
   String get navRehearsals => 'Ensayos';
 
   @override
+  String get rehearsalsPageSubtitle => 'Gestiona los ensayos de tu grupo';
+
+  @override
+  String get rehearsalsSummaryTitle => 'Resumen';
+
+  @override
+  String rehearsalsTotalCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# ensayos programados',
+      one: '1 ensayo programado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get rehearsalsNextLabel => 'Próximo';
+
+  @override
+  String get rehearsalsTotalStat => 'Total Ensayos';
+
+  @override
+  String get rehearsalsNoUpcoming => 'Sin programar';
+
+  @override
+  String get rehearsalsNewButton => 'Nuevo Ensayo';
+
+  @override
+  String get rehearsalsAddMusicianButton => 'Agregar Músico';
+
+  @override
+  String get rehearsalsOnlyAdmin => 'Solo Admin';
+
+  @override
+  String get rehearsalsFilterUpcoming => 'Próximos';
+
+  @override
+  String get rehearsalsFilterPast => 'Pasados';
+
+  @override
+  String get rehearsalsFilterAll => 'Todos';
+
+  @override
   String get musicianContactTitle => '¿Te interesa colaborar?';
 
   @override

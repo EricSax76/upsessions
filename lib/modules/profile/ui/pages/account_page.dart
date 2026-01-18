@@ -38,9 +38,10 @@ class _AccountPageState extends State<AccountPage> {
       final bytes = await file.readAsBytes();
       final extension = AccountPhotoFlow.extensionFromName(file.name);
       if (!mounted) return;
-      await context
-          .read<ProfileCubit>()
-          .updateProfilePhoto(bytes, fileExtension: extension);
+      await context.read<ProfileCubit>().updateProfilePhoto(
+        bytes,
+        fileExtension: extension,
+      );
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -173,10 +174,15 @@ class _AccountPageState extends State<AccountPage> {
               // Logout button simplified or moved here
               Card(
                 elevation: 0,
-                color: Theme.of(context).colorScheme.errorContainer.withOpacity(0.3),
+                // ignore: deprecated_member_use
+                color: Theme.of(
+                  context,
+                  // ignore: deprecated_member_use
+                ).colorScheme.errorContainer.withOpacity(0.3),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
+                    // ignore: deprecated_member_use
                     color: Theme.of(context).colorScheme.error.withOpacity(0.2),
                   ),
                 ),
@@ -213,9 +219,9 @@ class _AccountPageState extends State<AccountPage> {
               const SizedBox(height: 24),
               Text(
                 'Preferencias de la cuenta',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               AccountSettingsCard(
@@ -280,4 +286,3 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 }
-

@@ -65,6 +65,52 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     return doc.id;
   }
 
+  Future<void> deleteRehearsal({
+    required String groupId,
+    required String rehearsalId,
+  }) async {
+    final uid = requireUid();
+    logFirestore(
+      'deleteRehearsal groupId=$groupId rehearsalId=$rehearsalId uid=$uid',
+    );
+
+    final groupSnap = await groupDoc(groupId).get();
+    final group = groupSnap.data() ?? <String, dynamic>{};
+    final ownerId = (group['ownerId'] ?? '').toString();
+    if (ownerId != uid) {
+      throw Exception('Solo el dueño puede eliminar el ensayo.');
+    }
+
+    final batch = firestore.batch();
+    final setlistSnap = await setlist(groupId, rehearsalId).get();
+    for (final doc in setlistSnap.docs) {
+      batch.delete(doc.reference);
+    }
+    batch.delete(rehearsals(groupId).doc(rehearsalId));
+    await logFuture('deleteRehearsal commit', batch.commit());
+  }
+
+  Future<void> updateRehearsal({
+    required String groupId,
+    required String rehearsalId,
+    required DateTime startsAt,
+    DateTime? endsAt,
+    String location = '',
+    String notes = '',
+  }) async {
+    await requireMusicianUid();
+    logFirestore('updateRehearsal groupId=$groupId rehearsalId=$rehearsalId');
+    await logFuture(
+      'updateRehearsal update',
+      rehearsals(groupId).doc(rehearsalId).update({
+        'startsAt': Timestamp.fromDate(startsAt),
+        'endsAt': endsAt == null ? null : Timestamp.fromDate(endsAt),
+        'location': location.trim(),
+        'notes': notes.trim(),
+      }),
+    );
+  }
+
   RehearsalEntity _mapRehearsal(
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
   ) {

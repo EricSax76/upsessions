@@ -177,6 +177,7 @@ class _GroupsViewState extends State<_GroupsView> {
                       groupId: entry.value.groupId,
                       groupName: entry.value.groupName,
                       role: entry.value.role,
+                      photoUrl: entry.value.photoUrl,
                       onTap: () =>
                           context.go(AppRoutes.groupPage(entry.value.groupId)),
                     ),

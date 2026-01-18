@@ -4,9 +4,14 @@ import '../../../cubits/rehearsal_entity.dart';
 import '../../../controllers/rehearsal_helpers.dart';
 
 class RehearsalInfoCard extends StatelessWidget {
-  const RehearsalInfoCard({super.key, required this.rehearsal});
+  const RehearsalInfoCard({
+    super.key,
+    required this.rehearsal,
+    this.onTap,
+  });
 
   final RehearsalEntity rehearsal;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -17,90 +22,102 @@ class RehearsalInfoCard extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 44,
+                    width: 44,
+                    decoration: BoxDecoration(
+                      color: scheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      Icons.event_outlined,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Inicio',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          formatDateTime(rehearsal.startsAt),
+                          style: theme.textTheme.titleLarge,
+                        ),
+                        if (rehearsal.endsAt != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            'Fin: ${formatDateTime(rehearsal.endsAt!)}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: scheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  if (onTap != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Icon(
+                        Icons.edit_outlined,
+                        size: 18,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
+              if (location.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                _InfoRow(icon: Icons.place_outlined, text: location),
+              ],
+              if (notes.isNotEmpty) ...[
+                const SizedBox(height: 12),
                 Container(
-                  height: 44,
-                  width: 44,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: scheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(
-                    Icons.event_outlined,
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Inicio',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: scheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        formatDateTime(rehearsal.startsAt),
-                        style: theme.textTheme.titleLarge,
-                      ),
-                      if (rehearsal.endsAt != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          'Fin: ${formatDateTime(rehearsal.endsAt!)}',
-                          style: theme.textTheme.bodySmall?.copyWith(
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.notes_outlined,
+                            size: 18,
                             color: scheme.onSurfaceVariant,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Text('Notas', style: theme.textTheme.labelLarge),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(notes, style: theme.textTheme.bodyMedium),
                     ],
                   ),
                 ),
               ],
-            ),
-            if (location.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              _InfoRow(icon: Icons.place_outlined, text: location),
             ],
-            if (notes.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: scheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.notes_outlined,
-                          size: 18,
-                          color: scheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: 8),
-                        Text('Notas', style: theme.textTheme.labelLarge),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(notes, style: theme.textTheme.bodyMedium),
-                  ],
-                ),
-              ),
-            ],
-          ],
+          ),
         ),
       ),
     );

@@ -17,3 +17,16 @@ class HSpace extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(width: width);
 }
+class Gap extends StatelessWidget {
+  const Gap(this.size, {super.key});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+    );
+  }
+}

@@ -37,10 +37,7 @@ class AccountProfileHeaderCard extends StatelessWidget {
                 height: 100,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      colorScheme.primary,
-                      colorScheme.primaryContainer,
-                    ],
+                    colors: [colorScheme.primary, colorScheme.primaryContainer],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -58,6 +55,7 @@ class AccountProfileHeaderCard extends StatelessWidget {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
+                            // ignore: deprecated_member_use
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 10,
                             spreadRadius: 2,
@@ -80,7 +78,9 @@ class AccountProfileHeaderCard extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: const Center(
-                            child: CircularProgressIndicator(color: Colors.white),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -93,8 +93,15 @@ class AccountProfileHeaderCard extends StatelessWidget {
                         elevation: 4,
                         child: IconButton(
                           onPressed: uploadingPhoto ? null : onChangePhoto,
-                          icon: const Icon(Icons.camera_alt, size: 20, color: Colors.white),
-                          constraints: const BoxConstraints.tightFor(width: 40, height: 40),
+                          icon: const Icon(
+                            Icons.camera_alt,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                          constraints: const BoxConstraints.tightFor(
+                            width: 40,
+                            height: 40,
+                          ),
                           padding: EdgeInsets.zero,
                         ),
                       ),
@@ -104,7 +111,9 @@ class AccountProfileHeaderCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 62), // Space for the overlapping avatar (50px) + gap
+          const SizedBox(
+            height: 62,
+          ), // Space for the overlapping avatar (50px) + gap
           Text(
             name,
             style: textTheme.headlineSmall?.copyWith(
@@ -126,5 +135,3 @@ class AccountProfileHeaderCard extends StatelessWidget {
     );
   }
 }
-
-

@@ -102,6 +102,36 @@
   "@navEvents": {},
   "navRehearsals": "Ensayos",
   "@navRehearsals": {},
+  "rehearsalsPageSubtitle": "Gestiona los ensayos de tu grupo",
+  "@rehearsalsPageSubtitle": {},
+  "rehearsalsSummaryTitle": "Resumen",
+  "@rehearsalsSummaryTitle": {},
+  "rehearsalsTotalCount": "{count, plural, one{1 ensayo programado} other{# ensayos programados}}",
+  "@rehearsalsTotalCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rehearsalsNextLabel": "Próximo",
+  "@rehearsalsNextLabel": {},
+  "rehearsalsTotalStat": "Total Ensayos",
+  "@rehearsalsTotalStat": {},
+  "rehearsalsNoUpcoming": "Sin programar",
+  "@rehearsalsNoUpcoming": {},
+  "rehearsalsNewButton": "Nuevo Ensayo",
+  "@rehearsalsNewButton": {},
+  "rehearsalsAddMusicianButton": "Agregar Músico",
+  "@rehearsalsAddMusicianButton": {},
+  "rehearsalsOnlyAdmin": "Solo Admin",
+  "@rehearsalsOnlyAdmin": {},
+  "rehearsalsFilterUpcoming": "Próximos",
+  "@rehearsalsFilterUpcoming": {},
+  "rehearsalsFilterPast": "Pasados",
+  "@rehearsalsFilterPast": {},
+  "rehearsalsFilterAll": "Todos",
+  "@rehearsalsFilterAll": {},
   "musicianContactTitle": "¿Te interesa colaborar?",
   "@musicianContactTitle": {},
   "musicianContactDescription": "Conecta por chat para coordinar detalles y disponibilidad.",

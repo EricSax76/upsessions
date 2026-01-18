@@ -368,6 +368,78 @@ abstract class AppLocalizations {
   /// **'Ensayos'**
   String get navRehearsals;
 
+  /// No description provided for @rehearsalsPageSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestiona los ensayos de tu grupo'**
+  String get rehearsalsPageSubtitle;
+
+  /// No description provided for @rehearsalsSummaryTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Resumen'**
+  String get rehearsalsSummaryTitle;
+
+  /// No description provided for @rehearsalsTotalCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{1 ensayo programado} other{# ensayos programados}}'**
+  String rehearsalsTotalCount(int count);
+
+  /// No description provided for @rehearsalsNextLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximo'**
+  String get rehearsalsNextLabel;
+
+  /// No description provided for @rehearsalsTotalStat.
+  ///
+  /// In es, this message translates to:
+  /// **'Total Ensayos'**
+  String get rehearsalsTotalStat;
+
+  /// No description provided for @rehearsalsNoUpcoming.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin programar'**
+  String get rehearsalsNoUpcoming;
+
+  /// No description provided for @rehearsalsNewButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo Ensayo'**
+  String get rehearsalsNewButton;
+
+  /// No description provided for @rehearsalsAddMusicianButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar Músico'**
+  String get rehearsalsAddMusicianButton;
+
+  /// No description provided for @rehearsalsOnlyAdmin.
+  ///
+  /// In es, this message translates to:
+  /// **'Solo Admin'**
+  String get rehearsalsOnlyAdmin;
+
+  /// No description provided for @rehearsalsFilterUpcoming.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximos'**
+  String get rehearsalsFilterUpcoming;
+
+  /// No description provided for @rehearsalsFilterPast.
+  ///
+  /// In es, this message translates to:
+  /// **'Pasados'**
+  String get rehearsalsFilterPast;
+
+  /// No description provided for @rehearsalsFilterAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos'**
+  String get rehearsalsFilterAll;
+
   /// No description provided for @musicianContactTitle.
   ///
   /// In es, this message translates to:

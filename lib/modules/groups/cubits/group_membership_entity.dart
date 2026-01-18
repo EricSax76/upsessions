@@ -6,15 +6,17 @@ class GroupMembershipEntity extends Equatable {
     required this.groupName,
     required this.groupOwnerId,
     required this.role,
+    this.photoUrl = '',
   });
 
   final String groupId;
   final String groupName;
   final String groupOwnerId;
   final String role; // owner|admin|member
+  final String photoUrl;
 
   bool get canManageMembers => role == 'owner' || role == 'admin';
 
   @override
-  List<Object?> get props => [groupId, groupName, groupOwnerId, role];
+  List<Object?> get props => [groupId, groupName, groupOwnerId, role, photoUrl];
 }

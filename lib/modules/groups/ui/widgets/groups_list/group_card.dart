@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../../core/widgets/app_card.dart';
+import '../../../../../core/widgets/sm_avatar.dart';
 
 class GroupCard extends StatelessWidget {
   const GroupCard({
@@ -9,12 +10,14 @@ class GroupCard extends StatelessWidget {
     required this.groupId,
     required this.groupName,
     required this.role,
+    required this.photoUrl,
     required this.onTap,
   });
 
   final String groupId;
   final String groupName;
   final String role;
+  final String photoUrl;
   final VoidCallback onTap;
 
   @override
@@ -34,13 +37,13 @@ class GroupCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            CircleAvatar(
+            SmAvatar(
               radius: 22,
+              imageUrl: photoUrl,
+              initials: initials,
+              fallbackIcon: Icons.groups_outlined,
               backgroundColor: color.withAlpha(32),
-              child: Text(
-                initials,
-                style: TextStyle(color: color, fontWeight: FontWeight.w700),
-              ),
+              foregroundColor: color,
             ),
             const SizedBox(width: 12),
             Expanded(

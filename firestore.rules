@@ -353,6 +353,11 @@ service cloud.firestore {
         && get(memberDocPath(groupId, request.auth.uid)).data.role in ['owner', 'admin'];
     }
 
+    function isOwnerRole(groupId) {
+      return isActiveMember(groupId)
+        && get(memberDocPath(groupId, request.auth.uid)).data.role == 'owner';
+    }
+
     function canAcceptInvite(groupId, inviteId) {
       return isSignedIn() && canAcceptInviteData(get(inviteDocPath(groupId, inviteId)).data);
     }
@@ -399,7 +404,7 @@ service cloud.firestore {
         && request.resource.data.ownerId == request.auth.uid
         && request.resource.data.name is string;
       allow update: if isAdminOrOwner(groupId);
-      allow delete: if false;
+      allow delete: if isOwnerRole(groupId);
 
       match /members/{uid} {
         allow read: if isSignedIn()
@@ -421,7 +426,7 @@ service cloud.firestore {
       match /rehearsals/{rehearsalId} {
         allow read: if isActiveMember(groupId);
         allow create, update: if isActiveMember(groupId);
-        allow delete: if isAdminOrOwner(groupId);
+        allow delete: if isOwnerRole(groupId);
 
         match /setlist/{itemId} {
           allow read, write: if isActiveMember(groupId);

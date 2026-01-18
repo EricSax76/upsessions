@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../modules/auth/cubits/auth_cubit.dart';
-import '../../../../l10n/app_localizations.dart';
 
 class HomeHeroSection extends StatelessWidget {
   const HomeHeroSection({super.key});
@@ -10,21 +9,17 @@ class HomeHeroSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final loc = AppLocalizations.of(context);
-    
+
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
         final displayName = state.user?.displayName ?? '';
-        
+
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(48),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                colorScheme.primaryContainer,
-                colorScheme.surface,
-              ],
+              colors: [colorScheme.primaryContainer, colorScheme.surface],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -101,9 +96,7 @@ class _QuickActionButton extends StatelessWidget {
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 0,
       ),
     );

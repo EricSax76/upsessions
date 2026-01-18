@@ -75,6 +75,7 @@ mixin GroupsRepositoryMemberships on GroupsRepositoryBase {
           groupName: group.name,
           groupOwnerId: group.ownerId,
           role: membership.role,
+          photoUrl: group.photoUrl,
         ),
       );
     }

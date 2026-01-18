@@ -3,6 +3,7 @@ import '../../auth/data/auth_repository.dart';
 import '../../musicians/repositories/musicians_repository.dart';
 import '../../musicians/models/musician_entity.dart';
 import '../models/create_rehearsal_use_case.dart';
+import '../../groups/models/group_dtos.dart';
 import '../../groups/repositories/groups_repository.dart';
 import '../repositories/rehearsals_repository.dart';
 import '../cubits/rehearsal_entity.dart';
@@ -39,6 +40,9 @@ class GroupRehearsalsController {
 
   Stream<String?> watchMyRole(String groupId) =>
       _groupsRepository.watchMyRole(groupId);
+
+  Stream<GroupDoc> watchGroup(String groupId) =>
+      _groupsRepository.watchGroup(groupId);
 
   Stream<List<RehearsalEntity>> watchRehearsals(String groupId) =>
       _rehearsalsRepository.watchRehearsals(groupId);

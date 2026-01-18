@@ -18,7 +18,16 @@ class RehearsalDraft {
 }
 
 class RehearsalDialog extends StatefulWidget {
-  const RehearsalDialog({super.key});
+  const RehearsalDialog({
+    super.key,
+    this.initial,
+    this.title,
+    this.submitLabel,
+  });
+
+  final RehearsalDraft? initial;
+  final String? title;
+  final String? submitLabel;
 
   @override
   State<RehearsalDialog> createState() => _RehearsalDialogState();
@@ -27,8 +36,18 @@ class RehearsalDialog extends StatefulWidget {
 class _RehearsalDialogState extends State<RehearsalDialog> {
   DateTime? _startsAt;
   DateTime? _endsAt;
-  final _location = TextEditingController();
-  final _notes = TextEditingController();
+  late final TextEditingController _location;
+  late final TextEditingController _notes;
+
+  @override
+  void initState() {
+    super.initState();
+    final initial = widget.initial;
+    _startsAt = initial?.startsAt;
+    _endsAt = initial?.endsAt;
+    _location = TextEditingController(text: initial?.location ?? '');
+    _notes = TextEditingController(text: initial?.notes ?? '');
+  }
 
   @override
   void dispose() {
@@ -46,7 +65,7 @@ class _RehearsalDialogState extends State<RehearsalDialog> {
     final endsLabel = _endsAt == null ? 'Opcional' : formatDateTime(_endsAt!);
 
     return AlertDialog(
-      title: const Text('Nuevo ensayo'),
+      title: Text(widget.title ?? 'Nuevo ensayo'),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520),
         child: Column(
@@ -109,7 +128,7 @@ class _RehearsalDialogState extends State<RehearsalDialog> {
                     notes: _notes.text,
                   ),
                 ),
-          child: const Text('Crear'),
+          child: Text(widget.submitLabel ?? 'Crear'),
         ),
       ],
     );

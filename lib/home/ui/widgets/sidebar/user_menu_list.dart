@@ -14,6 +14,10 @@ class UserMenuList extends StatefulWidget {
 
 class _UserMenuListState extends State<UserMenuList> {
   final List<_MenuItem> _items = const [
+    _MenuItem(label: 'Inicio', route: AppRoutes.userHome),
+    _MenuItem(label: 'Músicos', route: AppRoutes.musicians),
+    _MenuItem(label: 'Anuncios', route: AppRoutes.announcements),
+    _MenuItem(label: 'Eventos', route: AppRoutes.events),
     _MenuItem(label: 'Mensajes', route: AppRoutes.messages),
     _MenuItem(label: 'Calendario', route: AppRoutes.calendar),
     _MenuItem(label: 'Contactos', route: AppRoutes.contacts),
@@ -71,6 +75,10 @@ class _UserMenuListState extends State<UserMenuList> {
             child: ListTile(
               selected: i == _selectedIndex,
               leading: Icon(
+                _items[i].route == AppRoutes.userHome ? Icons.home_outlined :
+                _items[i].route == AppRoutes.musicians ? Icons.person_search_outlined :
+                _items[i].route == AppRoutes.announcements ? Icons.campaign_outlined :
+                _items[i].route == AppRoutes.events ? Icons.event_outlined :
                 _items[i].route == AppRoutes.messages ? Icons.mail_outline :
                 _items[i].route == AppRoutes.calendar ? Icons.calendar_month_outlined :
                 _items[i].route == AppRoutes.contacts ? Icons.people_outline :
