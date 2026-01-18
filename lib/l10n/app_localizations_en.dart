@@ -48,10 +48,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createAccount => 'Create account';
 
   @override
-  String get registerPageSubtitle => 'Únete a la red de Solo Músicos';
+  String get registerPageSubtitle => 'Join the Solo Musicians network';
 
   @override
-  String get registerPageLoginPrompt => '¿Ya tienes cuenta? Inicia sesión';
+  String get registerPageLoginPrompt => 'Already have an account? Sign in';
 
   @override
   String get loginContinueWith => 'Or continue with';
@@ -240,4 +240,146 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get rehearsalsGroupsAgendaNoRehearsalsSubtitle =>
       'Here you will see your upcoming rehearsals from all your groups.';
+
+  @override
+  String get homeUpcomingEventsTitle => 'Upcoming events';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get homeRecommendedTitle => 'Recommended for you';
+
+  @override
+  String get homeRecommendedSubtitle => 'Based on your favorite styles';
+
+  @override
+  String get homeNewTalentTitle => 'New talent';
+
+  @override
+  String get homeNewTalentSubtitle =>
+      'Musicians newly arrived to the community';
+
+  @override
+  String get homeExploreByInstrumentTitle => 'Explore by instrument';
+
+  @override
+  String get homeExploreByInstrumentSubtitle =>
+      'Filter by instrument to find your next collaborator.';
+
+  @override
+  String rehearsalsSidebarErrorLoading(String error) {
+    return 'Error loading groups: $error';
+  }
+
+  @override
+  String get rehearsalsSidebarNewGroupLabel => 'New group';
+
+  @override
+  String get rehearsalsSidebarEmptyPrompt => 'Create a group to get started.';
+
+  @override
+  String rehearsalsSidebarRoleLabel(String role) {
+    return 'Role: $role';
+  }
+
+  @override
+  String get rehearsalsSidebarCreateGroupTitle => 'Create group';
+
+  @override
+  String get rehearsalsSidebarGroupNameLabel => 'Name';
+
+  @override
+  String get rehearsalsSidebarGroupNameHint => 'e.g. Band X';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get userSidebarTitle => 'Your dashboard';
+
+  @override
+  String get searchAdvancedTitle => 'Advanced search';
+
+  @override
+  String get searchFiltersTitle => 'Filters';
+
+  @override
+  String searchFiltersWithCount(int count) {
+    return 'Filters ($count)';
+  }
+
+  @override
+  String get searchTopBarHint => 'Search by name, style, or instrument';
+
+  @override
+  String get searchInstrumentLabel => 'Instrument';
+
+  @override
+  String get searchInstrumentHint => 'Select instrument';
+
+  @override
+  String get searchStyleLabel => 'Style';
+
+  @override
+  String get searchStyleHint => 'Select style';
+
+  @override
+  String get searchProfileTypeLabel => 'Profile type';
+
+  @override
+  String get searchProfileTypeHint => 'Select type';
+
+  @override
+  String get searchProvinceLabel => 'Province';
+
+  @override
+  String get searchProvinceHint => 'Select province';
+
+  @override
+  String get searchCityLabel => 'City';
+
+  @override
+  String get searchCityHint => 'Select city';
+
+  @override
+  String get searchCityUnavailable => 'No cities available';
+
+  @override
+  String get searchClearFilters => 'Clear filters';
+
+  @override
+  String get searchAction => 'Search';
+
+  @override
+  String get searchGenderLabel => 'Gender';
+
+  @override
+  String get searchGenderHint => 'Select gender';
+
+  @override
+  String get searchUnassignedOption => 'Unassigned';
+
+  @override
+  String get searchAnyOption => 'Any';
+
+  @override
+  String get searchFemaleOption => 'Female';
+
+  @override
+  String get searchMaleOption => 'Male';
+
+  @override
+  String get searchAdvancedFiltersTitle => 'Advanced filters';
+
+  @override
+  String get searchAdvancedFiltersSubtitle => 'Tap to adjust filters';
+
+  @override
+  String get searchProvincesLoadHint =>
+      'Load Spanish provinces from Firestore (metadata/geography.provinces).';
+
+  @override
+  String get searchCitiesLoadHint =>
+      'Add cities per province in Firestore (metadata/geography.citiesByProvince).';
 }

@@ -34,6 +34,14 @@ class EventsRepository {
     return _toEntities(fallbackSnapshot.docs);
   }
 
+  Future<EventEntity?> findById(String id) async {
+    final doc = await _collection.doc(id).get();
+    if (!doc.exists) {
+      return null;
+    }
+    return EventDto.fromDocument(doc).toEntity();
+  }
+
   Future<EventEntity> saveDraft(EventEntity event) async {
     final ownerId = event.ownerId.isNotEmpty
         ? event.ownerId

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../models/instrument_category_model.dart';
-import '../../../models/musician_card_model.dart';
+import '../../../../modules/musicians/models/musician_entity.dart';
 import 'musicians_grid.dart';
 
 class MusiciansByInstrumentSection extends StatefulWidget {
@@ -13,7 +13,7 @@ class MusiciansByInstrumentSection extends StatefulWidget {
   });
 
   final List<InstrumentCategoryModel> categories;
-  final List<MusicianCardModel> musicians;
+  final List<MusicianEntity> musicians;
   final ValueChanged<String> onInstrumentSelected;
 
   @override

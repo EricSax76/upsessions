@@ -4,6 +4,9 @@ import 'package:get_it/get_it.dart';
 import 'package:upsessions/core/services/cloud_functions_service.dart';
 import 'package:upsessions/core/services/firebase_initializer.dart';
 import 'package:upsessions/core/services/push_notifications_service.dart';
+import 'package:upsessions/core/services/analytics_service.dart';
+import 'package:upsessions/core/services/remote_config_service.dart';
+import 'package:upsessions/l10n/cubit/locale_cubit.dart';
 import 'package:upsessions/modules/announcements/data/announcements_repository.dart';
 import 'package:upsessions/modules/auth/data/auth_repository.dart';
 import 'package:upsessions/modules/auth/data/profile_repository.dart';
@@ -15,7 +18,7 @@ import 'package:upsessions/home/repositories/user_home_repository.dart';
 import 'package:upsessions/features/contacts/controllers/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/repositories/contacts_repository.dart';
 import 'package:upsessions/modules/rehearsals/models/create_rehearsal_use_case.dart';
-import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dart';
+import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
@@ -39,6 +42,11 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<PushNotificationsService>(
       () => PushNotificationsService(),
     )
+    ..registerLazySingleton<AnalyticsService>(() => const AnalyticsService())
+    ..registerLazySingleton<RemoteConfigService>(
+      () => const RemoteConfigService(),
+    )
+    ..registerLazySingleton<LocaleCubit>(() => LocaleCubit())
     ..registerLazySingleton<MusiciansRepository>(() => MusiciansRepository())
     ..registerLazySingleton<AnnouncementsRepository>(
       () => AnnouncementsRepository(),

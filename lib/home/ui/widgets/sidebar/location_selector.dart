@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class LocationSelector extends StatelessWidget {
   const LocationSelector({
@@ -20,6 +21,7 @@ class LocationSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final hasProvinces = provinces.isNotEmpty;
     final hasCities = cities.isNotEmpty;
 
@@ -27,9 +29,10 @@ class LocationSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownButtonFormField<String>(
-          initialValue: hasProvinces && provinces.contains(province) ? province : null,
-          decoration: const InputDecoration(labelText: 'Provincia'),
-          hint: const Text('Selecciona provincia'),
+          initialValue:
+              hasProvinces && provinces.contains(province) ? province : null,
+          decoration: InputDecoration(labelText: loc.searchProvinceLabel),
+          hint: Text(loc.searchProvinceHint),
           items: provinces.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
           onChanged: hasProvinces
               ? (selected) {
@@ -42,15 +45,17 @@ class LocationSelector extends StatelessWidget {
         if (!hasProvinces) ...[
           const SizedBox(height: 8),
           Text(
-            'Carga provincias españolas desde Firestore (metadata/geography.provinces).',
+            loc.searchProvincesLoadHint,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           initialValue: hasCities && cities.contains(city) ? city : null,
-          decoration: const InputDecoration(labelText: 'Ciudad'),
-          hint: Text(hasProvinces ? 'Selecciona ciudad' : 'Sin ciudades disponibles'),
+          decoration: InputDecoration(labelText: loc.searchCityLabel),
+          hint: Text(
+            hasProvinces ? loc.searchCityHint : loc.searchCityUnavailable,
+          ),
           items: cities.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
           onChanged: hasCities
               ? (selected) {
@@ -63,7 +68,7 @@ class LocationSelector extends StatelessWidget {
         if (!hasCities) ...[
           const SizedBox(height: 8),
           Text(
-            'Añade ciudades por provincia en Firestore (metadata/geography.citiesByProvince).',
+            loc.searchCitiesLoadHint,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],

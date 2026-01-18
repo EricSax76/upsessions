@@ -29,12 +29,44 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>music_in_touch</title>
+  <title>upsessions</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      initializeAppCheck,
+      ReCaptchaV3Provider,
+      getToken
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app-check.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHbysipgC7jnKItgGzSULzRGnsPnC5U2Y",
+      authDomain: "upsessions-31987.firebaseapp.com",
+      projectId: "upsessions-31987",
+      storageBucket: "upsessions-31987.firebasestorage.app",
+      messagingSenderId: "735814338688",
+      appId: "1:735814338688:web:f84e88a008ea8aa1a4fe65",
+      measurementId: "G-DK8CD9TBK7"
+    };
+
+    // Prints the App Check debug token in the console on first load.
     self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+
+    const app = initializeApp(firebaseConfig);
+    const appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider("6LdOLTksAAAAAOy0AvPLXhszVyOa38j9rZ81DsKh"),
+      isTokenAutoRefreshEnabled: true
+    });
+
+    getToken(appCheck, true)
+      .then((tokenResult) => {
+        console.log("[AppCheck] token:", tokenResult.token);
+      })
+      .catch((error) => {
+        console.error("[AppCheck] error:", error);
+      });
   </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>

@@ -241,4 +241,145 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get rehearsalsGroupsAgendaNoRehearsalsSubtitle =>
       'Aquí verás tus próximos ensayos de todos tus grupos.';
+
+  @override
+  String get homeUpcomingEventsTitle => 'Próximos eventos';
+
+  @override
+  String get viewAll => 'Ver todos';
+
+  @override
+  String get homeRecommendedTitle => 'Recomendados para ti';
+
+  @override
+  String get homeRecommendedSubtitle => 'Basado en tus estilos favoritos';
+
+  @override
+  String get homeNewTalentTitle => 'Nuevos talentos';
+
+  @override
+  String get homeNewTalentSubtitle => 'Músicos recién llegados a la comunidad';
+
+  @override
+  String get homeExploreByInstrumentTitle => 'Explora por instrumento';
+
+  @override
+  String get homeExploreByInstrumentSubtitle =>
+      'Filtra por instrumento para encontrar a tu próximo colaborador.';
+
+  @override
+  String rehearsalsSidebarErrorLoading(String error) {
+    return 'Error cargando grupos: $error';
+  }
+
+  @override
+  String get rehearsalsSidebarNewGroupLabel => 'Nuevo grupo';
+
+  @override
+  String get rehearsalsSidebarEmptyPrompt => 'Crea un grupo para empezar.';
+
+  @override
+  String rehearsalsSidebarRoleLabel(String role) {
+    return 'Rol: $role';
+  }
+
+  @override
+  String get rehearsalsSidebarCreateGroupTitle => 'Crear grupo';
+
+  @override
+  String get rehearsalsSidebarGroupNameLabel => 'Nombre';
+
+  @override
+  String get rehearsalsSidebarGroupNameHint => 'Ej. Banda X';
+
+  @override
+  String get create => 'Crear';
+
+  @override
+  String get userSidebarTitle => 'Tu panel';
+
+  @override
+  String get searchAdvancedTitle => 'Búsqueda avanzada';
+
+  @override
+  String get searchFiltersTitle => 'Filtros';
+
+  @override
+  String searchFiltersWithCount(int count) {
+    return 'Filtros ($count)';
+  }
+
+  @override
+  String get searchTopBarHint => 'Busca por nombre, estilo o instrumento';
+
+  @override
+  String get searchInstrumentLabel => 'Instrumento';
+
+  @override
+  String get searchInstrumentHint => 'Selecciona instrumento';
+
+  @override
+  String get searchStyleLabel => 'Estilo';
+
+  @override
+  String get searchStyleHint => 'Selecciona estilo';
+
+  @override
+  String get searchProfileTypeLabel => 'Tipo de perfil';
+
+  @override
+  String get searchProfileTypeHint => 'Selecciona tipo';
+
+  @override
+  String get searchProvinceLabel => 'Provincia';
+
+  @override
+  String get searchProvinceHint => 'Selecciona provincia';
+
+  @override
+  String get searchCityLabel => 'Ciudad';
+
+  @override
+  String get searchCityHint => 'Selecciona ciudad';
+
+  @override
+  String get searchCityUnavailable => 'Sin ciudades disponibles';
+
+  @override
+  String get searchClearFilters => 'Quitar filtros';
+
+  @override
+  String get searchAction => 'Buscar';
+
+  @override
+  String get searchGenderLabel => 'Género';
+
+  @override
+  String get searchGenderHint => 'Selecciona género';
+
+  @override
+  String get searchUnassignedOption => 'Sin asignar';
+
+  @override
+  String get searchAnyOption => 'Cualquiera';
+
+  @override
+  String get searchFemaleOption => 'Femenino';
+
+  @override
+  String get searchMaleOption => 'Masculino';
+
+  @override
+  String get searchAdvancedFiltersTitle => 'Filtros avanzados';
+
+  @override
+  String get searchAdvancedFiltersSubtitle => 'Toca para ajustar los filtros';
+
+  @override
+  String get searchProvincesLoadHint =>
+      'Carga provincias españolas desde Firestore (metadata/geography.provinces).';
+
+  @override
+  String get searchCitiesLoadHint =>
+      'Añade ciudades por provincia en Firestore (metadata/geography.citiesByProvince).';
 }

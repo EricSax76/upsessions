@@ -517,6 +517,270 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Aquí verás tus próximos ensayos de todos tus grupos.'**
   String get rehearsalsGroupsAgendaNoRehearsalsSubtitle;
+
+  /// No description provided for @homeUpcomingEventsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximos eventos'**
+  String get homeUpcomingEventsTitle;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver todos'**
+  String get viewAll;
+
+  /// No description provided for @homeRecommendedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Recomendados para ti'**
+  String get homeRecommendedTitle;
+
+  /// No description provided for @homeRecommendedSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Basado en tus estilos favoritos'**
+  String get homeRecommendedSubtitle;
+
+  /// No description provided for @homeNewTalentTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevos talentos'**
+  String get homeNewTalentTitle;
+
+  /// No description provided for @homeNewTalentSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Músicos recién llegados a la comunidad'**
+  String get homeNewTalentSubtitle;
+
+  /// No description provided for @homeExploreByInstrumentTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Explora por instrumento'**
+  String get homeExploreByInstrumentTitle;
+
+  /// No description provided for @homeExploreByInstrumentSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Filtra por instrumento para encontrar a tu próximo colaborador.'**
+  String get homeExploreByInstrumentSubtitle;
+
+  /// No description provided for @rehearsalsSidebarErrorLoading.
+  ///
+  /// In es, this message translates to:
+  /// **'Error cargando grupos: {error}'**
+  String rehearsalsSidebarErrorLoading(String error);
+
+  /// No description provided for @rehearsalsSidebarNewGroupLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo grupo'**
+  String get rehearsalsSidebarNewGroupLabel;
+
+  /// No description provided for @rehearsalsSidebarEmptyPrompt.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea un grupo para empezar.'**
+  String get rehearsalsSidebarEmptyPrompt;
+
+  /// No description provided for @rehearsalsSidebarRoleLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Rol: {role}'**
+  String rehearsalsSidebarRoleLabel(String role);
+
+  /// No description provided for @rehearsalsSidebarCreateGroupTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear grupo'**
+  String get rehearsalsSidebarCreateGroupTitle;
+
+  /// No description provided for @rehearsalsSidebarGroupNameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre'**
+  String get rehearsalsSidebarGroupNameLabel;
+
+  /// No description provided for @rehearsalsSidebarGroupNameHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej. Banda X'**
+  String get rehearsalsSidebarGroupNameHint;
+
+  /// No description provided for @create.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear'**
+  String get create;
+
+  /// No description provided for @userSidebarTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu panel'**
+  String get userSidebarTitle;
+
+  /// No description provided for @searchAdvancedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Búsqueda avanzada'**
+  String get searchAdvancedTitle;
+
+  /// No description provided for @searchFiltersTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Filtros'**
+  String get searchFiltersTitle;
+
+  /// No description provided for @searchFiltersWithCount.
+  ///
+  /// In es, this message translates to:
+  /// **'Filtros ({count})'**
+  String searchFiltersWithCount(int count);
+
+  /// No description provided for @searchTopBarHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Busca por nombre, estilo o instrumento'**
+  String get searchTopBarHint;
+
+  /// No description provided for @searchInstrumentLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Instrumento'**
+  String get searchInstrumentLabel;
+
+  /// No description provided for @searchInstrumentHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona instrumento'**
+  String get searchInstrumentHint;
+
+  /// No description provided for @searchStyleLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Estilo'**
+  String get searchStyleLabel;
+
+  /// No description provided for @searchStyleHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona estilo'**
+  String get searchStyleHint;
+
+  /// No description provided for @searchProfileTypeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo de perfil'**
+  String get searchProfileTypeLabel;
+
+  /// No description provided for @searchProfileTypeHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona tipo'**
+  String get searchProfileTypeHint;
+
+  /// No description provided for @searchProvinceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Provincia'**
+  String get searchProvinceLabel;
+
+  /// No description provided for @searchProvinceHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona provincia'**
+  String get searchProvinceHint;
+
+  /// No description provided for @searchCityLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Ciudad'**
+  String get searchCityLabel;
+
+  /// No description provided for @searchCityHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona ciudad'**
+  String get searchCityHint;
+
+  /// No description provided for @searchCityUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin ciudades disponibles'**
+  String get searchCityUnavailable;
+
+  /// No description provided for @searchClearFilters.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar filtros'**
+  String get searchClearFilters;
+
+  /// No description provided for @searchAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar'**
+  String get searchAction;
+
+  /// No description provided for @searchGenderLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Género'**
+  String get searchGenderLabel;
+
+  /// No description provided for @searchGenderHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona género'**
+  String get searchGenderHint;
+
+  /// No description provided for @searchUnassignedOption.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin asignar'**
+  String get searchUnassignedOption;
+
+  /// No description provided for @searchAnyOption.
+  ///
+  /// In es, this message translates to:
+  /// **'Cualquiera'**
+  String get searchAnyOption;
+
+  /// No description provided for @searchFemaleOption.
+  ///
+  /// In es, this message translates to:
+  /// **'Femenino'**
+  String get searchFemaleOption;
+
+  /// No description provided for @searchMaleOption.
+  ///
+  /// In es, this message translates to:
+  /// **'Masculino'**
+  String get searchMaleOption;
+
+  /// No description provided for @searchAdvancedFiltersTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Filtros avanzados'**
+  String get searchAdvancedFiltersTitle;
+
+  /// No description provided for @searchAdvancedFiltersSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca para ajustar los filtros'**
+  String get searchAdvancedFiltersSubtitle;
+
+  /// No description provided for @searchProvincesLoadHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Carga provincias españolas desde Firestore (metadata/geography.provinces).'**
+  String get searchProvincesLoadHint;
+
+  /// No description provided for @searchCitiesLoadHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Añade ciudades por provincia en Firestore (metadata/geography.citiesByProvince).'**
+  String get searchCitiesLoadHint;
 }
 
 class _AppLocalizationsDelegate

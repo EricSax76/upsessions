@@ -2,8 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/announcement_model.dart';
 import '../models/instrument_category_model.dart';
-import '../models/musician_card_model.dart';
 import '../models/home_event_model.dart';
+import '../../modules/musicians/models/musician_dto.dart';
+import '../../modules/musicians/models/musician_entity.dart';
 import '../../core/constants/spanish_geography.dart';
 
 class UserHomeRepository {
@@ -12,7 +13,7 @@ class UserHomeRepository {
 
   final FirebaseFirestore _firestore;
 
-  Future<List<MusicianCardModel>> fetchRecommendedMusicians() async {
+  Future<List<MusicianEntity>> fetchRecommendedMusicians() async {
     final snapshot = await _firestore
         .collection('musicians')
         .orderBy('rating', descending: true)
@@ -21,7 +22,7 @@ class UserHomeRepository {
     return snapshot.docs.map(_mapMusician).toList();
   }
 
-  Future<List<MusicianCardModel>> fetchNewMusicians() async {
+  Future<List<MusicianEntity>> fetchNewMusicians() async {
     final snapshot = await _firestore
         .collection('musicians')
         .orderBy('createdAt', descending: true)
@@ -107,23 +108,10 @@ class UserHomeRepository {
     return snapshot.docs.map(_mapEvent).toList();
   }
 
-  static MusicianCardModel _mapMusician(
+  static MusicianEntity _mapMusician(
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
   ) {
-    final data = doc.data();
-    final styles = _stringList(data['styles']);
-    return MusicianCardModel(
-      id: doc.id,
-      ownerId: (data['ownerId'] ?? '') as String,
-      name: (data['name'] ?? '') as String,
-      instrument: (data['instrument'] ?? '') as String,
-      location: (data['city'] ?? '') as String,
-      style: styles.isNotEmpty ? styles.first : '',
-      avatarUrl: data['photoUrl'] as String?,
-      rating: (data['rating'] as num?)?.toDouble() ?? 0,
-      experienceYears: (data['experienceYears'] as num?)?.toInt() ?? 0,
-      styles: styles,
-    );
+    return MusicianDto.fromDocument(doc).toEntity();
   }
 
   static HomeEventModel _mapEvent(

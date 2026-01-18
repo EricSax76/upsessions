@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class SetlistDraft {
   const SetlistDraft({
@@ -93,6 +94,7 @@ class _SetlistItemDialogState extends State<SetlistItemDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final hasInitialSheet = widget.initialSheetUrl.trim().isNotEmpty;
     final hasSelection =
         _sheetBytes != null || (hasInitialSheet && !_removeSheet);
@@ -179,7 +181,7 @@ class _SetlistItemDialogState extends State<SetlistItemDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
+          child: Text(loc.cancel),
         ),
         FilledButton(
           onPressed: () {

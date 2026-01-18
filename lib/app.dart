@@ -6,7 +6,7 @@ import 'package:upsessions/core/services/firebase_initializer.dart';
 import 'package:upsessions/core/services/push_notifications_service.dart';
 import 'package:upsessions/core/theme/app_theme.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
-import 'package:upsessions/l10n/locale_cubit.dart';
+import 'package:upsessions/l10n/cubit/locale_cubit.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import 'package:upsessions/modules/auth/data/auth_repository.dart';
 import 'package:upsessions/modules/auth/data/profile_repository.dart';

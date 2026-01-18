@@ -111,8 +111,13 @@ class MusicianSearchView extends StatelessWidget {
         );
       },
       results: MusicianSearchResultsList(
-        onTapMusician: (musician) =>
-            context.push(AppRoutes.musicianDetail, extra: musician),
+        onTapMusician: (musician) => context.push(
+          AppRoutes.musicianDetailPath(
+            musicianId: musician.id,
+            musicianName: musician.name,
+          ),
+          extra: musician,
+        ),
       ),
     );
 

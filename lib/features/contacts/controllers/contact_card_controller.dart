@@ -36,6 +36,7 @@ class ContactCardController {
       styles: musician.nonEmptyStyles,
       experienceYears: musician.experienceYears,
       photoUrl: musician.photoUrl,
+      rating: musician.rating,
     );
   }
 }

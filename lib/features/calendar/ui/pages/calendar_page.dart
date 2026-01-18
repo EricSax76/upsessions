@@ -32,7 +32,10 @@ class _CalendarPageState extends State<CalendarPage> {
 
   void _viewEvent(EventEntity event) {
     if (!mounted) return;
-    context.push(AppRoutes.eventDetail, extra: event);
+    context.push(
+      AppRoutes.eventDetailPath(event.id),
+      extra: event,
+    );
   }
 
   @override

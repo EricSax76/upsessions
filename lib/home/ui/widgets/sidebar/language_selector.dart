@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../../l10n/locale_cubit.dart';
+import '../../../../l10n/cubit/locale_cubit.dart';
 
 class LanguageSelector extends StatelessWidget {
   const LanguageSelector({super.key});

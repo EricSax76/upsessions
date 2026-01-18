@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../core/constants/app_routes.dart';
 import '../../../core/widgets/loading_indicator.dart';
-import '../../controllers/user_home_controller.dart';
-import 'package:upsessions/home/ui/widgets/announcements/announcement_card.dart';
+import '../../cubits/user_home_cubit.dart';
+import '../../cubits/user_home_state.dart';
+import 'package:upsessions/core/widgets/announcement_card.dart';
 import 'package:upsessions/home/ui/widgets/announcements/new_announcements_section.dart';
 import 'package:upsessions/home/ui/widgets/events/upcoming_events_section.dart';
 import 'package:upsessions/home/ui/widgets/footer/bottom_cookie_bar.dart';
@@ -14,49 +17,33 @@ import 'package:upsessions/home/ui/widgets/musicians/new_musicians_section.dart'
 import 'package:upsessions/home/ui/widgets/musicians/recommended_users_section.dart';
 import 'package:upsessions/home/ui/pages/user_shell_page.dart';
 
-class UserHomePage extends StatefulWidget {
+class UserHomePage extends StatelessWidget {
   const UserHomePage({super.key});
 
   @override
-  State<UserHomePage> createState() => _UserHomePageState();
-}
-
-class _UserHomePageState extends State<UserHomePage> {
-  late final UserHomeController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = UserHomeController();
-    _controller.loadHome();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return UserShellPage(
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          if (_controller.isLoading) {
-            return const Center(child: LoadingIndicator());
-          }
-          return _buildMainContent();
-        },
+    return BlocProvider(
+      create: (_) => UserHomeCubit()..loadHome(),
+      child: UserShellPage(
+        child: BlocBuilder<UserHomeCubit, UserHomeState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              return const Center(child: LoadingIndicator());
+            }
+            return _buildMainContent(context, state);
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildMainContent() {
+  Widget _buildMainContent(BuildContext context, UserHomeState state) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= 1024;
         final colorScheme = Theme.of(context).colorScheme;
+        final cubit = context.read<UserHomeCubit>();
+        final loc = AppLocalizations.of(context);
         return Container(
           color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
           child: SingleChildScrollView(
@@ -71,23 +58,30 @@ class _UserHomePageState extends State<UserHomePage> {
                     ..._buildResponsiveRow(
                       isWide,
                       HomeSectionCard(
-                        title: 'Próximos eventos',
+                        title: loc.homeUpcomingEventsTitle,
                         action: TextButton.icon(
                           onPressed: () => context.push(AppRoutes.events),
                           icon: const Icon(Icons.arrow_outward),
-                          label: const Text('Ver todos'),
+                          label: Text(loc.viewAll),
                         ),
                         child: UpcomingEventsSection(
-                          events: _controller.events,
+                          events: state.events,
                         ),
                       ),
                       HomeSectionCard(
-                        title: 'Anuncios recientes',
+                        title: loc.announcements,
 
                         child: NewAnnouncementsSection(
-                          announcements: _controller.announcements,
+                          announcements: state.announcements,
                           builder: (announcement) =>
-                              AnnouncementCard(announcement: announcement),
+                              AnnouncementCard(
+                                title: announcement.title,
+                                subtitle:
+                                    '${announcement.city} · ${announcement.description}',
+                                dateText:
+                                    '${announcement.date.day}/${announcement.date.month}',
+                                dense: true,
+                              ),
                         ),
                       ),
                     ),
@@ -95,39 +89,39 @@ class _UserHomePageState extends State<UserHomePage> {
                     ..._buildResponsiveRow(
                       isWide,
                       HomeSectionCard(
-                        title: 'Recomendados para ti',
-                        subtitle: 'Basado en tus estilos favoritos',
+                        title: loc.homeRecommendedTitle,
+                        subtitle: loc.homeRecommendedSubtitle,
                         child: RecommendedUsersSection(
-                          musicians: _controller.recommended,
+                          musicians: state.recommended,
                         ),
                       ),
                       HomeSectionCard(
-                        title: 'Nuevos talentos',
-                        subtitle: 'Músicos recién llegados a la comunidad',
+                        title: loc.homeNewTalentTitle,
+                        subtitle: loc.homeNewTalentSubtitle,
                         action: TextButton.icon(
                           onPressed: () => context.push(AppRoutes.musicians),
                           icon: const Icon(Icons.arrow_outward),
-                          label: const Text('Ver todos'),
+                          label: Text(loc.viewAll),
                         ),
                         child: NewMusiciansSection(
-                          musicians: _controller.newMusicians,
+                          musicians: state.newMusicians,
                         ),
                       ),
                     ),
                     const SizedBox(height: 32),
                     HomeSectionCard(
-                      title: 'Explora por instrumento',
+                      title: loc.homeExploreByInstrumentTitle,
                       subtitle:
-                          'Filtra por instrumento para encontrar a tu próximo colaborador.',
+                          loc.homeExploreByInstrumentSubtitle,
                       action: TextButton.icon(
                         onPressed: () => context.push(AppRoutes.musicians),
                         icon: const Icon(Icons.arrow_outward),
-                        label: const Text('Ver todos'),
+                        label: Text(loc.viewAll),
                       ),
                       child: MusiciansByInstrumentSection(
-                        categories: _controller.categories,
-                        musicians: _controller.recommended,
-                        onInstrumentSelected: _controller.selectInstrument,
+                        categories: state.categories,
+                        musicians: state.recommended,
+                        onInstrumentSelected: cubit.selectInstrument,
                       ),
                     ),
                     const SizedBox(height: 32),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../models/musician_search_filters_controller.dart';
 import '../../../../../home/ui/widgets/search/advanced_search_box.dart';
@@ -19,6 +20,7 @@ class MusicianSearchFilterPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return AnimatedBuilder(
       animation: filters,
       builder: (context, _) {
@@ -49,8 +51,8 @@ class MusicianSearchFilterPanel extends StatelessWidget {
         return Card(
           margin: EdgeInsets.zero,
           child: ExpansionTile(
-            title: const Text('Filtros avanzados'),
-            subtitle: const Text('Toca para ajustar los filtros'),
+            title: Text(loc.searchAdvancedFiltersTitle),
+            subtitle: Text(loc.searchAdvancedFiltersSubtitle),
             childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             children: [box],
           ),

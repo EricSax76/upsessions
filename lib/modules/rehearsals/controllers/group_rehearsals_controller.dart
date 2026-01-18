@@ -3,7 +3,7 @@ import '../../auth/data/auth_repository.dart';
 import '../../musicians/repositories/musicians_repository.dart';
 import '../../musicians/models/musician_entity.dart';
 import '../models/create_rehearsal_use_case.dart';
-import '../repositories/groups_repository.dart';
+import '../../groups/repositories/groups_repository.dart';
 import '../repositories/rehearsals_repository.dart';
 import '../cubits/rehearsal_entity.dart';
 

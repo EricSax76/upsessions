@@ -5,8 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_link_scheme.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
-import 'package:upsessions/modules/rehearsals/cubits/group_membership_entity.dart';
-import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
+import 'package:upsessions/modules/groups/cubits/group_membership_entity.dart';
+import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 
 import '../../../models/musician_entity.dart';
 
@@ -31,6 +32,7 @@ class _InviteToGroupDialogState extends State<InviteToGroupDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
     final dialogWidth = math.min(
       520.0,
@@ -75,7 +77,7 @@ class _InviteToGroupDialogState extends State<InviteToGroupDialog> {
                             GoRouter.of(context).go(AppRoutes.rehearsals);
                           },
                           icon: const Icon(Icons.group_add_outlined),
-                          label: const Text('Crear grupo'),
+                          label: Text(loc.rehearsalsSidebarCreateGroupTitle),
                         ),
                       ],
                     );

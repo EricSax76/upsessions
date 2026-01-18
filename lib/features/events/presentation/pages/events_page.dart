@@ -44,7 +44,10 @@ class EventsPage extends StatelessWidget {
                   onRefresh: cubit.load,
                   onSelectForPreview: cubit.selectPreview,
                   onViewDetails: (event) =>
-                      context.push(AppRoutes.eventDetail, extra: event),
+                      context.push(
+                        AppRoutes.eventDetailPath(event.id),
+                        extra: event,
+                      ),
                 );
               },
             ),

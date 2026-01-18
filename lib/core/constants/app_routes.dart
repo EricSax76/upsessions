@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class AppRoutes {
   static const splash = '/';
   static const welcome = '/welcome';
@@ -11,8 +13,10 @@ class AppRoutes {
   static const userHome = '/home';
   static const musicians = '/musicians';
   static const musicianDetail = '/musicians/detail';
+  static const musicianDetailRoute = '/musicians/:musicianId/:musicianName';
   static const announcements = '/announcements';
   static const announcementDetail = '/announcements/detail';
+  static const announcementDetailRoute = '/announcements/:announcementId';
   static const announcementForm = '/announcements/form';
   static const media = '/media';
   static const messages = '/messages';
@@ -20,6 +24,7 @@ class AppRoutes {
   static const calendar = '/calendar';
   static const events = '/events';
   static const eventDetail = '/events/detail';
+  static const eventDetailRoute = '/events/:eventId';
   static const createEvent = '/events/create';
   static const rehearsals = '/rehearsals';
   static const invite = '/invite';
@@ -29,6 +34,12 @@ class AppRoutes {
   static const settings = '/settings';
   static const help = '/settings/help';
   static const notifications = '/notifications';
+
+  static const groupRoute = '/rehearsals/groups/:groupId';
+  static const groupRehearsalsRoute =
+      '/rehearsals/groups/:groupId/rehearsals';
+  static const rehearsalDetailRoute =
+      '/rehearsals/groups/:groupId/rehearsals/:rehearsalId';
 
   static String groupPage(String groupId) => '/rehearsals/groups/$groupId';
 
@@ -42,4 +53,41 @@ class AppRoutes {
     required String rehearsalId,
   }) =>
       '/rehearsals/groups/$groupId/rehearsals/$rehearsalId';
+
+  static String musicianDetailPath({
+    required String musicianId,
+    required String musicianName,
+  }) {
+    if (!kIsWeb) {
+      return musicianDetail;
+    }
+    final encodedId = Uri.encodeComponent(musicianId);
+    final slug = _slugify(musicianName);
+    return '/musicians/$encodedId/$slug';
+  }
+
+  static String announcementDetailPath(String announcementId) {
+    if (!kIsWeb) {
+      return announcementDetail;
+    }
+    final encodedId = Uri.encodeComponent(announcementId);
+    return '/announcements/$encodedId';
+  }
+
+  static String eventDetailPath(String eventId) {
+    if (!kIsWeb) {
+      return eventDetail;
+    }
+    final encodedId = Uri.encodeComponent(eventId);
+    return '/events/$encodedId';
+  }
+
+  static String _slugify(String input) {
+    final trimmed = input.trim().toLowerCase();
+    if (trimmed.isEmpty) {
+      return 'musician';
+    }
+    final dashed = trimmed.replaceAll(RegExp(r'\s+'), '-');
+    return Uri.encodeComponent(dashed);
+  }
 }

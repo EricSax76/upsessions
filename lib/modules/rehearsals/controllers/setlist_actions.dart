@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:upsessions/core/utils/url_launcher_utils.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../cubits/rehearsal_entity.dart';
 import '../cubits/setlist_item_entity.dart';
@@ -122,6 +123,7 @@ Future<void> confirmDeleteSetlistItem({
   required String rehearsalId,
   required SetlistItemEntity item,
 }) async {
+  final loc = AppLocalizations.of(context);
   final ok = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
@@ -130,7 +132,7 @@ Future<void> confirmDeleteSetlistItem({
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancelar'),
+          child: Text(loc.cancel),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
@@ -162,6 +164,7 @@ Future<void> copySetlistFromLastRehearsal({
   required RehearsalEntity currentRehearsal,
   required List<SetlistItemEntity> currentSetlist,
 }) async {
+  final loc = AppLocalizations.of(context);
   final messenger = ScaffoldMessenger.of(context);
   try {
     final rehearsals = await rehearsalsRepository.getRehearsals(groupId);
@@ -197,7 +200,7 @@ Future<void> copySetlistFromLastRehearsal({
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
+              child: Text(loc.cancel),
             ),
             TextButton(
               onPressed: () =>
@@ -297,23 +300,7 @@ String _linkLabel(String url) {
 }
 
 Future<void> _openExternalUrl(BuildContext context, String url) async {
-  final messenger = ScaffoldMessenger.of(context);
-  final trimmed = url.trim();
-  if (trimmed.isEmpty) return;
-  final uri = Uri.tryParse(trimmed);
-  if (uri == null) {
-    messenger.showSnackBar(const SnackBar(content: Text('Enlace inválido')));
-    return;
-  }
-  try {
-    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!ok && context.mounted) {
-      messenger.showSnackBar(const SnackBar(content: Text('No se pudo abrir')));
-    }
-  } catch (_) {
-    if (!context.mounted) return;
-    messenger.showSnackBar(const SnackBar(content: Text('No se pudo abrir')));
-  }
+  await UrlLauncherUtils.launchSafeUrl(context, url);
 }
 
 Future<void> _copyToClipboard(BuildContext context, String value) async {

@@ -3,11 +3,13 @@ import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_routes.dart';
 import '../modules/announcements/domain/announcement_entity.dart';
+import '../modules/announcements/data/announcements_repository.dart';
 import '../modules/announcements/presentation/pages/announcement_detail_page.dart';
 import '../modules/announcements/presentation/pages/announcement_form_page.dart';
 import '../modules/announcements/presentation/pages/announcements_hub_page.dart';
 import '../features/media/ui/pages/media_gallery_page.dart';
 import '../features/calendar/ui/pages/calendar_page.dart';
+import '../features/events/data/events_repository.dart';
 import '../features/events/domain/event_entity.dart';
 import '../features/events/presentation/pages/create_event_page.dart';
 import '../features/events/presentation/pages/event_detail_page.dart';
@@ -20,16 +22,17 @@ import '../features/notifications/ui/pages/notifications_page.dart';
 import '../features/settin/ui/pages/help_page.dart';
 import '../features/settin/ui/pages/settings_page.dart';
 import '../home/splash/presentation/splash_page.dart';
+import '../modules/groups/ui/pages/group_page.dart';
+import '../modules/groups/ui/pages/groups_page.dart';
 import '../modules/rehearsals/ui/pages/group_rehearsals_page.dart';
-import '../modules/rehearsals/ui/pages/group_page.dart';
 import '../modules/rehearsals/ui/pages/invite_accept_page.dart';
 import '../modules/rehearsals/ui/pages/rehearsal_detail_page.dart';
-import '../modules/rehearsals/ui/pages/rehearsals_groups_page.dart';
 import '../home/ui/pages/user_home_page.dart';
 import '../modules/auth/ui/pages/forgot_password_page.dart';
 import '../modules/auth/ui/pages/login_page.dart';
 import '../modules/auth/ui/pages/register_page.dart';
 import '../modules/musicians/models/musician_entity.dart';
+import '../modules/musicians/repositories/musicians_repository.dart';
 import '../home/ui/pages/user_shell_page.dart';
 import '../modules/musicians/ui/pages/musician_detail_page.dart';
 import '../modules/musicians/ui/pages/musicians_hub_page.dart';
@@ -101,18 +104,11 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.musicianDetail,
-          builder: (context, state) {
-            final musician = state.extra;
-            if (musician is MusicianEntity) {
-              return UserShellPage(
-                child: MusicianDetailPage(musician: musician),
-              );
-            }
-            return _UnknownRouteScreen(
-              name: state.uri.toString(),
-              message: 'Missing MusicianEntity for ${state.uri}',
-            );
-          },
+          builder: _buildMusicianDetail,
+        ),
+        GoRoute(
+          path: AppRoutes.musicianDetailRoute,
+          builder: _buildMusicianDetail,
         ),
         GoRoute(
           path: AppRoutes.announcements,
@@ -120,18 +116,11 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.announcementDetail,
-          builder: (context, state) {
-            final announcement = state.extra;
-            if (announcement is AnnouncementEntity) {
-              return UserShellPage(
-                child: AnnouncementDetailPage(announcement: announcement),
-              );
-            }
-            return _UnknownRouteScreen(
-              name: state.uri.toString(),
-              message: 'Missing AnnouncementEntity for ${state.uri}',
-            );
-          },
+          builder: _buildAnnouncementDetail,
+        ),
+        GoRoute(
+          path: AppRoutes.announcementDetailRoute,
+          builder: _buildAnnouncementDetail,
         ),
         GoRoute(
           path: AppRoutes.announcementForm,
@@ -174,24 +163,24 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.rehearsals,
-          builder: (context, state) => const RehearsalsGroupsPage(),
+          builder: (context, state) => const GroupsPage(),
         ),
         GoRoute(
-          path: '/rehearsals/groups/:groupId',
+          path: AppRoutes.groupRoute,
           builder: (context, state) {
             final groupId = state.pathParameters['groupId'] ?? '';
             return GroupPage(groupId: groupId);
           },
         ),
         GoRoute(
-          path: '/rehearsals/groups/:groupId/rehearsals',
+          path: AppRoutes.groupRehearsalsRoute,
           builder: (context, state) {
             final groupId = state.pathParameters['groupId'] ?? '';
             return GroupRehearsalsPage(groupId: groupId);
           },
         ),
         GoRoute(
-          path: '/rehearsals/groups/:groupId/rehearsals/:rehearsalId',
+          path: AppRoutes.rehearsalDetailRoute,
           builder: (context, state) {
             final groupId = state.pathParameters['groupId'] ?? '';
             final rehearsalId = state.pathParameters['rehearsalId'] ?? '';
@@ -211,16 +200,11 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.eventDetail,
-          builder: (context, state) {
-            final extra = state.extra;
-            if (extra is EventEntity) {
-              return EventDetailPage(event: extra);
-            }
-            return _UnknownRouteScreen(
-              name: state.uri.toString(),
-              message: 'Missing EventEntity for ${state.uri}',
-            );
-          },
+          builder: _buildEventDetail,
+        ),
+        GoRoute(
+          path: AppRoutes.eventDetailRoute,
+          builder: _buildEventDetail,
         ),
         GoRoute(
           path: AppRoutes.profile,
@@ -253,6 +237,61 @@ class AppRouter {
   late final GoRouter router;
 }
 
+Widget _buildMusicianDetail(BuildContext context, GoRouterState state) {
+  final musician = state.extra;
+  if (musician is MusicianEntity) {
+    return UserShellPage(
+      child: MusicianDetailPage(musician: musician),
+    );
+  }
+  final musicianId = state.pathParameters['musicianId'];
+  if (musicianId != null && musicianId.isNotEmpty) {
+    return _MusicianDetailLoader(
+      musicianId: musicianId,
+      location: state.uri.toString(),
+    );
+  }
+  return _UnknownRouteScreen(
+    name: state.uri.toString(),
+    message: 'Missing MusicianEntity for ${state.uri}',
+  );
+}
+
+Widget _buildAnnouncementDetail(BuildContext context, GoRouterState state) {
+  final announcement = state.extra;
+  if (announcement is AnnouncementEntity) {
+    return UserShellPage(
+      child: AnnouncementDetailPage(announcement: announcement),
+    );
+  }
+  final announcementId = state.pathParameters['announcementId'];
+  if (announcementId != null && announcementId.isNotEmpty) {
+    return _AnnouncementDetailLoader(
+      announcementId: announcementId,
+      location: state.uri.toString(),
+    );
+  }
+  return _UnknownRouteScreen(
+    name: state.uri.toString(),
+    message: 'Missing AnnouncementEntity for ${state.uri}',
+  );
+}
+
+Widget _buildEventDetail(BuildContext context, GoRouterState state) {
+  final extra = state.extra;
+  if (extra is EventEntity) {
+    return EventDetailPage(event: extra);
+  }
+  final eventId = state.pathParameters['eventId'];
+  if (eventId != null && eventId.isNotEmpty) {
+    return _EventDetailLoader(eventId: eventId, location: state.uri.toString());
+  }
+  return _UnknownRouteScreen(
+    name: state.uri.toString(),
+    message: 'Missing EventEntity for ${state.uri}',
+  );
+}
+
 class _UnknownRouteScreen extends StatelessWidget {
   const _UnknownRouteScreen({required this.name, this.message});
 
@@ -281,6 +320,108 @@ class _UnknownRouteScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _MusicianDetailLoader extends StatelessWidget {
+  const _MusicianDetailLoader({
+    required this.musicianId,
+    required this.location,
+  });
+
+  final String musicianId;
+  final String location;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<MusicianEntity?>(
+      future: locate<MusiciansRepository>().findById(musicianId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return UserShellPage(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final musician = snapshot.data;
+        if (snapshot.hasError || musician == null) {
+          return _UnknownRouteScreen(
+            name: location,
+            message: snapshot.hasError
+                ? snapshot.error.toString()
+                : 'No se encontro el musico solicitado.',
+          );
+        }
+        return UserShellPage(
+          child: MusicianDetailPage(musician: musician),
+        );
+      },
+    );
+  }
+}
+
+class _AnnouncementDetailLoader extends StatelessWidget {
+  const _AnnouncementDetailLoader({
+    required this.announcementId,
+    required this.location,
+  });
+
+  final String announcementId;
+  final String location;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<AnnouncementEntity>(
+      future: locate<AnnouncementsRepository>().findById(announcementId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return UserShellPage(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasError || snapshot.data == null) {
+          return _UnknownRouteScreen(
+            name: location,
+            message: snapshot.hasError
+                ? snapshot.error.toString()
+                : 'No se encontro el anuncio solicitado.',
+          );
+        }
+        return UserShellPage(
+          child: AnnouncementDetailPage(announcement: snapshot.data!),
+        );
+      },
+    );
+  }
+}
+
+class _EventDetailLoader extends StatelessWidget {
+  const _EventDetailLoader({required this.eventId, required this.location});
+
+  final String eventId;
+  final String location;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<EventEntity?>(
+      future: locate<EventsRepository>().findById(eventId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final event = snapshot.data;
+        if (snapshot.hasError || event == null) {
+          return _UnknownRouteScreen(
+            name: location,
+            message: snapshot.hasError
+                ? snapshot.error.toString()
+                : 'No se encontro el evento solicitado.',
+          );
+        }
+        return EventDetailPage(event: event);
+      },
     );
   }
 }

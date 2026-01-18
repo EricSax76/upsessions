@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import 'rehearsal_helpers.dart';
 
@@ -38,6 +39,7 @@ class _RehearsalDialogState extends State<RehearsalDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final startsLabel = _startsAt == null
         ? 'Elegir fecha/hora'
         : formatDateTime(_startsAt!);
@@ -94,7 +96,7 @@ class _RehearsalDialogState extends State<RehearsalDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
+          child: Text(loc.cancel),
         ),
         FilledButton(
           onPressed: _startsAt == null

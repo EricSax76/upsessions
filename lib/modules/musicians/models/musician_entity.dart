@@ -14,6 +14,7 @@ class MusicianEntity {
     this.province,
     this.profileType,
     this.gender,
+    this.rating,
   });
 
   final String id;
@@ -27,4 +28,5 @@ class MusicianEntity {
   final String? province;
   final String? profileType;
   final String? gender;
+  final double? rating;
 }

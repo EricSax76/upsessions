@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
+import 'package:upsessions/core/widgets/announcement_card.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import '../../data/announcements_repository.dart';
 import '../../domain/announcement_entity.dart';
-import '../widgets/announcement_card.dart';
 import '../widgets/announcement_filter_panel.dart';
 import 'announcement_form_page.dart';
 
@@ -57,9 +57,12 @@ class _AnnouncementsListPageState extends State<AnnouncementsListPage> {
                 const SizedBox(height: 16),
                 for (final announcement in _announcements)
                   AnnouncementCard(
-                    announcement: announcement,
+                    title: announcement.title,
+                    subtitle: '${announcement.city} · ${announcement.author}',
+                    dateText:
+                        '${announcement.publishedAt.day}/${announcement.publishedAt.month}',
                     onTap: () => context.push(
-                      AppRoutes.announcementDetail,
+                      AppRoutes.announcementDetailPath(announcement.id),
                       extra: announcement,
                     ),
                   ),

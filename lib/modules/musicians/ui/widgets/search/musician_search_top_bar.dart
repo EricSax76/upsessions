@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../models/musician_search_filters_controller.dart';
 import '../../../../../home/ui/widgets/search/advanced_search_box.dart';
@@ -22,6 +23,7 @@ class MusicianSearchTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final showWebFilters = kIsWeb && filters != null && onClearFilters != null;
     return Material(
       color: Theme.of(context).colorScheme.surface,
@@ -36,10 +38,10 @@ class MusicianSearchTopBar extends StatelessWidget {
                 controller: controller,
                 onSubmitted: onSubmitted,
                 textInputAction: TextInputAction.search,
-                decoration: const InputDecoration(
-                  hintText: 'Busca por nombre, estilo o instrumento',
+                decoration: InputDecoration(
+                  hintText: loc.searchTopBarHint,
                   border: InputBorder.none,
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                 ),
               ),
             ),
@@ -60,7 +62,7 @@ class MusicianSearchTopBar extends StatelessWidget {
                   vertical: 12,
                 ),
               ),
-              child: const Text('Buscar'),
+              child: Text(loc.searchAction),
             ),
           ],
         ),
@@ -104,12 +106,15 @@ class _WebFiltersMenuState extends State<_WebFiltersMenu> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return AnimatedBuilder(
       animation: widget.filters,
       builder: (context, _) {
         final filtersReady = !widget.filters.isLoading;
         final activeCount = _activeFilterCount(widget.filters);
-        final label = activeCount == 0 ? 'Filtros' : 'Filtros ($activeCount)';
+        final label = activeCount == 0
+            ? loc.searchFiltersTitle
+            : loc.searchFiltersWithCount(activeCount);
 
         return MenuAnchor(
           controller: _menuController,

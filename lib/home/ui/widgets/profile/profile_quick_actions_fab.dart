@@ -14,6 +14,7 @@ class _ProfileQuickActionsFabState extends State<ProfileQuickActionsFab> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      heroTag: 'profile-quick-actions-fab',
       onPressed: () => _openQuickActionsModal(context),
       child: const Icon(Icons.add),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 /// Utilidad para abrir URLs externas de forma segura, validando esquemas
 /// y solicitando confirmación al usuario para mitigar riesgos de phishing o intents no deseados.
@@ -15,6 +16,7 @@ class UrlLauncherUtils {
     BuildContext context,
     String urlString,
   ) async {
+    final loc = AppLocalizations.of(context);
     final String trimmedUrl = urlString.trim();
     if (trimmedUrl.isEmpty) return;
 
@@ -57,7 +59,7 @@ class UrlLauncherUtils {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(loc.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),

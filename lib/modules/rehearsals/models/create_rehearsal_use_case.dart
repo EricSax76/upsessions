@@ -1,4 +1,4 @@
-import '../repositories/groups_repository.dart';
+import '../../groups/repositories/groups_repository.dart';
 import '../repositories/rehearsals_repository.dart';
 
 class CreateRehearsalUseCase {

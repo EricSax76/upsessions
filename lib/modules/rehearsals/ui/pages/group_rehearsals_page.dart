@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
@@ -127,6 +128,7 @@ class _GroupRehearsalsBodyState extends State<_GroupRehearsalsBody> {
 
                 return LayoutBuilder(
                   builder: (context, constraints) {
+                    final loc = AppLocalizations.of(context);
                     final horizontalPadding = constraints.maxWidth < 420
                         ? 16.0
                         : (constraints.maxWidth < 720 ? 20.0 : 24.0);
@@ -150,7 +152,7 @@ class _GroupRehearsalsBodyState extends State<_GroupRehearsalsBody> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Ensayos',
+                                loc.navRehearsals,
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(color: scheme.onSurfaceVariant),
                               ),

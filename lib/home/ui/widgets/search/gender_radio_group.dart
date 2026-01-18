@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class GenderRadioGroup extends StatelessWidget {
   const GenderRadioGroup({
@@ -17,20 +18,39 @@ class GenderRadioGroup extends StatelessWidget {
     'Masculino',
   ];
 
+  String _labelForOption(String option, AppLocalizations loc) {
+    switch (option) {
+      case 'Sin asignar':
+        return loc.searchUnassignedOption;
+      case 'Cualquiera':
+        return loc.searchAnyOption;
+      case 'Femenino':
+        return loc.searchFemaleOption;
+      case 'Masculino':
+        return loc.searchMaleOption;
+    }
+    return option;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final selectedValue =
-        value.isNotEmpty && _options.contains(value) ? value : _options.first;
+    final loc = AppLocalizations.of(context);
+    final selectedValue = value.isNotEmpty && _options.contains(value)
+        ? value
+        : _options.first;
     return DropdownButtonFormField<String>(
       isExpanded: true,
       initialValue: selectedValue,
-      decoration: const InputDecoration(labelText: 'Género'),
-      hint: const Text('Selecciona género'),
+      decoration: InputDecoration(labelText: loc.searchGenderLabel),
+      hint: Text(loc.searchGenderHint),
       items: _options
           .map(
             (option) => DropdownMenuItem(
               value: option,
-              child: Text(option, overflow: TextOverflow.ellipsis),
+              child: Text(
+                _labelForOption(option, loc),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           )
           .toList(),

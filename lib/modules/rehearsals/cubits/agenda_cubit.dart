@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../repositories/groups_repository.dart';
+import '../../groups/repositories/groups_repository.dart';
 import '../repositories/rehearsals_repository.dart';
 import 'rehearsal_entity.dart';
 

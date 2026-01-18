@@ -13,17 +13,20 @@ import 'package:upsessions/features/messaging/repositories/chat_repository.dart'
 import 'package:upsessions/features/notifications/models/invite_notification_entity.dart';
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
-import 'package:upsessions/modules/rehearsals/repositories/groups_repository.dart';
+import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/modules/rehearsals/ui/pages/rehearsal_detail_page.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
 import 'package:upsessions/modules/rehearsals/cubits/rehearsal_entity.dart';
-import 'package:upsessions/modules/rehearsals/cubits/group_membership_entity.dart';
+import 'package:upsessions/modules/groups/cubits/group_membership_entity.dart';
 import 'package:upsessions/modules/rehearsals/cubits/setlist_item_entity.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import 'package:upsessions/modules/auth/domain/user_entity.dart';
+import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 
 class MockAuthCubit extends MockCubit<AuthState> implements AuthCubit {}
+class MockProfileCubit extends MockCubit<ProfileState>
+    implements ProfileCubit {}
 
 class MockRehearsalsRepository extends Mock implements RehearsalsRepository {}
 
@@ -60,6 +63,7 @@ class FakeLikedMusiciansController extends ChangeNotifier
 
 void main() {
   late MockAuthCubit authCubit;
+  late MockProfileCubit profileCubit;
   late MockRehearsalsRepository rehearsalsRepository;
   late MockSetlistRepository setlistRepository;
   late MockGroupsRepository groupsRepository;
@@ -81,6 +85,15 @@ void main() {
       authCubit,
       const Stream<AuthState>.empty(),
       initialState: authState,
+    );
+
+    profileCubit = MockProfileCubit();
+    const profileState = ProfileState();
+    when(() => profileCubit.state).thenReturn(profileState);
+    whenListen(
+      profileCubit,
+      const Stream<ProfileState>.empty(),
+      initialState: profileState,
     );
 
     rehearsalsRepository = MockRehearsalsRepository();
@@ -168,8 +181,11 @@ void main() {
     );
 
     await tester.pumpWidget(
-      BlocProvider<AuthCubit>.value(
-        value: authCubit,
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthCubit>.value(value: authCubit),
+          BlocProvider<ProfileCubit>.value(value: profileCubit),
+        ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

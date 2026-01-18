@@ -155,12 +155,8 @@ solomusicos_flutter/
 │       │           │   └── musicians_by_instrument_section.dart
 │       │           ├── search/
 │       │           │   ├── advanced_search_box.dart
-│       │           │   ├── instrument_dropdown.dart
-│       │           │   ├── style_dropdown.dart
-│       │           │   ├── profile_type_dropdown.dart
-│       │           │   ├── gender_radio_group.dart
-│       │           │   ├── province_dropdown.dart
-│       │           │   └── city_dropdown.dart
+│       │           │   ├── filter_dropdown.dart
+│       │           │   └── gender_radio_group.dart
 │       │           ├── announcements/
 │       │           │   ├── new_announcements_section.dart
 │       │           │   └── announcement_card.dart

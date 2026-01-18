@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/musician_card_model.dart';
-import '../../../../features/contacts/models/liked_musician.dart';
 import '../../../../features/contacts/ui/widgets/musician_like_button.dart';
+import '../../../../modules/musicians/models/musician_entity.dart';
+import '../../../../modules/musicians/models/musician_liked_musician_mapper.dart';
 
 class MusiciansGrid extends StatelessWidget {
   const MusiciansGrid({super.key, required this.musicians});
 
-  final List<MusicianCardModel> musicians;
+  final List<MusicianEntity> musicians;
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +45,11 @@ class MusiciansGrid extends StatelessWidget {
 class _MusicianTile extends StatelessWidget {
   const _MusicianTile({required this.musician});
 
-  final MusicianCardModel musician;
+  final MusicianEntity musician;
 
   @override
   Widget build(BuildContext context) {
-    final likedMusician = _mapToLiked();
+    final likedMusician = musician.toLikedMusician();
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -76,7 +76,7 @@ class _MusicianTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  '${musician.instrument} · ${musician.location}',
+                  '${musician.instrument} · ${musician.city}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -87,7 +87,7 @@ class _MusicianTile extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(Icons.star, size: 10, color: Colors.amber),
-              Text(musician.rating.toStringAsFixed(1)),
+              Text((musician.rating ?? 0).toStringAsFixed(1)),
               const SizedBox(height: 2),
               MusicianLikeButton(
                 musician: likedMusician,
@@ -98,21 +98,6 @@ class _MusicianTile extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  LikedMusician _mapToLiked() {
-    return LikedMusician(
-      id: musician.id,
-      ownerId: musician.ownerId,
-      name: musician.name,
-      instrument: musician.instrument,
-      city: musician.location,
-      styles: musician.styles,
-      highlightStyle: musician.style,
-      photoUrl: musician.avatarUrl,
-      experienceYears: musician.experienceYears,
-      rating: musician.rating,
     );
   }
 }

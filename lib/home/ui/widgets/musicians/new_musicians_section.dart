@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/musician_card_model.dart';
-import '../../../../features/contacts/models/liked_musician.dart';
 import '../../../../features/contacts/ui/widgets/musician_like_button.dart';
+import '../../../../modules/musicians/models/musician_entity.dart';
+import '../../../../modules/musicians/models/musician_liked_musician_mapper.dart';
 
 class NewMusiciansSection extends StatelessWidget {
   const NewMusiciansSection({super.key, required this.musicians});
 
-  final List<MusicianCardModel> musicians;
+  final List<MusicianEntity> musicians;
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +45,12 @@ class NewMusiciansSection extends StatelessWidget {
 class _NewMusicianCard extends StatelessWidget {
   const _NewMusicianCard({required this.musician});
 
-  final MusicianCardModel musician;
+  final MusicianEntity musician;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final likedMusician = _mapToLiked();
+    final likedMusician = musician.toLikedMusician();
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -78,7 +78,7 @@ class _NewMusicianCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  musician.location,
+                  musician.city,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -88,21 +88,6 @@ class _NewMusicianCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  LikedMusician _mapToLiked() {
-    return LikedMusician(
-      id: musician.id,
-      ownerId: musician.ownerId,
-      name: musician.name,
-      instrument: musician.instrument,
-      city: musician.location,
-      styles: musician.styles,
-      highlightStyle: musician.style,
-      photoUrl: musician.avatarUrl,
-      experienceYears: musician.experienceYears,
-      rating: musician.rating,
     );
   }
 }

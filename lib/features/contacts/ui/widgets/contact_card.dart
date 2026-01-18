@@ -44,7 +44,13 @@ class _ContactCardState extends State<ContactCard> {
 
   void _viewProfile() {
     final entity = _controller.toMusicianEntity(widget.musician);
-    context.push(AppRoutes.musicianDetail, extra: entity);
+    context.push(
+      AppRoutes.musicianDetailPath(
+        musicianId: entity.id,
+        musicianName: entity.name,
+      ),
+      extra: entity,
+    );
   }
 
   @override
