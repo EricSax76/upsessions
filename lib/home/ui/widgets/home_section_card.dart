@@ -19,13 +19,25 @@ class HomeSectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return AppCard(
       margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      padding: const EdgeInsets.all(24),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+          width: 1,
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 child: Column(
@@ -33,8 +45,9 @@ class HomeSectionCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: theme.textTheme.titleLarge?.copyWith(
+                      style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
                       ),
                     ),
                     if (subtitle != null) ...[
@@ -42,17 +55,21 @@ class HomeSectionCard extends StatelessWidget {
                       Text(
                         subtitle!,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ],
                 ),
               ),
-              if (action != null) action!,
+              if (action != null) 
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: action!,
+                ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           child,
         ],
       ),

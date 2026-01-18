@@ -16,18 +16,32 @@ class UserShellPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isWideLayout = MediaQuery.of(context).size.width >= 1200;
+    final width = MediaQuery.of(context).size.width;
+    final isWideLayout = width >= 1200;
 
-    final layout = isWideLayout
-        ? Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(width: 280, child: UserSidebar()),
-              const VerticalDivider(width: 1),
-              Expanded(child: child),
-            ],
-          )
-        : child;
+    Widget body;
+    if (isWideLayout) {
+      body = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            width: 300,
+            child: Material(
+              elevation: 0,
+              child: UserSidebar(),
+            ),
+          ),
+          const VerticalDivider(width: 1, thickness: 1),
+          Expanded(
+            child: Scaffold(
+              body: child,
+            ),
+          ),
+        ],
+      );
+    } else {
+      body = child;
+    }
 
     return BlocListener<AuthCubit, AuthState>(
       listenWhen: (previous, current) => previous.status != current.status,
@@ -37,16 +51,20 @@ class UserShellPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: SmAppBar(
-          bottom: const MainNavBar(),
-          showMenuButton: !isWideLayout,
-        ),
         drawer: isWideLayout
             ? null
-            : const Drawer(child: SafeArea(child: UserSidebar())),
-        body: layout,
+            : const Drawer(
+                child: SafeArea(child: UserSidebar()),
+              ),
+        appBar: isWideLayout
+            ? null
+            : SmAppBar(
+                bottom: const MainNavBar(),
+                showMenuButton: true,
+              ),
+        body: body,
+        floatingActionButton: isWideLayout ? null : const ProfileQuickActionsFab(),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        floatingActionButton: const ProfileQuickActionsFab(),
       ),
     );
   }

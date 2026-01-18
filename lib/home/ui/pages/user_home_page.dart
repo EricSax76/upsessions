@@ -12,6 +12,7 @@ import 'package:upsessions/home/ui/widgets/announcements/new_announcements_secti
 import 'package:upsessions/home/ui/widgets/events/upcoming_events_section.dart';
 import 'package:upsessions/home/ui/widgets/footer/bottom_cookie_bar.dart';
 import 'package:upsessions/home/ui/widgets/home_section_card.dart';
+import 'package:upsessions/home/ui/widgets/home_hero_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/musicians_by_instrument_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/new_musicians_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/recommended_users_section.dart';
@@ -40,79 +41,74 @@ class UserHomePage extends StatelessWidget {
   Widget _buildMainContent(BuildContext context, UserHomeState state) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isWide = constraints.maxWidth >= 1024;
+        final width = constraints.maxWidth;
+        final isWide = width >= 1200;
+        final isMedium = width >= 800;
+        
         final colorScheme = Theme.of(context).colorScheme;
         final cubit = context.read<UserHomeCubit>();
         final loc = AppLocalizations.of(context);
+
         return Container(
-          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
+          color: colorScheme.surfaceContainerLow,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-            child: Align(
-              alignment: Alignment.topCenter,
+            padding: EdgeInsets.symmetric(
+              vertical: isWide ? 48 : 24,
+              horizontal: isWide ? 48 : 16,
+            ),
+            child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1200),
+                constraints: const BoxConstraints(maxWidth: 1400),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ..._buildResponsiveRow(
-                      isWide,
-                      HomeSectionCard(
-                        title: loc.homeUpcomingEventsTitle,
-                        action: TextButton.icon(
-                          onPressed: () => context.push(AppRoutes.events),
-                          icon: const Icon(Icons.arrow_outward),
-                          label: Text(loc.viewAll),
-                        ),
-                        child: UpcomingEventsSection(
-                          events: state.events,
-                        ),
+                    const HomeHeroSection(),
+                    const SizedBox(height: 48),
+                    
+                    if (isMedium) 
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              children: [
+                                _buildEventsSection(loc, state),
+                                const SizedBox(height: 32),
+                                _buildRecommendedSection(loc, state),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 32),
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              children: [
+                                _buildAnnouncementsSection(loc, state),
+                                const SizedBox(height: 32),
+                                _buildNewTalentSection(loc, state),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      Column(
+                        children: [
+                          _buildEventsSection(loc, state),
+                          const SizedBox(height: 32),
+                          _buildAnnouncementsSection(loc, state),
+                          const SizedBox(height: 32),
+                          _buildRecommendedSection(loc, state),
+                          const SizedBox(height: 32),
+                          _buildNewTalentSection(loc, state),
+                        ],
                       ),
-                      HomeSectionCard(
-                        title: loc.announcements,
 
-                        child: NewAnnouncementsSection(
-                          announcements: state.announcements,
-                          builder: (announcement) =>
-                              AnnouncementCard(
-                                title: announcement.title,
-                                subtitle:
-                                    '${announcement.city} · ${announcement.description}',
-                                dateText:
-                                    '${announcement.date.day}/${announcement.date.month}',
-                                dense: true,
-                              ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    ..._buildResponsiveRow(
-                      isWide,
-                      HomeSectionCard(
-                        title: loc.homeRecommendedTitle,
-                        subtitle: loc.homeRecommendedSubtitle,
-                        child: RecommendedUsersSection(
-                          musicians: state.recommended,
-                        ),
-                      ),
-                      HomeSectionCard(
-                        title: loc.homeNewTalentTitle,
-                        subtitle: loc.homeNewTalentSubtitle,
-                        action: TextButton.icon(
-                          onPressed: () => context.push(AppRoutes.musicians),
-                          icon: const Icon(Icons.arrow_outward),
-                          label: Text(loc.viewAll),
-                        ),
-                        child: NewMusiciansSection(
-                          musicians: state.newMusicians,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 48),
                     HomeSectionCard(
                       title: loc.homeExploreByInstrumentTitle,
-                      subtitle:
-                          loc.homeExploreByInstrumentSubtitle,
+                      subtitle: loc.homeExploreByInstrumentSubtitle,
                       action: TextButton.icon(
                         onPressed: () => context.push(AppRoutes.musicians),
                         icon: const Icon(Icons.arrow_outward),
@@ -124,7 +120,7 @@ class UserHomePage extends StatelessWidget {
                         onInstrumentSelected: cubit.selectInstrument,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 48),
                     const BottomCookieBar(),
                   ],
                 ),
@@ -136,19 +132,61 @@ class UserHomePage extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildResponsiveRow(bool isWide, Widget first, Widget second) {
-    if (isWide) {
-      return [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(child: first),
-            const SizedBox(width: 24),
-            Expanded(child: second),
-          ],
+  Widget _buildEventsSection(AppLocalizations loc, UserHomeState state) {
+    return Builder(
+      builder: (context) => HomeSectionCard(
+        title: loc.homeUpcomingEventsTitle,
+        action: TextButton.icon(
+          onPressed: () => context.push(AppRoutes.events),
+          icon: const Icon(Icons.arrow_outward),
+          label: Text(loc.viewAll),
         ),
-      ];
-    }
-    return [first, const SizedBox(height: 24), second];
+        child: UpcomingEventsSection(
+          events: state.events,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnnouncementsSection(AppLocalizations loc, UserHomeState state) {
+    return HomeSectionCard(
+      title: loc.announcements,
+      child: NewAnnouncementsSection(
+        announcements: state.announcements,
+        builder: (announcement) => AnnouncementCard(
+          title: announcement.title,
+          subtitle: '${announcement.city} · ${announcement.description}',
+          dateText: '${announcement.date.day}/${announcement.date.month}',
+          dense: true,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecommendedSection(AppLocalizations loc, UserHomeState state) {
+    return HomeSectionCard(
+      title: loc.homeRecommendedTitle,
+      subtitle: loc.homeRecommendedSubtitle,
+      child: RecommendedUsersSection(
+        musicians: state.recommended,
+      ),
+    );
+  }
+
+  Widget _buildNewTalentSection(AppLocalizations loc, UserHomeState state) {
+    return Builder(
+      builder: (context) => HomeSectionCard(
+        title: loc.homeNewTalentTitle,
+        subtitle: loc.homeNewTalentSubtitle,
+        action: TextButton.icon(
+          onPressed: () => context.push(AppRoutes.musicians),
+          icon: const Icon(Icons.arrow_outward),
+          label: Text(loc.viewAll),
+        ),
+        child: NewMusiciansSection(
+          musicians: state.newMusicians,
+        ),
+      ),
+    );
   }
 }

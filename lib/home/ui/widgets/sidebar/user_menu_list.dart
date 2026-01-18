@@ -59,19 +59,40 @@ class _UserMenuListState extends State<UserMenuList> {
   @override
   Widget build(BuildContext context) {
     final contactsTotal = _likedController.total;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (var i = 0; i < _items.length; i++)
-          ListTile(
-            selected: i == _selectedIndex,
-            leading: const Icon(Icons.chevron_right),
-            title: Text(
-              _items[i].route == AppRoutes.contacts
-                  ? 'Contactos ($contactsTotal)'
-                  : _items[i].label,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: ListTile(
+              selected: i == _selectedIndex,
+              leading: Icon(
+                _items[i].route == AppRoutes.messages ? Icons.mail_outline :
+                _items[i].route == AppRoutes.calendar ? Icons.calendar_month_outlined :
+                _items[i].route == AppRoutes.contacts ? Icons.people_outline :
+                _items[i].route == AppRoutes.rehearsals ? Icons.group_outlined :
+                Icons.chevron_right,
+                color: i == _selectedIndex ? colorScheme.primary : colorScheme.onSurfaceVariant,
+              ),
+              title: Text(
+                _items[i].route == AppRoutes.contacts
+                    ? 'Contactos ($contactsTotal)'
+                    : _items[i].label,
+                style: TextStyle(
+                  fontWeight: i == _selectedIndex ? FontWeight.bold : FontWeight.normal,
+                  color: i == _selectedIndex ? colorScheme.primary : colorScheme.onSurface,
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              selectedTileColor: colorScheme.primaryContainer.withValues(alpha: 0.3),
+              onTap: () => _handleTap(context, i),
             ),
-            onTap: () => _handleTap(context, i),
           ),
         const SizedBox(height: 12),
         _ContactsPreview(controller: _likedController),

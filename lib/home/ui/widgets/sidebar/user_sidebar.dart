@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/home/ui/widgets/sidebar/language_selector.dart';
+import 'package:upsessions/home/ui/widgets/sidebar/user_sidebar_header.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
 import 'package:upsessions/modules/rehearsals/ui/widgets/rehearsals_sidebar_section.dart';
@@ -11,23 +12,40 @@ class UserSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            loc.userSidebarTitle,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    final theme = Theme.of(context);
+    
+    return Column(
+      children: [
+        const UserSidebarHeader(),
+        const Divider(height: 1),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    loc.userSidebarTitle.toUpperCase(),
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      letterSpacing: 1.2,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const UserMenuList(),
+                const SizedBox(height: 32),
+                const RehearsalsSidebarSection(),
+                const SizedBox(height: 32),
+                const LanguageSelector(),
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
-          const UserMenuList(),
-          const SizedBox(height: 12),
-          const RehearsalsSidebarSection(),
-          const SizedBox(height: 12),
-          const LanguageSelector(),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

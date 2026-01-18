@@ -56,22 +56,27 @@ class CalendarDashboard extends StatelessWidget {
     );
 
     return SafeArea(
-      child: Stack(
-        children: [
-          content,
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            child: AnimatedOpacity(
-              opacity: controller.loading ? 1 : 0,
-              duration: const Duration(milliseconds: 250),
-              child: controller.loading
-                  ? const LinearProgressIndicator(minHeight: 3)
-                  : const SizedBox.shrink(),
-            ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1000),
+          child: Stack(
+            children: [
+              content,
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 0,
+                child: AnimatedOpacity(
+                  opacity: controller.loading ? 1 : 0,
+                  duration: const Duration(milliseconds: 250),
+                  child: controller.loading
+                      ? const LinearProgressIndicator(minHeight: 3)
+                      : const SizedBox.shrink(),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
