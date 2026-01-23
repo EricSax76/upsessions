@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
-import 'package:upsessions/core/widgets/announcement_card.dart';
-import 'package:upsessions/core/locator/locator.dart';
+import '../../../../core/locator/locator.dart';
+import '../../../../core/widgets/announcement_card.dart';
+import '../../../../core/widgets/layout/page_header.dart';
+import '../../../../core/widgets/layout/searchable_list_page.dart';
 import '../../data/announcements_repository.dart';
 import '../../domain/announcement_entity.dart';
 import '../widgets/announcement_filter_panel.dart';
@@ -46,62 +48,42 @@ class _AnnouncementsListPageState extends State<AnnouncementsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final listContent = _loading
-        ? const Center(child: CircularProgressIndicator())
-        : RefreshIndicator(
-            onRefresh: _load,
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                AnnouncementFilterPanel(onChanged: (_) => _load()),
-                const SizedBox(height: 16),
-                for (final announcement in _announcements)
-                  AnnouncementCard(
-                    title: announcement.title,
-                    subtitle: '${announcement.city} · ${announcement.author}',
-                    dateText:
-                        '${announcement.publishedAt.day}/${announcement.publishedAt.month}',
-                    onTap: () => context.push(
-                      AppRoutes.announcementDetailPath(announcement.id),
-                      extra: announcement,
-                    ),
-                  ),
-              ],
-            ),
-          );
+    final listContent = SearchableListPage<AnnouncementEntity>(
+      items: _announcements,
+      isLoading: _loading,
+      onRefresh: _load,
+      searchEnabled: false,
+      emptyIcon: Icons.campaign_outlined,
+      emptyTitle: 'No hay anuncios',
+      emptySubtitle: 'Crea el primero o vuelve más tarde.',
+      filterBuilder: (_) => AnnouncementFilterPanel(onChanged: (_) => _load()),
+      itemBuilder: (announcement, index) => AnnouncementCard(
+        title: announcement.title,
+        subtitle: '${announcement.city} · ${announcement.author}',
+        dateText:
+            '${announcement.publishedAt.day}/${announcement.publishedAt.month}',
+        onTap: () => context.push(
+          AppRoutes.announcementDetailPath(announcement.id),
+          extra: announcement,
+        ),
+      ),
+    );
 
     if (!widget.showAppBar) {
       return SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Anuncios',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text('Explora oportunidades y comparte las tuyas.'),
-                      ],
-                    ),
-                  ),
-                  FilledButton.icon(
-                    onPressed: _openForm,
-                    icon: const Icon(Icons.add_circle_outline),
-                    label: const Text('Nuevo'),
-                  ),
-                ],
-              ),
+            PageHeader(
+              title: 'Anuncios',
+              subtitle: 'Explora oportunidades y comparte las tuyas.',
+              actions: [
+                FilledButton.icon(
+                  onPressed: _openForm,
+                  icon: const Icon(Icons.add_circle_outline),
+                  label: const Text('Nuevo'),
+                ),
+              ],
             ),
             const Divider(height: 1),
             Expanded(child: listContent),

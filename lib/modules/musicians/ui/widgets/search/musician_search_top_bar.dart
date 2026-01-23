@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
+import '../../../../../core/widgets/forms/search_field.dart';
 import '../../../models/musician_search_filters_controller.dart';
 import '../../../../../home/ui/widgets/search/advanced_search_box.dart';
 
@@ -34,15 +35,11 @@ class MusicianSearchTopBar extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: TextField(
+              child: SearchField(
                 controller: controller,
+                hintText: loc.searchTopBarHint,
                 onSubmitted: onSubmitted,
-                textInputAction: TextInputAction.search,
-                decoration: InputDecoration(
-                  hintText: loc.searchTopBarHint,
-                  border: InputBorder.none,
-                  prefixIcon: const Icon(Icons.search),
-                ),
+                decoration: const InputDecoration(border: InputBorder.none),
               ),
             ),
             const SizedBox(width: 8),
