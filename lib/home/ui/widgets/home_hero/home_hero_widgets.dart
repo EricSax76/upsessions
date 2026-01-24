@@ -1,0 +1,246 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+
+import '../../../../core/constants/app_routes.dart';
+import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/app_card.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../modules/rehearsals/cubits/rehearsal_entity.dart';
+
+class HomeHeroNextRehearsalCard extends StatelessWidget {
+  const HomeHeroNextRehearsalCard({super.key, required this.rehearsal});
+
+  final RehearsalEntity? rehearsal;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
+
+    return AppCard(
+      margin: EdgeInsets.zero,
+      padding: const EdgeInsets.all(AppSpacing.md + AppSpacing.xs),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.lg),
+        side: const BorderSide(
+          color: AppColors.outline,
+          width: 1,
+        ),
+      ),
+      child: rehearsal == null
+          ? Text(
+              loc.rehearsalsNoUpcoming,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            )
+          : _HomeHeroNextRehearsalContent(rehearsal: rehearsal!),
+    );
+  }
+}
+
+class _HomeHeroNextRehearsalContent extends StatelessWidget {
+  const _HomeHeroNextRehearsalContent({required this.rehearsal});
+
+  final RehearsalEntity rehearsal;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toString();
+    final dateLabel = DateFormat.MMMd(locale).format(rehearsal.startsAt);
+    final timeLabel = DateFormat.Hm(locale).format(rehearsal.startsAt);
+    final notes = rehearsal.notes.trim();
+    final title =
+        notes.isEmpty ? loc.homeNextRehearsalFallbackTitle : notes;
+    final location = rehearsal.location.trim();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            Text(
+              loc.homeNextRehearsalLabel.toUpperCase(),
+              style: theme.textTheme.labelSmall?.copyWith(
+                letterSpacing: 1.6,
+                color: AppColors.textTertiary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Text(
+          title,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        if (location.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xs),
+          Row(
+            children: [
+              const Icon(
+                Icons.place_outlined,
+                size: 16,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(width: AppSpacing.xxs + AppSpacing.xs),
+              Expanded(
+                child: Text(
+                  location,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+        const SizedBox(height: AppSpacing.md),
+        Wrap(
+          spacing: AppSpacing.xs + AppSpacing.xxs,
+          runSpacing: AppSpacing.xs + AppSpacing.xxs,
+          children: [
+            _HomeHeroDateChip(label: dateLabel),
+            _HomeHeroDateChip(label: timeLabel),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _HomeHeroDateChip extends StatelessWidget {
+  const _HomeHeroDateChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs + AppSpacing.xxs,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(AppSpacing.md),
+      ),
+      child: Text(
+        label.toUpperCase(),
+        style: theme.textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: AppColors.onSurface,
+        ),
+      ),
+    );
+  }
+}
+
+class HomeHeroQuickActionsGrid extends StatelessWidget {
+  const HomeHeroQuickActionsGrid({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
+    return GridView.count(
+      crossAxisCount: 2,
+      mainAxisSpacing: AppSpacing.md,
+      crossAxisSpacing: AppSpacing.md,
+      childAspectRatio: 1.25,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        _HomeHeroQuickActionTile(
+          icon: Icons.people_alt_outlined,
+          label: loc.navMusicians,
+          onTap: () => context.push(AppRoutes.musicians),
+        ),
+        _HomeHeroQuickActionTile(
+          icon: Icons.campaign_outlined,
+          label: loc.navAnnouncements,
+          onTap: () => context.push(AppRoutes.announcements),
+        ),
+        _HomeHeroQuickActionTile(
+          icon: Icons.event_note_outlined,
+          label: loc.navEvents,
+          onTap: () => context.push(AppRoutes.events),
+        ),
+        _HomeHeroQuickActionTile(
+          icon: Icons.music_note_outlined,
+          label: loc.navRehearsals,
+          onTap: () => context.push(AppRoutes.rehearsals),
+        ),
+      ],
+    );
+  }
+}
+
+class _HomeHeroQuickActionTile extends StatelessWidget {
+  const _HomeHeroQuickActionTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return AppCard(
+      margin: EdgeInsets.zero,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      elevation: 0,
+      onTap: onTap,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.lg),
+        side: const BorderSide(
+          color: AppColors.outline,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+              color: AppColors.surfaceVariant,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 20, color: AppColors.primary),
+          ),
+          const Spacer(),
+          Text(
+            label,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

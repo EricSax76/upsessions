@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_routes.dart';
+import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
   const MainNavBar({super.key});
@@ -12,19 +14,38 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
     final loc = AppLocalizations.of(context);
     final items = [
-      _NavItem(label: loc.navMusicians, path: AppRoutes.musicians),
-      _NavItem(label: loc.navAnnouncements, path: AppRoutes.announcements),
-      _NavItem(label: loc.navEvents, path: AppRoutes.events),
-      _NavItem(label: loc.navRehearsals, path: AppRoutes.rehearsals),
+      _NavItem(
+        label: loc.navMusicians,
+        path: AppRoutes.musicians,
+        icon: Icons.people_alt_outlined,
+      ),
+      _NavItem(
+        label: loc.navAnnouncements,
+        path: AppRoutes.announcements,
+        icon: Icons.campaign_outlined,
+      ),
+      _NavItem(
+        label: loc.navEvents,
+        path: AppRoutes.events,
+        icon: Icons.event_outlined,
+      ),
+      _NavItem(
+        label: loc.navRehearsals,
+        path: AppRoutes.rehearsals,
+        icon: Icons.music_note_outlined,
+      ),
     ];
-    final colorScheme = Theme.of(context).colorScheme;
     final location = GoRouterState.of(context).uri.path;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 520;
+        final selectedBackground = AppColors.primaryContainer;
+        final selectedBorder = AppColors.outlineFocus;
 
         Widget buildButton(
           _NavItem item, {
@@ -37,28 +58,30 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
             maxLines: 1,
             overflow: TextOverflow.clip,
             textAlign: TextAlign.center,
+            style: textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: selected ? AppColors.primary : AppColors.textSecondary,
+            ),
           );
           return TextButton(
             onPressed: selected ? null : () => context.go(item.path),
             style: TextButton.styleFrom(
-              foregroundColor: selected
-                  ? colorScheme.primary
-                  : colorScheme.onSurface,
-              textStyle: const TextStyle(fontWeight: FontWeight.w600),
-              backgroundColor: selected
-                  ? colorScheme.primary.withValues(alpha: 0.12)
-                  : Colors.transparent,
+              foregroundColor:
+                  selected ? AppColors.primary : AppColors.textSecondary,
+              backgroundColor:
+                  selected ? selectedBackground : Colors.transparent,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
                 side: BorderSide(
-                  color: selected
-                      ? colorScheme.primary.withValues(alpha: 0.32)
-                      : Colors.transparent,
+                  color: selected ? selectedBorder : Colors.transparent,
                 ),
               ),
               padding:
                   padding ??
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.sm,
+                  ),
             ),
             child: scaleDownLabel
                 ? FittedBox(fit: BoxFit.scaleDown, child: label)
@@ -66,12 +89,54 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
           );
         }
 
+        Widget buildCompactButton(_NavItem item, {required bool selected}) {
+          final labelStyle = textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: selected ? AppColors.primary : AppColors.textSecondary,
+          );
+          return InkWell(
+            onTap: selected ? null : () => context.go(item.path),
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              decoration: BoxDecoration(
+                color: selected ? selectedBackground : Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: selected ? selectedBorder : Colors.transparent,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.xs,
+                vertical: AppSpacing.xs,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    item.icon,
+                    size: 20,
+                    color: selected ? AppColors.primary : AppColors.icon,
+                  ),
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    item.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: labelStyle,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
         return ColoredBox(
-          color: colorScheme.surface,
+          color: AppColors.surface,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Divider(height: 1, color: Theme.of(context).dividerColor),
+              const Divider(height: 1, color: AppColors.outline),
               SizedBox(
                 height: 60,
                 child: isCompact
@@ -83,14 +148,9 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 4,
                                 ),
-                                child: buildButton(
+                                child: buildCompactButton(
                                   item,
                                   selected: _isCurrent(location, item.path),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 12,
-                                  ),
-                                  scaleDownLabel: true,
                                 ),
                               ),
                             ),
@@ -127,8 +187,13 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class _NavItem {
-  const _NavItem({required this.label, required this.path});
+  const _NavItem({
+    required this.label,
+    required this.path,
+    required this.icon,
+  });
 
   final String label;
   final String path;
+  final IconData icon;
 }

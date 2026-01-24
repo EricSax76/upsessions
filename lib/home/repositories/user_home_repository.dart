@@ -1,17 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../models/announcement_model.dart';
-import '../models/instrument_category_model.dart';
-import '../models/home_event_model.dart';
+import '../../core/constants/spanish_geography.dart';
+import '../../modules/auth/data/auth_repository.dart';
 import '../../modules/musicians/models/musician_dto.dart';
 import '../../modules/musicians/models/musician_entity.dart';
-import '../../core/constants/spanish_geography.dart';
+import '../../modules/rehearsals/cubits/rehearsal_entity.dart';
+import '../models/announcement_model.dart';
+import '../models/home_event_model.dart';
+import '../models/instrument_category_model.dart';
 
 class UserHomeRepository {
-  UserHomeRepository({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance;
+  UserHomeRepository({
+    FirebaseFirestore? firestore,
+    AuthRepository? authRepository,
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _authRepository = authRepository ?? AuthRepository();
 
   final FirebaseFirestore _firestore;
+  final AuthRepository _authRepository;
 
   Future<List<MusicianEntity>> fetchRecommendedMusicians() async {
     final snapshot = await _firestore
@@ -108,6 +114,53 @@ class UserHomeRepository {
     return snapshot.docs.map(_mapEvent).toList();
   }
 
+  Future<RehearsalEntity?> fetchNextRehearsal() async {
+    final user = _authRepository.currentUser;
+    if (user == null) {
+      return null;
+    }
+    final memberships = await _firestore
+        .collectionGroup('members')
+        .where('ownerId', isEqualTo: user.id)
+        .where('status', isEqualTo: 'active')
+        .get();
+    final groupIds =
+        memberships.docs
+            .map((doc) => doc.reference.parent.parent?.id ?? '')
+            .where((groupId) => groupId.isNotEmpty)
+            .toSet()
+            .toList();
+    if (groupIds.isEmpty) {
+      return null;
+    }
+    final now = Timestamp.fromDate(DateTime.now());
+    final futures = groupIds.map((groupId) async {
+      try {
+        final snapshot = await _firestore
+            .collection('groups')
+            .doc(groupId)
+            .collection('rehearsals')
+            .where('startsAt', isGreaterThanOrEqualTo: now)
+            .orderBy('startsAt')
+            .limit(1)
+            .get();
+        if (snapshot.docs.isEmpty) {
+          return null;
+        }
+        return _mapRehearsal(snapshot.docs.first);
+      } catch (_) {
+        return null;
+      }
+    });
+    final rehearsals =
+        (await Future.wait(futures)).whereType<RehearsalEntity>().toList();
+    if (rehearsals.isEmpty) {
+      return null;
+    }
+    rehearsals.sort((a, b) => a.startsAt.compareTo(b.startsAt));
+    return rehearsals.first;
+  }
+
   static MusicianEntity _mapMusician(
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
   ) {
@@ -129,6 +182,23 @@ class UserHomeRepository {
       capacity: (data['capacity'] as num?)?.toInt() ?? 0,
       ticketInfo: (data['ticketInfo'] ?? '') as String,
       tags: _stringList(data['tags']),
+    );
+  }
+
+  static RehearsalEntity _mapRehearsal(
+    QueryDocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final data = doc.data();
+    final startsAt =
+        (data['startsAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+    final endsAt = (data['endsAt'] as Timestamp?)?.toDate();
+    return RehearsalEntity(
+      id: doc.id,
+      startsAt: startsAt,
+      endsAt: endsAt,
+      location: (data['location'] ?? '').toString(),
+      notes: (data['notes'] ?? '').toString(),
+      createdBy: (data['createdBy'] ?? '').toString(),
     );
   }
 

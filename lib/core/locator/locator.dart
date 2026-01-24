@@ -51,7 +51,9 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<AnnouncementsRepository>(
       () => AnnouncementsRepository(),
     )
-    ..registerLazySingleton<UserHomeRepository>(() => UserHomeRepository())
+    ..registerLazySingleton<UserHomeRepository>(
+      () => UserHomeRepository(authRepository: getIt<AuthRepository>()),
+    )
     ..registerLazySingleton<ProfileRepository>(
       () => ProfileRepository(authRepository: getIt<AuthRepository>()),
     )

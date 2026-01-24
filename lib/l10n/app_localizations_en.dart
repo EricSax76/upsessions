@@ -289,6 +289,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeUpcomingEventsTitle => 'Upcoming events';
 
   @override
+  String get homeNextRehearsalLabel => 'Next rehearsal';
+
+  @override
+  String get homeNextRehearsalFallbackTitle => 'Scheduled rehearsal';
+
+  @override
   String get viewAll => 'View all';
 
   @override

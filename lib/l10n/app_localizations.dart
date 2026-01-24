@@ -596,6 +596,18 @@ abstract class AppLocalizations {
   /// **'Próximos eventos'**
   String get homeUpcomingEventsTitle;
 
+  /// No description provided for @homeNextRehearsalLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximo ensayo'**
+  String get homeNextRehearsalLabel;
+
+  /// No description provided for @homeNextRehearsalFallbackTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ensayo programado'**
+  String get homeNextRehearsalFallbackTitle;
+
   /// No description provided for @viewAll.
   ///
   /// In es, this message translates to:

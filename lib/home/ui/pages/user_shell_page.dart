@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_routes.dart';
+import '../../../core/widgets/constants/breakpoints.dart';
 import '../../../modules/auth/cubits/auth_cubit.dart';
 import '../widgets/header/main_nav_bar.dart';
 import '../widgets/header/sm_app_bar.dart';
@@ -18,6 +19,7 @@ class UserShellPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isWideLayout = width >= 1200;
+    final isMobile = context.isMobile;
 
     Widget body;
     if (isWideLayout) {
@@ -59,10 +61,15 @@ class UserShellPage extends StatelessWidget {
         appBar: isWideLayout
             ? null
             : SmAppBar(
-                bottom: const MainNavBar(),
+                bottom: isMobile ? null : const MainNavBar(),
                 showMenuButton: true,
               ),
         body: body,
+        bottomNavigationBar: isWideLayout || !isMobile
+            ? null
+            : const SafeArea(
+                child: MainNavBar(),
+              ),
         floatingActionButton: isWideLayout ? null : const ProfileQuickActionsFab(),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),

@@ -44,6 +44,7 @@ class UserHomePage extends StatelessWidget {
         final width = constraints.maxWidth;
         final isWide = width >= 1200;
         final isMedium = width >= 800;
+        final isCompact = width < 700;
         
         final colorScheme = Theme.of(context).colorScheme;
         final cubit = context.read<UserHomeCubit>();
@@ -62,7 +63,10 @@ class UserHomePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const HomeHeroSection(),
+                    HomeHeroSection(
+                      isCompact: isCompact,
+                      nextRehearsal: state.nextRehearsal,
+                    ),
                     const SizedBox(height: 48),
                     
                     if (isMedium) 

@@ -4,6 +4,7 @@ import '../../modules/musicians/models/musician_entity.dart';
 import '../models/announcement_model.dart';
 import '../models/instrument_category_model.dart';
 import '../models/home_event_model.dart';
+import '../../modules/rehearsals/cubits/rehearsal_entity.dart';
 
 enum UserHomeStatus { initial, loading, ready, failure }
 
@@ -23,6 +24,7 @@ class UserHomeState extends Equatable {
     this.provinces = const [],
     this.cities = const [],
     this.events = const [],
+    this.nextRehearsal,
     this.errorMessage,
   });
 
@@ -42,6 +44,7 @@ class UserHomeState extends Equatable {
   final List<String> provinces;
   final List<String> cities;
   final List<HomeEventModel> events;
+  final RehearsalEntity? nextRehearsal;
   final String? errorMessage;
 
   bool get isLoading => status == UserHomeStatus.loading;
@@ -61,6 +64,7 @@ class UserHomeState extends Equatable {
     List<String>? provinces,
     List<String>? cities,
     List<HomeEventModel>? events,
+    RehearsalEntity? nextRehearsal,
     Object? errorMessage = _unset,
   }) {
     return UserHomeState(
@@ -78,6 +82,7 @@ class UserHomeState extends Equatable {
       provinces: provinces ?? this.provinces,
       cities: cities ?? this.cities,
       events: events ?? this.events,
+      nextRehearsal: nextRehearsal ?? this.nextRehearsal,
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
           : errorMessage as String?,
@@ -100,6 +105,7 @@ class UserHomeState extends Equatable {
     provinces,
     cities,
     events,
+    nextRehearsal,
     errorMessage,
   ];
 }

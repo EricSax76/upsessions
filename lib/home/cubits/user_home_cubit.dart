@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 
 import '../../core/locator/locator.dart';
+import '../../modules/rehearsals/cubits/rehearsal_entity.dart';
 import '../repositories/user_home_repository.dart';
 import 'user_home_state.dart';
 
@@ -24,6 +25,12 @@ class UserHomeCubit extends Cubit<UserHomeState> {
       final announcements = await _repository.fetchRecentAnnouncements();
       final categories = await _repository.fetchInstrumentCategories();
       final events = await _repository.fetchUpcomingEvents();
+      RehearsalEntity? nextRehearsal;
+      try {
+        nextRehearsal = await _repository.fetchNextRehearsal();
+      } catch (_) {
+        nextRehearsal = null;
+      }
       final provinces = await _repository.fetchProvinces();
       if (isClosed) {
         return;
@@ -37,6 +44,7 @@ class UserHomeCubit extends Cubit<UserHomeState> {
           announcements: announcements,
           categories: categories,
           events: events,
+          nextRehearsal: nextRehearsal,
           provinces: provinces,
           province: shouldClearLocation ? '' : state.province,
           city: shouldClearLocation ? '' : state.city,
