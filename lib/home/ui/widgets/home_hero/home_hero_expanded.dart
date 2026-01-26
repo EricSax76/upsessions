@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/sm_avatar.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'home_hero_view_model.dart';
@@ -15,6 +14,7 @@ class HomeHeroExpanded extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final loc = AppLocalizations.of(context);
     final titleName =
         viewModel.titleName.isEmpty ? loc.profile : viewModel.titleName;
@@ -29,7 +29,7 @@ class HomeHeroExpanded extends StatelessWidget {
               'Acciones rápidas',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppColors.onSurface,
+                color: colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -52,7 +52,7 @@ class HomeHeroExpanded extends StatelessWidget {
                         style: theme.textTheme.labelSmall?.copyWith(
                           letterSpacing: 2,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textTertiary,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),
@@ -60,16 +60,14 @@ class HomeHeroExpanded extends StatelessWidget {
                         'Hola, $titleName 👋',
                         style: theme.textTheme.displaySmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: AppColors.onPrimaryContainer,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs + AppSpacing.xxs),
                       Text(
                         '¿Listo para conectar con otros músicos hoy?',
                         style: theme.textTheme.headlineSmall?.copyWith(
-                          color: AppColors.onPrimaryContainer.withValues(
-                            alpha: 0.8,
-                          ),
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -80,7 +78,7 @@ class HomeHeroExpanded extends StatelessWidget {
                   radius: AppSpacing.xl,
                   imageUrl: viewModel.photoUrl,
                   initials: viewModel.initials,
-                  backgroundColor: AppColors.primaryContainer,
+                  backgroundColor: colorScheme.primaryContainer,
                 ),
               ],
             ),

@@ -80,6 +80,7 @@ service cloud.firestore {
         'capacity',
         'resources',
         'notes',
+        'bannerImageUrl',
         'createdAt',
         'updatedAt',
         'ownerId',
@@ -101,9 +102,11 @@ service cloud.firestore {
       && isStringList(request.resource.data.tags)
       && isStringList(request.resource.data.resources)
       && (!('notes' in request.resource.data) || request.resource.data.notes is string)
+      && (!('bannerImageUrl' in request.resource.data) || request.resource.data.bannerImageUrl is string)
       && (!('createdAt' in request.resource.data) || request.resource.data.createdAt is timestamp)
       && (!('updatedAt' in request.resource.data) || request.resource.data.updatedAt is timestamp);
     }
+
 
     function isValidContact(contactId) {
       return request.resource.data.keys().hasOnly([

@@ -182,6 +182,7 @@ class UserHomeRepository {
       capacity: (data['capacity'] as num?)?.toInt() ?? 0,
       ticketInfo: (data['ticketInfo'] ?? '') as String,
       tags: _stringList(data['tags']),
+      bannerImageUrl: data['bannerImageUrl'] as String?,
     );
   }
 

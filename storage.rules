@@ -27,7 +27,9 @@ service firebase.storage {
         && firestore.get(groupDocPath(groupId)).data.ownerId == request.auth.uid;
     }
 
-    function isActiveMember(groupId) {
+    
+
+function isActiveMember(groupId) {
       return isMusician()
         && firestore.exists(memberDocPath(groupId, request.auth.uid))
         && firestore.get(memberDocPath(groupId, request.auth.uid)).data.status == 'active';
@@ -46,6 +48,13 @@ service firebase.storage {
     match /groups/{groupId}/{allPaths=**} {
       allow read: if isActiveMember(groupId) || isGroupOwner(groupId);
       allow write: if (isAdminOrOwner(groupId) || isGroupOwner(groupId))
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    match /events/banners/{fileName} {
+      allow read: if true;
+      allow write: if isSignedIn()
                    && request.resource.size < 5 * 1024 * 1024
                    && request.resource.contentType.matches('image/.*');
     }

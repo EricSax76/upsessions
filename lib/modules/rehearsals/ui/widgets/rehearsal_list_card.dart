@@ -81,16 +81,41 @@ class RehearsalListCard extends StatelessWidget {
           else if (filtered.isEmpty)
             _EmptyFilterCard(filter: currentFilter)
           else
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: filtered.length,
-              separatorBuilder: (context, index) => const Gap(12),
-              itemBuilder: (context, index) {
-                final rehearsal = filtered[index];
-                return RehearsalCard(
-                  rehearsal: rehearsal,
-                  onTap: () => onRehearsalTap(rehearsal),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth > 600;
+                if (isWide) {
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 24,
+                      mainAxisSpacing: 24,
+                      childAspectRatio: 1.4, // Proporción más cercana al cuadrado (era 2.4)
+                    ),
+                    itemCount: filtered.length,
+                    itemBuilder: (context, index) {
+                      final rehearsal = filtered[index];
+                      return RehearsalCard(
+                        rehearsal: rehearsal,
+                        onTap: () => onRehearsalTap(rehearsal),
+                      );
+                    },
+                  );
+                }
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: filtered.length,
+                  separatorBuilder: (context, index) => const Gap(20), // Más espacio en móvil también (antes 12)
+                  itemBuilder: (context, index) {
+                    final rehearsal = filtered[index];
+                    return RehearsalCard(
+                      rehearsal: rehearsal,
+                      onTap: () => onRehearsalTap(rehearsal),
+                    );
+                  },
                 );
               },
             ),

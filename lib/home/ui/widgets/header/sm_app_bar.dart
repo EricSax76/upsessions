@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:upsessions/core/constants/app_routes.dart';
+import 'package:upsessions/core/widgets/theme_toggle_button.dart';
 import 'package:upsessions/core/widgets/sm_avatar.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
@@ -52,6 +53,7 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
                     )
                   : null,
               actions: [
+                const ThemeToggleButton(),
                 _NotificationsButton(
                   onPressed: () => context.push(AppRoutes.notifications),
                 ),

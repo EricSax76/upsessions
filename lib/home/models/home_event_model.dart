@@ -12,6 +12,7 @@ class HomeEventModel extends Equatable {
     required this.capacity,
     required this.ticketInfo,
     required this.tags,
+    this.bannerImageUrl,
   });
 
   final String id;
@@ -24,6 +25,7 @@ class HomeEventModel extends Equatable {
   final int capacity;
   final String ticketInfo;
   final List<String> tags;
+  final String? bannerImageUrl;
 
   @override
   List<Object?> get props => [
@@ -37,5 +39,6 @@ class HomeEventModel extends Equatable {
     capacity,
     ticketInfo,
     tags,
+    bannerImageUrl,
   ];
 }

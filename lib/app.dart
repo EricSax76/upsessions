@@ -5,6 +5,7 @@ import 'package:upsessions/core/services/app_links_service.dart';
 import 'package:upsessions/core/services/firebase_initializer.dart';
 import 'package:upsessions/core/services/push_notifications_service.dart';
 import 'package:upsessions/core/theme/app_theme.dart';
+import 'package:upsessions/core/theme/theme_cubit.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/l10n/cubit/locale_cubit.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
@@ -44,21 +45,28 @@ class UpsessionsApp extends StatelessWidget {
               authCubit: context.read<AuthCubit>(),
             ),
           ),
+          BlocProvider(create: (_) => locate<ThemeCubit>()),
         ],
         child: BlocBuilder<LocaleCubit, Locale>(
           builder: (context, locale) {
-            return AppLinksListener(
-              router: _appRouter.router,
-              child: MaterialApp.router(
-                onGenerateTitle: (context) =>
-                    AppLocalizations.of(context).appName,
-                debugShowCheckedModeBanner: false,
-                theme: AppTheme.light,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: AppLocalizations.supportedLocales,
-                locale: locale,
-                routerConfig: _appRouter.router,
-              ),
+            return BlocBuilder<ThemeCubit, ThemeMode>(
+              builder: (context, themeMode) {
+                return AppLinksListener(
+                  router: _appRouter.router,
+                  child: MaterialApp.router(
+                    onGenerateTitle: (context) =>
+                        AppLocalizations.of(context).appName,
+                    debugShowCheckedModeBanner: false,
+                    theme: AppTheme.light,
+                    darkTheme: AppTheme.dark,
+                    themeMode: themeMode,
+                    localizationsDelegates: AppLocalizations.localizationsDelegates,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    locale: locale,
+                    routerConfig: _appRouter.router,
+                  ),
+                );
+              },
             );
           },
         ),

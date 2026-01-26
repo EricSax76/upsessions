@@ -19,6 +19,7 @@ class EventEntity extends Equatable {
     required this.capacity,
     required this.resources,
     this.notes,
+    this.bannerImageUrl,
   });
 
   final String id;
@@ -38,6 +39,7 @@ class EventEntity extends Equatable {
   final int capacity;
   final List<String> resources;
   final String? notes;
+  final String? bannerImageUrl;
 
   EventEntity copyWith({
     String? id,
@@ -57,6 +59,7 @@ class EventEntity extends Equatable {
     int? capacity,
     List<String>? resources,
     String? notes,
+    String? bannerImageUrl,
   }) {
     return EventEntity(
       id: id ?? this.id,
@@ -76,6 +79,7 @@ class EventEntity extends Equatable {
       capacity: capacity ?? this.capacity,
       resources: resources ?? this.resources,
       notes: notes ?? this.notes,
+      bannerImageUrl: bannerImageUrl ?? this.bannerImageUrl,
     );
   }
 
@@ -98,5 +102,6 @@ class EventEntity extends Equatable {
     capacity,
     resources,
     notes,
+    bannerImageUrl,
   ];
 }

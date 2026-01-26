@@ -21,6 +21,7 @@ class EventDto {
     required this.capacity,
     required this.resources,
     this.notes,
+    this.bannerImageUrl,
   });
 
   factory EventDto.fromDocument(
@@ -45,6 +46,7 @@ class EventDto {
       capacity: (data['capacity'] as num?)?.toInt() ?? 0,
       resources: _stringList(data['resources']),
       notes: data['notes'] as String?,
+      bannerImageUrl: data['bannerImageUrl'] as String?,
     );
   }
 
@@ -67,6 +69,7 @@ class EventDto {
       capacity: entity.capacity,
       resources: entity.resources,
       notes: entity.notes,
+      bannerImageUrl: entity.bannerImageUrl,
     );
   }
 
@@ -87,6 +90,7 @@ class EventDto {
   final int capacity;
   final List<String> resources;
   final String? notes;
+  final String? bannerImageUrl;
 
   EventEntity toEntity() {
     return EventEntity(
@@ -107,6 +111,7 @@ class EventDto {
       capacity: capacity,
       resources: resources,
       notes: notes,
+      bannerImageUrl: bannerImageUrl,
     );
   }
 
@@ -128,6 +133,7 @@ class EventDto {
       'capacity': capacity,
       'resources': resources,
       if (notes != null) 'notes': notes,
+      if (bannerImageUrl != null) 'bannerImageUrl': bannerImageUrl,
     };
   }
 }

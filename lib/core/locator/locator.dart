@@ -7,6 +7,7 @@ import 'package:upsessions/core/services/push_notifications_service.dart';
 import 'package:upsessions/core/services/analytics_service.dart';
 import 'package:upsessions/core/services/remote_config_service.dart';
 import 'package:upsessions/l10n/cubit/locale_cubit.dart';
+import 'package:upsessions/core/theme/theme_cubit.dart';
 import 'package:upsessions/modules/announcements/data/announcements_repository.dart';
 import 'package:upsessions/modules/auth/data/auth_repository.dart';
 import 'package:upsessions/modules/auth/data/profile_repository.dart';
@@ -47,6 +48,7 @@ Future<void> setupServiceLocator() async {
       () => const RemoteConfigService(),
     )
     ..registerLazySingleton<LocaleCubit>(() => LocaleCubit())
+    ..registerLazySingleton<ThemeCubit>(() => ThemeCubit())
     ..registerLazySingleton<MusiciansRepository>(() => MusiciansRepository())
     ..registerLazySingleton<AnnouncementsRepository>(
       () => AnnouncementsRepository(),

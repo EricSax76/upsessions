@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../modules/rehearsals/cubits/rehearsal_entity.dart';
@@ -17,6 +16,7 @@ class HomeHeroNextRehearsalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final loc = AppLocalizations.of(context);
 
     return AppCard(
@@ -25,8 +25,8 @@ class HomeHeroNextRehearsalCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.lg),
-        side: const BorderSide(
-          color: AppColors.outline,
+        side: BorderSide(
+          color: colorScheme.outlineVariant,
           width: 1,
         ),
       ),
@@ -34,7 +34,7 @@ class HomeHeroNextRehearsalCard extends StatelessWidget {
           ? Text(
               loc.rehearsalsNoUpcoming,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
             )
           : _HomeHeroNextRehearsalContent(rehearsal: rehearsal!),
@@ -50,6 +50,7 @@ class _HomeHeroNextRehearsalContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final loc = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toString();
     final dateLabel = DateFormat.MMMd(locale).format(rehearsal.startsAt);
@@ -67,8 +68,8 @@ class _HomeHeroNextRehearsalContent extends StatelessWidget {
             Container(
               width: 8,
               height: 8,
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
+              decoration: BoxDecoration(
+                color: colorScheme.primary,
                 shape: BoxShape.circle,
               ),
             ),
@@ -77,7 +78,7 @@ class _HomeHeroNextRehearsalContent extends StatelessWidget {
               loc.homeNextRehearsalLabel.toUpperCase(),
               style: theme.textTheme.labelSmall?.copyWith(
                 letterSpacing: 1.6,
-                color: AppColors.textTertiary,
+                color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -94,17 +95,17 @@ class _HomeHeroNextRehearsalContent extends StatelessWidget {
           const SizedBox(height: AppSpacing.xs),
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.place_outlined,
                 size: 16,
-                color: AppColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: AppSpacing.xxs + AppSpacing.xs),
               Expanded(
                 child: Text(
                   location,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -133,20 +134,21 @@ class _HomeHeroDateChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.xs + AppSpacing.xxs,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(AppSpacing.md),
       ),
       child: Text(
         label.toUpperCase(),
         style: theme.textTheme.labelLarge?.copyWith(
           fontWeight: FontWeight.w700,
-          color: AppColors.onSurface,
+          color: colorScheme.onSurface,
         ),
       ),
     );
@@ -207,6 +209,7 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return AppCard(
       margin: EdgeInsets.zero,
@@ -215,8 +218,8 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
       onTap: onTap,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.lg),
-        side: const BorderSide(
-          color: AppColors.outline,
+        side: BorderSide(
+          color: colorScheme.outlineVariant,
           width: 1,
         ),
       ),
@@ -226,11 +229,11 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
           Container(
             width: 40,
             height: 40,
-            decoration: const BoxDecoration(
-              color: AppColors.surfaceVariant,
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHigh,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 20, color: AppColors.primary),
+            child: Icon(icon, size: 20, color: colorScheme.primary),
           ),
           const Spacer(),
           Text(

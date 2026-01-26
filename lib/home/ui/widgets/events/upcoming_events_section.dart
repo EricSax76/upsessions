@@ -64,68 +64,144 @@ class _EventCard extends StatelessWidget {
     final tags = event.tags.take(2).toList();
     return Card(
       clipBehavior: Clip.hardEdge,
-      child: InkWell(
-        onTap: () {},
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.event, color: theme.colorScheme.primary),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      '$dateLabel · $timeLabel',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                event.title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${event.venue} · ${event.city}',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                event.description,
-                maxLines: isCompact ? 2 : 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _InfoChip(
-                    icon: Icons.people_alt_outlined,
-                    label: appLoc.eventsPeopleCount(event.capacity),
-                  ),
-                  _InfoChip(
-                    icon: Icons.confirmation_num_outlined,
-                    label: event.ticketInfo,
-                  ),
-                  for (final tag in tags)
-                    _InfoChip(icon: Icons.sell_outlined, label: tag),
-                ],
-              ),
-            ],
-          ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.primary.withValues(alpha: 0.35),
         ),
       ),
+      child: InkWell(
+        onTap: () {},
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _EventBannerPreview(
+              imageUrl: event.bannerImageUrl,
+              height: isCompact ? 110 : 96,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.event, color: theme.colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '$dateLabel · $timeLabel',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    event.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${event.venue} · ${event.city}',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    event.description,
+                    maxLines: isCompact ? 2 : 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _InfoChip(
+                        icon: Icons.people_alt_outlined,
+                        label: appLoc.eventsPeopleCount(event.capacity),
+                      ),
+                      _InfoChip(
+                        icon: Icons.confirmation_num_outlined,
+                        label: event.ticketInfo,
+                      ),
+                      for (final tag in tags)
+                        _InfoChip(icon: Icons.sell_outlined, label: tag),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EventBannerPreview extends StatelessWidget {
+  const _EventBannerPreview({
+    required this.imageUrl,
+    required this.height,
+  });
+
+  final String? imageUrl;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final hasImage = imageUrl != null && imageUrl!.trim().isNotEmpty;
+    return SizedBox(
+      height: height,
+      width: double.infinity,
+      child: hasImage
+          ? Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.network(imageUrl!, fit: BoxFit.cover),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        colorScheme.primary.withValues(alpha: 0.24),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    colorScheme.primary.withValues(alpha: 0.32),
+                    colorScheme.secondary.withValues(alpha: 0.18),
+                  ],
+                ),
+              ),
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Icon(
+                    Icons.event_note_outlined,
+                    color: colorScheme.onPrimary.withValues(alpha: 0.8),
+                  ),
+                ),
+              ),
+            ),
     );
   }
 }

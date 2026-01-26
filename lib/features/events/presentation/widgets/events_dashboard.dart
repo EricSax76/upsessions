@@ -46,15 +46,8 @@ class EventsDashboard extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 if (events.isNotEmpty)
-                  EventHighlightCard(
-                    event: events.first,
-                    onSelect: onSelectForPreview,
-                    onViewDetails: onViewDetails,
-                  ),
-                if (events.isNotEmpty) const SizedBox(height: 32),
-                if (events.isNotEmpty)
                   EventList(
-                    events: events.skip(1).toList(),
+                    events: events, // Incluimos todos los eventos desde el primero
                     onSelect: onSelectForPreview,
                     onViewDetails: onViewDetails,
                   ),

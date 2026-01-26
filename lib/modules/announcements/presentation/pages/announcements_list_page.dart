@@ -53,6 +53,8 @@ class _AnnouncementsListPageState extends State<AnnouncementsListPage> {
       isLoading: _loading,
       onRefresh: _load,
       searchEnabled: false,
+      gridLayout: true,
+      gridSpacing: 24,
       emptyIcon: Icons.campaign_outlined,
       emptyTitle: 'No hay anuncios',
       emptySubtitle: 'Crea el primero o vuelve más tarde.',

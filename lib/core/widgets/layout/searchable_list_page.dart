@@ -30,6 +30,10 @@ class SearchableListPage<T> extends StatefulWidget {
     this.isLoading = false,
     this.animateItems = true,
     this.padding = const EdgeInsets.all(16),
+    this.gridLayout = false,
+    this.gridSpacing = 16.0,
+    this.gridCrossAxisSpacing,
+    this.gridMainAxisSpacing,
   });
 
   final List<T> items;
@@ -71,6 +75,12 @@ class SearchableListPage<T> extends StatefulWidget {
 
   // Layout
   final EdgeInsetsGeometry padding;
+  
+  // Grid Layout
+  final bool gridLayout;
+  final double gridSpacing;
+  final double? gridCrossAxisSpacing;
+  final double? gridMainAxisSpacing;
 
   @override
   State<SearchableListPage<T>> createState() => _SearchableListPageState<T>();
@@ -153,47 +163,102 @@ class _SearchableListPageState<T> extends State<SearchableListPage<T>> {
     final isSearchEmpty =
         widget.items.isNotEmpty && widget.searchEnabled && visibleItems.isEmpty;
 
-    final content = ListView(
-      padding: widget.padding,
-      physics: const AlwaysScrollableScrollPhysics(),
-      children: [
-        if (widget.headerBuilder != null)
-          widget.headerBuilder!(
-            context,
-            widget.items.length,
-            visibleItems.length,
-          ),
-        if (widget.searchEnabled) ...[
-          const SizedBox(height: 16),
-          SearchField(
-            controller: _controller,
-            hintText: widget.searchHint,
-            labelText: widget.searchLabel,
-          ),
-        ],
-        if (widget.filterBuilder != null) ...[
-          const SizedBox(height: 16),
-          widget.filterBuilder!(context),
-        ],
-        const SizedBox(height: 16),
-        if (visibleItems.isEmpty)
-          widget.emptyBuilder?.call(context, isSearchEmpty) ??
-              EmptyStateCard(
-                icon: widget.emptyIcon,
-                title: widget.emptyTitle,
-                subtitle: widget.emptySubtitle,
+    final content = LayoutBuilder(
+      builder: (context, constraints) {
+        // Determinar el número de columnas según el ancho
+        final isWide = constraints.maxWidth > 600;
+        final gridCrossAxisCount = isWide ? 2 : 1;
+        
+        // Calcular espaciado
+        final crossSpacing = widget.gridCrossAxisSpacing ?? widget.gridSpacing;
+        final mainSpacing = widget.gridMainAxisSpacing ?? widget.gridSpacing;
+
+        return CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: widget.padding,
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  if (widget.headerBuilder != null)
+                    widget.headerBuilder!(
+                      context,
+                      widget.items.length,
+                      visibleItems.length,
+                    ),
+                  if (widget.searchEnabled) ...[ 
+                    const SizedBox(height: 16),
+                    SearchField(
+                      controller: _controller,
+                      hintText: widget.searchHint,
+                      labelText: widget.searchLabel,
+                    ),
+                  ],
+                  if (widget.filterBuilder != null) ...[ 
+                    const SizedBox(height: 16),
+                    widget.filterBuilder!(context),
+                  ],
+                  const SizedBox(height: 16),
+                ]),
+              ),
+            ),
+            if (visibleItems.isEmpty)
+              SliverPadding(
+                padding: widget.padding,
+                sliver: SliverToBoxAdapter(
+                  child: widget.emptyBuilder?.call(context, isSearchEmpty) ??
+                      EmptyStateCard(
+                        icon: widget.emptyIcon,
+                        title: widget.emptyTitle,
+                        subtitle: widget.emptySubtitle,
+                      ),
+                ),
               )
-        else
-          ...visibleItems.asMap().entries.map((entry) {
-            final item = widget.itemBuilder(entry.value, entry.key);
-            if (!widget.animateItems) return item;
-            return AnimatedListItem(
-              key: ValueKey(entry.key),
-              index: entry.key,
-              child: item,
-            );
-          }),
-      ],
+            else if (widget.gridLayout)
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                sliver: SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: gridCrossAxisCount,
+                    crossAxisSpacing: crossSpacing,
+                    mainAxisSpacing: mainSpacing,
+                    childAspectRatio: isWide ? 1.5 : 2.0, // Mucho más cercano al cuadrado (era 3.0/2.6)
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final item = widget.itemBuilder(visibleItems[index], index);
+                      if (!widget.animateItems) return item;
+                      return AnimatedListItem(
+                        key: ValueKey(index),
+                        index: index,
+                        child: item,
+                      );
+                    },
+                    childCount: visibleItems.length,
+                  ),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final item = widget.itemBuilder(visibleItems[index], index);
+                      if (!widget.animateItems) return item;
+                      return AnimatedListItem(
+                        key: ValueKey(index),
+                        index: index,
+                        child: item,
+                      );
+                    },
+                    childCount: visibleItems.length,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
 
     if (widget.onRefresh != null) {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_spacing.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../modules/auth/cubits/auth_cubit.dart';
 import '../../../modules/rehearsals/cubits/rehearsal_entity.dart';
 import 'home_hero/home_hero_layout.dart';
@@ -24,6 +23,7 @@ class HomeHeroSection extends StatelessWidget {
 
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
+        final scheme = Theme.of(context).colorScheme;
         final viewModel = HomeHeroViewModel(
           displayName: state.user?.displayName ?? '',
           photoUrl: state.user?.photoUrl,
@@ -41,8 +41,11 @@ class HomeHeroSection extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(heroPadding),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.primaryContainer, AppColors.surface],
+            gradient: LinearGradient(
+              colors: [
+                scheme.surfaceContainerHighest,
+                scheme.surface,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

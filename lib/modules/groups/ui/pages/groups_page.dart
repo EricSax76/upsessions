@@ -55,6 +55,8 @@ class _GroupsViewState extends State<_GroupsView> {
           searchMatcher: _matchesGroup,
           sortComparator: _compareGroups,
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          gridLayout: true,
+          gridSpacing: 24,
           headerBuilder: (context, total, visible) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

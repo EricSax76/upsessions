@@ -11,6 +11,7 @@ import '../../../../core/widgets/constants/breakpoints.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/gap.dart';
 import '../../../../core/widgets/loading_indicator.dart';
+import '../../../../core/widgets/theme_toggle_button.dart';
 import '../../cubits/auth_cubit.dart';
 import '../widgets/login_form.dart';
 import '../widgets/social_login_buttons.dart';
@@ -55,6 +56,10 @@ class LoginPage extends StatelessWidget {
           final formContent = Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Align(
+                alignment: Alignment.centerRight,
+                child: ThemeToggleButton(),
+              ),
               const VSpace(AppSpacing.xs),
               Align(
                 alignment: Alignment.center,
@@ -145,10 +150,12 @@ class LoginPage extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Container(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHighest,
+                        child: SizedBox.expand(
+                          child: Image.asset(
+                            'assets/images/logos/upsessions_foto_login.png',
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                          ),
                         ),
                       ),
                       Expanded(
