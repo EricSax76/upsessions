@@ -1,0 +1,195 @@
+---
+const steps = [
+  {
+    number: "01",
+    title: "Crea tu perfil",
+    description:
+      "Regístrate en minutos y personaliza tu perfil musical. Añade tu experiencia, instrumentos, estilos musicales y preferencias.",
+    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>`,
+  },
+  {
+    number: "02",
+    title: "Conecta & Organiza",
+    description:
+      "Encuentra músicos, forma o únete a grupos, descubre salas de ensayo y conciertos. Organiza ensayos con nuestro calendario inteligente.",
+    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>`,
+  },
+  {
+    number: "03",
+    title: "Haz música juntos",
+    description:
+      "Colabora con tu grupo, gestiona repertorio, coordina ensayos y lleva tu proyecto musical al siguiente nivel.",
+    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>`,
+  },
+];
+---
+
+<section id="how-it-works" class="how-it-works">
+  <div class="container-lg">
+    <div class="section-header text-center">
+      <h2>Cómo funciona</h2>
+      <p class="section-subtitle">
+        Comienza tu viaje musical en 3 simples pasos
+      </p>
+    </div>
+
+    <div class="steps-container">
+      {
+        steps.map((step, index) => (
+          <div class="step" style={`animation-delay: ${index * 200}ms`}>
+            <div class="step-content">
+              <div class="step-number text-gradient">{step.number}</div>
+              <div class="step-icon glass">
+                <svg
+                  class="icon-lg"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  set:html={step.icon}
+                />
+              </div>
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
+            </div>
+            {index < steps.length - 1 && (
+              <div class="step-connector">
+                <svg viewBox="0 0 100 100" class="connector-line">
+                  <path
+                    d="M 10 50 Q 50 10, 90 50"
+                    stroke="url(#gradient)"
+                    stroke-width="2"
+                    fill="none"
+                    stroke-dasharray="5,5"
+                  />
+                  <defs>
+                    <linearGradient
+                      id="gradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="0%"
+                    >
+                      <stop
+                        offset="0%"
+                        style="stop-color:#8B5CF6;stop-opacity:0.5"
+                      />
+                      <stop
+                        offset="100%"
+                        style="stop-color:#3B82F6;stop-opacity:0.5"
+                      />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .how-it-works {
+    background: var(--color-bg-darker);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .steps-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-3xl);
+    position: relative;
+  }
+
+  .step {
+    position: relative;
+    animation: fadeIn 0.6s ease-out both;
+  }
+
+  .step-content {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    text-align: center;
+    border: 1px solid rgba(139, 92, 246, 0.1);
+    transition: all var(--transition-slow);
+    height: 100%;
+  }
+
+  .step-content:hover {
+    transform: translateY(-8px);
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: var(--shadow-xl), var(--shadow-glow);
+  }
+
+  .step-number {
+    font-size: 3rem;
+    font-weight: 900;
+    font-family: var(--font-heading);
+    margin-bottom: var(--spacing-md);
+    opacity: 0.8;
+  }
+
+  .step-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+  }
+
+  .step-icon svg {
+    color: var(--color-primary-light);
+  }
+
+  .step h3 {
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .step p {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+  }
+
+  .step-connector {
+    position: absolute;
+    top: 120px;
+    right: -10%;
+    width: 20%;
+    height: 100px;
+    z-index: 1;
+    display: none;
+  }
+
+  .connector-line {
+    width: 100%;
+    height: 100%;
+  }
+
+  .step:hover .step-icon {
+    animation: float 1s ease-in-out infinite;
+  }
+
+  @media (min-width: 1024px) {
+    .step-connector {
+      display: block;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .steps-container {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-xl);
+    }
+
+    .step-connector {
+      display: none;
+    }
+  }
+</style>
