@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../events/domain/event_entity.dart';
+import '../../../../core/widgets/section_card.dart';
 import 'calendar_day_cell.dart';
 import 'month_calendar_navigation.dart';
 
@@ -26,29 +27,26 @@ class MonthCalendarCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            MonthNavigationBar(
-              visibleMonth: visibleMonth,
-              onPreviousMonth: onPreviousMonth,
-              onNextMonth: onNextMonth,
-            ),
-            MonthActionRow(onGoToToday: onGoToToday),
-            const SizedBox(height: 8),
-            const WeekdayHeader(),
-            const SizedBox(height: 12),
-            CalendarGrid(
-              month: visibleMonth,
-              selectedDay: selectedDay,
-              eventsByDay: eventsByDay,
-              onSelectDay: onSelectDay,
-            ),
-          ],
-        ),
+    return SectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          MonthNavigationBar(
+            visibleMonth: visibleMonth,
+            onPreviousMonth: onPreviousMonth,
+            onNextMonth: onNextMonth,
+          ),
+          MonthActionRow(onGoToToday: onGoToToday),
+          const SizedBox(height: 8),
+          const WeekdayHeader(),
+          const SizedBox(height: 12),
+          CalendarGrid(
+            month: visibleMonth,
+            selectedDay: selectedDay,
+            eventsByDay: eventsByDay,
+            onSelectDay: onSelectDay,
+          ),
+        ],
       ),
     );
   }

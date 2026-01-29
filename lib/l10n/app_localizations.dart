@@ -494,18 +494,6 @@ abstract class AppLocalizations {
   /// **'Agenda'**
   String get rehearsalsGroupsAgendaTab;
 
-  /// No description provided for @rehearsalsGroupsSearchLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Buscar grupos'**
-  String get rehearsalsGroupsSearchLabel;
-
-  /// No description provided for @rehearsalsGroupsClearSearchTooltip.
-  ///
-  /// In es, this message translates to:
-  /// **'Limpiar búsqueda'**
-  String get rehearsalsGroupsClearSearchTooltip;
-
   /// No description provided for @rehearsalsGroupsErrorLoading.
   ///
   /// In es, this message translates to:
@@ -518,53 +506,11 @@ abstract class AppLocalizations {
   /// **'Reintentar'**
   String get rehearsalsGroupsRetryButton;
 
-  /// No description provided for @rehearsalsGroupsNoResultsTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'No hay resultados'**
-  String get rehearsalsGroupsNoResultsTitle;
-
-  /// No description provided for @rehearsalsGroupsNoResultsSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Prueba con otro nombre o limpia la búsqueda.'**
-  String get rehearsalsGroupsNoResultsSubtitle;
-
-  /// No description provided for @rehearsalsGroupsClearSearchButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Limpiar'**
-  String get rehearsalsGroupsClearSearchButton;
-
   /// No description provided for @rehearsalsGroupsCreateGroupError.
   ///
   /// In es, this message translates to:
   /// **'No se pudo crear el grupo: {error}'**
   String rehearsalsGroupsCreateGroupError(String error);
-
-  /// No description provided for @rehearsalsGroupsGoToGroupTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Ir a un grupo'**
-  String get rehearsalsGroupsGoToGroupTitle;
-
-  /// No description provided for @rehearsalsGroupsGroupIdLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'ID del grupo'**
-  String get rehearsalsGroupsGroupIdLabel;
-
-  /// No description provided for @rehearsalsGroupsGroupIdHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Ej. 6qDBI5b0LnybgBSF5KHU'**
-  String get rehearsalsGroupsGroupIdHint;
-
-  /// No description provided for @rehearsalsGroupsGoButton.
-  ///
-  /// In es, this message translates to:
-  /// **'Ir'**
-  String get rehearsalsGroupsGoButton;
 
   /// No description provided for @cancel.
   ///

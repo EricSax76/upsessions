@@ -30,7 +30,7 @@ class ThemeToggleButton extends StatelessWidget {
               );
             },
             child: Icon(
-              isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+              isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
               key: ValueKey(isDark),
             ),
           ),

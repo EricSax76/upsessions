@@ -16,8 +16,13 @@ class EventTile extends StatelessWidget {
     final endTime = loc.formatTimeOfDay(TimeOfDay.fromDateTime(event.end));
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      tileColor: theme.colorScheme.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      tileColor: theme.colorScheme.surface, // Changed from surfaceContainerHighest
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
       title: Text(
         event.title,
         style: theme.textTheme.titleMedium?.copyWith(
@@ -26,9 +31,12 @@ class EventTile extends StatelessWidget {
       ),
       subtitle: Text(
         '${loc.formatMediumDate(event.start)} · $startTime - $endTime · ${event.venue}',
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
       ),
       trailing: IconButton(
-        icon: const Icon(Icons.open_in_new),
+        icon: const Icon(Icons.arrow_outward, size: 20), // Updated icon
         tooltip: 'Ver detalles',
         onPressed: () => onViewEvent(event),
       ),

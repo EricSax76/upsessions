@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../events/domain/event_entity.dart';
 import '../../models/calendar_controller.dart';
-import '../widgets/calendar_intro.dart';
+import '../widgets/calendar_hero_section.dart';
 import '../widgets/month_calendar_card.dart';
 import '../widgets/month_event_list.dart';
 import '../widgets/selected_day_events_card.dart';
@@ -25,7 +25,7 @@ class CalendarDashboard extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          CalendarIntro(
+          CalendarHeroSection(
             totalEvents: controller.totalEvents,
             monthEvents: controller.monthEvents.length,
           ),

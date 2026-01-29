@@ -37,11 +37,6 @@ class RehearsalsSidebarSection extends StatelessWidget {
                 title: Text(loc.rehearsalsSidebarNewGroupLabel),
                 onTap: () => _createGroup(context, repository),
               ),
-              ListTile(
-                leading: const Icon(Icons.login_outlined),
-                title: Text(loc.rehearsalsGroupsGoToGroupTitle),
-                onTap: () => _goToGroupById(context),
-              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                 child: Text(
@@ -69,11 +64,6 @@ class RehearsalsSidebarSection extends StatelessWidget {
               leading: const Icon(Icons.group_add_outlined),
               title: Text(loc.rehearsalsSidebarNewGroupLabel),
               onTap: () => _createGroup(context, repository),
-            ),
-            ListTile(
-              leading: const Icon(Icons.login_outlined),
-              title: Text(loc.rehearsalsGroupsGoToGroupTitle),
-              onTap: () => _goToGroupById(context),
             ),
             if (groups.isEmpty)
               Padding(
@@ -126,12 +116,7 @@ class RehearsalsSidebarSection extends StatelessWidget {
     }
   }
 
-  Future<void> _goToGroupById(BuildContext context) async {
-    final groupId = await showGoToGroupDialog(context);
-    if (groupId == null || groupId.trim().isEmpty) return;
-    if (!context.mounted) return;
-    _go(context, AppRoutes.groupPage(groupId.trim()));
-  }
+
 
   void _go(BuildContext context, String route) {
     final scaffoldState = Scaffold.maybeOf(context);

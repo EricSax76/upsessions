@@ -11,7 +11,7 @@ import 'package:upsessions/core/widgets/announcement_card.dart';
 import 'package:upsessions/home/ui/widgets/announcements/new_announcements_section.dart';
 import 'package:upsessions/home/ui/widgets/events/upcoming_events_section.dart';
 import 'package:upsessions/home/ui/widgets/footer/bottom_cookie_bar.dart';
-import 'package:upsessions/home/ui/widgets/home_section_card.dart';
+import 'package:upsessions/core/widgets/section_card.dart';
 import 'package:upsessions/home/ui/widgets/home_hero_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/musicians_by_instrument_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/new_musicians_section.dart';
@@ -110,7 +110,7 @@ class UserHomePage extends StatelessWidget {
                       ),
 
                     const SizedBox(height: 48),
-                    HomeSectionCard(
+                    SectionCard(
                       title: loc.homeExploreByInstrumentTitle,
                       subtitle: loc.homeExploreByInstrumentSubtitle,
                       action: TextButton.icon(
@@ -138,7 +138,7 @@ class UserHomePage extends StatelessWidget {
 
   Widget _buildEventsSection(AppLocalizations loc, UserHomeState state) {
     return Builder(
-      builder: (context) => HomeSectionCard(
+      builder: (context) => SectionCard(
         title: loc.homeUpcomingEventsTitle,
         action: TextButton.icon(
           onPressed: () => context.push(AppRoutes.events),
@@ -153,7 +153,7 @@ class UserHomePage extends StatelessWidget {
   }
 
   Widget _buildAnnouncementsSection(AppLocalizations loc, UserHomeState state) {
-    return HomeSectionCard(
+    return SectionCard(
       title: loc.announcements,
       child: NewAnnouncementsSection(
         announcements: state.announcements,
@@ -168,7 +168,7 @@ class UserHomePage extends StatelessWidget {
   }
 
   Widget _buildRecommendedSection(AppLocalizations loc, UserHomeState state) {
-    return HomeSectionCard(
+    return SectionCard(
       title: loc.homeRecommendedTitle,
       subtitle: loc.homeRecommendedSubtitle,
       child: RecommendedUsersSection(
@@ -179,7 +179,7 @@ class UserHomePage extends StatelessWidget {
 
   Widget _buildNewTalentSection(AppLocalizations loc, UserHomeState state) {
     return Builder(
-      builder: (context) => HomeSectionCard(
+      builder: (context) => SectionCard(
         title: loc.homeNewTalentTitle,
         subtitle: loc.homeNewTalentSubtitle,
         action: TextButton.icon(

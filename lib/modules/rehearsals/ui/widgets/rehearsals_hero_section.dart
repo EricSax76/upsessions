@@ -28,74 +28,77 @@ class RehearsalsHeroSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(48),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [colorScheme.secondaryContainer, colorScheme.surface],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(24),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (groupPhotoUrl != null || groupName.isNotEmpty)
+                SmAvatar(
+                  radius: 20,
+                  imageUrl: groupPhotoUrl,
+                  initials:
+                      groupName.isNotEmpty ? groupName[0].toUpperCase() : null,
+                  backgroundColor: colorScheme.secondary,
+                  foregroundColor: colorScheme.onSecondary,
+                ),
+              if (groupPhotoUrl != null || groupName.isNotEmpty)
+                const SizedBox(width: 12),
+              Flexible(
+                child: Text(
                   groupName,
-                  style: theme.textTheme.displaySmall?.copyWith(
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSecondaryContainer,
                   ),
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  loc.rehearsalsTotalCount(totalRehearsals),
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: colorScheme.onSecondaryContainer.withValues(alpha: 0.8),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Wrap(
-                  spacing: 16,
-                  runSpacing: 16,
-                  children: [
-                    _QuickActionButton(
-                      icon: Icons.add_circle_outline,
-                      label: loc.rehearsalsNewButton,
-                      onPressed: onCreateRehearsal ?? () {},
-                      backgroundColor: colorScheme.secondary,
-                      foregroundColor: colorScheme.onSecondary,
-                    ),
-                    if (onInviteMusician != null)
-                      _QuickActionButton(
-                        icon: Icons.person_add_alt_1_outlined,
-                        label: canManageMembers
-                            ? loc.rehearsalsAddMusicianButton
-                            : loc.rehearsalsOnlyAdmin,
-                        onPressed: canManageMembers ? onInviteMusician! : () {},
-                        backgroundColor: colorScheme.surface,
-                        foregroundColor: colorScheme.secondary,
-                      ),
-                  ],
-                ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            loc.rehearsalsTotalCount(totalRehearsals),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: colorScheme.onSecondaryContainer.withValues(alpha: 0.8),
             ),
           ),
-          if (groupPhotoUrl != null || groupName.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(left: 24),
-              child: SmAvatar(
-                radius: 60,
-                imageUrl: groupPhotoUrl,
-                initials: groupName.isNotEmpty ? groupName[0].toUpperCase() : null,
+          const SizedBox(height: 20),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            alignment: WrapAlignment.center,
+            children: [
+              _QuickActionButton(
+                icon: Icons.add_circle_outline,
+                label: loc.rehearsalsNewButton,
+                onPressed: onCreateRehearsal ?? () {},
                 backgroundColor: colorScheme.secondary,
                 foregroundColor: colorScheme.onSecondary,
               ),
-            ),
+              if (onInviteMusician != null)
+                _QuickActionButton(
+                  icon: Icons.person_add_alt_1_outlined,
+                  label: canManageMembers
+                      ? loc.rehearsalsAddMusicianButton
+                      : loc.rehearsalsOnlyAdmin,
+                  onPressed: canManageMembers ? onInviteMusician! : () {},
+                  backgroundColor: colorScheme.surface,
+                  foregroundColor: colorScheme.secondary,
+                ),
+            ],
+          ),
         ],
       ),
     );
@@ -126,8 +129,8 @@ class _QuickActionButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 0,
       ),
     );

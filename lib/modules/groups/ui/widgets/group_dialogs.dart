@@ -42,34 +42,4 @@ Future<String?> showCreateGroupDialog(BuildContext context) async {
   );
 }
 
-/// Shows a dialog to go to a group by its ID.
-/// Returns the group ID if confirmed, or null if cancelled.
-Future<String?> showGoToGroupDialog(BuildContext context) async {
-  final loc = AppLocalizations.of(context);
-  final controller = TextEditingController();
-  return showDialog<String>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(loc.rehearsalsGroupsGoToGroupTitle),
-      content: TextField(
-        controller: controller,
-        decoration: const InputDecoration(
-          labelText: 'ID del grupo',
-          hintText: 'Ej. 6qDBI5b0LnybgBSF5KHU',
-        ),
-        autofocus: true,
-        onSubmitted: (value) => Navigator.of(context).pop(value.trim()),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(loc.cancel),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(controller.text.trim()),
-          child: const Text('Ir'),
-        ),
-      ],
-    ),
-  );
-}
+

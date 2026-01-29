@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/gap.dart';
 import '../../../../core/widgets/empty_state_card.dart';
-import '../../../../home/ui/widgets/home_section_card.dart';
+import '../../../../core/widgets/section_card.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../cubits/rehearsal_entity.dart';
 import '../models/rehearsal_filter.dart';
@@ -38,7 +38,7 @@ class RehearsalListCard extends StatelessWidget {
     final loc = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
 
-    return HomeSectionCard(
+    return SectionCard(
       title: loc.navRehearsals,
       subtitle: loc.rehearsalsPageSubtitle,
       action: isMediumScreen

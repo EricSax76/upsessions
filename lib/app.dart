@@ -60,6 +60,7 @@ class UpsessionsApp extends StatelessWidget {
                     theme: AppTheme.light,
                     darkTheme: AppTheme.dark,
                     themeMode: themeMode,
+                    themeAnimationDuration: Duration.zero,
                     localizationsDelegates: AppLocalizations.localizationsDelegates,
                     supportedLocales: AppLocalizations.supportedLocales,
                     locale: locale,

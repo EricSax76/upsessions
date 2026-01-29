@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/gap.dart';
-import '../../../../home/ui/widgets/home_section_card.dart';
+import '../../../../core/widgets/section_card.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../controllers/rehearsal_helpers.dart';
 import '../../cubits/rehearsal_entity.dart';
@@ -23,7 +23,7 @@ class RehearsalStatsCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final loc = AppLocalizations.of(context);
 
-    return HomeSectionCard(
+    return SectionCard(
       title: loc.rehearsalsSummaryTitle,
       child: Column(
         children: [

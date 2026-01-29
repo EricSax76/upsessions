@@ -43,6 +43,7 @@ class EventsPage extends StatelessWidget {
                   ownerId: ownerId,
                   onRefresh: cubit.load,
                   onSelectForPreview: cubit.selectPreview,
+                  onCreateEvent: () => context.push(AppRoutes.createEvent),
                   onViewDetails: (event) =>
                       context.push(
                         AppRoutes.eventDetailPath(event.id),
@@ -51,10 +52,6 @@ class EventsPage extends StatelessWidget {
                 );
               },
             ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => context.push(AppRoutes.createEvent),
-            child: const Icon(Icons.add),
           ),
         ),
       ),

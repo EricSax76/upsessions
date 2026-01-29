@@ -234,43 +234,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rehearsalsGroupsAgendaTab => 'Agenda';
 
   @override
-  String get rehearsalsGroupsSearchLabel => 'Search groups';
-
-  @override
-  String get rehearsalsGroupsClearSearchTooltip => 'Clear search';
-
-  @override
   String get rehearsalsGroupsErrorLoading => 'We could not load your groups.';
 
   @override
   String get rehearsalsGroupsRetryButton => 'Retry';
 
   @override
-  String get rehearsalsGroupsNoResultsTitle => 'No results';
-
-  @override
-  String get rehearsalsGroupsNoResultsSubtitle =>
-      'Try another name or clear the search.';
-
-  @override
-  String get rehearsalsGroupsClearSearchButton => 'Clear';
-
-  @override
   String rehearsalsGroupsCreateGroupError(String error) {
     return 'Could not create group: $error';
   }
-
-  @override
-  String get rehearsalsGroupsGoToGroupTitle => 'Go to a group';
-
-  @override
-  String get rehearsalsGroupsGroupIdLabel => 'Group ID';
-
-  @override
-  String get rehearsalsGroupsGroupIdHint => 'e.g. 6qDBI5b0LnybgBSF5KHU';
-
-  @override
-  String get rehearsalsGroupsGoButton => 'Go';
 
   @override
   String get cancel => 'Cancel';

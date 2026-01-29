@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../features/contacts/ui/widgets/musician_like_button.dart';
 import '../../../../modules/musicians/models/musician_entity.dart';
-import '../../../../modules/musicians/models/musician_liked_musician_mapper.dart';
+import '../../../../core/widgets/sm_avatar.dart';
 
 class NewMusiciansSection extends StatelessWidget {
   const NewMusiciansSection({super.key, required this.musicians});
@@ -14,7 +13,7 @@ class NewMusiciansSection extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 600;
-        final listHeight = isCompact ? 200.0 : 160.0;
+        final listHeight = isCompact ? 120.0 : 100.0;
         final availableWidth = constraints.maxWidth == double.infinity
             ? 260.0
             : constraints.maxWidth;
@@ -50,43 +49,65 @@ class _NewMusicianCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final likedMusician = musician.toLikedMusician();
+
     return Container(
-      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+          width: 1,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            musician.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 2),
-          Text(
-            musician.instrument,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: colorScheme.onSurfaceVariant),
-          ),
-          const Spacer(),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  musician.city,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          children: [
+            SmAvatar(
+              radius: 28,
+              imageUrl: musician.photoUrl,
+              initials: musician.name.isNotEmpty ? musician.name[0] : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    musician.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    musician.instrument,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    musician.city,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
-              MusicianLikeButton(musician: likedMusician, iconSize: 20),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

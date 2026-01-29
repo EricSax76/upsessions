@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../features/contacts/ui/widgets/musician_like_button.dart';
 import '../../../../modules/musicians/models/musician_entity.dart';
 import '../../../../modules/musicians/models/musician_liked_musician_mapper.dart';
+import '../../../../core/widgets/sm_avatar.dart';
 
 class MusiciansGrid extends StatelessWidget {
   const MusiciansGrid({super.key, required this.musicians});
@@ -18,8 +19,8 @@ class MusiciansGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 600;
-        final cardWidth = isCompact ? 280.0 : 320.0;
-        final cardHeight = isCompact ? 120.0 : 140.0;
+        final cardWidth = isCompact ? 220.0 : 260.0;
+        final cardHeight = isCompact ? 120.0 : 100.0;
 
         return SizedBox(
           height: cardHeight,
@@ -103,119 +104,57 @@ class _MusicianTileState extends State<_MusicianTile> {
                   ),
                 ],
         ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        padding: const EdgeInsets.all(12),
+        child: Row(
           children: [
-            Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: colorScheme.primary.withValues(alpha: 0.3),
-                      width: 2,
-                    ),
-                  ),
-                  child: CircleAvatar(
-                    radius: 24,
-                    backgroundColor: colorScheme.primaryContainer,
-                    child: Text(
-                      widget.musician.name.isNotEmpty
-                          ? widget.musician.name[0].toUpperCase()
-                          : '?',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.musician.name,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        widget.musician.instrument,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-                MusicianLikeButton(
-                  musician: likedMusician,
-                  iconSize: 20,
-                  constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
-                ),
-              ],
+            SmAvatar(
+              radius: 28,
+              imageUrl: widget.musician.photoUrl,
+              initials: widget.musician.name.isNotEmpty
+                  ? widget.musician.name[0]
+                  : null,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      size: 14,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    widget.musician.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    widget.musician.instrument,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: colorScheme.onSurfaceVariant,
+                      fontSize: 12,
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      widget.musician.city,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    widget.musician.city,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 12,
                     ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
                   ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.tertiaryContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.star,
-                        size: 14,
-                        color: Colors.amber,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        (widget.musician.rating ?? 0).toStringAsFixed(1),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onTertiaryContainer,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
+            ),
+            MusicianLikeButton(
+              musician: likedMusician,
+              iconSize: 20,
             ),
           ],
         ),

@@ -4,11 +4,12 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../core/widgets/announcement_card.dart';
-import '../../../../core/widgets/layout/page_header.dart';
+
 import '../../../../core/widgets/layout/searchable_list_page.dart';
 import '../../data/announcements_repository.dart';
 import '../../domain/announcement_entity.dart';
 import '../widgets/announcement_filter_panel.dart';
+import '../widgets/announcements_hero_section.dart';
 import 'announcement_form_page.dart';
 
 class AnnouncementsListPage extends StatefulWidget {
@@ -58,6 +59,10 @@ class _AnnouncementsListPageState extends State<AnnouncementsListPage> {
       emptyIcon: Icons.campaign_outlined,
       emptyTitle: 'No hay anuncios',
       emptySubtitle: 'Crea el primero o vuelve más tarde.',
+      headerBuilder: !widget.showAppBar
+          ? (_, _, _) =>
+                AnnouncementsHeroSection(onNewAnnouncement: _openForm)
+          : null,
       filterBuilder: (_) => AnnouncementFilterPanel(onChanged: (_) => _load()),
       itemBuilder: (announcement, index) => AnnouncementCard(
         title: announcement.title,
@@ -72,26 +77,7 @@ class _AnnouncementsListPageState extends State<AnnouncementsListPage> {
     );
 
     if (!widget.showAppBar) {
-      return SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            PageHeader(
-              title: 'Anuncios',
-              subtitle: 'Explora oportunidades y comparte las tuyas.',
-              actions: [
-                FilledButton.icon(
-                  onPressed: _openForm,
-                  icon: const Icon(Icons.add_circle_outline),
-                  label: const Text('Nuevo'),
-                ),
-              ],
-            ),
-            const Divider(height: 1),
-            Expanded(child: listContent),
-          ],
-        ),
-      );
+      return SafeArea(child: listContent);
     }
 
     return Scaffold(

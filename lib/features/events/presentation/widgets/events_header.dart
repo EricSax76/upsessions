@@ -6,12 +6,12 @@ class EventsHeader extends StatelessWidget {
     super.key,
     required this.eventsCount,
     required this.thisWeekCount,
-    required this.totalCapacity,
+    required this.onCreateEvent,
   });
 
   final int eventsCount;
   final int thisWeekCount;
-  final int totalCapacity;
+  final VoidCallback onCreateEvent;
 
   @override
   Widget build(BuildContext context) {
@@ -19,23 +19,26 @@ class EventsHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          loc.eventsShowcasesTitle,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w800,
+          'Eventos',
+          style: theme.textTheme.displaySmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            letterSpacing: -0.5,
           ),
+          textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         Text(
           loc.eventsShowcasesDescription,
           style: theme.textTheme.bodyLarge?.copyWith(
             color: colorScheme.onSurfaceVariant,
-            height: 1.35,
+            height: 1.5,
           ),
+          textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 24),
         LayoutBuilder(
           builder: (context, constraints) {
             final maxWidth = constraints.maxWidth;
@@ -51,20 +54,66 @@ class EventsHeader extends StatelessWidget {
               value: thisWeekCount.toString(),
               icon: Icons.calendar_month,
             );
-            final capacity = SummaryChip(
-              label: loc.eventsTotalCapacityLabel,
-              value: loc.eventsPeopleCount(totalCapacity),
-              icon: Icons.people_alt_outlined,
+            
+            final createButton = Container(
+              height: 80, // Match typical chip height approx
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    colorScheme.primary,
+                    colorScheme.tertiary,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: colorScheme.primary.withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: onCreateEvent,
+                  borderRadius: BorderRadius.circular(16),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add_circle_outline_rounded,
+                          color: colorScheme.onPrimary,
+                          size: 28,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Nuevo evento',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             );
 
             if (isWide) {
               return Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(child: active),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(child: thisWeek),
-                  const SizedBox(width: 12),
-                  Expanded(child: capacity),
+                  const SizedBox(width: 16),
+                  Expanded(child: createButton),
                 ],
               );
             }
@@ -78,8 +127,11 @@ class EventsHeader extends StatelessWidget {
                     Expanded(child: thisWeek),
                   ],
                 ),
-                const SizedBox(height: 12),
-                capacity,
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: createButton,
+                ),
               ],
             );
           },

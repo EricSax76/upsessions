@@ -162,20 +162,13 @@
   "@rehearsalsGroupsMyGroupsTab": {},
   "rehearsalsGroupsAgendaTab": "Agenda",
   "@rehearsalsGroupsAgendaTab": {},
-  "rehearsalsGroupsSearchLabel": "Search groups",
-  "@rehearsalsGroupsSearchLabel": {},
-  "rehearsalsGroupsClearSearchTooltip": "Clear search",
-  "@rehearsalsGroupsClearSearchTooltip": {},
+
+
   "rehearsalsGroupsErrorLoading": "We could not load your groups.",
   "@rehearsalsGroupsErrorLoading": {},
   "rehearsalsGroupsRetryButton": "Retry",
   "@rehearsalsGroupsRetryButton": {},
-  "rehearsalsGroupsNoResultsTitle": "No results",
-  "@rehearsalsGroupsNoResultsTitle": {},
-  "rehearsalsGroupsNoResultsSubtitle": "Try another name or clear the search.",
-  "@rehearsalsGroupsNoResultsSubtitle": {},
-  "rehearsalsGroupsClearSearchButton": "Clear",
-  "@rehearsalsGroupsClearSearchButton": {},
+
   "rehearsalsGroupsCreateGroupError": "Could not create group: {error}",
   "@rehearsalsGroupsCreateGroupError": {
     "placeholders": {
@@ -184,14 +177,7 @@
       }
     }
   },
-  "rehearsalsGroupsGoToGroupTitle": "Go to a group",
-  "@rehearsalsGroupsGoToGroupTitle": {},
-  "rehearsalsGroupsGroupIdLabel": "Group ID",
-  "@rehearsalsGroupsGroupIdLabel": {},
-  "rehearsalsGroupsGroupIdHint": "e.g. 6qDBI5b0LnybgBSF5KHU",
-  "@rehearsalsGroupsGroupIdHint": {},
-  "rehearsalsGroupsGoButton": "Go",
-  "@rehearsalsGroupsGoButton": {},
+
   "cancel": "Cancel",
   "@cancel": {},
   "error": "Error",

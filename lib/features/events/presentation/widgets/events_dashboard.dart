@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../domain/event_entity.dart';
 import 'event_cards.dart';
 
-import 'events_header.dart';
+import 'events_hero_section.dart';
 
 class EventsDashboard extends StatelessWidget {
   const EventsDashboard({
@@ -16,6 +16,7 @@ class EventsDashboard extends StatelessWidget {
     required this.onRefresh,
     required this.onSelectForPreview,
     required this.onViewDetails,
+    required this.onCreateEvent,
     required this.ownerId,
   });
 
@@ -27,6 +28,7 @@ class EventsDashboard extends StatelessWidget {
   final Future<void> Function() onRefresh;
   final ValueChanged<EventEntity> onSelectForPreview;
   final ValueChanged<EventEntity> onViewDetails;
+  final VoidCallback onCreateEvent;
   final String? ownerId;
 
   @override
@@ -39,10 +41,10 @@ class EventsDashboard extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                EventsHeader(
+                EventsHeroSection(
                   eventsCount: eventsCount,
                   thisWeekCount: thisWeekCount,
-                  totalCapacity: totalCapacity,
+                  onCreateEvent: onCreateEvent,
                 ),
                 const SizedBox(height: 24),
                 if (events.isNotEmpty)

@@ -7,10 +7,11 @@ import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/empty_state_card.dart';
 import '../../../../core/widgets/layout/searchable_list_page.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
-import '../../../../l10n/app_localizations.dart';
+
 import '../../cubits/group_membership_entity.dart';
 import '../../repositories/groups_repository.dart';
 import '../widgets/groups_widgets.dart';
+import '../widgets/groups_list/groups_hero_section.dart';
 
 class GroupsPage extends StatelessWidget {
   const GroupsPage({super.key});
@@ -29,11 +30,8 @@ class _GroupsView extends StatefulWidget {
 }
 
 class _GroupsViewState extends State<_GroupsView> {
-  final TextEditingController _searchController = TextEditingController();
-
   @override
   void dispose() {
-    _searchController.dispose();
     super.dispose();
   }
 
@@ -50,24 +48,14 @@ class _GroupsViewState extends State<_GroupsView> {
           errorMessage: snapshot.hasError ? '${snapshot.error}' : null,
           onRetry: () => repository.authRepository.refreshIdToken(),
           onRefresh: () => repository.authRepository.refreshIdToken(),
-          searchController: _searchController,
-          searchHint: 'Buscar grupos',
-          searchMatcher: _matchesGroup,
+          searchEnabled: false,
           sortComparator: _compareGroups,
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
           gridLayout: true,
           gridSpacing: 24,
-          headerBuilder: (context, total, visible) => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GroupsHeader(groupCount: total, visibleCount: visible),
-              const SizedBox(height: 16),
-              GroupsActions(
-                onGoToGroup: () => _showGoToGroupDialog(context),
-                onCreateGroup: () =>
-                    _showCreateGroupDialog(context, repository),
-              ),
-            ],
+          headerBuilder: (context, total, visible) => GroupsHeroSection(
+            groupCount: total,
+            onCreateGroup: () => _showCreateGroupDialog(context, repository),
           ),
           emptyBuilder: (context, isSearchEmpty) {
             if (groups.isEmpty) {
@@ -78,10 +66,6 @@ class _GroupsViewState extends State<_GroupsView> {
                 icon: Icons.search_off_outlined,
                 title: 'No hay resultados',
                 subtitle: 'Prueba con otro nombre o limpia la búsqueda.',
-                trailing: TextButton(
-                  onPressed: _searchController.clear,
-                  child: const Text('Limpiar'),
-                ),
               );
             }
             return EmptyStateCard(
@@ -129,26 +113,6 @@ class _GroupsViewState extends State<_GroupsView> {
       DialogService.showError(context, 'No se pudo crear el grupo: $error');
     }
   }
-
-  Future<void> _showGoToGroupDialog(BuildContext context) async {
-    final loc = AppLocalizations.of(context);
-    final groupId = await DialogService.showInputDialog(
-      context: context,
-      title: 'Ir a un grupo',
-      hint: 'Ej. 6qDBI5b0LnybgBSF5KHU',
-      confirmText: 'Ir',
-      cancelText: loc.cancel,
-    );
-    if (groupId == null || groupId.trim().isEmpty) return;
-    if (!context.mounted) return;
-    context.go(AppRoutes.groupPage(groupId.trim()));
-  }
-}
-
-bool _matchesGroup(GroupMembershipEntity group, String query) {
-  final trimmed = query.trim().toLowerCase();
-  if (trimmed.isEmpty) return true;
-  return group.groupName.toLowerCase().contains(trimmed);
 }
 
 int _compareGroups(GroupMembershipEntity a, GroupMembershipEntity b) {

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'app_colors.dart';
 import 'app_fonts.dart';
 
 class AppTheme {
-  static ThemeData get light => ThemeData(
+  static final ThemeData light = ThemeData(
     colorScheme: const ColorScheme(
       brightness: Brightness.light,
       primary: AppColorsLight.primary,
@@ -41,6 +42,11 @@ class AppTheme {
       foregroundColor: AppColorsLight.textPrimary,
       elevation: 0,
       centerTitle: false,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+      ),
     ),
     dividerTheme: const DividerThemeData(
       color: AppColorsLight.outline,
@@ -133,7 +139,7 @@ class AppTheme {
     useMaterial3: true,
   );
 
-  static ThemeData get dark => ThemeData(
+  static final ThemeData dark = ThemeData(
     colorScheme: const ColorScheme(
       brightness: Brightness.dark,
       primary: AppColorsDark.primary,
@@ -170,6 +176,11 @@ class AppTheme {
       foregroundColor: AppColorsDark.textPrimary,
       elevation: 0,
       centerTitle: false,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
     ),
     dividerTheme: const DividerThemeData(
       color: AppColorsDark.outline,
