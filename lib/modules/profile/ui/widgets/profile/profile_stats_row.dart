@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:upsessions/modules/auth/domain/profile_entity.dart';
+import 'package:upsessions/modules/auth/models/profile_entity.dart';
 
 class ProfileStatsRow extends StatelessWidget {
   const ProfileStatsRow({super.key, required this.profile});
@@ -11,7 +11,9 @@ class ProfileStatsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       spacing: 8,
-      children: profile.skills.map((skill) => Chip(label: Text(skill))).toList(),
+      children: profile.skills
+          .map((skill) => Chip(label: Text(skill)))
+          .toList(),
     );
   }
 }

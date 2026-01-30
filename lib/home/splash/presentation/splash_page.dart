@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_routes.dart';
 import '../../../core/services/firebase_initializer.dart';
-import 'package:upsessions/modules/auth/data/auth_repository.dart';
+import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import '../../cubits/bootstrap_cubit.dart';
 

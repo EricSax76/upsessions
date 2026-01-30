@@ -4,14 +4,14 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../repositories/groups_repository.dart';
-import 'group_membership_entity.dart';
+import '../models/group_membership_entity.dart';
 
 part 'groups_state.dart';
 
 class GroupsCubit extends Cubit<GroupsState> {
   GroupsCubit({required GroupsRepository repository})
-      : _repository = repository,
-        super(const GroupsState()) {
+    : _repository = repository,
+      super(const GroupsState()) {
     _subscription = _repository.watchMyGroups().listen(
       (memberships) {
         _allMemberships = memberships;
@@ -55,7 +55,7 @@ class GroupsCubit extends Cubit<GroupsState> {
       // For now, we just rely on the stream listening.
       _updateStateWithFilteredAndSortedMemberships();
     } finally {
-       emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false));
     }
   }
 
@@ -63,13 +63,15 @@ class GroupsCubit extends Cubit<GroupsState> {
     final currentQuery = query ?? state.query;
     final filtered = _filterGroups(_allMemberships, currentQuery);
     final sorted = _sortGroups(filtered);
-    emit(state.copyWith(
-      memberships: sorted,
-      totalMemberships: _allMemberships.length,
-      query: currentQuery,
-      errorMessage: null,
-      isLoading: false,
-    ));
+    emit(
+      state.copyWith(
+        memberships: sorted,
+        totalMemberships: _allMemberships.length,
+        query: currentQuery,
+        errorMessage: null,
+        isLoading: false,
+      ),
+    );
   }
 
   List<GroupMembershipEntity> _filterGroups(

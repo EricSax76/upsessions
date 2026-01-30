@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/modules/auth/data/auth_repository.dart';
-import 'package:upsessions/modules/auth/data/profile_repository.dart';
+import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
+import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 
 import '../../repositories/chat_repository.dart';
 import '../../models/chat_message.dart';
@@ -255,7 +255,10 @@ class _ChatPageState extends State<ChatPage> {
                 child: hasSelectedThread
                     ? ListView.builder(
                         reverse: true,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
                         itemCount: _messages.length,
                         itemBuilder: (context, index) =>
                             MessageBubble(message: _messages[index]),
@@ -267,14 +270,19 @@ class _ChatPageState extends State<ChatPage> {
                             Icon(
                               Icons.chat_bubble_outline_rounded,
                               size: 64,
-                              color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.outline.withOpacity(0.5),
                             ),
                             const SizedBox(height: 16),
                             Text(
                               'Selecciona una conversación',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
                             ),
                           ],
                         ),
@@ -307,8 +315,9 @@ class _ChatPageState extends State<ChatPage> {
           final thread = _threads[index];
           final title = thread.titleFor(currentUserId);
           final otherId = _otherParticipantId(thread, currentUserId);
-          final avatarUrl =
-              otherId == null ? null : _avatarUrlsByUserId[otherId];
+          final avatarUrl = otherId == null
+              ? null
+              : _avatarUrlsByUserId[otherId];
           final lastMessage =
               _lastMessageByThreadId[thread.id] ?? thread.lastMessage;
           final subtitle = _isNoMessagesPlaceholder(lastMessage)
@@ -341,11 +350,8 @@ class _ChatPageState extends State<ChatPage> {
         }
         return Row(
           children: [
-            SizedBox(
-              width: 320, 
-              child: buildThreadsList(false)
-            ),
-            const SizedBox(width: 8), 
+            SizedBox(width: 320, child: buildThreadsList(false)),
+            const SizedBox(width: 8),
             buildConversationPane(),
           ],
         );
@@ -355,9 +361,7 @@ class _ChatPageState extends State<ChatPage> {
     if (!widget.showAppBar) {
       return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: SafeArea(
-          child: body,
-        ),
+        body: SafeArea(child: body),
       );
     }
 

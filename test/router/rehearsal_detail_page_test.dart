@@ -14,17 +14,19 @@ import 'package:upsessions/features/notifications/models/invite_notification_ent
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
+import 'package:upsessions/modules/groups/models/group_dtos.dart';
 import 'package:upsessions/modules/rehearsals/ui/pages/rehearsal_detail_page.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
-import 'package:upsessions/modules/rehearsals/cubits/rehearsal_entity.dart';
-import 'package:upsessions/modules/groups/cubits/group_membership_entity.dart';
-import 'package:upsessions/modules/rehearsals/cubits/setlist_item_entity.dart';
+import 'package:upsessions/modules/rehearsals/models/rehearsal_entity.dart';
+import 'package:upsessions/modules/groups/models/group_membership_entity.dart';
+import 'package:upsessions/modules/rehearsals/models/setlist_item_entity.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
-import 'package:upsessions/modules/auth/domain/user_entity.dart';
+import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 
 class MockAuthCubit extends MockCubit<AuthState> implements AuthCubit {}
+
 class MockProfileCubit extends MockCubit<ProfileState>
     implements ProfileCubit {}
 
@@ -36,8 +38,7 @@ class MockGroupsRepository extends Mock implements GroupsRepository {}
 
 class MockChatRepository extends Mock implements ChatRepository {}
 
-class MockInviteNotificationsRepository
-    extends Mock
+class MockInviteNotificationsRepository extends Mock
     implements InviteNotificationsRepository {}
 
 class FakeLikedMusiciansController extends ChangeNotifier
@@ -128,10 +129,16 @@ void main() {
     when(
       () => groupsRepository.watchMyGroups(),
     ).thenAnswer((_) => Stream.value(const <GroupMembershipEntity>[]));
+    when(() => groupsRepository.watchGroup(any())).thenAnswer(
+      (_) => Stream.value(
+        const GroupDoc(id: '1', name: 'Test Group', ownerId: 'u1'),
+      ),
+    );
 
     chatRepository = MockChatRepository();
-    when(() => chatRepository.watchUnreadTotal())
-        .thenAnswer((_) => Stream.value(0));
+    when(
+      () => chatRepository.watchUnreadTotal(),
+    ).thenAnswer((_) => Stream.value(0));
 
     invitesRepository = MockInviteNotificationsRepository();
     when(() => invitesRepository.watchMyInvites()).thenAnswer(

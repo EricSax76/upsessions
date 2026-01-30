@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../core/constants/spanish_geography.dart';
-import '../../modules/auth/data/auth_repository.dart';
+import '../../modules/auth/repositories/auth_repository.dart';
 import '../../modules/musicians/models/musician_dto.dart';
 import '../../modules/musicians/models/musician_entity.dart';
-import '../../modules/rehearsals/cubits/rehearsal_entity.dart';
+import '../../modules/rehearsals/models/rehearsal_entity.dart';
 import '../models/announcement_model.dart';
 import '../models/home_event_model.dart';
 import '../models/instrument_category_model.dart';
@@ -124,17 +124,16 @@ class UserHomeRepository {
         .where('ownerId', isEqualTo: user.id)
         .where('status', isEqualTo: 'active')
         .get();
-    final groupIds =
-        memberships.docs
-            .map((doc) => doc.reference.parent.parent?.id ?? '')
-            .where((groupId) => groupId.isNotEmpty)
-            .toSet()
-            .toList();
+    final groupIds = memberships.docs
+        .map((doc) => doc.reference.parent.parent?.id ?? '')
+        .where((groupId) => groupId.isNotEmpty)
+        .toSet()
+        .toList();
     if (groupIds.isEmpty) {
       return [];
     }
     final now = Timestamp.fromDate(DateTime.now());
-    
+
     // Fetch a few upcoming from each group to ensure we get the overall top ones
     // We fetch 'limit' from each group to be safe, though this might be over-fetching slightly,
     // it ensures correctness if all next rehearsals are in one group.
@@ -161,13 +160,13 @@ class UserHomeRepository {
 
     final results = await Future.wait(futures);
     final allRehearsals = results.expand((x) => x).toList();
-    
+
     if (allRehearsals.isEmpty) {
       return [];
     }
-    
+
     allRehearsals.sort((a, b) => a.startsAt.compareTo(b.startsAt));
-    
+
     return allRehearsals.take(limit).toList();
   }
 

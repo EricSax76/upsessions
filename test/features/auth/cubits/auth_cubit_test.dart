@@ -5,9 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
-import 'package:upsessions/modules/auth/data/auth_exceptions.dart';
-import 'package:upsessions/modules/auth/data/auth_repository.dart';
-import 'package:upsessions/modules/auth/domain/user_entity.dart';
+import 'package:upsessions/modules/auth/models/auth_exceptions.dart';
+import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
+import 'package:upsessions/modules/auth/models/user_entity.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
@@ -40,9 +40,7 @@ void main() {
 
   group('AuthCubit', () {
     test('empieza desautenticado cuando no hay sesión activa', () {
-      final cubit = AuthCubit(
-        authRepository: authRepository,
-      );
+      final cubit = AuthCubit(authRepository: authRepository);
       expect(cubit.state.status, AuthStatus.unauthenticated);
       cubit.close();
     });
@@ -56,9 +54,7 @@ void main() {
           authChangesController.add(user);
           return user;
         });
-        return AuthCubit(
-          authRepository: authRepository,
-        );
+        return AuthCubit(authRepository: authRepository);
       },
       act: (cubit) => cubit.signIn('solista@example.com', 'token'),
       expect: () => const [
@@ -86,9 +82,7 @@ void main() {
         when(
           () => authRepository.signIn(any(), any()),
         ).thenThrow(InvalidCredentialsException());
-        return AuthCubit(
-          authRepository: authRepository,
-        );
+        return AuthCubit(authRepository: authRepository);
       },
       act: (cubit) => cubit.signIn('invalid@example.com', 'wrong'),
       expect: () => const [

@@ -9,8 +9,8 @@ import 'package:upsessions/core/theme/theme_cubit.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/l10n/cubit/locale_cubit.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
-import 'package:upsessions/modules/auth/data/auth_repository.dart';
-import 'package:upsessions/modules/auth/data/profile_repository.dart';
+import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
+import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 import 'package:upsessions/router/app_router.dart';
@@ -61,7 +61,8 @@ class UpsessionsApp extends StatelessWidget {
                     darkTheme: AppTheme.dark,
                     themeMode: themeMode,
                     themeAnimationDuration: Duration.zero,
-                    localizationsDelegates: AppLocalizations.localizationsDelegates,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
                     supportedLocales: AppLocalizations.supportedLocales,
                     locale: locale,
                     routerConfig: _appRouter.router,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_card.dart';
-import '../../cubits/rehearsal_entity.dart';
+import '../../models/rehearsal_entity.dart';
 import '../../controllers/rehearsal_helpers.dart';
 
 class RehearsalCard extends StatelessWidget {

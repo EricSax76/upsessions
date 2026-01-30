@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
-import '../../../modules/auth/data/auth_repository.dart';
-import '../../../modules/auth/domain/user_entity.dart';
+import '../../../modules/auth/repositories/auth_repository.dart';
+import '../../../modules/auth/models/user_entity.dart';
 import '../repositories/contacts_repository.dart';
 import '../models/liked_musician.dart';
 

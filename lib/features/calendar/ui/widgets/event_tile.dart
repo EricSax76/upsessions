@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../events/domain/event_entity.dart';
+import '../../../events/models/event_entity.dart';
 
 class EventTile extends StatelessWidget {
   const EventTile({super.key, required this.event, required this.onViewEvent});
@@ -16,7 +16,8 @@ class EventTile extends StatelessWidget {
     final endTime = loc.formatTimeOfDay(TimeOfDay.fromDateTime(event.end));
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      tileColor: theme.colorScheme.surface, // Changed from surfaceContainerHighest
+      tileColor:
+          theme.colorScheme.surface, // Changed from surfaceContainerHighest
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(

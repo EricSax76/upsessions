@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:upsessions/core/widgets/sm_avatar.dart';
 import '../../../../modules/auth/cubits/auth_cubit.dart';
-import '../../../../modules/auth/domain/profile_entity.dart';
+import '../../../../modules/auth/models/profile_entity.dart';
 import '../../../../modules/profile/cubit/profile_cubit.dart';
 
 class ProfileStatusBar extends StatelessWidget {
@@ -61,8 +61,9 @@ class ProfileStatusBar extends StatelessWidget {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onPrimary
-                                .withValues(alpha: 0.85),
+                            color: colorScheme.onPrimary.withValues(
+                              alpha: 0.85,
+                            ),
                           ),
                         ),
                       ],
@@ -76,18 +77,12 @@ class ProfileStatusBar extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(36),
                 gradient: LinearGradient(
-                  colors: [
-                    colorScheme.primary,
-                    colorScheme.primaryContainer,
-                  ],
+                  colors: [colorScheme.primary, colorScheme.primaryContainer],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
               ),
-              child: Padding(
-                padding: padding,
-                child: buildUserInfo(),
-              ),
+              child: Padding(padding: padding, child: buildUserInfo()),
             );
           },
         );

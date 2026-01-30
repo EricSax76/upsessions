@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../core/services/cloud_functions_service.dart';
-import 'package:upsessions/modules/auth/data/auth_repository.dart';
+import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 
 class ChatRepositoryBase {
   ChatRepositoryBase({

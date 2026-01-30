@@ -1,0 +1,45 @@
+part of '../controllers/invite_musician_dialog.dart';
+
+@immutable
+class InviteMusicianDialogState {
+  const InviteMusicianDialogState({
+    required this.query,
+    required this.isLoading,
+    required this.results,
+  });
+
+  const InviteMusicianDialogState.initial()
+    : query = '',
+      isLoading = false,
+      results = const [];
+
+  final String query;
+  final bool isLoading;
+  final List<MusicianEntity> results;
+
+  bool get hasQuery => query.trim().isNotEmpty;
+  bool get hasResults => results.isNotEmpty;
+
+  InviteMusicianDialogState copyWith({
+    String? query,
+    bool? isLoading,
+    List<MusicianEntity>? results,
+  }) {
+    return InviteMusicianDialogState(
+      query: query ?? this.query,
+      isLoading: isLoading ?? this.isLoading,
+      results: results ?? this.results,
+    );
+  }
+}
+
+@immutable
+class InviteLinkData {
+  const InviteLinkData({required this.groupId, required this.inviteId});
+
+  final String groupId;
+  final String inviteId;
+
+  String get url =>
+      '$appLinkScheme:///invite?groupId=$groupId&inviteId=$inviteId';
+}

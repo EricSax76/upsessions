@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_spacing.dart';
 import '../../../modules/auth/cubits/auth_cubit.dart';
-import '../../../modules/rehearsals/cubits/rehearsal_entity.dart';
+import '../../../modules/rehearsals/models/rehearsal_entity.dart';
 import 'home_hero/home_hero_layout.dart';
 import 'home_hero/home_hero_view_model.dart';
 
@@ -31,10 +31,7 @@ class HomeHeroSection extends StatelessWidget {
         );
 
         if (isCompact) {
-          return HomeHeroLayout(
-            isCompact: true,
-            viewModel: viewModel,
-          );
+          return HomeHeroLayout(isCompact: true, viewModel: viewModel);
         }
 
         return Container(
@@ -42,19 +39,13 @@ class HomeHeroSection extends StatelessWidget {
           padding: const EdgeInsets.all(heroPadding),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                scheme.surfaceContainerHighest,
-                scheme.surface,
-              ],
+              colors: [scheme.surfaceContainerHighest, scheme.surface],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(AppSpacing.xl),
           ),
-          child: HomeHeroLayout(
-            isCompact: false,
-            viewModel: viewModel,
-          ),
+          child: HomeHeroLayout(isCompact: false, viewModel: viewModel),
         );
       },
     );

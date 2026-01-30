@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:upsessions/core/services/firebase_initializer.dart';
-import 'package:upsessions/modules/auth/data/auth_repository.dart';
-import 'package:upsessions/modules/auth/domain/user_entity.dart';
+import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
+import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/home/cubits/bootstrap_cubit.dart';
 

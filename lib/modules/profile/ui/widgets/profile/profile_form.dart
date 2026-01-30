@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:upsessions/modules/auth/domain/profile_entity.dart';
+import 'package:upsessions/modules/auth/models/profile_entity.dart';
 
 class ProfileForm extends StatefulWidget {
   const ProfileForm({super.key, required this.profile, required this.onSave});
@@ -56,7 +56,10 @@ class _ProfileFormState extends State<ProfileForm> {
         const SizedBox(height: 16),
         Align(
           alignment: Alignment.centerRight,
-          child: FilledButton(onPressed: _save, child: const Text('Guardar cambios')),
+          child: FilledButton(
+            onPressed: _save,
+            child: const Text('Guardar cambios'),
+          ),
         ),
       ],
     );

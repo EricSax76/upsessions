@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../auth/data/auth_repository.dart';
+import '../../auth/repositories/auth_repository.dart';
 
 class GroupsRepositoryBase {
   GroupsRepositoryBase({

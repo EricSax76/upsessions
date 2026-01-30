@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:upsessions/modules/auth/domain/profile_entity.dart';
+import 'package:upsessions/modules/auth/models/profile_entity.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 import '../widgets/profile/profile_header.dart';
 import '../widgets/profile/profile_stats_row.dart';

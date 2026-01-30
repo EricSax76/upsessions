@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../models/rehearsal_filter.dart';
+import '../../controllers/rehearsal_filter.dart';
 
 /// Filter chips for selecting rehearsal time periods.
 class RehearsalFilterChips extends StatelessWidget {

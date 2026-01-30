@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../groups/models/group_dtos.dart';
 import '../../groups/repositories/groups_repository.dart';
-import 'rehearsal_entity.dart';
-import 'setlist_item_entity.dart';
+import '../models/rehearsal_entity.dart';
+import '../models/setlist_item_entity.dart';
 import '../repositories/rehearsals_repository.dart';
 import '../repositories/setlist_repository.dart';
 import 'rehearsal_detail_state.dart';
@@ -40,37 +40,28 @@ class RehearsalDetailCubit extends Cubit<RehearsalDetailState> {
     emit(RehearsalDetailLoading());
 
     _subscriptions.add(
-      groupsRepository.watchGroup(groupId).listen(
-        (group) {
-          _group = group;
-          _updateState();
-        },
-        onError: _handleError,
-      ),
+      groupsRepository.watchGroup(groupId).listen((group) {
+        _group = group;
+        _updateState();
+      }, onError: _handleError),
     );
 
     _subscriptions.add(
       rehearsalsRepository
           .watchRehearsal(groupId: groupId, rehearsalId: rehearsalId)
-          .listen(
-        (rehearsal) {
-          _rehearsal = rehearsal;
-          _updateState();
-        },
-        onError: _handleError,
-      ),
+          .listen((rehearsal) {
+            _rehearsal = rehearsal;
+            _updateState();
+          }, onError: _handleError),
     );
 
     _subscriptions.add(
       setlistRepository
           .watchSetlist(groupId: groupId, rehearsalId: rehearsalId)
-          .listen(
-        (setlist) {
-          _setlist = setlist;
-          _updateState();
-        },
-        onError: _handleError,
-      ),
+          .listen((setlist) {
+            _setlist = setlist;
+            _updateState();
+          }, onError: _handleError),
     );
   }
 
@@ -89,12 +80,14 @@ class RehearsalDetailCubit extends Cubit<RehearsalDetailState> {
 
     final canDelete = userId != null && group.ownerId == userId;
 
-    emit(RehearsalDetailLoaded(
-      group: group,
-      rehearsal: rehearsal,
-      setlist: setlist,
-      canDelete: canDelete,
-    ));
+    emit(
+      RehearsalDetailLoaded(
+        group: group,
+        rehearsal: rehearsal,
+        setlist: setlist,
+        canDelete: canDelete,
+      ),
+    );
   }
 
   void _handleError(Object error) {

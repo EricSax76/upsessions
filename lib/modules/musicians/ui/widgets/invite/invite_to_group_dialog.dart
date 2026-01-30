@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_link_scheme.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
-import 'package:upsessions/modules/groups/cubits/group_membership_entity.dart';
+import 'package:upsessions/modules/groups/models/group_membership_entity.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 
 import '../../../models/musician_entity.dart';
@@ -125,7 +125,8 @@ class _InviteToGroupDialogState extends State<InviteToGroupDialog> {
         groupId: groupId,
         targetUid: widget.targetUid,
       );
-      final link = '$appLinkScheme:///invite?groupId=$groupId&inviteId=$inviteId';
+      final link =
+          '$appLinkScheme:///invite?groupId=$groupId&inviteId=$inviteId';
       if (!context.mounted) return;
 
       final dialogWidth = math.min(

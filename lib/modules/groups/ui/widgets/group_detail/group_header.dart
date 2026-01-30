@@ -3,14 +3,10 @@ import 'package:flutter/material.dart';
 import '../../../../../core/widgets/gap.dart';
 import '../../../../../core/widgets/sm_avatar.dart';
 import '../../../models/group_dtos.dart';
-import '../../controllers/group_page_controller.dart';
+import '../../../controllers/group_page_controller.dart';
 
 class GroupHeader extends StatelessWidget {
-  const GroupHeader({
-    super.key,
-    required this.group,
-    required this.controller,
-  });
+  const GroupHeader({super.key, required this.group, required this.controller});
 
   final GroupDoc group;
   final GroupPageController controller;

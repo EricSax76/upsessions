@@ -6,7 +6,7 @@ import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/loading_indicator.dart';
 import '../../../../core/widgets/empty_state_card.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
-import '../../cubits/rehearsal_entity.dart';
+import '../../models/rehearsal_entity.dart';
 import '../../controllers/group_rehearsals_controller.dart';
 import '../../controllers/invite_musician_dialog.dart';
 import '../../../groups/models/group_dtos.dart';
@@ -16,8 +16,8 @@ import '../widgets/rehearsals_hero_section.dart';
 import '../widgets/rehearsal_list_card.dart';
 import '../widgets/rehearsal_stats_widget.dart';
 import '../widgets/rehearsal_responsive_layout.dart';
-import '../models/rehearsal_filter.dart';
-import '../utils/rehearsal_utils.dart';
+import '../../controllers/rehearsal_filter.dart';
+import '../../utils/rehearsal_utils.dart';
 
 class GroupRehearsalsPage extends StatelessWidget {
   const GroupRehearsalsPage({

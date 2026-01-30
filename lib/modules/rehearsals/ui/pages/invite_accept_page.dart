@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../auth/cubits/auth_cubit.dart';
-import '../../../auth/data/auth_repository.dart';
+import '../../../auth/repositories/auth_repository.dart';
 import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
 import '../../../groups/repositories/groups_repository.dart';
 

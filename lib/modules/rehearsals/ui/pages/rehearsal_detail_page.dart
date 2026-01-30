@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../home/ui/pages/user_shell_page.dart';
-import '../widgets/rehearsal_detail_view.dart';
+import 'rehearsal_detail_view.dart';
 
 class RehearsalDetailPage extends StatelessWidget {
   const RehearsalDetailPage({

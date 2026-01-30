@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../events/domain/event_entity.dart';
-import '../../events/data/events_repository.dart';
+import '../../events/models/event_entity.dart';
+import '../../events/repositories/events_repository.dart';
 
 class CalendarController extends ChangeNotifier {
   CalendarController({required EventsRepository repository})

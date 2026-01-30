@@ -5,7 +5,7 @@ import 'package:upsessions/features/contacts/ui/widgets/musician_like_button.dar
 import 'package:upsessions/features/messaging/ui/pages/messages_page.dart';
 
 import '../../models/musician_entity.dart';
-import '../../models/musician_detail_controller.dart';
+import '../../controllers/musician_detail_controller.dart';
 import '../../models/musician_liked_musician_mapper.dart';
 import '../widgets/invite/invite_to_group_dialog.dart';
 import '../widgets/musicians/musician_contact_card.dart';
@@ -69,7 +69,7 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
   @override
   Widget build(BuildContext context) {
     final musician = widget.musician;
-    
+
     return LayoutBuilder(
       builder: (context, constraints) {
         // Responsive padding: larger on desktop
@@ -82,10 +82,10 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
             constraints: const BoxConstraints(maxWidth: 860),
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(
-                horizontalPadding, 
-                topPadding, 
-                horizontalPadding, 
-                80
+                horizontalPadding,
+                topPadding,
+                horizontalPadding,
+                80,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

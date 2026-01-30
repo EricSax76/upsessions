@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:upsessions/modules/auth/domain/profile_entity.dart';
+import 'package:upsessions/modules/auth/models/profile_entity.dart';
 import 'package:upsessions/core/widgets/sm_avatar.dart';
 
 class ProfileHeader extends StatelessWidget {

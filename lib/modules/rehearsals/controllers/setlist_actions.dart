@@ -5,10 +5,10 @@ import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.da
 import 'package:upsessions/core/utils/url_launcher_utils.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
-import '../cubits/rehearsal_entity.dart';
-import '../cubits/setlist_item_entity.dart';
+import '../models/rehearsal_entity.dart';
+import '../models/setlist_item_entity.dart';
 import 'rehearsal_helpers.dart';
-import '../ui/widgets/rehearsal_detail_widgets.dart';
+import '../ui/widgets/rehearsal_detail/rehearsal_detail_widgets.dart';
 
 enum CopySetlistMode { replace, append }
 

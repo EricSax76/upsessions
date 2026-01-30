@@ -78,13 +78,23 @@ class SetlistHeader extends StatelessWidget {
         }
 
         return Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            title,
-            const Spacer(),
-            countLabel,
+            Expanded(child: title),
             const SizedBox(width: 16),
-            if (copyButton != null) ...[copyButton, const SizedBox(width: 12)],
-            addButton,
+            Flexible(
+              child: Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 12,
+                runSpacing: 12,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  countLabel,
+                  if (copyButton != null) copyButton,
+                  addButton,
+                ],
+              ),
+            ),
           ],
         );
       },

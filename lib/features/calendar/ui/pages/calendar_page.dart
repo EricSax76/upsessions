@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
-import '../../../events/domain/event_entity.dart';
+import '../../../events/models/event_entity.dart';
 import '../../models/calendar_controller.dart';
 import 'calendar_dashboard.dart';
 
@@ -32,10 +32,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   void _viewEvent(EventEntity event) {
     if (!mounted) return;
-    context.push(
-      AppRoutes.eventDetailPath(event.id),
-      extra: event,
-    );
+    context.push(AppRoutes.eventDetailPath(event.id), extra: event);
   }
 
   @override

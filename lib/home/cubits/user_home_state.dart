@@ -4,7 +4,7 @@ import '../../modules/musicians/models/musician_entity.dart';
 import '../models/announcement_model.dart';
 import '../models/instrument_category_model.dart';
 import '../models/home_event_model.dart';
-import '../../modules/rehearsals/cubits/rehearsal_entity.dart';
+import '../../modules/rehearsals/models/rehearsal_entity.dart';
 
 enum UserHomeStatus { initial, loading, ready, failure }
 

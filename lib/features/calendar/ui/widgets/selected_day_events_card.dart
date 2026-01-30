@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
-import '../../../events/domain/event_entity.dart';
+import '../../../events/models/event_entity.dart';
 import '../../../../core/widgets/section_card.dart';
 import 'event_tile.dart';
 

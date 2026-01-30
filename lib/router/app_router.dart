@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_routes.dart';
-import '../modules/announcements/domain/announcement_entity.dart';
-import '../modules/announcements/data/announcements_repository.dart';
-import '../modules/announcements/presentation/pages/announcement_detail_page.dart';
-import '../modules/announcements/presentation/pages/announcement_form_page.dart';
-import '../modules/announcements/presentation/pages/announcements_hub_page.dart';
+import '../modules/announcements/models/announcement_entity.dart';
+import '../modules/announcements/repositories/announcements_repository.dart';
+import '../modules/announcements/ui/pages/announcement_detail_page.dart';
+import '../modules/announcements/ui/pages/announcement_form_page.dart';
+import '../modules/announcements/ui/pages/announcements_hub_page.dart';
 import '../features/media/ui/pages/media_gallery_page.dart';
 import '../features/calendar/ui/pages/calendar_page.dart';
-import '../features/events/data/events_repository.dart';
-import '../features/events/domain/event_entity.dart';
-import '../features/events/presentation/pages/create_event_page.dart';
-import '../features/events/presentation/pages/event_detail_page.dart';
-import '../features/events/presentation/pages/events_page.dart';
+import '../features/events/repositories/events_repository.dart';
+import '../features/events/models/event_entity.dart';
+import '../features/events/ui/pages/create_event_page.dart';
+import '../features/events/ui/pages/event_detail_page.dart';
+import '../features/events/ui/pages/events_page.dart';
 import '../features/messaging/ui/pages/messages_page.dart';
 import '../features/onboarding/ui/pages/app_welcome_page.dart';
 import '../features/onboarding/ui/pages/musician_onboarding_page.dart';
@@ -102,10 +102,7 @@ class AppRouter {
           path: AppRoutes.musicians,
           builder: (context, state) => const MusiciansHubPage(),
         ),
-        GoRoute(
-          path: AppRoutes.musicianDetail,
-          builder: _buildMusicianDetail,
-        ),
+        GoRoute(path: AppRoutes.musicianDetail, builder: _buildMusicianDetail),
         GoRoute(
           path: AppRoutes.musicianDetailRoute,
           builder: _buildMusicianDetail,
@@ -198,14 +195,8 @@ class AppRouter {
             return InviteAcceptPage(groupId: groupId, inviteId: inviteId);
           },
         ),
-        GoRoute(
-          path: AppRoutes.eventDetail,
-          builder: _buildEventDetail,
-        ),
-        GoRoute(
-          path: AppRoutes.eventDetailRoute,
-          builder: _buildEventDetail,
-        ),
+        GoRoute(path: AppRoutes.eventDetail, builder: _buildEventDetail),
+        GoRoute(path: AppRoutes.eventDetailRoute, builder: _buildEventDetail),
         GoRoute(
           path: AppRoutes.profile,
           builder: (context, state) => const ProfileOverviewPage(),
@@ -240,9 +231,7 @@ class AppRouter {
 Widget _buildMusicianDetail(BuildContext context, GoRouterState state) {
   final musician = state.extra;
   if (musician is MusicianEntity) {
-    return UserShellPage(
-      child: MusicianDetailPage(musician: musician),
-    );
+    return UserShellPage(child: MusicianDetailPage(musician: musician));
   }
   final musicianId = state.pathParameters['musicianId'];
   if (musicianId != null && musicianId.isNotEmpty) {
@@ -352,9 +341,7 @@ class _MusicianDetailLoader extends StatelessWidget {
                 : 'No se encontro el musico solicitado.',
           );
         }
-        return UserShellPage(
-          child: MusicianDetailPage(musician: musician),
-        );
+        return UserShellPage(child: MusicianDetailPage(musician: musician));
       },
     );
   }

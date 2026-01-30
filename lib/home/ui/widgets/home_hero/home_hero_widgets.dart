@@ -6,7 +6,7 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../../modules/rehearsals/cubits/rehearsal_entity.dart';
+import '../../../../modules/rehearsals/models/rehearsal_entity.dart';
 
 class HomeHeroNextRehearsalCard extends StatelessWidget {
   const HomeHeroNextRehearsalCard({super.key, required this.rehearsal});
@@ -26,17 +26,14 @@ class HomeHeroNextRehearsalCard extends StatelessWidget {
       onTap: rehearsal == null
           ? null
           : () => context.push(
-                AppRoutes.rehearsalDetail(
-                  groupId: rehearsal!.groupId,
-                  rehearsalId: rehearsal!.id,
-                ),
+              AppRoutes.rehearsalDetail(
+                groupId: rehearsal!.groupId,
+                rehearsalId: rehearsal!.id,
               ),
+            ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.lg),
-        side: BorderSide(
-          color: colorScheme.outlineVariant,
-          width: 1,
-        ),
+        side: BorderSide(color: colorScheme.outlineVariant, width: 1),
       ),
       child: rehearsal == null
           ? Text(
@@ -64,8 +61,7 @@ class _HomeHeroNextRehearsalContent extends StatelessWidget {
     final dateLabel = DateFormat.MMMd(locale).format(rehearsal.startsAt);
     final timeLabel = DateFormat.Hm(locale).format(rehearsal.startsAt);
     final notes = rehearsal.notes.trim();
-    final title =
-        notes.isEmpty ? loc.homeNextRehearsalFallbackTitle : notes;
+    final title = notes.isEmpty ? loc.homeNextRehearsalFallbackTitle : notes;
     final location = rehearsal.location.trim();
 
     return Column(
@@ -233,10 +229,7 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.lg),
-        side: BorderSide(
-          color: colorScheme.outlineVariant,
-          width: 1,
-        ),
+        side: BorderSide(color: colorScheme.outlineVariant, width: 1),
       ),
       child: Container(
         decoration: BoxDecoration(

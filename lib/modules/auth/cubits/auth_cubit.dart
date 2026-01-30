@@ -4,9 +4,9 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../data/auth_exceptions.dart';
-import '../data/auth_repository.dart';
-import '../domain/user_entity.dart';
+import '../models/auth_exceptions.dart';
+import '../repositories/auth_repository.dart';
+import '../models/user_entity.dart';
 import '../../../core/services/push_notifications_service.dart';
 
 part 'auth_state.dart';
@@ -15,20 +15,15 @@ class AuthCubit extends Cubit<AuthState> {
   AuthCubit({
     required AuthRepository authRepository,
     PushNotificationsService? pushNotificationsService,
-  })  : _authRepository = authRepository,
-        _pushNotificationsService = pushNotificationsService,
-        super(const AuthState()) {
+  }) : _authRepository = authRepository,
+       _pushNotificationsService = pushNotificationsService,
+       super(const AuthState()) {
     _authSubscription = _authRepository.authStateChanges.listen(
       _handleUserChanged,
     );
     final user = _authRepository.currentUser;
     if (user != null) {
-      emit(
-        state.copyWith(
-          status: AuthStatus.authenticated,
-          user: user,
-        ),
-      );
+      emit(state.copyWith(status: AuthStatus.authenticated, user: user));
     } else {
       emit(state.copyWith(status: AuthStatus.unauthenticated));
     }

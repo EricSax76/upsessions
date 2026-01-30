@@ -6,13 +6,10 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../../modules/rehearsals/cubits/rehearsal_entity.dart';
+import '../../../../modules/rehearsals/models/rehearsal_entity.dart';
 
 class RehearsalsQuickView extends StatefulWidget {
-  const RehearsalsQuickView({
-    super.key,
-    required this.rehearsals,
-  });
+  const RehearsalsQuickView({super.key, required this.rehearsals});
 
   final List<RehearsalEntity> rehearsals;
 
@@ -41,10 +38,7 @@ class _RehearsalsQuickViewState extends State<RehearsalsQuickView> {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.lg),
-        side: BorderSide(
-          color: colorScheme.outlineVariant,
-          width: 1,
-        ),
+        side: BorderSide(color: colorScheme.outlineVariant, width: 1),
       ),
       child: Column(
         children: [
@@ -57,32 +51,32 @@ class _RehearsalsQuickViewState extends State<RehearsalsQuickView> {
               padding: const EdgeInsets.all(AppSpacing.md + AppSpacing.xs),
               child: Column(
                 children: [
-                   _RehearsalMainContent(rehearsal: firstRehearsal),
-                   if (remainingCount > 0) ...[
-                     const SizedBox(height: AppSpacing.md),
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                       children: [
-                         Text(
-                           _isExpanded 
-                               ? 'Ocultar próximos ensayos' 
-                               : 'Ver $remainingCount ensayos más reprogramados',
-                           style: theme.textTheme.labelMedium?.copyWith(
-                             color: colorScheme.primary,
-                             fontWeight: FontWeight.bold,
-                           ),
-                         ),
-                         const SizedBox(width: AppSpacing.xs),
-                         Icon(
-                           _isExpanded 
-                              ? Icons.keyboard_arrow_up 
+                  _RehearsalMainContent(rehearsal: firstRehearsal),
+                  if (remainingCount > 0) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _isExpanded
+                              ? 'Ocultar próximos ensayos'
+                              : 'Ver $remainingCount ensayos más reprogramados',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Icon(
+                          _isExpanded
+                              ? Icons.keyboard_arrow_up
                               : Icons.keyboard_arrow_down,
-                           size: 16,
-                           color: colorScheme.primary,
-                         ),
-                       ],
-                     )
-                   ]
+                          size: 16,
+                          color: colorScheme.primary,
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -92,7 +86,9 @@ class _RehearsalsQuickViewState extends State<RehearsalsQuickView> {
           if (_isExpanded && remainingCount > 0)
             Container(
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
+                ),
                 border: Border(
                   top: BorderSide(
                     color: colorScheme.outlineVariant.withValues(alpha: 0.5),
@@ -122,7 +118,7 @@ class _RehearsalMainContent extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final loc = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toString();
-    
+
     final dateLabel = DateFormat.MMMd(locale).format(rehearsal.startsAt);
     final timeLabel = DateFormat.Hm(locale).format(rehearsal.startsAt);
     final notes = rehearsal.notes.trim();
@@ -173,7 +169,7 @@ class _RehearsalMainContent extends StatelessWidget {
               ),
               const Spacer(),
               Container(
-                 padding: const EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.sm,
                   vertical: AppSpacing.xs,
                 ),
@@ -188,7 +184,7 @@ class _RehearsalMainContent extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              )
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
@@ -222,7 +218,11 @@ class _RehearsalMainContent extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Row(
             children: [
-              Icon(Icons.access_time_rounded, size: 16, color: colorScheme.primary),
+              Icon(
+                Icons.access_time_rounded,
+                size: 16,
+                color: colorScheme.primary,
+              ),
               const SizedBox(width: AppSpacing.xs),
               Text(
                 timeLabel,
@@ -232,7 +232,7 @@ class _RehearsalMainContent extends StatelessWidget {
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -250,7 +250,7 @@ class _RehearsalListItem extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final loc = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context).toString();
-    
+
     final dayLabel = DateFormat.d(locale).format(rehearsal.startsAt);
     final monthLabel = DateFormat.MMM(locale).format(rehearsal.startsAt);
     final timeLabel = DateFormat.Hm(locale).format(rehearsal.startsAt);

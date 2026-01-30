@@ -1,12 +1,12 @@
-import '../../../../modules/rehearsals/cubits/rehearsal_entity.dart';
+import '../../../../modules/rehearsals/models/rehearsal_entity.dart';
 
 class HomeHeroViewModel {
   HomeHeroViewModel({
     required this.displayName,
     required this.photoUrl,
     required this.upcomingRehearsals,
-  })  : titleName = displayName.trim().isEmpty ? '' : displayName.trim(),
-        initials = _initialsFromName(displayName);
+  }) : titleName = displayName.trim().isEmpty ? '' : displayName.trim(),
+       initials = _initialsFromName(displayName);
 
   final String displayName;
   final String titleName;

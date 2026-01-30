@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import '../../groups/models/group_dtos.dart';
-import 'rehearsal_entity.dart';
-import 'setlist_item_entity.dart';
+import '../models/rehearsal_entity.dart';
+import '../models/setlist_item_entity.dart';
 
 abstract class RehearsalDetailState extends Equatable {
   const RehearsalDetailState();

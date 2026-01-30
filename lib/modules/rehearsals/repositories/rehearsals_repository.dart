@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../cubits/rehearsal_entity.dart';
+import '../models/rehearsal_entity.dart';
 import 'rehearsals_repository_base.dart';
 
 class RehearsalsRepository extends RehearsalsRepositoryBase {
@@ -20,8 +20,10 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     final stream = rehearsals(groupId)
         .orderBy('startsAt', descending: false)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => _mapRehearsal(doc, groupId)).toList());
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => _mapRehearsal(doc, groupId)).toList(),
+        );
     yield* logStream('watchRehearsals snapshots', stream);
   }
 

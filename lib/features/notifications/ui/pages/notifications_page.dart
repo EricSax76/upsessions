@@ -6,7 +6,7 @@ import '../../../../core/locator/locator.dart';
 import '../../../messaging/repositories/chat_repository.dart';
 import '../../../messaging/models/chat_thread.dart';
 import '../../../messaging/ui/pages/messages_page.dart';
-import '../../../../modules/auth/data/auth_repository.dart';
+import '../../../../modules/auth/repositories/auth_repository.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
 import '../../repositories/invite_notifications_repository.dart';
 import '../../models/invite_notification_entity.dart';

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
-import 'package:upsessions/modules/auth/data/auth_repository.dart';
+import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import '../../models/musician_onboarding_controller.dart';
 import '../widgets/musician_onboarding_missing_session_view.dart';

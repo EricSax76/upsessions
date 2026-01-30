@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
-import '../cubits/rehearsal_entity.dart';
+import '../models/rehearsal_entity.dart';
 import '../repositories/rehearsals_repository.dart';
 // Wait, this might cause circular import
 import '../controllers/rehearsal_dialog.dart';

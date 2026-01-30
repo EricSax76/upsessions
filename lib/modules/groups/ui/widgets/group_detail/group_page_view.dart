@@ -4,7 +4,7 @@ import 'package:upsessions/l10n/app_localizations.dart';
 import '../../../../../core/widgets/loading_indicator.dart';
 import '../../../../rehearsals/ui/pages/group_rehearsals_page.dart';
 import '../../../models/group_dtos.dart';
-import '../../controllers/group_page_controller.dart';
+import '../../../controllers/group_page_controller.dart';
 import 'group_header.dart';
 import 'group_info_tab.dart';
 
@@ -54,7 +54,10 @@ class GroupPageView extends StatelessWidget {
                     text: loc.navRehearsals,
                     icon: const Icon(Icons.event_available),
                   ),
-                  const Tab(text: 'Información', icon: Icon(Icons.info_outline)),
+                  const Tab(
+                    text: 'Información',
+                    icon: Icon(Icons.info_outline),
+                  ),
                 ],
               ),
             ),

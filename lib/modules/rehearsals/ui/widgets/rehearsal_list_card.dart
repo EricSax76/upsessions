@@ -4,8 +4,8 @@ import '../../../../core/widgets/gap.dart';
 import '../../../../core/widgets/empty_state_card.dart';
 import '../../../../core/widgets/section_card.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../cubits/rehearsal_entity.dart';
-import '../models/rehearsal_filter.dart';
+import '../../models/rehearsal_entity.dart';
+import '../../controllers/rehearsal_filter.dart';
 import 'rehearsal_card.dart';
 import 'rehearsal_filter_chips.dart';
 import '../pages/group_rehearsals_page.dart';
@@ -59,7 +59,10 @@ class RehearsalListCard extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorScheme.secondary,
                   foregroundColor: colorScheme.onSecondary,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -92,7 +95,8 @@ class RehearsalListCard extends StatelessWidget {
                       crossAxisCount: 2,
                       crossAxisSpacing: 24,
                       mainAxisSpacing: 24,
-                      childAspectRatio: 1.4, // Proporción más cercana al cuadrado (era 2.4)
+                      childAspectRatio:
+                          1.4, // Proporción más cercana al cuadrado (era 2.4)
                     ),
                     itemCount: filtered.length,
                     itemBuilder: (context, index) {
@@ -108,7 +112,8 @@ class RehearsalListCard extends StatelessWidget {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: filtered.length,
-                  separatorBuilder: (context, index) => const Gap(20), // Más espacio en móvil también (antes 12)
+                  separatorBuilder: (context, index) =>
+                      const Gap(20), // Más espacio en móvil también (antes 12)
                   itemBuilder: (context, index) {
                     final rehearsal = filtered[index];
                     return RehearsalCard(

@@ -6,9 +6,9 @@ import 'package:equatable/equatable.dart';
 
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 
-import 'package:upsessions/modules/auth/data/auth_exceptions.dart';
-import 'package:upsessions/modules/auth/data/profile_repository.dart';
-import 'package:upsessions/modules/auth/domain/profile_entity.dart';
+import 'package:upsessions/modules/auth/models/auth_exceptions.dart';
+import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
+import 'package:upsessions/modules/auth/models/profile_entity.dart';
 
 part 'profile_state.dart';
 
@@ -16,9 +16,9 @@ class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit({
     required ProfileRepository profileRepository,
     required AuthCubit authCubit,
-  })  : _profileRepository = profileRepository,
-        _authCubit = authCubit,
-        super(const ProfileState()) {
+  }) : _profileRepository = profileRepository,
+       _authCubit = authCubit,
+       super(const ProfileState()) {
     _authSubscription = _authCubit.stream.listen((authState) {
       final user = authState.user;
       if (user == null) {
@@ -53,10 +53,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     try {
       final dto = await _profileRepository.fetchProfile(profileId: id);
       emit(
-        state.copyWith(
-          profile: dto.toEntity(),
-          status: ProfileStatus.success,
-        ),
+        state.copyWith(profile: dto.toEntity(), status: ProfileStatus.success),
       );
     } on AuthException catch (error) {
       emit(
@@ -80,10 +77,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     try {
       final dto = await _profileRepository.updateProfile(profile);
       emit(
-        state.copyWith(
-          profile: dto.toEntity(),
-          status: ProfileStatus.success,
-        ),
+        state.copyWith(profile: dto.toEntity(), status: ProfileStatus.success),
       );
     } on AuthException catch (error) {
       emit(
@@ -124,10 +118,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         fileExtension: fileExtension,
       );
       emit(
-        state.copyWith(
-          profile: dto.toEntity(),
-          status: ProfileStatus.success,
-        ),
+        state.copyWith(profile: dto.toEntity(), status: ProfileStatus.success),
       );
     } on AuthException catch (error) {
       emit(

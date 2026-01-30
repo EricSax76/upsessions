@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 
-import '../cubits/setlist_item_entity.dart';
+import '../models/setlist_item_entity.dart';
 import 'rehearsals_repository_base.dart';
 
 class SetlistRepository extends RehearsalsRepositoryBase {

@@ -8,7 +8,7 @@ import '../../../../core/widgets/empty_state_card.dart';
 import '../../../../core/widgets/layout/searchable_list_page.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
 
-import '../../cubits/group_membership_entity.dart';
+import '../../models/group_membership_entity.dart';
 import '../../repositories/groups_repository.dart';
 import '../widgets/groups_widgets.dart';
 import '../widgets/groups_list/groups_hero_section.dart';

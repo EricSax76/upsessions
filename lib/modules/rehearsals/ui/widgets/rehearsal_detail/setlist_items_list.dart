@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../cubits/setlist_item_entity.dart';
+import '../../../models/setlist_item_entity.dart';
 import '../../../../../core/widgets/empty_state_card.dart';
 import 'setlist_item_card.dart';
 

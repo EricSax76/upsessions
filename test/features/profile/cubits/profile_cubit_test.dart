@@ -5,11 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
-import 'package:upsessions/modules/auth/data/auth_repository.dart';
-import 'package:upsessions/modules/auth/data/profile_dto.dart';
-import 'package:upsessions/modules/auth/data/profile_repository.dart';
-import 'package:upsessions/modules/auth/domain/profile_entity.dart';
-import 'package:upsessions/modules/auth/domain/user_entity.dart';
+import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
+import 'package:upsessions/modules/auth/models/profile_dto.dart';
+import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
+import 'package:upsessions/modules/auth/models/profile_entity.dart';
+import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
@@ -61,8 +61,9 @@ void main() {
       () => authRepository.authStateChanges,
     ).thenAnswer((_) => authChangesController.stream);
     when(() => authRepository.currentUser).thenReturn(null);
-    when(() => profileRepository.fetchProfile(profileId: any(named: 'profileId')))
-        .thenAnswer((_) async => profileDto);
+    when(
+      () => profileRepository.fetchProfile(profileId: any(named: 'profileId')),
+    ).thenAnswer((_) async => profileDto);
   });
 
   tearDown(() async {
@@ -83,7 +84,9 @@ void main() {
       },
       wait: const Duration(milliseconds: 1),
       verify: (_) {
-        verify(() => profileRepository.fetchProfile(profileId: user.id)).called(1);
+        verify(
+          () => profileRepository.fetchProfile(profileId: user.id),
+        ).called(1);
       },
       expect: () => const [
         ProfileState(status: ProfileStatus.loading),
@@ -106,7 +109,9 @@ void main() {
       },
       wait: const Duration(milliseconds: 1),
       verify: (_) {
-        verify(() => profileRepository.fetchProfile(profileId: user.id)).called(1);
+        verify(
+          () => profileRepository.fetchProfile(profileId: user.id),
+        ).called(1);
       },
       expect: () => const [
         ProfileState(status: ProfileStatus.loading),
@@ -137,4 +142,3 @@ void main() {
     );
   });
 }
-
