@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/widgets/sm_avatar.dart';
+import '../../../../features/notifications/ui/widgets/notifications_button.dart';
 import '../../../../modules/auth/cubits/auth_cubit.dart';
 import '../../../../modules/profile/cubit/profile_cubit.dart';
 
@@ -64,6 +65,7 @@ class UserSidebarHeader extends StatelessWidget {
                               ],
                             ),
                           ),
+                          const NotificationsButton(),
                         ],
                       ),
                     ),
@@ -78,3 +80,4 @@ class UserSidebarHeader extends StatelessWidget {
     );
   }
 }
+

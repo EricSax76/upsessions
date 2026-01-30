@@ -69,32 +69,57 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
   @override
   Widget build(BuildContext context) {
     final musician = widget.musician;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: MusicianLikeButton(
-              musician: musician.toLikedMusician(),
-              iconSize: 28,
-              padding: const EdgeInsets.all(4),
+    
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Responsive padding: larger on desktop
+        final double horizontalPadding = constraints.maxWidth < 600 ? 20 : 32;
+        final double topPadding = constraints.maxWidth < 600 ? 20 : 40;
+
+        return Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 860),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding, 
+                topPadding, 
+                horizontalPadding, 
+                80
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Breadcrumb or Back button could go here
+                      const SizedBox.shrink(), // Placeholder if needed
+                      MusicianLikeButton(
+                        musician: musician.toLikedMusician(),
+                        iconSize: 28,
+                        padding: const EdgeInsets.all(4),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  MusicianProfileHeader(musician: musician),
+                  const SizedBox(height: 32),
+                  MusicianHighlightsGrid(musician: musician),
+                  const SizedBox(height: 32),
+                  MusicianStylesSection(styles: musician.styles),
+                  const SizedBox(height: 32),
+                  MusicianContactCard(
+                    isLoading: _isContacting,
+                    onPressed: _isContacting ? null : _contactMusician,
+                    onInvite: _inviteMusician,
+                  ),
+                ],
+              ),
             ),
           ),
-          MusicianProfileHeader(musician: musician),
-          const SizedBox(height: 24),
-          MusicianHighlightsGrid(musician: musician),
-          const SizedBox(height: 24),
-          MusicianStylesSection(styles: musician.styles),
-          const SizedBox(height: 32),
-          MusicianContactCard(
-            isLoading: _isContacting,
-            onPressed: _isContacting ? null : _contactMusician,
-            onInvite: _inviteMusician,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

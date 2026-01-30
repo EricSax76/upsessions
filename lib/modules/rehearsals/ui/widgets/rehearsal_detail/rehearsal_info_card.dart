@@ -19,82 +19,117 @@ class RehearsalInfoCard extends StatelessWidget {
     final scheme = theme.colorScheme;
     final location = rehearsal.location.trim();
     final notes = rehearsal.notes.trim();
+
     return Card(
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+               // Header row with Icon and Edit button
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    height: 44,
-                    width: 44,
+                   Container(
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: scheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(14),
+                      color: scheme.primaryContainer.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Icon(
-                      Icons.event_outlined,
-                      color: scheme.onSurfaceVariant,
+                      Icons.calendar_today_outlined, 
+                      color: scheme.primary,
+                      size: 24, // Slightly larger
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Inicio',
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: scheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          formatDateTime(rehearsal.startsAt),
-                          style: theme.textTheme.titleLarge,
-                        ),
-                        if (rehearsal.endsAt != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            'Fin: ${formatDateTime(rehearsal.endsAt!)}',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: scheme.onSurfaceVariant,
+                   ),
+                   const SizedBox(width: 16),
+                   Expanded(
+                     child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         Text(
+                           'Inicio',
+                           style: theme.textTheme.labelMedium?.copyWith(
+                             color: scheme.onSurfaceVariant,
+                             fontWeight: FontWeight.w600,
+                           ),
+                         ),
+                         const SizedBox(height: 4),
+                         Text(
+                           formatDateTime(rehearsal.startsAt), // e.g. 30/1/2026 19:43
+                           style: theme.textTheme.headlineSmall?.copyWith( // Significant size increase
+                             fontWeight: FontWeight.bold,
+                             color: scheme.onSurface,
+                           ),
+                         ),
+                         
+                         // End Time if exists
+                         if (rehearsal.endsAt != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              'Fin: ${formatDateTime(rehearsal.endsAt!)}',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: scheme.onSurfaceVariant,
+                              ),
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (onTap != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Icon(
-                        Icons.edit_outlined,
-                        size: 18,
+                         ]
+                       ],
+                     ),
+                   ),
+                   if (onTap != null)
+                     IconButton(
+                        icon: const Icon(Icons.edit_outlined, size: 20),
+                        onPressed: onTap,
                         color: scheme.onSurfaceVariant,
-                      ),
-                    ),
+                        tooltip: 'Editar detalles',
+                     ),
                 ],
               ),
+              
+              const SizedBox(height: 24),
+ 
+              // Location Section
               if (location.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                _InfoRow(icon: Icons.place_outlined, text: location),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.place_outlined,
+                      size: 20, 
+                      color: scheme.onSurfaceVariant
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        location, 
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: scheme.onSurface,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
               ],
+              
+              // Notes Section - Styled Container
               if (notes.isNotEmpty) ...[
-                const SizedBox(height: 12),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: scheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(14),
+                    color: scheme.surfaceContainerHighest.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,16 +137,28 @@ class RehearsalInfoCard extends StatelessWidget {
                       Row(
                         children: [
                           Icon(
-                            Icons.notes_outlined,
+                            Icons.sort,
                             size: 18,
                             color: scheme.onSurfaceVariant,
                           ),
                           const SizedBox(width: 8),
-                          Text('Notas', style: theme.textTheme.labelLarge),
+                          Text(
+                            'Notas', 
+                            style: theme.textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: scheme.onSurface,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(notes, style: theme.textTheme.bodyMedium),
+                      Text(
+                        notes, 
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                            height: 1.5,
+                            color: scheme.onSurfaceVariant,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -124,23 +171,4 @@ class RehearsalInfoCard extends StatelessWidget {
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: scheme.onSurfaceVariant),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
-        ),
-      ],
-    );
-  }
-}
+// _InfoRow removed as it's no longer used or needed layout-wise

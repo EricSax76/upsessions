@@ -106,6 +106,7 @@ void main() {
       (_) => Stream.value(
         RehearsalEntity(
           id: '1',
+          groupId: '1',
           startsAt: DateTime(2024, 1, 1, 19),
           endsAt: null,
           location: '',

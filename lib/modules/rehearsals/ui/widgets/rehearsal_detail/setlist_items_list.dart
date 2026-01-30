@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../cubits/setlist_item_entity.dart';
 import '../../../../../core/widgets/empty_state_card.dart';
-import '../../../controllers/setlist_actions.dart';
 import 'setlist_item_card.dart';
 
 class SetlistItemsList extends StatefulWidget {
@@ -77,7 +76,7 @@ class _SetlistItemsListState extends State<SetlistItemsList> {
           index: index,
           child: SetlistItemCard(
             item: item,
-            subtitle: setlistSubtitleFor(context, item),
+            // subtitle removed
             onTap: () => widget.onEditSong(item),
             onDelete: () => widget.onDeleteSong(item),
             trailing: ReorderableDragStartListener(

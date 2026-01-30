@@ -13,6 +13,7 @@ class AnnouncementEntity {
     required this.instrument,
     required this.styles,
     required this.publishedAt,
+    this.imageUrl,
   });
 
   final String id;
@@ -26,6 +27,7 @@ class AnnouncementEntity {
   final String instrument;
   final List<String> styles;
   final DateTime publishedAt;
+  final String? imageUrl;
 
   AnnouncementEntity copyWith({
     String? id,
@@ -38,6 +40,7 @@ class AnnouncementEntity {
     String? instrument,
     List<String>? styles,
     DateTime? publishedAt,
+    String? imageUrl,
   }) {
     return AnnouncementEntity(
       id: id ?? this.id,
@@ -50,6 +53,7 @@ class AnnouncementEntity {
       instrument: instrument ?? this.instrument,
       styles: styles ?? this.styles,
       publishedAt: publishedAt ?? this.publishedAt,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 }

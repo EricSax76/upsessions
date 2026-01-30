@@ -5,6 +5,7 @@ import '../../../../core/widgets/sm_avatar.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'home_hero_view_model.dart';
 import 'home_hero_widgets.dart';
+import 'rehearsals_quick_view.dart';
 
 class HomeHeroExpanded extends StatelessWidget {
   const HomeHeroExpanded({super.key, required this.viewModel});
@@ -88,16 +89,24 @@ class HomeHeroExpanded extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: HomeHeroNextRehearsalCard(
-                      rehearsal: viewModel.nextRehearsal,
-                    ),
+                    child: viewModel.upcomingRehearsals.length > 1
+                        ? RehearsalsQuickView(
+                            rehearsals: viewModel.upcomingRehearsals,
+                          )
+                        : HomeHeroNextRehearsalCard(
+                            rehearsal: viewModel.nextRehearsal,
+                          ),
                   ),
                   const SizedBox(width: AppSpacing.lg),
                   Expanded(child: actionsBlock),
                 ],
               )
             else ...[
-              HomeHeroNextRehearsalCard(rehearsal: viewModel.nextRehearsal),
+              viewModel.upcomingRehearsals.length > 1
+                  ? RehearsalsQuickView(
+                      rehearsals: viewModel.upcomingRehearsals,
+                    )
+                  : HomeHeroNextRehearsalCard(rehearsal: viewModel.nextRehearsal),
               const SizedBox(height: AppSpacing.lg),
               actionsBlock,
             ],

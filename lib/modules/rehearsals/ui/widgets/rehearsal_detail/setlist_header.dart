@@ -34,24 +34,30 @@ class SetlistHeader extends StatelessWidget {
             ? null
             : OutlinedButton.icon(
                 onPressed: onCopyFromLast,
-                icon: const Icon(Icons.copy_all_outlined),
+                icon: const Icon(Icons.copy_all_outlined, size: 20),
                 label: const Text('Copiar'),
                 style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(0, 40),
+                  minimumSize: const Size(0, 44), // Slightly taller
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+                    horizontal: 20,
+                    vertical: 0,
                   ),
+                  side: BorderSide(color: theme.colorScheme.outlineVariant),
+                  foregroundColor: theme.colorScheme.onSurface,
                 ),
               );
 
         final addButton = FilledButton.icon(
           onPressed: onAddSong,
-          icon: const Icon(Icons.playlist_add),
+          icon: const Icon(Icons.playlist_add, size: 20),
           label: const Text('Agregar canción'),
           style: FilledButton.styleFrom(
-            minimumSize: const Size(0, 40),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+             minimumSize: const Size(0, 44),
+             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+             elevation: 0,
+             backgroundColor: theme.colorScheme.primary, // Explicit primary
+             foregroundColor: theme.colorScheme.onPrimary,
+             textStyle: const TextStyle(fontWeight: FontWeight.w600),
           ),
         );
 
@@ -60,11 +66,11 @@ class SetlistHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(children: [title, const Spacer(), countLabel]),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Wrap(
                 alignment: WrapAlignment.end,
-                spacing: 8,
-                runSpacing: 8,
+                spacing: 12,
+                runSpacing: 12,
                 children: [if (copyButton != null) copyButton, addButton],
               ),
             ],
@@ -76,8 +82,8 @@ class SetlistHeader extends StatelessWidget {
             title,
             const Spacer(),
             countLabel,
-            const SizedBox(width: 12),
-            if (copyButton != null) ...[copyButton, const SizedBox(width: 8)],
+            const SizedBox(width: 16),
+            if (copyButton != null) ...[copyButton, const SizedBox(width: 12)],
             addButton,
           ],
         );

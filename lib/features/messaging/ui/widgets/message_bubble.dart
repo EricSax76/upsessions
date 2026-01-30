@@ -9,30 +9,69 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final alignment = message.isMine
-        ? Alignment.centerRight
-        : Alignment.centerLeft;
-    final color = message.isMine
-        ? Theme.of(context).colorScheme.primaryContainer
-        : Theme.of(context).colorScheme.surfaceContainerHighest;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
+    final isMine = message.isMine;
+    final alignment = isMine ? Alignment.centerRight : Alignment.centerLeft;
+    
+    // Aesthetic choices
+    final bubbleColor = isMine 
+        ? const Color(0xFF4F46E5) // Indigo/Primary
+        : colorScheme.surfaceContainerHighest.withOpacity(0.6); // Subtle gray/glass
+        
+    final textColor = isMine 
+        ? Colors.white 
+        : colorScheme.onSurface;
+        
+    final timeColor = isMine 
+        ? Colors.white.withOpacity(0.7) 
+        : colorScheme.onSurfaceVariant;
+
+    // Modern bubble shape
+    final borderRadius = BorderRadius.only(
+      topLeft: const Radius.circular(20),
+      topRight: const Radius.circular(20),
+      bottomLeft: isMine ? const Radius.circular(20) : const Radius.circular(4),
+      bottomRight: isMine ? const Radius.circular(4) : const Radius.circular(20),
+    );
+
     return Align(
       alignment: alignment,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.all(12),
+        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(16),
+          color: bubbleColor,
+          borderRadius: borderRadius,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
-          crossAxisAlignment: message.isMine
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(message.body),
+            Text(
+              message.body,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: textColor,
+                fontSize: 15,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 4),
             Text(
               '${message.sentAt.hour}:${message.sentAt.minute.toString().padLeft(2, '0')}',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: timeColor,
+                fontSize: 10,
+              ),
             ),
           ],
         ),

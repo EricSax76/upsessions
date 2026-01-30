@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/core/theme/theme_cubit.dart';
 import 'package:upsessions/home/ui/widgets/sidebar/language_selector.dart';
 import 'package:upsessions/home/ui/widgets/sidebar/user_sidebar_header.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
@@ -40,6 +42,8 @@ class UserSidebar extends StatelessWidget {
                 const SizedBox(height: 32),
                 const RehearsalsSidebarSection(),
                 const SizedBox(height: 32),
+                const _SidebarThemeToggle(),
+                const SizedBox(height: 16),
                 const LanguageSelector(),
               ],
             ),
@@ -49,3 +53,61 @@ class UserSidebar extends StatelessWidget {
     );
   }
 }
+
+class _SidebarThemeToggle extends StatelessWidget {
+  const _SidebarThemeToggle();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ThemeCubit, ThemeMode>(
+      builder: (context, themeMode) {
+        final isDark = themeMode == ThemeMode.dark ||
+            (themeMode == ThemeMode.system &&
+                MediaQuery.of(context).platformBrightness == Brightness.dark);
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+
+        return InkWell(
+          onTap: () {
+            context.read<ThemeCubit>().toggleTheme();
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: colorScheme.outlineVariant.withValues(alpha: 0.2),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                  size: 20,
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    isDark ? 'Modo claro' : 'Modo oscuro',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Switch(
+                  value: isDark,
+                  onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
+                  activeColor: colorScheme.primary,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+

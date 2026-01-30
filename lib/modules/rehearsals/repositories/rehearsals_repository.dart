@@ -11,7 +11,7 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
       'getRehearsals get',
       rehearsals(groupId).orderBy('startsAt', descending: false).get(),
     );
-    return snapshot.docs.map(_mapRehearsal).toList();
+    return snapshot.docs.map((doc) => _mapRehearsal(doc, groupId)).toList();
   }
 
   Stream<List<RehearsalEntity>> watchRehearsals(String groupId) async* {
@@ -20,7 +20,8 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     final stream = rehearsals(groupId)
         .orderBy('startsAt', descending: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map(_mapRehearsal).toList());
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => _mapRehearsal(doc, groupId)).toList());
     yield* logStream('watchRehearsals snapshots', stream);
   }
 
@@ -35,7 +36,7 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
       ) {
         if (!doc.exists) return null;
         final data = doc.data() ?? <String, dynamic>{};
-        return _mapRehearsalFromMap(doc.id, data);
+        return _mapRehearsalFromMap(doc.id, data, groupId);
       });
       return logStream('watchRehearsal snapshots', stream);
     });
@@ -113,16 +114,22 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
 
   RehearsalEntity _mapRehearsal(
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
+    String groupId,
   ) {
-    return _mapRehearsalFromMap(doc.id, doc.data());
+    return _mapRehearsalFromMap(doc.id, doc.data(), groupId);
   }
 
-  RehearsalEntity _mapRehearsalFromMap(String id, Map<String, dynamic> data) {
+  RehearsalEntity _mapRehearsalFromMap(
+    String id,
+    Map<String, dynamic> data,
+    String groupId,
+  ) {
     final startsAt =
         (data['startsAt'] as Timestamp?)?.toDate() ?? DateTime.now();
     final endsAt = (data['endsAt'] as Timestamp?)?.toDate();
     return RehearsalEntity(
       id: id,
+      groupId: groupId,
       startsAt: startsAt,
       endsAt: endsAt,
       location: (data['location'] ?? '').toString(),

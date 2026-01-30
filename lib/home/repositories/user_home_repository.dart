@@ -114,10 +114,10 @@ class UserHomeRepository {
     return snapshot.docs.map(_mapEvent).toList();
   }
 
-  Future<RehearsalEntity?> fetchNextRehearsal() async {
+  Future<List<RehearsalEntity>> fetchUpcomingRehearsals({int limit = 5}) async {
     final user = _authRepository.currentUser;
     if (user == null) {
-      return null;
+      return [];
     }
     final memberships = await _firestore
         .collectionGroup('members')
@@ -131,9 +131,13 @@ class UserHomeRepository {
             .toSet()
             .toList();
     if (groupIds.isEmpty) {
-      return null;
+      return [];
     }
     final now = Timestamp.fromDate(DateTime.now());
+    
+    // Fetch a few upcoming from each group to ensure we get the overall top ones
+    // We fetch 'limit' from each group to be safe, though this might be over-fetching slightly,
+    // it ensures correctness if all next rehearsals are in one group.
     final futures = groupIds.map((groupId) async {
       try {
         final snapshot = await _firestore
@@ -142,23 +146,29 @@ class UserHomeRepository {
             .collection('rehearsals')
             .where('startsAt', isGreaterThanOrEqualTo: now)
             .orderBy('startsAt')
-            .limit(1)
+            .limit(limit)
             .get();
         if (snapshot.docs.isEmpty) {
-          return null;
+          return <RehearsalEntity>[];
         }
-        return _mapRehearsal(snapshot.docs.first);
+        return snapshot.docs
+            .map((doc) => _mapRehearsal(doc, groupId: groupId))
+            .toList();
       } catch (_) {
-        return null;
+        return <RehearsalEntity>[];
       }
     });
-    final rehearsals =
-        (await Future.wait(futures)).whereType<RehearsalEntity>().toList();
-    if (rehearsals.isEmpty) {
-      return null;
+
+    final results = await Future.wait(futures);
+    final allRehearsals = results.expand((x) => x).toList();
+    
+    if (allRehearsals.isEmpty) {
+      return [];
     }
-    rehearsals.sort((a, b) => a.startsAt.compareTo(b.startsAt));
-    return rehearsals.first;
+    
+    allRehearsals.sort((a, b) => a.startsAt.compareTo(b.startsAt));
+    
+    return allRehearsals.take(limit).toList();
   }
 
   static MusicianEntity _mapMusician(
@@ -187,14 +197,16 @@ class UserHomeRepository {
   }
 
   static RehearsalEntity _mapRehearsal(
-    QueryDocumentSnapshot<Map<String, dynamic>> doc,
-  ) {
+    QueryDocumentSnapshot<Map<String, dynamic>> doc, {
+    required String groupId,
+  }) {
     final data = doc.data();
     final startsAt =
         (data['startsAt'] as Timestamp?)?.toDate() ?? DateTime.now();
     final endsAt = (data['endsAt'] as Timestamp?)?.toDate();
     return RehearsalEntity(
       id: doc.id,
+      groupId: groupId,
       startsAt: startsAt,
       endsAt: endsAt,
       location: (data['location'] ?? '').toString(),

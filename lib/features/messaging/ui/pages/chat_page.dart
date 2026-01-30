@@ -240,26 +240,52 @@ class _ChatPageState extends State<ChatPage> {
 
     Widget buildConversationPane() {
       return Expanded(
-        child: Column(
-          children: [
-            Expanded(
-              child: hasSelectedThread
-                  ? ListView.builder(
-                      reverse: true,
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _messages.length,
-                      itemBuilder: (context, index) =>
-                          MessageBubble(message: _messages[index]),
-                    )
-                  : const Center(
-                      child: Text('Selecciona una conversación para empezar.'),
-                    ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
             ),
-            if (hasSelectedThread)
-              ChatInputField(onSend: _sendMessage)
-            else
-              const SizedBox.shrink(),
-          ],
+          ),
+          clipBehavior: Clip.hardEdge,
+          child: Column(
+            children: [
+              Expanded(
+                child: hasSelectedThread
+                    ? ListView.builder(
+                        reverse: true,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) =>
+                            MessageBubble(message: _messages[index]),
+                      )
+                    : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.chat_bubble_outline_rounded,
+                              size: 64,
+                              color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Selecciona una conversación',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+              ),
+              if (hasSelectedThread)
+                ChatInputField(onSend: _sendMessage)
+              else
+                const SizedBox.shrink(),
+            ],
+          ),
         ),
       );
     }
@@ -274,9 +300,9 @@ class _ChatPageState extends State<ChatPage> {
         );
       }
       return ListView.separated(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         itemCount: _threads.length,
-        separatorBuilder: (_, index) => const SizedBox(height: 10),
+        separatorBuilder: (_, index) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final thread = _threads[index];
           final title = thread.titleFor(currentUserId);
@@ -315,8 +341,11 @@ class _ChatPageState extends State<ChatPage> {
         }
         return Row(
           children: [
-            SizedBox(width: 260, child: buildThreadsList(false)),
-            const VerticalDivider(width: 1),
+            SizedBox(
+              width: 320, 
+              child: buildThreadsList(false)
+            ),
+            const SizedBox(width: 8), 
             buildConversationPane(),
           ],
         );
@@ -324,12 +353,10 @@ class _ChatPageState extends State<ChatPage> {
     );
 
     if (!widget.showAppBar) {
-      return SafeArea(
-        child: Column(
-          children: [
-            const Divider(height: 1),
-            Expanded(child: body),
-          ],
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: SafeArea(
+          child: body,
         ),
       );
     }

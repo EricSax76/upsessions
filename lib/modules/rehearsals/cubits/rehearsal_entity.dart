@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 class RehearsalEntity extends Equatable {
   const RehearsalEntity({
     required this.id,
+    required this.groupId,
     required this.startsAt,
     required this.endsAt,
     required this.location,
@@ -11,6 +12,7 @@ class RehearsalEntity extends Equatable {
   });
 
   final String id;
+  final String groupId;
   final DateTime startsAt;
   final DateTime? endsAt;
   final String location;
@@ -18,6 +20,7 @@ class RehearsalEntity extends Equatable {
   final String createdBy;
 
   @override
-  List<Object?> get props => [id, startsAt, endsAt, location, notes, createdBy];
+  List<Object?> get props =>
+      [id, groupId, startsAt, endsAt, location, notes, createdBy];
 }
 

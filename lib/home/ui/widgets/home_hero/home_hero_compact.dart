@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_spacing.dart';
 import 'home_hero_view_model.dart';
 import 'home_hero_widgets.dart';
+import 'rehearsals_quick_view.dart';
 
 class HomeHeroCompact extends StatelessWidget {
   const HomeHeroCompact({super.key, required this.viewModel});
@@ -25,10 +26,25 @@ class HomeHeroCompact extends StatelessWidget {
             ),
           ),
         ),
-        if (viewModel.nextRehearsal != null) ...[
+        if (viewModel.upcomingRehearsals.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
-          HomeHeroNextRehearsalCard(rehearsal: viewModel.nextRehearsal),
+          viewModel.upcomingRehearsals.length > 1
+              ? RehearsalsQuickView(rehearsals: viewModel.upcomingRehearsals)
+              : HomeHeroNextRehearsalCard(rehearsal: viewModel.nextRehearsal),
         ],
+        const SizedBox(height: AppSpacing.lg),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Acciones rápidas',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        const HomeHeroQuickActionsGrid(),
       ],
     );
   }

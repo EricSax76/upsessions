@@ -46,35 +46,47 @@ class RehearsalDetailContent extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.fromLTRB(
                 horizontalPadding,
-                16,
+                40, // More top padding for breathing room
                 horizontalPadding,
                 88,
               ),
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      height: 44,
-                      width: 44,
+                      height: 56, // Larger icon container
+                      width: 56,
                       decoration: BoxDecoration(
-                        color: scheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(14),
+                        color: scheme.surface, // Clean background
+                        shape: BoxShape.circle, // Circular shape
+                        // image: DecorationImage(image: ...), // User's avatar eventually
+                        border: Border.all(color: scheme.outlineVariant, width: 1),
                       ),
-                      child: Icon(
-                        Icons.event_available_outlined,
-                        color: scheme.onSurfaceVariant,
+                      child: ClipOval(
+                        child: Icon(
+                          Icons.event_note, 
+                          color: scheme.primary,
+                          size: 28,
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Ensayo', style: theme.textTheme.headlineSmall),
-                          const SizedBox(height: 2),
+                          Text(
+                            'Ensayo', 
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: scheme.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
                           Text(
                             'Detalles y setlist',
-                            style: theme.textTheme.bodySmall?.copyWith(
+                            style: theme.textTheme.bodyMedium?.copyWith(
                               color: scheme.onSurfaceVariant,
                             ),
                           ),
@@ -89,15 +101,15 @@ class RehearsalDetailContent extends StatelessWidget {
                       ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 32),
                 RehearsalInfoCard(rehearsal: rehearsal, onTap: onEditRehearsal),
-                const SizedBox(height: 20),
+                const SizedBox(height: 32),
                 SetlistHeader(
                   count: setlist.length,
                   onAddSong: onAddSong,
                   onCopyFromLast: onCopyFromLast,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 SetlistItemsList(
                   setlist: setlist,
                   onEditSong: onEditSong,

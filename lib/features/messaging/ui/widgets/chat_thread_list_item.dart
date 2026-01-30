@@ -35,35 +35,59 @@ class ChatThreadListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final surface = selected
-        ? colorScheme.secondaryContainer.withAlpha(110)
+    
+    // Design decisions from user screenshot:
+    // Selected: Pinkish background / Border
+    // Normal: White/Surface background
+    
+    final backgroundColor = selected
+        ? const Color(0xFFF43F5E).withOpacity(0.12) // Rose-like opacity
         : colorScheme.surface;
-    final borderColor = colorScheme.outlineVariant.withAlpha(160);
-    final subtitleColor = colorScheme.onSurfaceVariant;
+        
+    final borderColor = selected
+        ? const Color(0xFFF43F5E).withOpacity(0.5)
+        : colorScheme.outlineVariant.withOpacity(0.5);
+
+    final titleColor = colorScheme.onSurface;
+    final subtitleColor = selected 
+        ? const Color(0xFFF43F5E) // Text matches selection
+        : colorScheme.onSurfaceVariant;
 
     final badgeCount = unreadCount < 0 ? 0 : unreadCount;
     final badgeText = badgeCount > 99 ? '99+' : badgeCount.toString();
 
     return Material(
-      color: surface,
-      borderRadius: BorderRadius.circular(14),
+      color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: borderColor),
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: borderColor,
+              width: selected ? 1.5 : 1,
+            ),
+            boxShadow: [
+              if (selected)
+                BoxShadow(
+                  color: const Color(0xFFF43F5E).withOpacity(0.1),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+            ],
           ),
           child: Row(
             children: [
               SmAvatar(
-                radius: 22,
+                radius: 24, // Slightly larger
                 imageUrl: avatarUrl,
                 initials: _initialsFromName(title),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,16 +95,18 @@ class ChatThreadListItem extends StatelessWidget {
                     Text(
                       title,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: badgeCount > 0 ? FontWeight.w700 : null,
+                        fontWeight: FontWeight.w700,
+                        color: titleColor,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      subtitle.trim().isEmpty ? ' ' : subtitle.trim(),
+                      subtitle.trim().isEmpty ? 'Start a conversation' : subtitle.trim(),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: subtitleColor,
+                        fontWeight: selected ? FontWeight.w500 : FontWeight.normal,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -88,29 +114,39 @@ class ChatThreadListItem extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               if (badgeCount > 0)
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
+                    horizontal: 8,
+                    vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: colorScheme.primary,
+                    color: const Color(0xFFF43F5E), // Rose
                     borderRadius: BorderRadius.circular(999),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFF43F5E).withOpacity(0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Text(
                     badgeText,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: colorScheme.onPrimary,
-                      fontWeight: FontWeight.w800,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 )
               else
                 Icon(
-                  Icons.chevron_right,
-                  color: colorScheme.onSurfaceVariant,
+                  Icons.chevron_right_rounded,
+                  size: 20,
+                  color: selected 
+                    ? const Color(0xFFF43F5E).withOpacity(0.8) 
+                    : colorScheme.onSurfaceVariant.withOpacity(0.6),
                 ),
             ],
           ),

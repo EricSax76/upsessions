@@ -23,8 +23,9 @@ class UserHomeState extends Equatable {
     this.categories = const [],
     this.provinces = const [],
     this.cities = const [],
+
     this.events = const [],
-    this.nextRehearsal,
+    this.upcomingRehearsals = const [],
     this.errorMessage,
   });
 
@@ -43,8 +44,9 @@ class UserHomeState extends Equatable {
   final List<InstrumentCategoryModel> categories;
   final List<String> provinces;
   final List<String> cities;
+
   final List<HomeEventModel> events;
-  final RehearsalEntity? nextRehearsal;
+  final List<RehearsalEntity> upcomingRehearsals;
   final String? errorMessage;
 
   bool get isLoading => status == UserHomeStatus.loading;
@@ -64,7 +66,7 @@ class UserHomeState extends Equatable {
     List<String>? provinces,
     List<String>? cities,
     List<HomeEventModel>? events,
-    RehearsalEntity? nextRehearsal,
+    List<RehearsalEntity>? upcomingRehearsals,
     Object? errorMessage = _unset,
   }) {
     return UserHomeState(
@@ -82,7 +84,7 @@ class UserHomeState extends Equatable {
       provinces: provinces ?? this.provinces,
       cities: cities ?? this.cities,
       events: events ?? this.events,
-      nextRehearsal: nextRehearsal ?? this.nextRehearsal,
+      upcomingRehearsals: upcomingRehearsals ?? this.upcomingRehearsals,
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
           : errorMessage as String?,
@@ -105,7 +107,7 @@ class UserHomeState extends Equatable {
     provinces,
     cities,
     events,
-    nextRehearsal,
+    upcomingRehearsals,
     errorMessage,
   ];
 }

@@ -21,17 +21,19 @@ class MusicianHighlightsGrid extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: colors.surfaceContainerHighest,
+          color: colors.surface,
+          border: Border.all(color: colors.outlineVariant),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, color: colors.primary),
             const SizedBox(height: 12),
             Text(
               label,
               style: theme.textTheme.labelMedium?.copyWith(
-                color: colors.primary,
+                color: colors.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 4),
@@ -39,7 +41,10 @@ class MusicianHighlightsGrid extends StatelessWidget {
               value,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: colors.onSurface,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -48,7 +53,7 @@ class MusicianHighlightsGrid extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isNarrow = constraints.maxWidth < 500;
+        final isNarrow = constraints.maxWidth < 600;
         final items = [
           buildHighlight(
             icon: Icons.work_history_outlined,
@@ -66,16 +71,23 @@ class MusicianHighlightsGrid extends StatelessWidget {
             value: musician.city,
           ),
         ];
+
+        // On very narrow screens, stack them with spacing
         if (isNarrow) {
           return Column(
             children: [
               for (var i = 0; i < items.length; i++) ...[
-                items[i],
+                SizedBox(
+                  width: double.infinity, 
+                  child: items[i]
+                ),
                 if (i != items.length - 1) const SizedBox(height: 12),
               ],
             ],
           );
         }
+
+        // On wider screens (Web), keep them in a single row equal expanded
         return Row(
           children: [
             Expanded(child: items[0]),

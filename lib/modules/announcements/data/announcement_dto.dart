@@ -14,6 +14,7 @@ class AnnouncementDto {
     required this.instrument,
     required this.styles,
     required this.publishedAt,
+    this.imageUrl,
   });
 
   factory AnnouncementDto.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -29,6 +30,7 @@ class AnnouncementDto {
       instrument: (data['instrument'] ?? '') as String,
       styles: _stringList(data['styles']),
       publishedAt: _parseDate(data['publishedAt']),
+      imageUrl: (data['imageUrl'] ?? '') as String?,
     );
   }
 
@@ -44,6 +46,7 @@ class AnnouncementDto {
       instrument: entity.instrument,
       styles: entity.styles,
       publishedAt: entity.publishedAt,
+      imageUrl: entity.imageUrl,
     );
   }
 
@@ -57,6 +60,7 @@ class AnnouncementDto {
   final String instrument;
   final List<String> styles;
   final DateTime publishedAt;
+  final String? imageUrl;
 
   Map<String, dynamic> toJson() {
     return {
@@ -69,6 +73,7 @@ class AnnouncementDto {
       'instrument': instrument,
       'styles': styles,
       'publishedAt': Timestamp.fromDate(publishedAt),
+      if (imageUrl != null) 'imageUrl': imageUrl,
     };
   }
 
@@ -84,6 +89,7 @@ class AnnouncementDto {
       instrument: instrument,
       styles: styles,
       publishedAt: publishedAt,
+      imageUrl: imageUrl,
     );
   }
 

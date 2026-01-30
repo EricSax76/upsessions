@@ -4,7 +4,7 @@ class HomeHeroViewModel {
   HomeHeroViewModel({
     required this.displayName,
     required this.photoUrl,
-    required this.nextRehearsal,
+    required this.upcomingRehearsals,
   })  : titleName = displayName.trim().isEmpty ? '' : displayName.trim(),
         initials = _initialsFromName(displayName);
 
@@ -12,7 +12,10 @@ class HomeHeroViewModel {
   final String titleName;
   final String initials;
   final String? photoUrl;
-  final RehearsalEntity? nextRehearsal;
+  final List<RehearsalEntity> upcomingRehearsals;
+
+  RehearsalEntity? get nextRehearsal =>
+      upcomingRehearsals.isNotEmpty ? upcomingRehearsals.first : null;
 
   static String _initialsFromName(String name) {
     final trimmed = name.trim();

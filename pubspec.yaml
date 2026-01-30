@@ -1,6 +1,6 @@
 name: upsessions
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -20,7 +20,7 @@ dependencies:
   url_launcher: ^6.3.2
   firebase_core: ^4.2.1
   firebase_auth: ^6.1.2
-  
+
   cloud_firestore: ^6.1.0
   firebase_storage: ^13.0.0
   cloud_functions: ^6.0.4
@@ -49,3 +49,4 @@ flutter:
   generate: true
   assets:
     - assets/images/logos/
+    - assets/images/home/quick_actions/

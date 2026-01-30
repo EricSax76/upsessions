@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../domain/announcement_entity.dart';
+import 'announcement_form/basic_info_section.dart';
+import 'announcement_form/image_section.dart';
+import 'announcement_form/location_instrument_section.dart';
 
 class AnnouncementForm extends StatefulWidget {
   const AnnouncementForm({super.key, required this.onSubmit});
 
-  final ValueChanged<AnnouncementEntity> onSubmit;
+  final void Function(AnnouncementEntity, XFile?) onSubmit;
 
   @override
   State<AnnouncementForm> createState() => _AnnouncementFormState();
@@ -19,6 +23,7 @@ class _AnnouncementFormState extends State<AnnouncementForm> {
   final _provinceController = TextEditingController();
   final _instrumentController = TextEditingController();
   final _stylesController = TextEditingController();
+  XFile? _pickedImage;
 
   @override
   void dispose() {
@@ -50,7 +55,7 @@ class _AnnouncementFormState extends State<AnnouncementForm> {
       styles: styles,
       publishedAt: DateTime.now(),
     );
-    widget.onSubmit(entity);
+    widget.onSubmit(entity, _pickedImage);
   }
 
   @override
@@ -59,49 +64,39 @@ class _AnnouncementFormState extends State<AnnouncementForm> {
       key: _formKey,
       child: Column(
         children: [
-          TextFormField(
-            controller: _titleController,
-            decoration: const InputDecoration(labelText: 'Título'),
-            validator: (value) => value != null && value.isNotEmpty ? null : 'Campo obligatorio',
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _cityController,
-            decoration: const InputDecoration(labelText: 'Ciudad'),
-            validator: (value) => value != null && value.isNotEmpty ? null : 'Campo obligatorio',
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _provinceController,
-            decoration: const InputDecoration(labelText: 'Provincia'),
-            validator: (value) => value != null && value.isNotEmpty ? null : 'Campo obligatorio',
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _instrumentController,
-            decoration: const InputDecoration(labelText: 'Instrumento'),
-            validator: (value) => value != null && value.isNotEmpty ? null : 'Campo obligatorio',
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _stylesController,
-            decoration: const InputDecoration(
-              labelText: 'Estilos (separados por coma)',
-              hintText: 'Ej: Rock, Pop',
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _bodyController,
-            decoration: const InputDecoration(labelText: 'Descripción'),
-            maxLines: 4,
-            validator: (value) => value != null && value.length >= 10 ? null : 'Describe mejor tu anuncio',
+          BasicInfoSection(
+            titleController: _titleController,
+            bodyController: _bodyController,
           ),
           const SizedBox(height: 16),
+          LocationInstrumentSection(
+            cityController: _cityController,
+            provinceController: _provinceController,
+            instrumentController: _instrumentController,
+            stylesController: _stylesController,
+          ),
+          const SizedBox(height: 16),
+          ImageSection(
+            pickedImage: _pickedImage,
+            onImagePicked: (image) => setState(() => _pickedImage = image),
+            onImageRemoved: () => setState(() => _pickedImage = null),
+          ),
+          const SizedBox(height: 24),
           Align(
             alignment: Alignment.centerRight,
-            child: FilledButton(onPressed: _submit, child: const Text('Publicar anuncio')),
+            child: FilledButton.icon(
+              onPressed: _submit,
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
+              ),
+              icon: const Icon(Icons.check_circle_outline),
+              label: const Text('Publicar anuncio'),
+            ),
           ),
+          const SizedBox(height: 48),
         ],
       ),
     );

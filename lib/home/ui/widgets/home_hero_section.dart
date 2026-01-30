@@ -11,11 +11,11 @@ class HomeHeroSection extends StatelessWidget {
   const HomeHeroSection({
     super.key,
     this.isCompact = false,
-    this.nextRehearsal,
+    this.upcomingRehearsals = const [],
   });
 
   final bool isCompact;
-  final RehearsalEntity? nextRehearsal;
+  final List<RehearsalEntity> upcomingRehearsals;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class HomeHeroSection extends StatelessWidget {
         final viewModel = HomeHeroViewModel(
           displayName: state.user?.displayName ?? '',
           photoUrl: state.user?.photoUrl,
-          nextRehearsal: nextRehearsal,
+          upcomingRehearsals: upcomingRehearsals,
         );
 
         if (isCompact) {

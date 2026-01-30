@@ -23,6 +23,14 @@ class HomeHeroNextRehearsalCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       padding: const EdgeInsets.all(AppSpacing.md + AppSpacing.xs),
       elevation: 0,
+      onTap: rehearsal == null
+          ? null
+          : () => context.push(
+                AppRoutes.rehearsalDetail(
+                  groupId: rehearsal!.groupId,
+                  rehearsalId: rehearsal!.id,
+                ),
+              ),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.lg),
         side: BorderSide(
@@ -173,21 +181,25 @@ class HomeHeroQuickActionsGrid extends StatelessWidget {
         _HomeHeroQuickActionTile(
           icon: Icons.people_alt_outlined,
           label: loc.navMusicians,
+          imagePath: 'assets/images/home/quick_actions/quick_musicians.png',
           onTap: () => context.push(AppRoutes.musicians),
         ),
         _HomeHeroQuickActionTile(
           icon: Icons.campaign_outlined,
           label: loc.navAnnouncements,
+          imagePath: 'assets/images/home/quick_actions/quick_announcements.png',
           onTap: () => context.push(AppRoutes.announcements),
         ),
         _HomeHeroQuickActionTile(
           icon: Icons.event_note_outlined,
           label: loc.navEvents,
+          imagePath: 'assets/images/home/quick_actions/quick_events.png',
           onTap: () => context.push(AppRoutes.events),
         ),
         _HomeHeroQuickActionTile(
           icon: Icons.music_note_outlined,
           label: loc.navRehearsals,
+          imagePath: 'assets/images/home/quick_actions/quick_rehearsals.png',
           onTap: () => context.push(AppRoutes.rehearsals),
         ),
       ],
@@ -199,11 +211,13 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
   const _HomeHeroQuickActionTile({
     required this.icon,
     required this.label,
+    required this.imagePath,
     required this.onTap,
   });
 
   final IconData icon;
   final String label;
+  final String imagePath;
   final VoidCallback onTap;
 
   @override
@@ -213,9 +227,10 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
 
     return AppCard(
       margin: EdgeInsets.zero,
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: EdgeInsets.zero,
       elevation: 0,
       onTap: onTap,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.lg),
         side: BorderSide(
@@ -223,26 +238,55 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
           width: 1,
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHigh,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 20, color: colorScheme.primary),
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover,
           ),
-          const Spacer(),
-          Text(
-            label,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withValues(alpha: 0.1),
+                Colors.black.withValues(alpha: 0.7),
+              ],
             ),
           ),
-        ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 20, color: Colors.white),
+              ),
+              const Spacer(),
+              Text(
+                label,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      offset: const Offset(0, 1),
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

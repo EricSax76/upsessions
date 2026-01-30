@@ -10,23 +10,38 @@ class MusicianStylesSection extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      elevation: 0,
+      color: colors.surface,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+        side: BorderSide(color: colors.outlineVariant),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Estilos musicales',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Icon(Icons.category_outlined, size: 20, color: colors.primary),
+                const SizedBox(width: 12),
+                Text(
+                  'Estilos musicales',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colors.onSurface,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             if (styles.isEmpty)
               Text(
                 'Este músico aún no especificó estilos.',
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
               )
             else
               Wrap(
@@ -41,13 +56,14 @@ class MusicianStylesSection extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(32),
-                          color: colors.primary.withValues(),
+                          color: colors.secondaryContainer.withOpacity(0.3),
+                          border: Border.all(color: colors.secondaryContainer),
                         ),
                         child: Text(
                           style,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: colors.primary,
+                            color: colors.onSecondaryContainer,
                           ),
                         ),
                       ),

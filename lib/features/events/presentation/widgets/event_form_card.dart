@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/widgets/section_card.dart';
+import '../../../../core/widgets/gap.dart';
 import '../../domain/event_entity.dart';
+import 'event_form/contact_section.dart';
+import 'event_form/general_info_section.dart';
+import 'event_form/location_calendar_section.dart';
+import 'event_form/logistics_section.dart';
 
 class EventFormCard extends StatefulWidget {
   const EventFormCard({
@@ -167,199 +171,37 @@ class _EventFormCardState extends State<EventFormCard> {
       key: _formKey,
       child: Column(
         children: [
-          SectionCard(
-            title: 'Información general',
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Título del evento',
-                    prefixIcon: Icon(Icons.title),
-                  ),
-                  validator: (value) => value != null && value.trim().isNotEmpty
-                      ? null
-                      : 'Requerido',
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Descripción',
-                    prefixIcon: Icon(Icons.short_text),
-                  ),
-                  minLines: 3,
-                  maxLines: 4,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _tagsController,
-                  decoration: const InputDecoration(
-                    labelText: 'Tags (separados por coma)',
-                    prefixIcon: Icon(Icons.tag),
-                  ),
-                ),
-              ],
-            ),
+          GeneralInfoSection(
+            titleController: _titleController,
+            descriptionController: _descriptionController,
+            tagsController: _tagsController,
           ),
-          const SizedBox(height: 16),
-          SectionCard(
-            title: 'Calendario y ubicación',
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _cityController,
-                        decoration: const InputDecoration(
-                          labelText: 'Ciudad',
-                          prefixIcon: Icon(Icons.location_city),
-                        ),
-                        validator: (value) =>
-                            value != null && value.trim().isNotEmpty
-                            ? null
-                            : 'Requerido',
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _venueController,
-                        decoration: const InputDecoration(
-                          labelText: 'Venue',
-                          prefixIcon: Icon(Icons.place),
-                        ),
-                        validator: (value) =>
-                            value != null && value.trim().isNotEmpty
-                            ? null
-                            : 'Requerido',
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                PickerField(
-                  label: 'Fecha',
-                  value: dateLabel,
-                  onTap: _pickDate,
-                  icon: Icons.calendar_today,
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: PickerField(
-                        label: 'Inicio',
-                        value: startLabel,
-                        onTap: () => _pickTime(start: true),
-                        icon: Icons.access_time,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: PickerField(
-                        label: 'Fin',
-                        value: endLabel,
-                        onTap: () => _pickTime(start: false),
-                        icon: Icons.access_time_filled,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          const VSpace(16),
+          LocationCalendarSection(
+            cityController: _cityController,
+            venueController: _venueController,
+            dateLabel: dateLabel,
+            startLabel: startLabel,
+            endLabel: endLabel,
+            onPickDate: _pickDate,
+            onPickStartTime: () => _pickTime(start: true),
+            onPickEndTime: () => _pickTime(start: false),
           ),
-          const SizedBox(height: 16),
-          SectionCard(
-            title: 'Logística y detalles',
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _lineupController,
-                  decoration: const InputDecoration(
-                    labelText: 'Lineup (separado por coma)',
-                    prefixIcon: Icon(Icons.group_work),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _resourcesController,
-                  decoration: const InputDecoration(
-                    labelText: 'Recursos/Backline',
-                    prefixIcon: Icon(Icons.speaker),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _ticketController,
-                        decoration: const InputDecoration(
-                          labelText: 'Entradas/Aporte',
-                          prefixIcon: Icon(Icons.confirmation_number),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _capacityController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Capacidad',
-                          prefixIcon: Icon(Icons.people),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+          const VSpace(16),
+          LogisticsSection(
+            lineupController: _lineupController,
+            resourcesController: _resourcesController,
+            ticketController: _ticketController,
+            capacityController: _capacityController,
           ),
-          const SizedBox(height: 16),
-          SectionCard(
-            title: 'Contacto',
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _organizerController,
-                  decoration: const InputDecoration(
-                    labelText: 'Organizador',
-                    prefixIcon: Icon(Icons.person),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _contactEmailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _contactPhoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Teléfono',
-                    prefixIcon: Icon(Icons.phone),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _notesController,
-                  decoration: const InputDecoration(
-                    labelText: 'Notas adicionales',
-                    prefixIcon: Icon(Icons.note),
-                  ),
-                  minLines: 2,
-                  maxLines: 3,
-                ),
-              ],
-            ),
+          const VSpace(16),
+          ContactSection(
+            organizerController: _organizerController,
+            contactEmailController: _contactEmailController,
+            contactPhoneController: _contactPhoneController,
+            notesController: _notesController,
           ),
-          const SizedBox(height: 24),
+          const VSpace(24),
           Align(
             alignment: Alignment.centerRight,
             child: FilledButton.icon(
@@ -374,38 +216,8 @@ class _EventFormCardState extends State<EventFormCard> {
               label: const Text('Confirmar y crear ficha'),
             ),
           ),
-          const SizedBox(height: 48), // Bottom padding
+          const VSpace(48),
         ],
-      ),
-    );
-  }
-}
-
-class PickerField extends StatelessWidget {
-  const PickerField({
-    super.key,
-    required this.label,
-    required this.value,
-    required this.onTap,
-    this.icon,
-  });
-
-  final String label;
-  final String value;
-  final VoidCallback onTap;
-  final IconData? icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: icon != null ? Icon(icon) : null,
-        ),
-        child: Text(value),
       ),
     );
   }

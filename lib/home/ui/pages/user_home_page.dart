@@ -65,7 +65,7 @@ class UserHomePage extends StatelessWidget {
                   children: [
                     HomeHeroSection(
                       isCompact: isCompact,
-                      nextRehearsal: state.nextRehearsal,
+                      upcomingRehearsals: state.upcomingRehearsals,
                     ),
                     const SizedBox(height: 48),
                     
