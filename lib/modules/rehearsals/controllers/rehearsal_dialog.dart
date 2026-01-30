@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
-import 'rehearsal_helpers.dart';
+import '../../../core/services/dialog_service.dart';
+import '../utils/rehearsal_date_utils.dart';
 
 class RehearsalDraft {
   const RehearsalDraft({
@@ -184,8 +185,9 @@ class _RehearsalDialogState extends State<RehearsalDialog> {
       time.minute,
     );
     if (_startsAt != null && selected.isBefore(_startsAt!)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('El fin no puede ser antes del inicio.')),
+      DialogService.showError(
+        context,
+        'El fin no puede ser antes del inicio.',
       );
       return;
     }

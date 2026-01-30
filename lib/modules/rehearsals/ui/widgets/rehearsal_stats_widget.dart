@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/widgets/gap.dart';
 import '../../../../core/widgets/section_card.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../controllers/rehearsal_helpers.dart';
+import '../../utils/rehearsal_date_utils.dart';
 import '../../models/rehearsal_entity.dart';
 
 /// Displays statistics card with total rehearsals and next rehearsal info.

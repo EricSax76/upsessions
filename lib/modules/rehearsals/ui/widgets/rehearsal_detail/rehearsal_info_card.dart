@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../models/rehearsal_entity.dart';
-import '../../../controllers/rehearsal_helpers.dart';
+import '../../../utils/rehearsal_date_utils.dart';
 
 class RehearsalInfoCard extends StatelessWidget {
   const RehearsalInfoCard({super.key, required this.rehearsal, this.onTap});

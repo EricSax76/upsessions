@@ -2,7 +2,7 @@ import '../../../core/locator/locator.dart';
 import '../../auth/repositories/auth_repository.dart';
 import '../../musicians/repositories/musicians_repository.dart';
 import '../../musicians/models/musician_entity.dart';
-import '../models/create_rehearsal_use_case.dart';
+import '../use_cases/create_rehearsal_use_case.dart';
 import '../../groups/models/group_dtos.dart';
 import '../../groups/repositories/groups_repository.dart';
 import '../repositories/rehearsals_repository.dart';

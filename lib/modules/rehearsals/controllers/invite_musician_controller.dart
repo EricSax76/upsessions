@@ -1,18 +1,21 @@
-part of 'invite_musician_dialog.dart';
+import 'package:flutter/material.dart';
+
+import '../../musicians/models/musician_entity.dart';
+import 'group_rehearsals_controller.dart';
+import 'invite_musician_state.dart';
 
 class InviteMusicianDialogController extends ChangeNotifier {
   InviteMusicianDialogController({
     required GroupRehearsalsController controller,
     required String groupId,
-  }) : _controller = controller,
-       _groupId = groupId;
+  })  : _controller = controller,
+        _groupId = groupId;
 
   final GroupRehearsalsController _controller;
   final String _groupId;
 
   final TextEditingController searchController = TextEditingController();
-  InviteMusicianDialogState _state =
-      const InviteMusicianDialogState.initial();
+  InviteMusicianDialogState _state = const InviteMusicianDialogState.initial();
   int _searchToken = 0;
   bool _isDisposed = false;
 

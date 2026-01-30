@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_routes.dart';
+import '../../../../core/services/dialog_service.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../groups/repositories/groups_repository.dart';
 import '../../../groups/ui/widgets/group_dialogs.dart';
@@ -108,10 +109,9 @@ class RehearsalsSidebarSection extends StatelessWidget {
       GoRouter.of(context).go(AppRoutes.groupPage(groupId));
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(loc.rehearsalsGroupsCreateGroupError(error.toString())),
-        ),
+      DialogService.showError(
+        context,
+        loc.rehearsalsGroupsCreateGroupError(error.toString()),
       );
     }
   }

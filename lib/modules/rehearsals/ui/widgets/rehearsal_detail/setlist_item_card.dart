@@ -6,6 +6,7 @@ class SetlistItemCard extends StatelessWidget {
   const SetlistItemCard({
     super.key,
     required this.item,
+    this.displayOrder,
     // subtitle removed, handled internally
     required this.onDelete,
     this.onTap,
@@ -13,6 +14,7 @@ class SetlistItemCard extends StatelessWidget {
   });
 
   final SetlistItemEntity item;
+  final int? displayOrder;
   final VoidCallback onDelete;
   final VoidCallback? onTap;
   final Widget? trailing;
@@ -27,6 +29,7 @@ class SetlistItemCard extends StatelessWidget {
     final hasKey = item.keySignature.isNotEmpty;
     final hasTempo = item.tempoBpm != null && item.tempoBpm! > 0;
     final hasLink = item.linkUrl.isNotEmpty;
+    final order = displayOrder ?? item.order;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -53,7 +56,7 @@ class SetlistItemCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  item.order.toString(),
+                  order.toString(),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: scheme.onSurfaceVariant,
                     fontWeight: FontWeight.bold,

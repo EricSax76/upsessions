@@ -18,7 +18,7 @@ import 'package:upsessions/modules/musicians/repositories/musicians_repository.d
 import 'package:upsessions/home/repositories/user_home_repository.dart';
 import 'package:upsessions/features/contacts/controllers/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/repositories/contacts_repository.dart';
-import 'package:upsessions/modules/rehearsals/models/create_rehearsal_use_case.dart';
+import 'package:upsessions/modules/rehearsals/use_cases/create_rehearsal_use_case.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';

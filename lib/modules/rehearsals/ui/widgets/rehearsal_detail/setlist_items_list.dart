@@ -46,6 +46,24 @@ class _SetlistItemsListState extends State<SetlistItemsList> {
     return true;
   }
 
+  List<SetlistItemEntity> _withLocalOrders(List<SetlistItemEntity> items) {
+    return [
+      for (var i = 0; i < items.length; i++)
+        SetlistItemEntity(
+          id: items[i].id,
+          order: i,
+          songId: items[i].songId,
+          songTitle: items[i].songTitle,
+          keySignature: items[i].keySignature,
+          tempoBpm: items[i].tempoBpm,
+          notes: items[i].notes,
+          linkUrl: items[i].linkUrl,
+          sheetUrl: items[i].sheetUrl,
+          sheetPath: items[i].sheetPath,
+        ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final setlist = _items;
@@ -66,6 +84,7 @@ class _SetlistItemsListState extends State<SetlistItemsList> {
           if (newIndex > oldIndex) newIndex -= 1;
           final item = _items.removeAt(oldIndex);
           _items.insert(newIndex, item);
+          _items = _withLocalOrders(_items);
         });
         widget.onReorderSetlist(_items.map((e) => e.id).toList());
       },
@@ -76,6 +95,7 @@ class _SetlistItemsListState extends State<SetlistItemsList> {
           index: index,
           child: SetlistItemCard(
             item: item,
+            displayOrder: item.order,
             // subtitle removed
             onTap: () => widget.onEditSong(item),
             onDelete: () => widget.onDeleteSong(item),

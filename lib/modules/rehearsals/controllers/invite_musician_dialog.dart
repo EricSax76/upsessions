@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:upsessions/core/constants/app_link_scheme.dart';
 
 import '../../musicians/models/musician_entity.dart';
+import '../../../core/services/dialog_service.dart';
 import 'group_rehearsals_controller.dart';
-
-part '../models/invite_musician_dialog_models.dart';
-part 'invite_musician_dialog_logic.dart';
-part '../ui/widgets/invite_musician_dialog_widgets.dart';
+import 'invite_musician_controller.dart';
+import '../ui/widgets/invite_musician_dialog_widgets.dart';
 
 class InviteMusicianDialog extends StatefulWidget {
   const InviteMusicianDialog({
@@ -45,7 +42,7 @@ class _InviteMusicianDialogState extends State<InviteMusicianDialog> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _dialogController,
-      builder: (context, _) => _InviteMusicianDialogView(
+      builder: (context, _) => InviteMusicianDialogView(
         controller: _dialogController,
         state: _dialogController.state,
         onInviteTap: _handleInviteTap,
@@ -60,15 +57,16 @@ class _InviteMusicianDialogState extends State<InviteMusicianDialog> {
 
       await showDialog<void>(
         context: context,
-        builder: (context) => _InviteCreatedDialog(link: link, target: target),
+        builder: (context) => InviteCreatedDialog(link: link, target: target),
       );
 
       if (!mounted) return;
       Navigator.of(context).pop();
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudo crear la invitación: $error')),
+      DialogService.showError(
+        context,
+        'No se pudo crear la invitación: $error',
       );
     }
   }

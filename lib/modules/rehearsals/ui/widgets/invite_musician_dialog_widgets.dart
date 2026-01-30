@@ -1,7 +1,14 @@
-part of '../../controllers/invite_musician_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-class _InviteMusicianDialogView extends StatelessWidget {
-  const _InviteMusicianDialogView({
+import '../../../../core/services/dialog_service.dart';
+import '../../controllers/invite_musician_controller.dart';
+import '../../controllers/invite_musician_state.dart';
+import '../../../musicians/models/musician_entity.dart';
+
+class InviteMusicianDialogView extends StatelessWidget {
+  const InviteMusicianDialogView({
+    super.key,
     required this.controller,
     required this.state,
     required this.onInviteTap,
@@ -17,7 +24,7 @@ class _InviteMusicianDialogView extends StatelessWidget {
     final scheme = theme.colorScheme;
 
     return AlertDialog(
-      title: _InviteDialogTitle(scheme: scheme),
+      title: InviteDialogTitle(scheme: scheme),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520),
         child: Column(
@@ -33,7 +40,7 @@ class _InviteMusicianDialogView extends StatelessWidget {
               onChanged: controller.onQueryChanged,
             ),
             const SizedBox(height: 12),
-            _InviteSearchBody(
+            InviteSearchBody(
               state: state,
               theme: theme,
               scheme: scheme,
@@ -52,8 +59,8 @@ class _InviteMusicianDialogView extends StatelessWidget {
   }
 }
 
-class _InviteDialogTitle extends StatelessWidget {
-  const _InviteDialogTitle({required this.scheme});
+class InviteDialogTitle extends StatelessWidget {
+  const InviteDialogTitle({super.key, required this.scheme});
 
   final ColorScheme scheme;
 
@@ -80,8 +87,9 @@ class _InviteDialogTitle extends StatelessWidget {
   }
 }
 
-class _InviteSearchBody extends StatelessWidget {
-  const _InviteSearchBody({
+class InviteSearchBody extends StatelessWidget {
+  const InviteSearchBody({
+    super.key,
     required this.state,
     required this.theme,
     required this.scheme,
@@ -120,7 +128,7 @@ class _InviteSearchBody extends StatelessWidget {
       );
     }
 
-    return _InviteResultsList(
+    return InviteResultsList(
       results: state.results,
       scheme: scheme,
       onInviteTap: onInviteTap,
@@ -128,8 +136,9 @@ class _InviteSearchBody extends StatelessWidget {
   }
 }
 
-class _InviteResultsList extends StatelessWidget {
-  const _InviteResultsList({
+class InviteResultsList extends StatelessWidget {
+  const InviteResultsList({
+    super.key,
     required this.results,
     required this.scheme,
     required this.onInviteTap,
@@ -149,7 +158,7 @@ class _InviteResultsList extends StatelessWidget {
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
           final target = results[index];
-          return _InviteResultTile(
+          return InviteResultTile(
             target: target,
             scheme: scheme,
             onTap: () => onInviteTap(target),
@@ -160,8 +169,9 @@ class _InviteResultsList extends StatelessWidget {
   }
 }
 
-class _InviteResultTile extends StatelessWidget {
-  const _InviteResultTile({
+class InviteResultTile extends StatelessWidget {
+  const InviteResultTile({
+    super.key,
     required this.target,
     required this.scheme,
     required this.onTap,
@@ -196,8 +206,8 @@ class _InviteResultTile extends StatelessWidget {
   }
 }
 
-class _InviteCreatedDialog extends StatelessWidget {
-  const _InviteCreatedDialog({required this.link, required this.target});
+class InviteCreatedDialog extends StatelessWidget {
+  const InviteCreatedDialog({super.key, required this.link, required this.target});
 
   final InviteLinkData link;
   final MusicianEntity target;
@@ -241,8 +251,6 @@ class _InviteCreatedDialog extends StatelessWidget {
   Future<void> _copyLink(BuildContext context) async {
     await Clipboard.setData(ClipboardData(text: link.url));
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Link copiado.')));
+    DialogService.showSuccess(context, 'Link copiado.');
   }
 }

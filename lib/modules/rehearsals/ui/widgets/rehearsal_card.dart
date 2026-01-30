@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_card.dart';
 import '../../models/rehearsal_entity.dart';
-import '../../controllers/rehearsal_helpers.dart';
+import '../../utils/rehearsal_date_utils.dart';
 
 class RehearsalCard extends StatelessWidget {
   const RehearsalCard({

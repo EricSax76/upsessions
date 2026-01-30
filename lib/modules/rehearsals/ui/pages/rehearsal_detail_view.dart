@@ -9,9 +9,10 @@ import '../../../auth/cubits/auth_cubit.dart';
 import '../../../groups/repositories/groups_repository.dart';
 import '../../cubits/rehearsal_detail_cubit.dart';
 import '../../cubits/rehearsal_detail_state.dart';
-import '../../controllers/rehearsal_actions.dart';
+import '../../application/rehearsal_actions_service.dart';
 import '../widgets/rehearsal_detail/rehearsal_detail_widgets.dart';
-import '../../controllers/setlist_actions.dart';
+import '../../application/setlist_actions_service.dart';
+import '../../../../core/services/dialog_service.dart';
 
 class RehearsalDetailView extends StatelessWidget {
   const RehearsalDetailView({
@@ -69,62 +70,60 @@ class _RehearsalDetailViewBody extends StatelessWidget {
 
         if (state is RehearsalDetailLoaded) {
           final cubit = context.read<RehearsalDetailCubit>();
+          final rehearsalActions = RehearsalActionsService(
+            repository: cubit.rehearsalsRepository,
+          );
+          final setlistActions = SetlistActionsService(
+            rehearsalsRepository: cubit.rehearsalsRepository,
+            setlistRepository: cubit.setlistRepository,
+          );
           return RehearsalDetailContent(
             rehearsal: state.rehearsal,
             setlist: state.setlist,
-            onEditRehearsal: () => editRehearsal(
+            onEditRehearsal: () => rehearsalActions.editRehearsal(
               context: context,
-              repository: cubit.rehearsalsRepository,
               groupId: cubit.groupId,
               rehearsal: state.rehearsal,
             ),
             onDeleteRehearsal: state.canDelete
-                ? () => confirmDeleteRehearsal(
+                ? () => rehearsalActions.confirmDeleteRehearsal(
                     context: context,
-                    repository: cubit.rehearsalsRepository,
                     groupId: cubit.groupId,
                     rehearsalId: cubit.rehearsalId,
                   )
                 : null,
-            onCopyFromLast: () => copySetlistFromLastRehearsal(
+            onCopyFromLast: () => setlistActions.copySetlistFromLastRehearsal(
               context: context,
-              rehearsalsRepository: cubit.rehearsalsRepository,
-              setlistRepository: cubit.setlistRepository,
               groupId: cubit.groupId,
               currentRehearsal: state.rehearsal,
               currentSetlist: state.setlist,
             ),
-            onAddSong: () => addSetlistItem(
+            onAddSong: () => setlistActions.addSetlistItem(
               context: context,
-              repository: cubit.setlistRepository,
               groupId: cubit.groupId,
               rehearsalId: cubit.rehearsalId,
               current: state.setlist,
             ),
-            onEditSong: (item) => editSetlistItem(
+            onEditSong: (item) => setlistActions.editSetlistItem(
               context: context,
-              repository: cubit.setlistRepository,
               groupId: cubit.groupId,
               rehearsalId: cubit.rehearsalId,
               item: item,
             ),
-            onDeleteSong: (item) => confirmDeleteSetlistItem(
+            onDeleteSong: (item) => setlistActions.confirmDeleteSetlistItem(
               context: context,
-              repository: cubit.setlistRepository,
               groupId: cubit.groupId,
               rehearsalId: cubit.rehearsalId,
               item: item,
             ),
             onReorderSetlist: (itemIdsInOrder) async {
-              final messenger = ScaffoldMessenger.of(context);
               try {
                 await cubit.reorderSetlist(itemIdsInOrder);
               } catch (error) {
                 if (!context.mounted) return;
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text('No se pudo reordenar el setlist: $error'),
-                  ),
+                DialogService.showError(
+                  context,
+                  'No se pudo reordenar el setlist: $error',
                 );
               }
             },

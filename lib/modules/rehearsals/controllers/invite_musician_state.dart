@@ -1,4 +1,7 @@
-part of '../controllers/invite_musician_dialog.dart';
+import 'package:flutter/foundation.dart';
+import 'package:upsessions/core/constants/app_link_scheme.dart';
+
+import '../../musicians/models/musician_entity.dart';
 
 @immutable
 class InviteMusicianDialogState {
@@ -9,9 +12,9 @@ class InviteMusicianDialogState {
   });
 
   const InviteMusicianDialogState.initial()
-    : query = '',
-      isLoading = false,
-      results = const [];
+      : query = '',
+        isLoading = false,
+        results = const [];
 
   final String query;
   final bool isLoading;

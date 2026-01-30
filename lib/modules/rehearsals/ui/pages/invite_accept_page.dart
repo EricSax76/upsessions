@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
+import '../../../../core/services/dialog_service.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../auth/cubits/auth_cubit.dart';
 import '../../../auth/repositories/auth_repository.dart';
@@ -96,9 +97,7 @@ class _InviteAcceptPageState extends State<InviteAcceptPage> {
       context.go(AppRoutes.groupPage(widget.groupId));
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('No se pudo aceptar: $error')));
+      DialogService.showError(context, 'No se pudo aceptar: $error');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
