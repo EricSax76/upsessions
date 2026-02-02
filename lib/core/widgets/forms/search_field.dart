@@ -32,22 +32,19 @@ class SearchField extends StatefulWidget {
 }
 
 class _SearchFieldState extends State<SearchField> {
-  late final TextEditingController _internalController;
+  TextEditingController? _internalController;
   bool get _ownsController => widget.controller == null;
 
-  TextEditingController get _effectiveController =>
-      widget.controller ?? _internalController;
-
-  @override
-  void initState() {
-    super.initState();
-    _internalController = TextEditingController();
+  TextEditingController get _effectiveController {
+    if (widget.controller != null) return widget.controller!;
+    _internalController ??= TextEditingController();
+    return _internalController!;
   }
 
   @override
   void dispose() {
     if (_ownsController) {
-      _internalController.dispose();
+      _internalController?.dispose();
     }
     super.dispose();
   }

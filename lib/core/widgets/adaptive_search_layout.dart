@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'responsive_constants.dart';
+import 'constants/breakpoints.dart';
 
 class AdaptiveSearchLayout extends StatelessWidget {
   const AdaptiveSearchLayout({
@@ -33,7 +33,7 @@ class AdaptiveSearchLayout extends StatelessWidget {
                 );
               }
 
-              final isWide = constraints.maxWidth >= kDesktopBreakpoint;
+              final isWide = constraints.maxWidth >= Breakpoints.desktop;
               final filterPanel = filterPanelBuilder(context, isWide);
 
               if (!isWide) {

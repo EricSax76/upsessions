@@ -37,22 +37,28 @@ class EventsDashboard extends StatelessWidget {
         ? const Center(child: CircularProgressIndicator())
         : RefreshIndicator(
             onRefresh: onRefresh,
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+            child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                EventsHeroSection(
-                  eventsCount: eventsCount,
-                  thisWeekCount: thisWeekCount,
-                  onCreateEvent: onCreateEvent,
+              slivers: [
+                SliverPadding(
+                   padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                   sliver: SliverToBoxAdapter(
+                      child: EventsHeroSection(
+                        eventsCount: eventsCount,
+                        thisWeekCount: thisWeekCount,
+                        onCreateEvent: onCreateEvent,
+                      ),
+                   ),
                 ),
-                const SizedBox(height: 24),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
                 if (events.isNotEmpty)
-                  EventList(
-                    events:
-                        events, // Incluimos todos los eventos desde el primero
-                    onSelect: onSelectForPreview,
-                    onViewDetails: onViewDetails,
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                    sliver: SliverEventList(
+                      events: events,
+                      onSelect: onSelectForPreview,
+                      onViewDetails: onViewDetails,
+                    ),
                   ),
               ],
             ),

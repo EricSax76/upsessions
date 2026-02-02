@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upsessions/core/theme/theme_cubit.dart';
+import 'package:upsessions/core/widgets/settings_tile.dart';
 import 'package:upsessions/home/ui/widgets/sidebar/language_selector.dart';
 import 'package:upsessions/home/ui/widgets/sidebar/user_sidebar_header.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
@@ -67,43 +68,16 @@ class _SidebarThemeToggle extends StatelessWidget {
         final theme = Theme.of(context);
         final colorScheme = theme.colorScheme;
 
-        return InkWell(
+        return SettingsTile(
           onTap: () {
             context.read<ThemeCubit>().toggleTheme();
           },
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.2),
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
-                  size: 20,
-                  color: colorScheme.primary,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    isDark ? 'Modo claro' : 'Modo oscuro',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                Switch(
-                  value: isDark,
-                  onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
-                  activeColor: colorScheme.primary,
-                ),
-              ],
-            ),
+          icon: isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+          title: isDark ? 'Modo claro' : 'Modo oscuro',
+          trailing: Switch(
+            value: isDark,
+            onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
+            activeColor: colorScheme.primary,
           ),
         );
       },

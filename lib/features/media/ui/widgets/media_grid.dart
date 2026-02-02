@@ -5,14 +5,27 @@ import 'audio_player_widget.dart';
 import 'video_player_widget.dart';
 
 class MediaGrid extends StatelessWidget {
-  const MediaGrid({super.key, required this.items});
+  const MediaGrid({
+    super.key,
+    required this.items,
+    this.isLoading = false,
+  });
 
   final List<MediaItem> items;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
-    if (items.isEmpty) {
+    if (isLoading) {
       return const Center(child: CircularProgressIndicator());
+    }
+    if (items.isEmpty) {
+      return Center(
+        child: Text(
+          'No hay elementos multimedia',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      );
     }
     return GridView.builder(
       padding: const EdgeInsets.all(16),

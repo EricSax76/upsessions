@@ -12,6 +12,7 @@ class SearchableListPage<T> extends StatefulWidget {
     super.key,
     required this.items,
     required this.itemBuilder,
+    this.itemKeyBuilder,
     this.searchEnabled = true,
     this.searchController,
     this.searchHint = 'Buscar...',
@@ -38,6 +39,9 @@ class SearchableListPage<T> extends StatefulWidget {
 
   final List<T> items;
   final Widget Function(T item, int index) itemBuilder;
+  /// Optional key builder for stable animations. 
+  /// If null, ValueKey(index) is used (which is not stable for reorders/inserts).
+  final Key Function(T item)? itemKeyBuilder;
 
   // Search
   final bool searchEnabled;
@@ -87,18 +91,26 @@ class SearchableListPage<T> extends StatefulWidget {
 }
 
 class _SearchableListPageState<T> extends State<SearchableListPage<T>> {
-  late final TextEditingController _internalController;
+  TextEditingController? _internalController;
   bool get _ownsController => widget.searchController == null;
 
-  TextEditingController get _controller =>
-      widget.searchController ?? _internalController;
+  TextEditingController get _controller {
+    if (widget.searchController != null) return widget.searchController!;
+    _internalController ??= TextEditingController();
+    return _internalController!;
+  }
 
   String _query = '';
+  List<T>? _cachedVisibleItems;
+  
+  // Cache keys for dependencies to invalidate cache
+  List<T>? _lastItems;
+  String? _lastQuery;
+  int Function(T, T)? _lastSortComparator;
 
   @override
   void initState() {
     super.initState();
-    _internalController = TextEditingController();
     _controller.addListener(_handleQueryChange);
     _query = _controller.text;
   }
@@ -111,13 +123,19 @@ class _SearchableListPageState<T> extends State<SearchableListPage<T>> {
       _controller.addListener(_handleQueryChange);
       _query = _controller.text;
     }
+    // Invalidate cache if dependencies change
+    if (oldWidget.items != widget.items ||
+        oldWidget.sortComparator != widget.sortComparator) {
+      _cachedVisibleItems = null;
+    }
   }
 
   @override
   void dispose() {
     _controller.removeListener(_handleQueryChange);
+    // Only dispose if we created it and it's still the active one
     if (_ownsController) {
-      _internalController.dispose();
+      _internalController?.dispose();
     }
     super.dispose();
   }
@@ -125,10 +143,21 @@ class _SearchableListPageState<T> extends State<SearchableListPage<T>> {
   void _handleQueryChange() {
     final next = _controller.text;
     if (next == _query) return;
-    setState(() => _query = next);
+    setState(() {
+      _query = next;
+      _cachedVisibleItems = null;
+    });
   }
 
   List<T> _buildVisibleItems() {
+    // Return cached if valid
+    if (_cachedVisibleItems != null && 
+        _lastItems == widget.items && 
+        _lastQuery == _query &&
+        _lastSortComparator == widget.sortComparator) {
+      return _cachedVisibleItems!;
+    }
+
     var visible = List<T>.from(widget.items);
     final trimmed = _query.trim();
     if (widget.searchEnabled &&
@@ -141,6 +170,13 @@ class _SearchableListPageState<T> extends State<SearchableListPage<T>> {
     if (widget.sortComparator != null) {
       visible.sort(widget.sortComparator);
     }
+
+    // Update cache
+    _cachedVisibleItems = visible;
+    _lastItems = widget.items;
+    _lastQuery = _query;
+    _lastSortComparator = widget.sortComparator;
+    
     return visible;
   }
 
@@ -222,16 +258,22 @@ class _SearchableListPageState<T> extends State<SearchableListPage<T>> {
                     crossAxisCount: gridCrossAxisCount,
                     crossAxisSpacing: crossSpacing,
                     mainAxisSpacing: mainSpacing,
-                    childAspectRatio: isWide ? 1.5 : 2.0, // Mucho más cercano al cuadrado (era 3.0/2.6)
+                    childAspectRatio: isWide ? 1.5 : 2.0,
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final item = widget.itemBuilder(visibleItems[index], index);
-                      if (!widget.animateItems) return item;
+                      final item = visibleItems[index];
+                      final child = widget.itemBuilder(item, index);
+                      if (!widget.animateItems) return child;
+                      
+                      final key = widget.itemKeyBuilder != null 
+                          ? widget.itemKeyBuilder!(item)
+                          : ValueKey(index);
+                          
                       return AnimatedListItem(
-                        key: ValueKey(index),
+                        key: key,
                         index: index,
-                        child: item,
+                        child: child,
                       );
                     },
                     childCount: visibleItems.length,
@@ -244,12 +286,18 @@ class _SearchableListPageState<T> extends State<SearchableListPage<T>> {
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final item = widget.itemBuilder(visibleItems[index], index);
-                      if (!widget.animateItems) return item;
+                       final item = visibleItems[index];
+                       final child = widget.itemBuilder(item, index);
+                       if (!widget.animateItems) return child;
+
+                       final key = widget.itemKeyBuilder != null 
+                          ? widget.itemKeyBuilder!(item)
+                          : ValueKey(index);
+
                       return AnimatedListItem(
-                        key: ValueKey(index),
+                        key: key,
                         index: index,
-                        child: item,
+                        child: child,
                       );
                     },
                     childCount: visibleItems.length,

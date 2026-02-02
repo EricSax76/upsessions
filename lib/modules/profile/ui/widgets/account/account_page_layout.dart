@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/widgets/responsive_constants.dart';
+import '../../../../../core/widgets/constants/breakpoints.dart';
 import '../../../../../home/ui/widgets/profile/profile_link_box.dart';
 import '../../../../auth/models/profile_entity.dart';
 import '../../../../auth/models/user_entity.dart';
@@ -48,7 +48,7 @@ class AccountPageLayout extends StatelessWidget {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final isDesktop = constraints.maxWidth > kDesktopBreakpoint;
+          final isDesktop = constraints.maxWidth > Breakpoints.desktop;
           return Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1100),
