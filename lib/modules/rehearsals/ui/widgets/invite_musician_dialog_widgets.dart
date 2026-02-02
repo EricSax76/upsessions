@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/services/dialog_service.dart';
+import '../../../../core/widgets/dialog_header.dart';
 import '../../controllers/invite_musician_controller.dart';
 import '../../controllers/invite_musician_state.dart';
 import '../../../musicians/models/musician_entity.dart';
@@ -24,7 +25,10 @@ class InviteMusicianDialogView extends StatelessWidget {
     final scheme = theme.colorScheme;
 
     return AlertDialog(
-      title: InviteDialogTitle(scheme: scheme),
+      title: const DialogHeader(
+        icon: Icons.person_add_alt_1_outlined,
+        title: 'Agregar músico',
+      ),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520),
         child: Column(
@@ -59,33 +63,7 @@ class InviteMusicianDialogView extends StatelessWidget {
   }
 }
 
-class InviteDialogTitle extends StatelessWidget {
-  const InviteDialogTitle({super.key, required this.scheme});
 
-  final ColorScheme scheme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          height: 36,
-          width: 36,
-          decoration: BoxDecoration(
-            color: scheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            Icons.person_add_alt_1_outlined,
-            color: scheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(width: 12),
-        const Text('Agregar músico'),
-      ],
-    );
-  }
-}
 
 class InviteSearchBody extends StatelessWidget {
   const InviteSearchBody({

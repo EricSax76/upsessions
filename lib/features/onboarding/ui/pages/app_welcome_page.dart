@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
-import 'package:upsessions/core/theme/app_colors.dart';
 
 class AppWelcomePage extends StatelessWidget {
   const AppWelcomePage({
@@ -21,13 +20,13 @@ class AppWelcomePage extends StatelessWidget {
       body: GestureDetector(
         onTap: onContinue,
         child: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                AppColors.primary,
-                AppColors.secondary,
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.secondary,
               ],
             ),
           ),
@@ -69,7 +68,7 @@ class AppWelcomePage extends StatelessWidget {
                         onPressed: onContinue,
                         style: FilledButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: AppColors.primary,
+                          foregroundColor: Theme.of(context).colorScheme.primary,
                         ),
                         child: Text(loc.startButton),
                       ),

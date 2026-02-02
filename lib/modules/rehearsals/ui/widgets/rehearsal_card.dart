@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/date_badge.dart';
 import '../../models/rehearsal_entity.dart';
 import '../../utils/rehearsal_date_utils.dart';
 
@@ -26,31 +27,9 @@ class RehearsalCard extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Container(
-            width: 56,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: scheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  month,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  rehearsal.startsAt.day.toString(),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
+          DateBadge(
+            month: month,
+            day: rehearsal.startsAt.day.toString(),
           ),
           const SizedBox(width: 12),
           Expanded(

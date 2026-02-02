@@ -4,7 +4,6 @@ import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/constants/app_spacing.dart';
-import '../../../../core/theme/app_colors.dart';
 
 class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
   const MainNavBar({super.key});
@@ -44,8 +43,9 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 520;
-        final selectedBackground = AppColors.primaryContainer;
-        final selectedBorder = AppColors.outlineFocus;
+        final scheme = theme.colorScheme;
+        final selectedBackground = scheme.primaryContainer;
+        final selectedBorder = scheme.primary;
 
         Widget buildButton(
           _NavItem item, {
@@ -60,14 +60,14 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
             textAlign: TextAlign.center,
             style: textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: selected ? AppColors.primary : AppColors.textSecondary,
+              color: selected ? scheme.primary : scheme.onSurfaceVariant,
             ),
           );
           return TextButton(
             onPressed: selected ? null : () => context.go(item.path),
             style: TextButton.styleFrom(
               foregroundColor:
-                  selected ? AppColors.primary : AppColors.textSecondary,
+                  selected ? scheme.primary : scheme.onSurfaceVariant,
               backgroundColor:
                   selected ? selectedBackground : Colors.transparent,
               shape: RoundedRectangleBorder(
@@ -92,7 +92,7 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
         Widget buildCompactButton(_NavItem item, {required bool selected}) {
           final labelStyle = textTheme.labelSmall?.copyWith(
             fontWeight: FontWeight.w600,
-            color: selected ? AppColors.primary : AppColors.textSecondary,
+            color: selected ? scheme.primary : scheme.onSurfaceVariant,
           );
           return InkWell(
             onTap: selected ? null : () => context.go(item.path),
@@ -115,7 +115,7 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
                   Icon(
                     item.icon,
                     size: 20,
-                    color: selected ? AppColors.primary : AppColors.icon,
+                    color: selected ? scheme.primary : scheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: AppSpacing.xxs),
                   Text(
@@ -132,11 +132,11 @@ class MainNavBar extends StatelessWidget implements PreferredSizeWidget {
         }
 
         return ColoredBox(
-          color: AppColors.surface,
+          color: scheme.surface,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Divider(height: 1, color: AppColors.outline),
+              Divider(height: 1, color: scheme.outline),
               SizedBox(
                 height: 60,
                 child: isCompact

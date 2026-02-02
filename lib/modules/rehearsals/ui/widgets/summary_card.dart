@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/widgets/info_card.dart';
 import '../../models/rehearsal_entity.dart';
 import '../../utils/rehearsal_date_utils.dart';
 
@@ -22,43 +23,10 @@ class SummaryCard extends StatelessWidget {
         ? 'Sin proximo ensayo'
         : formatDateTime(nextRehearsal!.startsAt);
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              height: 44,
-              width: 44,
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.secondary.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.event_note_outlined),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    totalLabel,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Proximo: $nextLabel',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+    return InfoCard(
+      title: totalLabel,
+      subtitle: 'Proximo: $nextLabel',
+      icon: Icons.event_note_outlined,
     );
   }
 }

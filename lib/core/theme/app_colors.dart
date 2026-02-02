@@ -54,25 +54,4 @@ class AppColorsDark {
   static const Color danger = Color(0xFFF87171); // Red 400
 }
 
-// Legacy support - defaults to light theme colors
-class AppColors {
-  static const Color primary = AppColorsLight.primary;
-  static const Color secondary = AppColorsLight.secondary;
-  static const Color tertiary = AppColorsLight.tertiary;
-  static const Color background = AppColorsLight.background;
-  static const Color surface = AppColorsLight.surface;
-  static const Color surfaceVariant = AppColorsLight.surfaceVariant;
-  static const Color primaryContainer = AppColorsLight.primaryContainer;
-  static const Color onPrimaryContainer = AppColorsLight.onPrimaryContainer;
-  static const Color onPrimary = AppColorsLight.onPrimary;
-  static const Color onSecondary = AppColorsLight.onSecondary;
-  static const Color onBackground = AppColorsLight.onBackground;
-  static const Color onSurface = AppColorsLight.onSurface;
-  static const Color outline = AppColorsLight.outline;
-  static const Color outlineFocus = AppColorsLight.outlineFocus;
-  static const Color textPrimary = AppColorsLight.textPrimary;
-  static const Color textSecondary = AppColorsLight.textSecondary;
-  static const Color textTertiary = AppColorsLight.textTertiary;
-  static const Color icon = AppColorsLight.icon;
-  static const Color danger = AppColorsLight.danger;
-}
+
