@@ -295,5 +295,15 @@
   "searchProvincesLoadHint": "Carga provincias españolas desde Firestore (metadata/geography.provinces).",
   "@searchProvincesLoadHint": {},
   "searchCitiesLoadHint": "Añade ciudades por provincia en Firestore (metadata/geography.citiesByProvince).",
-  "@searchCitiesLoadHint": {}
+  "@searchCitiesLoadHint": {},
+  "studios": "Salas de Ensayo",
+  "@studios": {},
+  "studiosSubtitle": "Reserva el espacio ideal para tu banda",
+  "@studiosSubtitle": {},
+  "studiosDashboard": "Gestión de Sala",
+  "@studiosDashboard": {},
+  "studiosManage": "Gestionar Sala",
+  "@studiosManage": {},
+  "studiosRegister": "Registrar Sala",
+  "@studiosRegister": {}
 }

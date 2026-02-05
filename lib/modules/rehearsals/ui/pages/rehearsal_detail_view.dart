@@ -7,6 +7,7 @@ import '../../../../core/locator/locator.dart';
 import '../../../../core/widgets/loading_indicator.dart';
 import '../../../auth/cubits/auth_cubit.dart';
 import '../../../groups/repositories/groups_repository.dart';
+import '../../../studios/ui/consumer/studios_list_page.dart';
 import '../../cubits/rehearsal_detail_cubit.dart';
 import '../../cubits/rehearsal_detail_state.dart';
 import '../../application/rehearsal_actions_service.dart';
@@ -44,13 +45,34 @@ class RehearsalDetailView extends StatelessWidget {
             rehearsalsRepository ?? locate<RehearsalsRepository>(),
         setlistRepository: setlistRepository ?? locate<SetlistRepository>(),
       ),
-      child: const _RehearsalDetailViewBody(),
+      child: _RehearsalDetailViewBody(groupId: groupId, rehearsalId: rehearsalId),
     );
   }
 }
 
 class _RehearsalDetailViewBody extends StatelessWidget {
-  const _RehearsalDetailViewBody();
+  const _RehearsalDetailViewBody({
+    required this.groupId,
+    required this.rehearsalId,
+  });
+
+  final String groupId;
+  final String rehearsalId;
+
+  void _navigateToStudios(BuildContext context, DateTime rehearsalDate, DateTime? rehearsalEndDate) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => StudiosListPage(
+          rehearsalContext: RehearsalBookingContext(
+            groupId: groupId,
+            rehearsalId: rehearsalId,
+            suggestedDate: rehearsalDate,
+            suggestedEndDate: rehearsalEndDate,
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +149,13 @@ class _RehearsalDetailViewBody extends StatelessWidget {
                 );
               }
             },
+            onBookRoom: state.rehearsal.bookingId == null
+                ? () => _navigateToStudios(
+                    context,
+                    state.rehearsal.startsAt,
+                    state.rehearsal.endsAt,
+                  )
+                : null,
           );
         }
 

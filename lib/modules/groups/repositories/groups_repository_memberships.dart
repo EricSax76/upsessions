@@ -164,4 +164,52 @@ mixin GroupsRepositoryMemberships on GroupsRepositoryBase {
       }),
     );
   }
+  Stream<List<GroupMember>> watchGroupMembers(String groupId) {
+    return members(groupId)
+        .where('status', isEqualTo: 'active')
+        .snapshots()
+        .asyncMap(_processGroupMembersSnapshot);
+  }
+
+  Future<List<GroupMember>> _processGroupMembersSnapshot(
+    QuerySnapshot<Map<String, dynamic>> snapshot,
+  ) async {
+    if (snapshot.docs.isEmpty) return [];
+
+    final members = <GroupMember>[];
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+      final uid = doc.id;
+      final role = data['role']?.toString() ?? 'member';
+      final status = data['status']?.toString() ?? 'active';
+
+      try {
+        final musicianDoc =
+            await firestore.collection('musicians').doc(uid).get();
+        final musicianData = musicianDoc.data() ?? {};
+
+        members.add(
+          GroupMember(
+            id: uid,
+            name: musicianData['name']?.toString() ?? 'Musician',
+            role: role,
+            status: status,
+            photoUrl: musicianData['photoUrl']?.toString(),
+            instrument: musicianData['instrument']?.toString(),
+          ),
+        );
+      } catch (e) {
+        logFirestore('Error fetching musician profile for $uid: $e');
+        members.add(
+          GroupMember(
+            id: uid,
+            name: 'Musician',
+            role: role,
+            status: status,
+          ),
+        );
+      }
+    }
+    return members;
+  }
 }

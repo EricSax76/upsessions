@@ -12,6 +12,7 @@ class AuthState extends Equatable {
     this.errorMessage,
     this.passwordResetEmailSent = false,
     this.lastAction = AuthAction.none,
+    this.studioId,
   });
 
   static const Object _unset = Object();
@@ -22,6 +23,7 @@ class AuthState extends Equatable {
   final String? errorMessage;
   final bool passwordResetEmailSent;
   final AuthAction lastAction;
+  final String? studioId;
 
   AuthState copyWith({
     AuthStatus? status,
@@ -30,6 +32,7 @@ class AuthState extends Equatable {
     Object? errorMessage = _unset,
     bool? passwordResetEmailSent,
     AuthAction? lastAction,
+    Object? studioId = _unset,
   }) {
     return AuthState(
       status: status ?? this.status,
@@ -41,10 +44,13 @@ class AuthState extends Equatable {
       passwordResetEmailSent:
           passwordResetEmailSent ?? this.passwordResetEmailSent,
       lastAction: lastAction ?? this.lastAction,
+      studioId: identical(studioId, _unset)
+          ? this.studioId
+          : studioId as String?,
     );
   }
 
   @override
   List<Object?> get props =>
-      [status, user, isLoading, errorMessage, passwordResetEmailSent, lastAction];
+      [status, user, isLoading, errorMessage, passwordResetEmailSent, lastAction, studioId];
 }

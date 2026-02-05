@@ -40,7 +40,11 @@ class LoginPage extends StatelessWidget {
         }
 
         if (state.status == AuthStatus.authenticated) {
-          context.go(AppRoutes.userHome);
+          if (state.studioId != null) {
+            context.go(AppRoutes.studiosDashboard);
+          } else {
+             context.go(AppRoutes.userHome);
+          }
         }
       },
       child: BlocBuilder<AuthCubit, AuthState>(
@@ -127,6 +131,40 @@ class LoginPage extends StatelessWidget {
                     const VSpace(AppSpacing.section),
                     SocialLoginButtons(
                       onSelected: (provider) => _onSocialLogin(context, provider),
+                    ),
+                    const VSpace(AppSpacing.xl),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                           context.push(AppRoutes.studiosLogin);
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.storefront, color: Colors.white70),
+                            const SizedBox(width: 8),
+                             RichText(
+                              text: TextSpan(
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                                children: [
+                                  const TextSpan(text: '¿Tienes una Sala de Ensayo? '),
+                                  TextSpan(
+                                    text: 'Ingresa aquí',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).colorScheme.primaryContainer,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),

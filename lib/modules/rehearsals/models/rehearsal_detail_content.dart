@@ -18,6 +18,8 @@ class RehearsalDetailContent extends StatelessWidget {
     required this.onEditSong,
     required this.onDeleteSong,
     required this.onReorderSetlist,
+    this.onBookRoom,
+    this.bookingInfo,
   });
 
   final RehearsalEntity rehearsal;
@@ -29,6 +31,8 @@ class RehearsalDetailContent extends StatelessWidget {
   final ValueChanged<SetlistItemEntity> onEditSong;
   final ValueChanged<SetlistItemEntity> onDeleteSong;
   final ValueChanged<List<String>> onReorderSetlist;
+  final VoidCallback? onBookRoom;
+  final String? bookingInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +110,15 @@ class RehearsalDetailContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 RehearsalInfoCard(rehearsal: rehearsal, onTap: onEditRehearsal),
+                const SizedBox(height: 24),
+                // Booking Section
+                _BookingSection(
+                  hasBooking: rehearsal.bookingId != null,
+                  bookingInfo: bookingInfo,
+                  onBookRoom: onBookRoom,
+                  scheme: scheme,
+                  theme: theme,
+                ),
                 const SizedBox(height: 32),
                 SetlistHeader(
                   count: setlist.length,
@@ -124,6 +137,111 @@ class RehearsalDetailContent extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _BookingSection extends StatelessWidget {
+  const _BookingSection({
+    required this.hasBooking,
+    required this.bookingInfo,
+    required this.onBookRoom,
+    required this.scheme,
+    required this.theme,
+  });
+
+  final bool hasBooking;
+  final String? bookingInfo;
+  final VoidCallback? onBookRoom;
+  final ColorScheme scheme;
+  final ThemeData theme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: hasBooking ? scheme.primary.withOpacity(0.3) : scheme.outlineVariant,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: hasBooking
+                        ? scheme.primaryContainer.withOpacity(0.5)
+                        : scheme.surfaceContainerHighest.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    hasBooking ? Icons.meeting_room : Icons.meeting_room_outlined,
+                    color: hasBooking ? scheme.primary : scheme.onSurfaceVariant,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sala de Ensayo',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        hasBooking
+                            ? (bookingInfo ?? 'Sala reservada')
+                            : 'Sin sala reservada',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: hasBooking
+                              ? scheme.primary
+                              : scheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (!hasBooking && onBookRoom != null)
+                  FilledButton.icon(
+                    onPressed: onBookRoom,
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('Reservar'),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                    ),
+                  )
+                else if (hasBooking)
+                  Chip(
+                    label: const Text('Reservada'),
+                    backgroundColor: scheme.primaryContainer,
+                    labelStyle: TextStyle(
+                      color: scheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    side: BorderSide.none,
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -111,6 +111,55 @@ class UserHomePage extends StatelessWidget {
 
                     const SizedBox(height: 48),
                     SectionCard(
+                      title: loc.studios, 
+                      subtitle: loc.studiosSubtitle,
+                      action: TextButton.icon(
+                        onPressed: () => context.push(AppRoutes.studios),
+                        icon: const Icon(Icons.arrow_outward),
+                        label: Text(loc.viewAll),
+                      ),
+                      child: Card(
+                        clipBehavior: Clip.antiAlias,
+                        child: InkWell(
+                          onTap: () => context.push(AppRoutes.studios),
+                          child: Container(
+                            height: 150,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  colorScheme.primaryContainer,
+                                  colorScheme.tertiaryContainer,
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.music_note, size: 48, color: colorScheme.onPrimaryContainer),
+                                const SizedBox(height: 8),
+                                Text(
+                                  loc.studiosSubtitle,
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: colorScheme.onPrimaryContainer,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: TextButton(
+                        onPressed: () => context.push(AppRoutes.studiosDashboard), // Entry point for Providers
+                        child: Text(loc.studiosManage),
+                      ),
+                    ),
+                    SectionCard(
                       title: loc.homeExploreByInstrumentTitle,
                       subtitle: loc.homeExploreByInstrumentSubtitle,
                       action: TextButton.icon(

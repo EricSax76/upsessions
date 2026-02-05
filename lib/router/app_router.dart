@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/constants/app_routes.dart';
@@ -31,6 +32,7 @@ import '../home/ui/pages/user_home_page.dart';
 import '../modules/auth/ui/pages/forgot_password_page.dart';
 import '../modules/auth/ui/pages/login_page.dart';
 import '../modules/auth/ui/pages/register_page.dart';
+import '../modules/auth/repositories/auth_repository.dart';
 import '../modules/musicians/models/musician_entity.dart';
 import '../modules/musicians/repositories/musicians_repository.dart';
 import '../home/ui/pages/user_shell_page.dart';
@@ -41,6 +43,15 @@ import '../modules/profile/ui/pages/profile_edit_page.dart';
 import '../modules/profile/ui/pages/profile_overview_page.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import '../features/contacts/ui/pages/contacts_page.dart';
+import '../modules/studios/ui/consumer/studios_list_page.dart';
+import '../modules/studios/cubits/studios_cubit.dart';
+import '../modules/studios/ui/provider/create_studio_page.dart';
+import '../modules/studios/ui/provider/studio_dashboard_page.dart';
+import '../modules/studios/ui/auth/studio_login_page.dart';
+import '../modules/studios/ui/auth/studio_register_page.dart';
+import '../modules/studios/ui/provider/studio_profile_page.dart';
+
+import '../modules/studios/ui/consumer/musician_bookings_page.dart';
 
 class AppRouter {
   AppRouter() {
@@ -216,6 +227,56 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.help,
           builder: (context, state) => const HelpPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.studios,
+          builder: (context, state) => const StudiosListPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.studiosLogin,
+          builder: (context, state) => const StudioLoginPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.studiosRegister,
+          builder: (context, state) => const StudioRegisterPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.studiosCreate,
+          builder: (context, state) => const CreateStudioPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.studiosDashboard,
+          builder: (context, state) => const StudioDashboardPage(),
+        ),
+        GoRoute(
+          path: '/studios/profile', // Ideally add to AppRoutes constant
+          builder: (context, state) {
+            final extra = state.extra;
+            if (extra is StudiosCubit) {
+              return BlocProvider.value(
+                value: extra,
+                child: const StudioProfilePage(),
+              );
+            }
+
+            final authRepo = locate<AuthRepository>();
+            final userId = authRepo.currentUser?.id;
+            return BlocProvider(
+              create: (_) {
+                final cubit = StudiosCubit();
+                if (userId != null && userId.isNotEmpty) {
+                  cubit.loadMyStudio(userId);
+                }
+                return cubit;
+              },
+              child: const StudioProfilePage(),
+            );
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.myBookings,
+          builder: (context, state) =>
+              UserShellPage(child: const MusicianBookingsPage()),
         ),
       ],
       errorBuilder: (context, state) => _UnknownRouteScreen(

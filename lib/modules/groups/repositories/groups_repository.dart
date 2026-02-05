@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../models/group_membership_entity.dart';
 import '../models/group_dtos.dart';
+import '../models/group_member.dart';
 import 'groups_repository_base.dart';
 
 part 'groups_repository_groups.dart';

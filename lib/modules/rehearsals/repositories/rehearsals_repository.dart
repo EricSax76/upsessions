@@ -114,6 +114,21 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     );
   }
 
+  Future<void> updateRehearsalBooking({
+    required String groupId,
+    required String rehearsalId,
+    required String bookingId,
+  }) async {
+    await requireMusicianUid();
+    logFirestore('updateRehearsalBooking groupId=$groupId rehearsalId=$rehearsalId bookingId=$bookingId');
+    await logFuture(
+      'updateRehearsalBooking update',
+      rehearsals(groupId).doc(rehearsalId).update({
+        'bookingId': bookingId,
+      }),
+    );
+  }
+
   RehearsalEntity _mapRehearsal(
     QueryDocumentSnapshot<Map<String, dynamic>> doc,
     String groupId,
@@ -137,6 +152,7 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
       location: (data['location'] ?? '').toString(),
       notes: (data['notes'] ?? '').toString(),
       createdBy: (data['createdBy'] ?? '').toString(),
+      bookingId: data['bookingId'] as String?,
     );
   }
 }

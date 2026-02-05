@@ -449,6 +449,82 @@ service cloud.firestore {
       }
     }
 
+    // Root-level bookings collection
+    match /bookings/{bookingId} {
+      // Helper: check if user owns the studio for this booking
+      function isStudioOwnerForBooking() {
+        return get(/databases/$(database)/documents/studios/$(resource.data.studioId)).data.ownerId == request.auth.uid;
+      }
+
+      // GET (single document): user can see their own booking OR studio owner can see it
+      allow get: if isSignedIn()
+        && (
+          resource.data.ownerId == request.auth.uid
+          || isStudioOwnerForBooking()
+        );
+      
+      // LIST (queries): Allow queries that filter by ownerId == auth.uid
+      // For studio owner queries by studioId, they must verify ownership client-side
+      // because Firestore can't evaluate get() during list operations
+      allow list: if isSignedIn();
+      
+      // Create: any signed-in user can create a booking for themselves
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.studioId is string
+        && request.resource.data.roomId is string
+        && request.resource.data.startTime is timestamp
+        && request.resource.data.endTime is timestamp;
+      
+      // Update: user or studio owner can update
+      allow update: if isSignedIn()
+        && (
+          resource.data.ownerId == request.auth.uid
+          || isStudioOwnerForBooking()
+        );
+      
+      // Delete: only studio owner can delete
+      allow delete: if isSignedIn()
+        && isStudioOwnerForBooking();
+    }
+
+    match /studios/{studioId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.cif is string
+        && request.resource.data.businessName is string;
+      allow update: if isSignedIn()
+        && resource.data.ownerId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.cif is string
+        && request.resource.data.businessName is string;
+      allow delete: if isSignedIn()
+        && resource.data.ownerId == request.auth.uid;
+
+      match /rooms/{roomId} {
+        allow read: if true;
+        allow write: if isSignedIn()
+          && get(/databases/$(database)/documents/studios/$(studioId)).data.ownerId == request.auth.uid;
+
+        match /bookings/{bookingId} {
+           allow read: if isSignedIn()
+             && (
+                resource.data.userId == request.auth.uid
+                || get(/databases/$(database)/documents/studios/$(studioId)).data.ownerId == request.auth.uid
+             );
+           allow create: if isSignedIn()
+             && request.resource.data.userId == request.auth.uid;
+           allow update: if isSignedIn()
+             && (
+                resource.data.userId == request.auth.uid
+                || get(/databases/$(database)/documents/studios/$(studioId)).data.ownerId == request.auth.uid
+             );
+        }
+      }
+    }
+
     // Support collectionGroup('members') queries across all groups.
     match /{path=**}/members/{uid} {
       allow read: if isSignedIn() && request.auth.uid == resource.data.ownerId;

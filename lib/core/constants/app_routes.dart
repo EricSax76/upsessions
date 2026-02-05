@@ -34,6 +34,13 @@ class AppRoutes {
   static const settings = '/settings';
   static const help = '/settings/help';
   static const notifications = '/notifications';
+  
+  static const studios = '/studios';
+  static const studiosLogin = '/studios/login';
+  static const studiosRegister = '/studios/register';
+  static const studiosCreate = '/studios/create';
+  static const studiosDashboard = '/studios/dashboard';
+  static const myBookings = '/bookings';
 
   static const groupRoute = '/rehearsals/groups/:groupId';
   static const groupRehearsalsRoute =

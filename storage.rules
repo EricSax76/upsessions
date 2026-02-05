@@ -59,6 +59,14 @@ function isActiveMember(groupId) {
                    && request.resource.contentType.matches('image/.*');
     }
 
+    match /studios/{studioId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isSignedIn()
+                   && firestore.get(/databases/(default)/documents/studios/$(studioId)).data.ownerId == request.auth.uid
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

@@ -811,6 +811,36 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Añade ciudades por provincia en Firestore (metadata/geography.citiesByProvince).'**
   String get searchCitiesLoadHint;
+
+  /// No description provided for @studios.
+  ///
+  /// In es, this message translates to:
+  /// **'Salas de Ensayo'**
+  String get studios;
+
+  /// No description provided for @studiosSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Reserva el espacio ideal para tu banda'**
+  String get studiosSubtitle;
+
+  /// No description provided for @studiosDashboard.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestión de Sala'**
+  String get studiosDashboard;
+
+  /// No description provided for @studiosManage.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestionar Sala'**
+  String get studiosManage;
+
+  /// No description provided for @studiosRegister.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrar Sala'**
+  String get studiosRegister;
 }
 
 class _AppLocalizationsDelegate

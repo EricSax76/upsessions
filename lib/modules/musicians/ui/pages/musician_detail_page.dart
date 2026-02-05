@@ -76,45 +76,47 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
         final double horizontalPadding = constraints.maxWidth < 600 ? 20 : 32;
         final double topPadding = constraints.maxWidth < 600 ? 20 : 40;
 
-        return Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 860),
-            child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                topPadding,
-                horizontalPadding,
-                80,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Breadcrumb or Back button could go here
-                      const SizedBox.shrink(), // Placeholder if needed
-                      MusicianLikeButton(
-                        musician: musician.toLikedMusician(),
-                        iconSize: 28,
-                        padding: const EdgeInsets.all(4),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  MusicianProfileHeader(musician: musician),
-                  const SizedBox(height: 32),
-                  MusicianHighlightsGrid(musician: musician),
-                  const SizedBox(height: 32),
-                  MusicianStylesSection(styles: musician.styles),
-                  const SizedBox(height: 32),
-                  MusicianContactCard(
-                    isLoading: _isContacting,
-                    onPressed: _isContacting ? null : _contactMusician,
-                    onInvite: _inviteMusician,
-                  ),
-                ],
+        return SingleChildScrollView(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 860),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  topPadding,
+                  horizontalPadding,
+                  80,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Breadcrumb or Back button could go here
+                        const SizedBox.shrink(), // Placeholder if needed
+                        MusicianLikeButton(
+                          musician: musician.toLikedMusician(),
+                          iconSize: 28,
+                          padding: const EdgeInsets.all(4),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    MusicianProfileHeader(musician: musician),
+                    const SizedBox(height: 32),
+                    MusicianHighlightsGrid(musician: musician),
+                    const SizedBox(height: 32),
+                    MusicianStylesSection(styles: musician.styles),
+                    const SizedBox(height: 32),
+                    MusicianContactCard(
+                      isLoading: _isContacting,
+                      onPressed: _isContacting ? null : _contactMusician,
+                      onInvite: _inviteMusician,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

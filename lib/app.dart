@@ -13,6 +13,7 @@ import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
+import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
 import 'package:upsessions/router/app_router.dart';
 
 class UpsessionsApp extends StatelessWidget {
@@ -28,6 +29,7 @@ class UpsessionsApp extends StatelessWidget {
         RepositoryProvider(create: (_) => locate<AuthRepository>()),
         RepositoryProvider(create: (_) => locate<ProfileRepository>()),
         RepositoryProvider(create: (_) => locate<MusiciansRepository>()),
+        RepositoryProvider(create: (_) => locate<StudiosRepository>()),
         RepositoryProvider(create: (_) => locate<PushNotificationsService>()),
       ],
       child: MultiBlocProvider(
@@ -35,6 +37,7 @@ class UpsessionsApp extends StatelessWidget {
           BlocProvider(
             create: (context) => AuthCubit(
               authRepository: context.read<AuthRepository>(),
+              studiosRepository: context.read<StudiosRepository>(),
               pushNotificationsService: context
                   .read<PushNotificationsService>(),
             ),

@@ -3,16 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/constants/app_routes.dart';
-import '../../../core/widgets/constants/breakpoints.dart';
-import '../../../modules/auth/cubits/auth_cubit.dart';
-import '../widgets/header/main_nav_bar.dart';
-import '../widgets/header/sm_app_bar.dart';
-import '../widgets/profile/profile_quick_actions_fab.dart';
-import '../widgets/sidebar/user_sidebar.dart';
+import '../../../../core/constants/app_routes.dart';
+import '../../../auth/cubits/auth_cubit.dart';
+import 'studio_sidebar.dart';
 
-class UserShellPage extends StatelessWidget {
-  const UserShellPage({super.key, required this.child});
+/// Shell page for studio session that provides sidebar navigation
+class StudioShellPage extends StatelessWidget {
+  const StudioShellPage({super.key, required this.child});
 
   final Widget child;
 
@@ -20,7 +17,6 @@ class UserShellPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isWideLayout = kIsWeb ? width >= 700 : width >= 1200;
-    final isMobile = context.isMobile;
 
     Widget body;
     if (isWideLayout) {
@@ -31,7 +27,7 @@ class UserShellPage extends StatelessWidget {
             width: 300,
             child: Material(
               elevation: 0,
-              child: UserSidebar(),
+              child: StudioSidebar(),
             ),
           ),
           const VerticalDivider(width: 1, thickness: 1),
@@ -54,7 +50,7 @@ class UserShellPage extends StatelessWidget {
               child: SafeArea(
                 child: Builder(
                   builder: (context) => FloatingActionButton.small(
-                    heroTag: 'web_hamburger_fab',
+                    heroTag: 'studio_hamburger_fab',
                     elevation: 2,
                     backgroundColor: Theme.of(context).cardColor,
                     foregroundColor: Theme.of(context).primaryColor,
@@ -75,29 +71,27 @@ class UserShellPage extends StatelessWidget {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == AuthStatus.unauthenticated) {
-          context.go(AppRoutes.login);
+          context.go(AppRoutes.studiosLogin);
         }
       },
       child: Scaffold(
         drawer: isWideLayout
             ? null
             : const Drawer(
-                child: SafeArea(child: UserSidebar()),
+                child: SafeArea(child: StudioSidebar()),
               ),
-        appBar: (isWideLayout || kIsWeb)
+        appBar: isWideLayout || kIsWeb
             ? null
-            : SmAppBar(
-                bottom: isMobile ? null : const MainNavBar(),
-                showMenuButton: true,
+            : AppBar(
+                title: const Text('Panel de Estudio'),
+                leading: Builder(
+                  builder: (context) => IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                  ),
+                ),
               ),
         body: body,
-        bottomNavigationBar: isWideLayout || !isMobile || kIsWeb
-            ? null
-            : const SafeArea(
-                child: MainNavBar(),
-              ),
-        floatingActionButton: isWideLayout ? null : const ProfileQuickActionsFab(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }

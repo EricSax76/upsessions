@@ -23,6 +23,9 @@ import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
+import 'package:upsessions/modules/studios/repositories/firestore_studios_repository.dart';
+import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
+import 'package:upsessions/modules/studios/services/studio_image_service.dart';
 
 final GetIt getIt = GetIt.instance;
 final Set<String> _loggedLocateTypes = <String>{};
@@ -88,6 +91,8 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<SetlistRepository>(
       () => SetlistRepository(authRepository: getIt<AuthRepository>()),
     )
+    ..registerLazySingleton<StudiosRepository>(() => FirestoreStudiosRepository())
+    ..registerLazySingleton<StudioImageService>(() => StudioImageService())
     ..registerLazySingleton<LikedMusiciansController>(
       () => LikedMusiciansController(
         contactsRepository: getIt<ContactsRepository>(),

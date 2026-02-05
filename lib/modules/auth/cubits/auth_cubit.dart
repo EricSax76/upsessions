@@ -8,14 +8,18 @@ import '../models/auth_exceptions.dart';
 import '../repositories/auth_repository.dart';
 import '../models/user_entity.dart';
 import '../../../core/services/push_notifications_service.dart';
+import '../../studios/repositories/studios_repository.dart';
+import '../../../core/locator/locator.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit({
     required AuthRepository authRepository,
+    StudiosRepository? studiosRepository,
     PushNotificationsService? pushNotificationsService,
   }) : _authRepository = authRepository,
+       _studiosRepository = studiosRepository ?? locate<StudiosRepository>(), // Helper locator or GetIt
        _pushNotificationsService = pushNotificationsService,
        super(const AuthState()) {
     _authSubscription = _authRepository.authStateChanges.listen(
@@ -31,6 +35,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   final AuthRepository _authRepository;
   final PushNotificationsService? _pushNotificationsService;
+  final StudiosRepository _studiosRepository;
   StreamSubscription<UserEntity?>? _authSubscription;
 
   Future<void> signIn(String email, String password) async {
@@ -151,10 +156,21 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  void _handleUserChanged(UserEntity? user) {
+  Future<void> _handleUserChanged(UserEntity? user) async {
     log(
       '[AuthCubit] User state changed: ${user != null ? 'Authenticated' : 'Unauthenticated'} (user ID: ${user?.id})',
     );
+    
+    String? studioId;
+    if (user != null) {
+      try {
+        final studio = await _studiosRepository.getStudioByOwner(user.id);
+        studioId = studio?.id;
+      } catch (e) {
+        log('[AuthCubit] Error fetching studio: $e');
+      }
+    }
+
     emit(
       state.copyWith(
         status: user != null
@@ -165,6 +181,7 @@ class AuthCubit extends Cubit<AuthState> {
         errorMessage: null,
         lastAction: AuthAction.none,
         passwordResetEmailSent: false,
+        studioId: studioId,
       ),
     );
     if (user != null) {
