@@ -41,13 +41,13 @@ class _ChatInputFieldState extends State<ChatInputField> {
                 borderRadius: BorderRadius.circular(32),
                 boxShadow: [
                   BoxShadow(
-                    color: colorScheme.shadow.withOpacity(0.08),
+                    color: colorScheme.shadow.withValues(alpha: 0.08),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
                   ),
                 ],
                 border: Border.all(
-                  color: colorScheme.outlineVariant.withOpacity(0.5),
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.5),
                 ),
               ),
               child: Row(
@@ -62,7 +62,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
                       decoration: InputDecoration(
                         hintText: 'Escribe un mensaje...',
                         hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                         ),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
@@ -87,7 +87,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF4F46E5).withOpacity(0.3),
+                  color: const Color(0xFF4F46E5).withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),

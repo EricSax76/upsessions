@@ -33,7 +33,7 @@ class StudioDashboardPage extends StatelessWidget {
                     Icon(
                       Icons.store_outlined,
                       size: 80,
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                     ),
                     const SizedBox(height: 24),
                     Text(
@@ -136,7 +136,7 @@ class StudioDashboardPage extends StatelessWidget {
                   Icon(
                     Icons.meeting_room_outlined,
                     size: 48,
-                    color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -204,7 +204,7 @@ class StudioDashboardPage extends StatelessWidget {
             Icon(
               Icons.event_available_outlined,
               size: 64,
-              color: colorScheme.onSurfaceVariant.withOpacity(0.5),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(

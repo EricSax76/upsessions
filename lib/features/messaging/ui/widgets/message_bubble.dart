@@ -18,14 +18,14 @@ class MessageBubble extends StatelessWidget {
     // Aesthetic choices
     final bubbleColor = isMine 
         ? const Color(0xFF4F46E5) // Indigo/Primary
-        : colorScheme.surfaceContainerHighest.withOpacity(0.6); // Subtle gray/glass
+        : colorScheme.surfaceContainerHighest.withValues(alpha: 0.6); // Subtle gray/glass
         
     final textColor = isMine 
         ? Colors.white 
         : colorScheme.onSurface;
         
     final timeColor = isMine 
-        ? Colors.white.withOpacity(0.7) 
+        ? Colors.white.withValues(alpha: 0.7) 
         : colorScheme.onSurfaceVariant;
 
     // Modern bubble shape
@@ -47,7 +47,7 @@ class MessageBubble extends StatelessWidget {
           borderRadius: borderRadius,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

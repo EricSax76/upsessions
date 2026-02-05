@@ -97,15 +97,18 @@ class FirebaseInitializer {
   }
 
   void _logFirebaseContext() {
+    if (!kDebugMode) {
+      return;
+    }
     final options = Firebase.app().options;
-    print(
+    debugPrint(
       '[Firebase] appId=${options.appId} projectId=${options.projectId} '
       'storageBucket=${options.storageBucket}',
     );
     final user = FirebaseAuth.instance.currentUser;
-    print(
+    debugPrint(
       '[FirebaseAuth] uid=${user?.uid ?? "null"} email=${user?.email ?? "null"}',
     );
-    print('[Firestore] databaseId=${FirebaseFirestore.instance.databaseId}');
+    debugPrint('[Firestore] databaseId=${FirebaseFirestore.instance.databaseId}');
   }
 }

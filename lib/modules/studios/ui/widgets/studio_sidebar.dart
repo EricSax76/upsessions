@@ -171,7 +171,7 @@ class _StudioMenuListState extends State<_StudioMenuList> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              selectedTileColor: colorScheme.primaryContainer.withOpacity(0.3),
+              selectedTileColor: colorScheme.primaryContainer.withValues(alpha: 0.3),
               onTap: () => _handleTap(context, i),
             ),
           ),
@@ -228,7 +228,7 @@ class _SidebarThemeToggle extends StatelessWidget {
           trailing: Switch(
             value: isDark,
             onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
-            activeColor: colorScheme.primary,
+            activeThumbColor: colorScheme.primary,
           ),
         );
       },

@@ -52,7 +52,7 @@ class SetlistItemCard extends StatelessWidget {
                 width: 36,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: scheme.surfaceContainerHighest.withOpacity(0.5),
+                  color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(

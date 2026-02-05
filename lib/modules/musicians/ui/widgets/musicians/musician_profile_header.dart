@@ -55,14 +55,14 @@ class MusicianProfileHeader extends StatelessWidget {
                       icon: Icons.music_note,
                       label: musician.instrument,
                       color: colors.primary,
-                      backgroundColor: colors.primaryContainer.withOpacity(0.4),
+                      backgroundColor: colors.primaryContainer.withValues(alpha: 0.4),
                     ),
                    if (musician.city.isNotEmpty)
                     _HeaderPill(
                       icon: Icons.location_on_outlined,
                       label: musician.city,
                       color: colors.secondary,
-                      backgroundColor: colors.secondaryContainer.withOpacity(0.4),
+                      backgroundColor: colors.secondaryContainer.withValues(alpha: 0.4),
                     ),
                 ],
               ),
@@ -119,14 +119,14 @@ class MusicianProfileHeader extends StatelessWidget {
                           icon: Icons.music_note,
                           label: musician.instrument,
                           color: colors.primary,
-                          backgroundColor: colors.primaryContainer.withOpacity(0.4),
+                          backgroundColor: colors.primaryContainer.withValues(alpha: 0.4),
                         ),
                        if (musician.city.isNotEmpty)
                         _HeaderPill(
                           icon: Icons.location_on_outlined,
                           label: musician.city,
                           color: colors.secondary,
-                          backgroundColor: colors.secondaryContainer.withOpacity(0.4),
+                          backgroundColor: colors.secondaryContainer.withValues(alpha: 0.4),
                         ),
                     ],
                   ),

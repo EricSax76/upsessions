@@ -47,7 +47,7 @@ class AuthLayout extends StatelessWidget {
           ),
           // Opacity Overlay
           Container(
-            color: Colors.black.withOpacity(0.6), // Adjust opacity as needed
+            color: Colors.black.withValues(alpha: 0.6), // Adjust opacity as needed
           ),
           // Centered Card Content
           SafeArea(
@@ -62,10 +62,10 @@ class AuthLayout extends StatelessWidget {
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       // Transparent background for the card as requested
-                      color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                         color: Colors.white.withOpacity(0.2),
+                         color: Colors.white.withValues(alpha: 0.2),
                          width: 1,
                       ),
                     ),

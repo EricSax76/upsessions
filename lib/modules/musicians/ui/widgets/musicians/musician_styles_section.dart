@@ -56,7 +56,7 @@ class MusicianStylesSection extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(32),
-                          color: colors.secondaryContainer.withOpacity(0.3),
+                          color: colors.secondaryContainer.withValues(alpha: 0.3),
                           border: Border.all(color: colors.secondaryContainer),
                         ),
                         child: Text(

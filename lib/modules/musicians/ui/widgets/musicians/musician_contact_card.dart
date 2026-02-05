@@ -38,7 +38,7 @@ class MusicianContactCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: colors.primaryContainer.withOpacity(0.4),
+                    color: colors.primaryContainer.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(

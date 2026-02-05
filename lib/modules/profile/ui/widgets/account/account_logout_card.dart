@@ -9,16 +9,13 @@ class AccountLogoutCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      // ignore: deprecated_member_use
       color: Theme.of(
         context,
-        // ignore: deprecated_member_use
-      ).colorScheme.errorContainer.withOpacity(0.3),
+      ).colorScheme.errorContainer.withValues(alpha: 0.3),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          // ignore: deprecated_member_use
-          color: Theme.of(context).colorScheme.error.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.error.withValues(alpha: 0.2),
         ),
       ),
       child: ListTile(

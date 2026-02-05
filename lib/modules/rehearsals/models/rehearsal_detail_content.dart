@@ -165,7 +165,7 @@ class _BookingSection extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: hasBooking ? scheme.primary.withOpacity(0.3) : scheme.outlineVariant,
+          color: hasBooking ? scheme.primary.withValues(alpha: 0.3) : scheme.outlineVariant,
         ),
       ),
       child: Padding(
@@ -179,8 +179,8 @@ class _BookingSection extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: hasBooking
-                        ? scheme.primaryContainer.withOpacity(0.5)
-                        : scheme.surfaceContainerHighest.withOpacity(0.5),
+                        ? scheme.primaryContainer.withValues(alpha: 0.5)
+                        : scheme.surfaceContainerHighest.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(

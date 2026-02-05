@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/user_entity.dart';
 import '../models/auth_exceptions.dart';
@@ -30,7 +31,9 @@ class AuthRepository {
         email: email,
         password: password,
       );
-      print('[AuthRepository] User signed in: ${credential.user?.uid}');
+      if (kDebugMode) {
+        debugPrint('[AuthRepository] User signed in: ${credential.user?.uid}');
+      }
       return _mapUser(credential.user)!;
     } on FirebaseAuthException catch (error) {
       throw _mapFirebaseAuthException(error);
@@ -69,7 +72,9 @@ class AuthRepository {
   Future<void> signOut() async {
     final uid = _firebaseAuth.currentUser?.uid;
     await _firebaseAuth.signOut();
-    print('[AuthRepository] User signed out: $uid');
+    if (kDebugMode) {
+      debugPrint('[AuthRepository] User signed out: $uid');
+    }
   }
 
   AuthException _mapFirebaseAuthException(FirebaseAuthException error) {

@@ -77,11 +77,10 @@ class _SidebarThemeToggle extends StatelessWidget {
           trailing: Switch(
             value: isDark,
             onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
-            activeColor: colorScheme.primary,
+            activeThumbColor: colorScheme.primary,
           ),
         );
       },
     );
   }
 }
-

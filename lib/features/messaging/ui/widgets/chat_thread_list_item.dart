@@ -41,12 +41,12 @@ class ChatThreadListItem extends StatelessWidget {
     // Normal: White/Surface background
     
     final backgroundColor = selected
-        ? const Color(0xFFF43F5E).withOpacity(0.12) // Rose-like opacity
+        ? const Color(0xFFF43F5E).withValues(alpha: 0.12) // Rose-like opacity
         : colorScheme.surface;
         
     final borderColor = selected
-        ? const Color(0xFFF43F5E).withOpacity(0.5)
-        : colorScheme.outlineVariant.withOpacity(0.5);
+        ? const Color(0xFFF43F5E).withValues(alpha: 0.5)
+        : colorScheme.outlineVariant.withValues(alpha: 0.5);
 
     final titleColor = colorScheme.onSurface;
     final subtitleColor = selected 
@@ -74,7 +74,7 @@ class ChatThreadListItem extends StatelessWidget {
             boxShadow: [
               if (selected)
                 BoxShadow(
-                  color: const Color(0xFFF43F5E).withOpacity(0.1),
+                  color: const Color(0xFFF43F5E).withValues(alpha: 0.1),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -126,7 +126,7 @@ class ChatThreadListItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(999),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFF43F5E).withOpacity(0.3),
+                        color: const Color(0xFFF43F5E).withValues(alpha: 0.3),
                         blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
@@ -145,8 +145,8 @@ class ChatThreadListItem extends StatelessWidget {
                   Icons.chevron_right_rounded,
                   size: 20,
                   color: selected 
-                    ? const Color(0xFFF43F5E).withOpacity(0.8) 
-                    : colorScheme.onSurfaceVariant.withOpacity(0.6),
+                    ? const Color(0xFFF43F5E).withValues(alpha: 0.8) 
+                    : colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                 ),
             ],
           ),
