@@ -17,6 +17,16 @@ class AuthLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final isCompact =
+        media.size.width < 400 || media.size.height < 720;
+    final outerPadding = isCompact
+        ? const EdgeInsets.symmetric(horizontal: 16, vertical: 16)
+        : const EdgeInsets.all(24);
+    final cardPadding = isCompact
+        ? const EdgeInsets.symmetric(horizontal: 18, vertical: 18)
+        : const EdgeInsets.all(24);
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: showAppBar
@@ -47,19 +57,19 @@ class AuthLayout extends StatelessWidget {
           ),
           // Opacity Overlay
           Container(
-            color: Colors.black.withValues(alpha: 0.6), // Adjust opacity as needed
+            color: Colors.black.withValues(alpha: 0.7), // Adjust opacity as needed
           ),
           // Centered Card Content
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: outerPadding,
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(
                     maxWidth: AppLayout.maxAuthFormWidth,
                   ),
                   child: Container(
-                    padding: const EdgeInsets.all(24),
+                    padding: cardPadding,
                     decoration: BoxDecoration(
                       // Transparent background for the card as requested
                       color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.1),

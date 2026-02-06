@@ -50,6 +50,8 @@
   },
   "providerEmail": "Correo",
   "@providerEmail": {},
+  "providerGoogle": "Google",
+  "@providerGoogle": {},
   "providerFacebook": "Facebook",
   "@providerFacebook": {},
   "providerApple": "Apple",

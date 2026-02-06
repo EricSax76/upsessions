@@ -60,85 +60,119 @@ class _ContactCardState extends State<ContactCard> {
     final styles = musician.nonEmptyStyles;
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SmAvatar(
-                  radius: 28,
-                  imageUrl: musician.photoUrl,
-                  initials: musician.initials,
-                  backgroundColor: colorScheme.primaryContainer,
-                  foregroundColor: colorScheme.onPrimaryContainer,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        musician.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text('${musician.instrument} · ${musician.city}'),
-                      if (styles.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: styles
-                              .map(
-                                (style) => Chip(
-                                  label: Text(style),
-                                  backgroundColor: colorScheme.primary
-                                      .withValues(alpha: 0.08),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ],
-                    ],
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      color: colorScheme.surface,
+      child: InkWell(
+        onTap: _viewProfile,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SmAvatar(
+                    radius: 24,
+                    imageUrl: musician.photoUrl,
+                    initials: musician.initials,
+                    backgroundColor: colorScheme.primaryContainer,
+                    foregroundColor: colorScheme.onPrimaryContainer,
                   ),
-                ),
-                MusicianLikeButton(
-                  musician: musician,
-                  iconSize: 24,
-                  padding: const EdgeInsets.all(4),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                FilledButton.icon(
-                  onPressed: _isContacting ? null : _contact,
-                  icon: _isContacting
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.message_rounded),
-                  label: Text(_isContacting ? 'Abriendo chat...' : 'Contactar'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: _viewProfile,
-                  icon: const Icon(Icons.person),
-                  label: const Text('Ver perfil'),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                musician.name,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            MusicianLikeButton(
+                              musician: musician,
+                              iconSize: 20,
+                              padding: EdgeInsets.zero,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${musician.instrument} · ${musician.city}',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (styles.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            styles.take(3).join(" · "),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: colorScheme.secondary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _viewProfile,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        visualDensity: VisualDensity.compact,
+                        side: BorderSide(color: colorScheme.outline.withValues(alpha: 0.3)),
+                      ),
+                      child: const Text('Ver perfil'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton.tonalIcon(
+                      onPressed: _isContacting ? null : _contact,
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      icon: _isContacting
+                          ? const SizedBox(
+                              width: 12,
+                              height: 12,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.chat_bubble_outline_rounded, size: 16),
+                      label: Text(
+                        _isContacting ? '...' : 'Contactar',
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

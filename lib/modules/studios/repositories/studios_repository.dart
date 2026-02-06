@@ -15,6 +15,7 @@ abstract class StudiosRepository {
   Future<List<RoomEntity>> getRoomsByStudio(String studioId);
 
   Future<void> createBooking(BookingEntity booking);
+  Future<BookingEntity?> getBookingById(String bookingId);
   Future<List<BookingEntity>> getBookingsByRoom(String roomId);
   Future<List<BookingEntity>> getBookingsByUser(String userId);
   Future<List<BookingEntity>> getBookingsByStudio(String studioId);
@@ -93,10 +94,20 @@ class MockStudiosRepository implements StudiosRepository {
     return _rooms.where((r) => r.studioId == studioId).toList();
   }
 
-    @override
+  @override
   Future<void> createBooking(BookingEntity booking) async {
     await Future.delayed(const Duration(milliseconds: 500));
     _bookings.add(booking);
+  }
+
+  @override
+  Future<BookingEntity?> getBookingById(String bookingId) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      return _bookings.firstWhere((b) => b.id == bookingId);
+    } catch (_) {
+      return null;
+    }
   }
 
   @override

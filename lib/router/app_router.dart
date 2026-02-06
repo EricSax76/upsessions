@@ -230,7 +230,8 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.studios,
-          builder: (context, state) => const StudiosListPage(),
+          builder: (context, state) =>
+              const UserShellPage(child: StudiosListPage()),
         ),
         GoRoute(
           path: AppRoutes.studiosLogin,

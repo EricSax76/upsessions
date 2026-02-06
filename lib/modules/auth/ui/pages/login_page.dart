@@ -64,7 +64,7 @@ class LoginPage extends StatelessWidget {
                       alignment: Alignment.center,
                       child: AppLogo(label: localizations.appBrandName),
                     ),
-                    const VSpace(AppSpacing.xxl),
+                    const VSpace(AppSpacing.lg),
                     Text(
                       localizations.login,
                       textAlign: TextAlign.center,
@@ -72,7 +72,7 @@ class LoginPage extends StatelessWidget {
                             color: Colors.white,
                           ),
                     ),
-                    const VSpace(AppSpacing.lg),
+                    const VSpace(AppSpacing.md),
                     const LoginForm(),
                     const VSpace(AppSpacing.sm),
                     Row(
@@ -105,7 +105,7 @@ class LoginPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const VSpace(AppSpacing.section),
+                    const VSpace(AppSpacing.sm),
                     Row(
                       children: [
                         const Expanded(
@@ -128,39 +128,44 @@ class LoginPage extends StatelessWidget {
                             child: Divider(thickness: 1, color: Colors.white24)),
                       ],
                     ),
-                    const VSpace(AppSpacing.section),
+                    const VSpace(AppSpacing.sm),
                     SocialLoginButtons(
                       onSelected: (provider) => _onSocialLogin(context, provider),
                     ),
-                    const VSpace(AppSpacing.xl),
+                    const VSpace(AppSpacing.md),
                     Center(
                       child: TextButton(
                         onPressed: () {
-                           context.push(AppRoutes.studiosLogin);
+                          context.push(AppRoutes.studiosLogin);
                         },
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white,
                         ),
-                        child: Row(
+                        child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.storefront, color: Colors.white70),
-                            const SizedBox(width: 8),
-                             RichText(
-                              text: TextSpan(
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
-                                children: [
-                                  const TextSpan(text: '¿Tienes una Sala de Ensayo? '),
-                                  TextSpan(
-                                    text: 'Ingresa aquí',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).colorScheme.primaryContainer,
-                                      decoration: TextDecoration.underline,
-                                    ),
+                            Text(
+                              '¿Tienes una Sala de Ensayo?',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: Colors.white),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Ingresa aquí',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primaryContainer,
+                                    decoration: TextDecoration.underline,
                                   ),
-                                ],
-                              ),
                             ),
                           ],
                         ),

@@ -4,6 +4,9 @@ import '../../groups/models/group_dtos.dart';
 import '../../groups/repositories/groups_repository.dart';
 import '../models/rehearsal_entity.dart';
 import '../models/setlist_item_entity.dart';
+import '../../studios/models/booking_entity.dart';
+import '../../studios/models/studio_entity.dart';
+import '../../studios/repositories/studios_repository.dart';
 import '../repositories/rehearsals_repository.dart';
 import '../repositories/setlist_repository.dart';
 import 'rehearsal_detail_state.dart';
@@ -16,6 +19,7 @@ class RehearsalDetailCubit extends Cubit<RehearsalDetailState> {
     required this.groupsRepository,
     required this.rehearsalsRepository,
     required this.setlistRepository,
+    required this.studiosRepository,
   }) : super(RehearsalDetailInitial()) {
     _subscribe();
   }
@@ -26,11 +30,15 @@ class RehearsalDetailCubit extends Cubit<RehearsalDetailState> {
   final GroupsRepository groupsRepository;
   final RehearsalsRepository rehearsalsRepository;
   final SetlistRepository setlistRepository;
+  final StudiosRepository studiosRepository;
 
   final List<StreamSubscription> _subscriptions = [];
   GroupDoc? _group;
   RehearsalEntity? _rehearsal;
   List<SetlistItemEntity>? _setlist;
+  BookingEntity? _booking;
+  StudioEntity? _bookingStudio;
+  String? _bookingIdInFlight;
 
   void _subscribe() {
     for (var sub in _subscriptions) {
@@ -51,6 +59,7 @@ class RehearsalDetailCubit extends Cubit<RehearsalDetailState> {
           .watchRehearsal(groupId: groupId, rehearsalId: rehearsalId)
           .listen((rehearsal) {
             _rehearsal = rehearsal;
+            _loadBookingDetailsIfNeeded();
             _updateState();
           }, onError: _handleError),
     );
@@ -86,8 +95,47 @@ class RehearsalDetailCubit extends Cubit<RehearsalDetailState> {
         rehearsal: rehearsal,
         setlist: setlist,
         canDelete: canDelete,
+        booking: _booking,
+        bookingStudio: _bookingStudio,
       ),
     );
+  }
+
+  Future<void> _loadBookingDetailsIfNeeded() async {
+    final bookingId = _rehearsal?.bookingId?.trim();
+    if (bookingId == null || bookingId.isEmpty) {
+      if (_booking != null || _bookingStudio != null || _bookingIdInFlight != null) {
+        _booking = null;
+        _bookingStudio = null;
+        _bookingIdInFlight = null;
+        _updateState();
+      }
+      return;
+    }
+
+    if (_booking?.id == bookingId && _bookingStudio != null) {
+      return;
+    }
+    if (_bookingIdInFlight == bookingId) {
+      return;
+    }
+
+    _bookingIdInFlight = bookingId;
+    try {
+      final booking = await studiosRepository.getBookingById(bookingId);
+      StudioEntity? studio;
+      if (booking != null && booking.studioId.trim().isNotEmpty) {
+        studio = await studiosRepository.getStudioById(booking.studioId);
+      }
+      if (_rehearsal?.bookingId?.trim() != bookingId) {
+        return;
+      }
+      _booking = booking;
+      _bookingStudio = studio;
+    } finally {
+      _bookingIdInFlight = null;
+      _updateState();
+    }
   }
 
   void _handleError(Object error) {

@@ -4,9 +4,11 @@ import '../constants/app_spacing.dart';
 import 'gap.dart';
 
 class AppLogo extends StatelessWidget {
-  const AppLogo({super.key, required this.label});
+  const AppLogo({super.key, required this.label, this.textStyle, this.iconSize});
 
   final String label;
+  final TextStyle? textStyle;
+  final double? iconSize;
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +20,13 @@ class AppLogo extends StatelessWidget {
         children: [
           Icon(
             Icons.music_note_outlined,
-            size: 28,
+            size: iconSize ?? 28,
             color: theme.colorScheme.primary,
           ),
           const HSpace(AppSpacing.sm),
           Text(
             label,
-            style: theme.textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w600),
+            style: textStyle ?? theme.textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w600),
           ),
         ],
       ),

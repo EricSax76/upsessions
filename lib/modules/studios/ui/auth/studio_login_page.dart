@@ -4,14 +4,26 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/gap.dart';
 import '../../../../core/widgets/loading_indicator.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/cubits/auth_cubit.dart';
 import '../../../auth/ui/widgets/auth_layout.dart';
 import '../../../auth/ui/widgets/login_form.dart';
+import '../../../auth/ui/widgets/social_login_buttons.dart';
 
 class StudioLoginPage extends StatelessWidget {
   const StudioLoginPage({super.key});
+
+  void _onSocialLogin(BuildContext context, String provider) {
+    final message = AppLocalizations.of(
+      context,
+    ).socialLoginPlaceholder(provider);
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +48,7 @@ class StudioLoginPage extends StatelessWidget {
         builder: (context, state) {
           final isSubmitting =
               state.isLoading && state.lastAction == AuthAction.login;
+          final localizations = AppLocalizations.of(context);
 
           return Stack(
             children: [
@@ -44,19 +57,15 @@ class StudioLoginPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Center(
-                      child: Icon(
-                        Icons.storefront,
-                        size: 64,
-                        color: Theme.of(context).primaryColor,
-                      ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: AppLogo(label: localizations.appBrandName),
                     ),
                     const VSpace(AppSpacing.lg),
                     Text(
                       'Acceso para Estudios',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
@@ -69,9 +78,9 @@ class StudioLoginPage extends StatelessWidget {
                         context,
                       ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
                     ),
-                    const VSpace(AppSpacing.xl),
+                    const VSpace(AppSpacing.lg),
                     const LoginForm(), // Reuse existing login form
-                    const VSpace(AppSpacing.md),
+                    const VSpace(AppSpacing.sm),
                     TextButton(
                       onPressed: () => context.push(AppRoutes.studiosRegister),
                       style: TextButton.styleFrom(
@@ -81,6 +90,35 @@ class StudioLoginPage extends StatelessWidget {
                       // Ideally we'd pass a param to register to know to redirect back here or to studio creation,
                       // but for now standard register flow -> Home -> Sidebar -> Manage Studio works as a fallback,
                       // OR we assume they come back here to login.
+                    ),
+                    const VSpace(AppSpacing.sm),
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Divider(thickness: 1, color: Colors.white24),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.sm,
+                          ),
+                          child: Text(
+                            localizations.loginContinueWith,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.white70,
+                                ),
+                          ),
+                        ),
+                        const Expanded(
+                          child: Divider(thickness: 1, color: Colors.white24),
+                        ),
+                      ],
+                    ),
+                    const VSpace(AppSpacing.sm),
+                    SocialLoginButtons(
+                      onSelected: (provider) => _onSocialLogin(context, provider),
                     ),
                   ],
                 ),

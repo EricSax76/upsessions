@@ -140,25 +140,23 @@ class UserHomePage extends StatelessWidget {
                               children: [
                                 Icon(Icons.music_note, size: 48, color: colorScheme.onPrimaryContainer),
                                 const SizedBox(height: 8),
-                                Text(
-                                  loc.studiosSubtitle,
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: colorScheme.onPrimaryContainer,
+                                  Text(
+                                    loc.studiosSubtitle,
+                                    style: (isCompact
+                                            ? Theme.of(context).textTheme.titleSmall
+                                            : Theme.of(context).textTheme.titleMedium)
+                                        ?.copyWith(
+                                      color: colorScheme.onPrimaryContainer,
+                                    ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                ),
                               ],
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: TextButton(
-                        onPressed: () => context.push(AppRoutes.studiosDashboard), // Entry point for Providers
-                        child: Text(loc.studiosManage),
-                      ),
-                    ),
+                    const SizedBox(height: 48),
                     SectionCard(
                       title: loc.homeExploreByInstrumentTitle,
                       subtitle: loc.homeExploreByInstrumentSubtitle,

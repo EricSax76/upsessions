@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
+
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
 import '../../models/booking_entity.dart';
+import 'widgets/booking_card.dart';
 import '../../../auth/repositories/auth_repository.dart';
 import '../../../../core/locator/locator.dart';
 
@@ -34,32 +35,136 @@ class MusicianBookingsPage extends StatelessWidget {
               return const Center(child: Text('No bookings found.'));
             }
 
-            return ListView.builder(
-              itemCount: state.myBookings.length,
-              itemBuilder: (context, index) {
-                final booking = state.myBookings[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    leading: const Icon(Icons.event_available, color: Colors.blue),
-                    title: Text('${booking.studioName} - ${booking.roomName}'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            final now = DateTime.now();
+            final sortedBookings = List<BookingEntity>.from(state.myBookings)
+              ..sort(
+                (a, b) => b.startTime.compareTo(a.startTime),
+              ); // Newest first
+
+            final upcoming =
+                sortedBookings.where((b) => b.startTime.isAfter(now)).toList()
+                  ..sort(
+                    (a, b) => a.startTime.compareTo(b.startTime),
+                  ); // Nearest future first
+
+            final past = sortedBookings
+                .where((b) => b.startTime.isBefore(now))
+                .toList();
+
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1000),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWide = constraints.maxWidth > 700;
+                    if (isWide) {
+                      return Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: CustomScrollView(
+                          slivers: [
+                            if (upcoming.isNotEmpty) ...[
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child:
+                                      _buildSectionTitle(context, 'Próximas Reservas'),
+                                ),
+                              ),
+                              SliverGrid(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  mainAxisExtent: 180, // Adjustable height for premium card
+                                ),
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) {
+                                    return BookingCard(booking: upcoming[index]);
+                                  },
+                                  childCount: upcoming.length,
+                                ),
+                              ),
+                              const SliverToBoxAdapter(child: SizedBox(height: 32)),
+                            ],
+                            if (past.isNotEmpty) ...[
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: _buildSectionTitle(context, 'Historial'),
+                                ),
+                              ),
+                              SliverGrid(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  mainAxisExtent: 180,
+                                ),
+                                delegate: SliverChildBuilderDelegate(
+                                  (context, index) {
+                                    return Opacity(
+                                      opacity: 0.7,
+                                      child: BookingCard(booking: past[index]),
+                                    );
+                                  },
+                                  childCount: past.length,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      );
+                    }
+
+                    // Mobile Layout
+                    return ListView(
+                      padding: const EdgeInsets.all(16),
                       children: [
-                        Text(DateFormat('EEE, MMM d, y • HH:mm').format(booking.startTime)),
-                        Text('Duration: ${booking.endTime.difference(booking.startTime).inHours}h • Total: ${booking.totalPrice}€'),
+                        if (upcoming.isNotEmpty) ...[
+                          _buildSectionTitle(context, 'Próximas Reservas'),
+                          const SizedBox(height: 12),
+                          ...upcoming.map(
+                            (booking) => Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: BookingCard(booking: booking),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                        if (past.isNotEmpty) ...[
+                          _buildSectionTitle(context, 'Historial'),
+                          const SizedBox(height: 12),
+                          ...past.map(
+                            (booking) => Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Opacity(
+                                opacity: 0.7,
+                                child: BookingCard(booking: booking),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
-                    ),
-                    trailing: Chip(
-                      label: Text(booking.status.name.toUpperCase()),
-                      backgroundColor: booking.status == BookingStatus.confirmed ? Colors.green.shade100 : Colors.orange.shade100,
-                    ),
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ),
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Text(
+      title.toUpperCase(),
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 1.2,
       ),
     );
   }

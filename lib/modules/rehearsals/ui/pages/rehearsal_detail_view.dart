@@ -8,6 +8,7 @@ import '../../../../core/widgets/loading_indicator.dart';
 import '../../../auth/cubits/auth_cubit.dart';
 import '../../../groups/repositories/groups_repository.dart';
 import '../../../studios/ui/consumer/studios_list_page.dart';
+import '../../../studios/repositories/studios_repository.dart';
 import '../../cubits/rehearsal_detail_cubit.dart';
 import '../../cubits/rehearsal_detail_state.dart';
 import '../../application/rehearsal_actions_service.dart';
@@ -23,6 +24,7 @@ class RehearsalDetailView extends StatelessWidget {
     this.rehearsalsRepository,
     this.setlistRepository,
     this.groupsRepository,
+    this.studiosRepository,
   });
 
   final String groupId;
@@ -30,6 +32,7 @@ class RehearsalDetailView extends StatelessWidget {
   final RehearsalsRepository? rehearsalsRepository;
   final SetlistRepository? setlistRepository;
   final GroupsRepository? groupsRepository;
+  final StudiosRepository? studiosRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +47,7 @@ class RehearsalDetailView extends StatelessWidget {
         rehearsalsRepository:
             rehearsalsRepository ?? locate<RehearsalsRepository>(),
         setlistRepository: setlistRepository ?? locate<SetlistRepository>(),
+        studiosRepository: studiosRepository ?? locate<StudiosRepository>(),
       ),
       child: _RehearsalDetailViewBody(groupId: groupId, rehearsalId: rehearsalId),
     );
@@ -102,6 +106,8 @@ class _RehearsalDetailViewBody extends StatelessWidget {
           return RehearsalDetailContent(
             rehearsal: state.rehearsal,
             setlist: state.setlist,
+            bookingRoomName: state.booking?.roomName,
+            bookingAddress: state.bookingStudio?.address,
             onEditRehearsal: () => rehearsalActions.editRehearsal(
               context: context,
               groupId: cubit.groupId,

@@ -70,6 +70,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get providerEmail => 'Correo';
 
   @override
+  String get providerGoogle => 'Google';
+
+  @override
   String get providerFacebook => 'Facebook';
 
   @override

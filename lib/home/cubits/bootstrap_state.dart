@@ -4,6 +4,7 @@ enum BootstrapStatus {
   initial,
   loading,
   authenticated,
+  studioAuthenticated,
   needsLogin,
   needsOnboarding,
   error,

@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
 import 'room_detail_page.dart';
+import '../../../../home/ui/pages/user_shell_page.dart';
+import 'widgets/room_card.dart';
+import 'widgets/studio_card.dart';
 
 /// Context for booking from a rehearsal
 class RehearsalBookingContext {
@@ -43,39 +46,67 @@ class StudiosListPage extends StatelessWidget {
             if (state.studios.isEmpty) {
                return const Center(child: Text('No studios available.'));
             }
-            return ListView.builder(
-              itemCount: state.studios.length,
-              itemBuilder: (context, index) {
-                final studio = state.studios[index];
-                return Card(
-                  margin: const EdgeInsets.all(8),
-                  child: ExpansionTile(
-                    title: Text(studio.name),
-                    subtitle: Text(studio.address),
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => StudioRoomsPage(
-                                  studioId: studio.id,
-                                  studioName: studio.name,
-                                  rehearsalContext: rehearsalContext,
-                                ),
-                              ),
-                            );
-                          },
-                          child: const Text('View Rooms'),
+            
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1000),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWide = constraints.maxWidth > 700;
+                    
+                    if (isWide) {
+                      return GridView.builder(
+                        padding: const EdgeInsets.all(24),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          mainAxisExtent: 280, // Adjust height for StudioCard
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                        itemCount: state.studios.length,
+                        itemBuilder: (context, index) {
+                          final studio = state.studios[index];
+                          return StudioCard(
+                            studio: studio,
+                            onTap: () => _navigateToRooms(context, studio),
+                          );
+                        },
+                      );
+                    }
+                    
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: state.studios.length,
+                      itemBuilder: (context, index) {
+                        final studio = state.studios[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: StudioCard(
+                            studio: studio,
+                            onTap: () => _navigateToRooms(context, studio),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
             );
           },
+        ),
+      ),
+    );
+  }
+
+  void _navigateToRooms(BuildContext context, dynamic studio) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => UserShellPage(
+          child: StudioRoomsPage(
+            studioId: studio.id,
+            studioName: studio.name,
+            rehearsalContext: rehearsalContext,
+          ),
         ),
       ),
     );
@@ -109,32 +140,72 @@ class StudioRoomsPage extends StatelessWidget {
              if (rooms.isEmpty) {
                return const Center(child: Text('No rooms available in this studio.'));
             }
-            return ListView.builder(
-              itemCount: rooms.length,
-              itemBuilder: (context, index) {
-                final room = rooms[index];
-                return ListTile(
-                  title: Text(room.name),
-                  subtitle: Text('${room.capacity} ppl • ${room.pricePerHour}€/hr'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => BlocProvider.value(
-                          value: context.read<StudiosCubit>(),
-                          child: RoomDetailPage(
+
+            return Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1000),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWide = constraints.maxWidth > 700;
+                    
+                    if (isWide) {
+                      return GridView.builder(
+                        padding: const EdgeInsets.all(24),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          mainAxisExtent: 320, // Adjust height for RoomCard
+                        ),
+                        itemCount: rooms.length,
+                        itemBuilder: (context, index) {
+                          final room = rooms[index];
+                          return RoomCard(
                             room: room,
                             studioName: studioName,
-                            rehearsalContext: rehearsalContext,
+                            onTap: () => _navigateToRoomDetail(context, room),
+                          );
+                        },
+                      );
+                    }
+                    
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: rooms.length,
+                      itemBuilder: (context, index) {
+                        final room = rooms[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: RoomCard(
+                            room: room,
+                            studioName: studioName,
+                            onTap: () => _navigateToRoomDetail(context, room),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     );
                   },
-                );
-              },
+                ),
+              ),
             );
           },
+        ),
+      ),
+    );
+  }
+  
+  void _navigateToRoomDetail(BuildContext context, dynamic room) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<StudiosCubit>(),
+          child: UserShellPage( // Also wrap detail page to keep sidebar
+            child: RoomDetailPage(
+              room: room,
+              studioName: studioName,
+              rehearsalContext: rehearsalContext,
+            ),
+          ),
         ),
       ),
     );

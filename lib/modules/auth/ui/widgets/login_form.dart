@@ -70,7 +70,7 @@ class _LoginFormState extends State<LoginForm> {
                   return null;
                 },
               ),
-              const VSpace(AppSpacing.md),
+              const VSpace(AppSpacing.sm),
               TextFormField(
                 controller: _passwordController,
                 autofillHints: const [AutofillHints.password],
@@ -98,7 +98,7 @@ class _LoginFormState extends State<LoginForm> {
                     ? null
                     : localization.passwordTooShort,
               ),
-              const VSpace(AppSpacing.md),
+              const VSpace(AppSpacing.sm),
               if (error != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm),

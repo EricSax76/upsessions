@@ -228,6 +228,14 @@ class FirestoreStudiosRepository implements StudiosRepository {
   }
 
   @override
+  Future<BookingEntity?> getBookingById(String bookingId) async {
+    final docSnapshot =
+        await _firestore.collection('bookings').doc(bookingId).get();
+    if (!docSnapshot.exists || docSnapshot.data() == null) return null;
+    return _mapBooking(docSnapshot);
+  }
+
+  @override
   Future<List<BookingEntity>> getBookingsByRoom(String roomId) async {
     final querySnapshot = await _firestore
         .collection('bookings')

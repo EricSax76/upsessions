@@ -212,6 +212,12 @@ abstract class AppLocalizations {
   /// **'Correo'**
   String get providerEmail;
 
+  /// No description provided for @providerGoogle.
+  ///
+  /// In es, this message translates to:
+  /// **'Google'**
+  String get providerGoogle;
+
   /// No description provided for @providerFacebook.
   ///
   /// In es, this message translates to:

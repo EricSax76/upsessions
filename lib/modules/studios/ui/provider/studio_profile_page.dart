@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:upsessions/core/constants/app_routes.dart';
 
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
@@ -82,6 +84,15 @@ class _StudioProfilePageState extends State<StudioProfilePage> {
     }
   }
 
+  void _handleExit(BuildContext context) {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return;
+    }
+    context.go(AppRoutes.studiosDashboard);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<StudiosCubit, StudiosState>(
@@ -106,6 +117,13 @@ class _StudioProfilePageState extends State<StudioProfilePage> {
                 SliverAppBar(
                   expandedHeight: 200.0,
                   pinned: true,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    tooltip: 'Volver',
+                    onPressed: () => _handleExit(context),
+                  ),
+                  title: const Text('Perfil del Estudio'),
+                  centerTitle: true,
                   flexibleSpace: FlexibleSpaceBar(
                     background: Stack(
                       fit: StackFit.expand,

@@ -16,7 +16,11 @@ class _AnnouncementFilterPanelState extends State<AnnouncementFilterPanel> {
   @override
   Widget build(BuildContext context) {
     return Wrap(
+      alignment: WrapAlignment.center,
+      runAlignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 8,
+      runSpacing: 8,
       children: filters
           .map(
             (filter) => ChoiceChip(

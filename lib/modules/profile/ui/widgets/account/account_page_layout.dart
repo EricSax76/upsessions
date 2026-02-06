@@ -4,7 +4,6 @@ import '../../../../../core/widgets/constants/breakpoints.dart';
 import '../../../../../home/ui/widgets/profile/profile_link_box.dart';
 import '../../../../auth/models/profile_entity.dart';
 import '../../../../auth/models/user_entity.dart';
-import 'account_logout_card.dart';
 import 'account_preferences_section.dart';
 import 'account_profile_details_card.dart';
 import 'account_profile_header_card.dart';
@@ -148,8 +147,6 @@ class AccountDesktopLayout extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               const ProfileLinkBox(),
-              const SizedBox(height: 16),
-              AccountLogoutCard(onSignOut: onSignOut),
             ],
           ),
         ),

@@ -6,6 +6,7 @@ import '../../../core/constants/app_routes.dart';
 import '../../../core/services/firebase_initializer.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
+import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
 import '../../cubits/bootstrap_cubit.dart';
 
 class SplashPage extends StatelessWidget {
@@ -18,6 +19,7 @@ class SplashPage extends StatelessWidget {
         firebaseInitializer: context.read<FirebaseInitializer>(),
         authRepository: context.read<AuthRepository>(),
         musiciansRepository: context.read<MusiciansRepository>(),
+        studiosRepository: context.read<StudiosRepository>(),
       )..initialize(),
       child: const _SplashView(),
     );
@@ -32,7 +34,9 @@ class _SplashView extends StatelessWidget {
     return BlocConsumer<BootstrapCubit, BootstrapState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
-        if (state.status == BootstrapStatus.authenticated) {
+        if (state.status == BootstrapStatus.studioAuthenticated) {
+          context.go(AppRoutes.studiosDashboard);
+        } else if (state.status == BootstrapStatus.authenticated) {
           context.go(AppRoutes.userHome);
         } else if (state.status == BootstrapStatus.needsOnboarding) {
           context.go(AppRoutes.musicianOnboarding);

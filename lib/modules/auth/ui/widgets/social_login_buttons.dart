@@ -15,8 +15,8 @@ class SocialLoginButtons extends StatelessWidget {
     String tooltip(String label) => localization.continueWithProvider(label);
     final providers = [
       _SocialProvider(
-        icon: Icons.mail_outline_rounded,
-        label: localization.providerEmail,
+        icon: Icons.g_mobiledata,
+        label: localization.providerGoogle,
       ),
       _SocialProvider(
         icon: Icons.facebook_outlined,
@@ -30,7 +30,7 @@ class SocialLoginButtons extends StatelessWidget {
     return Row(
       children: [
         for (var i = 0; i < providers.length; i++) ...[
-          if (i > 0) const HSpace(AppSpacing.md),
+          if (i > 0) const HSpace(AppSpacing.sm),
           Expanded(
             child: _SocialButton(
               icon: providers[i].icon,
@@ -72,15 +72,18 @@ class _SocialButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SizedBox(
-      height: 72,
+      height: 56,
       child: Tooltip(
         message: tooltip,
         child: OutlinedButton(
           onPressed: onPressed,
           style: OutlinedButton.styleFrom(
             foregroundColor: theme.colorScheme.onSurface,
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
             padding: const EdgeInsets.symmetric(
-              vertical: AppSpacing.sm,
+              vertical: 6,
               horizontal: AppSpacing.sm,
             ),
           ),
@@ -88,14 +91,17 @@ class _SocialButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: theme.colorScheme.primary, size: 22),
-              const VSpace(AppSpacing.xxs),
+              Icon(icon, color: theme.colorScheme.primary, size: 20),
+              const SizedBox(height: 2),
               Text(
                 label,
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelMedium?.copyWith(fontSize: 12),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontSize: 11,
+                  height: 1.1,
+                ),
               ),
             ],
           ),

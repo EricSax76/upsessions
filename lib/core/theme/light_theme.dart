@@ -38,8 +38,8 @@ ThemeData buildLightTheme() {
     ),
     scaffoldBackgroundColor: AppColorsLight.background,
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColorsLight.background,
-      foregroundColor: AppColorsLight.textPrimary,
+      backgroundColor: AppColorsLight.appBarBackground,
+      foregroundColor: AppColorsLight.appBarForeground,
       elevation: 0,
       centerTitle: false,
       systemOverlayStyle: SystemUiOverlayStyle(
