@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/widgets/app_card.dart';
+import '../../../../../core/widgets/sm_avatar.dart';
 import '../../../models/studio_entity.dart';
 
 class StudioCard extends StatelessWidget {
-  const StudioCard({
-    super.key,
-    required this.studio,
-    required this.onTap,
-  });
+  const StudioCard({super.key, required this.studio, required this.onTap});
 
   final StudioEntity studio;
   final VoidCallback onTap;
@@ -40,13 +37,14 @@ class StudioCard extends StatelessWidget {
                   Image.network(
                     studio.bannerUrl!,
                     fit: BoxFit.cover,
+                    webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
                     errorBuilder: (context, error, stackTrace) =>
                         Container(color: scheme.surfaceContainerHighest),
                   )
                 else
                   Container(
                     decoration: BoxDecoration(
-                       gradient: LinearGradient(
+                      gradient: LinearGradient(
                         colors: [
                           scheme.primaryContainer,
                           scheme.surfaceContainerHighest,
@@ -85,22 +83,23 @@ class StudioCard extends StatelessWidget {
                     bottom: 12,
                     left: 16,
                     child: Container(
-                      width: 48,
-                      height: 48,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 2),
-                        image: DecorationImage(
-                          image: NetworkImage(studio.logoUrl!),
-                          fit: BoxFit.cover,
-                        ),
+                      ),
+                      child: SmAvatar(
+                        radius: 24,
+                        imageUrl: studio.logoUrl,
+                        fallbackIcon: Icons.storefront,
+                        backgroundColor: scheme.surfaceContainerHighest,
+                        foregroundColor: scheme.onSurfaceVariant,
                       ),
                     ),
                   ),
               ],
             ),
           ),
-          
+
           // Content
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
@@ -121,13 +120,17 @@ class StudioCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               letterSpacing: -0.5,
                             ),
-                             maxLines: 1,
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              Icon(Icons.location_on, size: 14, color: scheme.secondary),
+                              Icon(
+                                Icons.location_on,
+                                size: 14,
+                                color: scheme.secondary,
+                              ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
@@ -145,25 +148,33 @@ class StudioCard extends StatelessWidget {
                       ),
                     ),
                     // Action Arrow
-                     Container(
+                    Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                        color: scheme.surfaceContainerHighest.withValues(
+                          alpha: 0.5,
+                        ),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.arrow_forward, size: 16, color: scheme.onSurface),
+                      child: Icon(
+                        Icons.arrow_forward,
+                        size: 16,
+                        color: scheme.onSurface,
+                      ),
                     ),
                   ],
                 ),
-                 const SizedBox(height: 12),
-                 // View Rooms Button-like look (optional, maybe redundant with arrow but good for explicit CTA)
-                 Container(
+                const SizedBox(height: 12),
+                // View Rooms Button-like look (optional, maybe redundant with arrow but good for explicit CTA)
+                Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     color: scheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: scheme.primary.withValues(alpha: 0.2)),
+                    border: Border.all(
+                      color: scheme.primary.withValues(alpha: 0.2),
+                    ),
                   ),
                   child: Center(
                     child: Text(
@@ -174,7 +185,7 @@ class StudioCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                 ),
+                ),
               ],
             ),
           ),

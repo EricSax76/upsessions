@@ -4,6 +4,23 @@ import '../models/rehearsal_entity.dart';
 import 'rehearsals_repository_base.dart';
 
 class RehearsalsRepository extends RehearsalsRepositoryBase {
+  Future<List<RehearsalEntity>> getMyRehearsals() async {
+    await requireMusicianUid();
+    logFirestore('getMyRehearsals');
+    final snapshot = await logFuture(
+      'getMyRehearsals get',
+      firestore.collectionGroup('rehearsals').orderBy('startsAt').get(),
+    );
+    return snapshot.docs
+        .map((doc) {
+          final groupId = doc.reference.parent.parent?.id ?? '';
+          if (groupId.isEmpty) return null;
+          return _mapRehearsalFromMap(doc.id, doc.data(), groupId);
+        })
+        .whereType<RehearsalEntity>()
+        .toList();
+  }
+
   Future<List<RehearsalEntity>> getRehearsals(String groupId) async {
     await requireMusicianUid();
     logFirestore('getRehearsals groupId=$groupId');
@@ -120,12 +137,12 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     required String bookingId,
   }) async {
     await requireMusicianUid();
-    logFirestore('updateRehearsalBooking groupId=$groupId rehearsalId=$rehearsalId bookingId=$bookingId');
+    logFirestore(
+      'updateRehearsalBooking groupId=$groupId rehearsalId=$rehearsalId bookingId=$bookingId',
+    );
     await logFuture(
       'updateRehearsalBooking update',
-      rehearsals(groupId).doc(rehearsalId).update({
-        'bookingId': bookingId,
-      }),
+      rehearsals(groupId).doc(rehearsalId).update({'bookingId': bookingId}),
     );
   }
 

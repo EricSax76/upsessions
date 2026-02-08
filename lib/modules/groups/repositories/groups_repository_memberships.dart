@@ -1,8 +1,14 @@
 part of 'groups_repository.dart';
 
 mixin GroupsRepositoryMemberships on GroupsRepositoryBase {
-  Stream<List<GroupMembershipEntity>> watchMyGroups() async* {
-    yield* authRepository.idTokenChanges.asyncExpand((user) {
+  Stream<List<GroupMembershipEntity>> watchMyGroups() {
+    // Return a fresh stream per consumer. This avoids stale subscriptions
+    // when responsive layout switches rebuild pages and sidebars.
+    return _buildWatchMyGroupsStream();
+  }
+
+  Stream<List<GroupMembershipEntity>> _buildWatchMyGroupsStream() {
+    return authRepository.idTokenChanges.asyncExpand((user) {
       if (user == null) {
         logFirestore('watchMyGroups skipped (no auth)');
         return Stream.value(const <GroupMembershipEntity>[]);
@@ -103,7 +109,9 @@ mixin GroupsRepositoryMemberships on GroupsRepositoryBase {
   }
 
   Stream<GroupDoc> watchGroup(String groupId) {
-    return groupDoc(groupId).snapshots().map((doc) => GroupDoc.fromGroupDoc(doc));
+    return groupDoc(
+      groupId,
+    ).snapshots().map((doc) => GroupDoc.fromGroupDoc(doc));
   }
 
   Future<bool> isActiveMember(String groupId) async {
@@ -164,6 +172,7 @@ mixin GroupsRepositoryMemberships on GroupsRepositoryBase {
       }),
     );
   }
+
   Stream<List<GroupMember>> watchGroupMembers(String groupId) {
     return members(groupId)
         .where('status', isEqualTo: 'active')
@@ -176,40 +185,37 @@ mixin GroupsRepositoryMemberships on GroupsRepositoryBase {
   ) async {
     if (snapshot.docs.isEmpty) return [];
 
-    final members = <GroupMember>[];
-    for (final doc in snapshot.docs) {
+    final futures = snapshot.docs.map((doc) async {
       final data = doc.data();
       final uid = doc.id;
       final role = data['role']?.toString() ?? 'member';
       final status = data['status']?.toString() ?? 'active';
 
       try {
-        final musicianDoc =
-            await firestore.collection('musicians').doc(uid).get();
+        final musicianDoc = await firestore
+            .collection('musicians')
+            .doc(uid)
+            .get();
         final musicianData = musicianDoc.data() ?? {};
 
-        members.add(
-          GroupMember(
-            id: uid,
-            name: musicianData['name']?.toString() ?? 'Musician',
-            role: role,
-            status: status,
-            photoUrl: musicianData['photoUrl']?.toString(),
-            instrument: musicianData['instrument']?.toString(),
-          ),
+        return GroupMember(
+          id: uid,
+          name: musicianData['name']?.toString() ?? 'Musician',
+          role: role,
+          status: status,
+          photoUrl: musicianData['photoUrl']?.toString(),
+          instrument: musicianData['instrument']?.toString(),
         );
       } catch (e) {
         logFirestore('Error fetching musician profile for $uid: $e');
-        members.add(
-          GroupMember(
-            id: uid,
-            name: 'Musician',
-            role: role,
-            status: status,
-          ),
+        return GroupMember(
+          id: uid,
+          name: 'Musician',
+          role: role,
+          status: status,
         );
       }
-    }
-    return members;
+    });
+    return Future.wait(futures);
   }
 }

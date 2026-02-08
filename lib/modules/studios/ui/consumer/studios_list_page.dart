@@ -31,62 +31,94 @@ class StudiosListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => StudiosCubit()..loadAllStudios(),
+      create: (context) => StudiosCubit()..loadAllStudios(refresh: true),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(rehearsalContext != null
-              ? 'Reservar Sala para Ensayo'
-              : 'Rehearsal Rooms'),
+          title: Text(
+            rehearsalContext != null
+                ? 'Reservar Sala para Ensayo'
+                : 'Rehearsal Rooms',
+          ),
         ),
         body: BlocBuilder<StudiosCubit, StudiosState>(
           builder: (context, state) {
-            if (state.status == StudiosStatus.loading) {
+            if (state.status == StudiosStatus.loading &&
+                state.studios.isEmpty) {
               return const Center(child: CircularProgressIndicator());
             }
             if (state.studios.isEmpty) {
-               return const Center(child: Text('No studios available.'));
+              return const Center(child: Text('No studios available.'));
             }
-            
+
             return Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1000),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final isWide = constraints.maxWidth > 700;
-                    
+                    final loadMore = _buildLoadMore(context, state);
+
                     if (isWide) {
-                      return GridView.builder(
-                        padding: const EdgeInsets.all(24),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          mainAxisExtent: 280, // Adjust height for StudioCard
-                        ),
-                        itemCount: state.studios.length,
-                        itemBuilder: (context, index) {
-                          final studio = state.studios[index];
-                          return StudioCard(
-                            studio: studio,
-                            onTap: () => _navigateToRooms(context, studio),
-                          );
-                        },
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: RefreshIndicator(
+                              onRefresh: () => context
+                                  .read<StudiosCubit>()
+                                  .loadAllStudios(refresh: true),
+                              child: GridView.builder(
+                                padding: const EdgeInsets.all(24),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 16,
+                                      mainAxisSpacing: 16,
+                                      mainAxisExtent:
+                                          280, // Adjust height for StudioCard
+                                    ),
+                                itemCount: state.studios.length,
+                                itemBuilder: (context, index) {
+                                  final studio = state.studios[index];
+                                  return StudioCard(
+                                    studio: studio,
+                                    onTap: () =>
+                                        _navigateToRooms(context, studio),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          loadMore,
+                        ],
                       );
                     }
-                    
-                    return ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: state.studios.length,
-                      itemBuilder: (context, index) {
-                        final studio = state.studios[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: StudioCard(
-                            studio: studio,
-                            onTap: () => _navigateToRooms(context, studio),
+
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: RefreshIndicator(
+                            onRefresh: () => context
+                                .read<StudiosCubit>()
+                                .loadAllStudios(refresh: true),
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: state.studios.length,
+                              itemBuilder: (context, index) {
+                                final studio = state.studios[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: StudioCard(
+                                    studio: studio,
+                                    onTap: () =>
+                                        _navigateToRooms(context, studio),
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                        );
-                      },
+                        ),
+                        loadMore,
+                      ],
                     );
                   },
                 ),
@@ -94,6 +126,26 @@ class StudiosListPage extends StatelessWidget {
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoadMore(BuildContext context, StudiosState state) {
+    if (state.isLoadingStudiosMore) {
+      return const Padding(
+        padding: EdgeInsets.only(bottom: 16),
+        child: CircularProgressIndicator(),
+      );
+    }
+    if (!state.hasMoreStudios) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: OutlinedButton.icon(
+        onPressed: () => context.read<StudiosCubit>().loadAllStudios(),
+        icon: const Icon(Icons.expand_more),
+        label: const Text('Cargar más estudios'),
       ),
     );
   }
@@ -133,12 +185,14 @@ class StudioRoomsPage extends StatelessWidget {
         appBar: AppBar(title: Text(studioName)),
         body: BlocBuilder<StudiosCubit, StudiosState>(
           builder: (context, state) {
-             if (state.status == StudiosStatus.loading) {
+            if (state.status == StudiosStatus.loading) {
               return const Center(child: CircularProgressIndicator());
             }
             final rooms = state.myRooms; // Reused field as per cubit note
-             if (rooms.isEmpty) {
-               return const Center(child: Text('No rooms available in this studio.'));
+            if (rooms.isEmpty) {
+              return const Center(
+                child: Text('No rooms available in this studio.'),
+              );
             }
 
             return Center(
@@ -147,16 +201,17 @@ class StudioRoomsPage extends StatelessWidget {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final isWide = constraints.maxWidth > 700;
-                    
+
                     if (isWide) {
                       return GridView.builder(
                         padding: const EdgeInsets.all(24),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          mainAxisExtent: 320, // Adjust height for RoomCard
-                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              mainAxisExtent: 320, // Adjust height for RoomCard
+                            ),
                         itemCount: rooms.length,
                         itemBuilder: (context, index) {
                           final room = rooms[index];
@@ -168,7 +223,7 @@ class StudioRoomsPage extends StatelessWidget {
                         },
                       );
                     }
-                    
+
                     return ListView.builder(
                       padding: const EdgeInsets.all(16),
                       itemCount: rooms.length,
@@ -193,13 +248,14 @@ class StudioRoomsPage extends StatelessWidget {
       ),
     );
   }
-  
+
   void _navigateToRoomDetail(BuildContext context, dynamic room) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: context.read<StudiosCubit>(),
-          child: UserShellPage( // Also wrap detail page to keep sidebar
+          child: UserShellPage(
+            // Also wrap detail page to keep sidebar
             child: RoomDetailPage(
               room: room,
               studioName: studioName,

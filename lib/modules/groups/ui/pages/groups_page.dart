@@ -30,6 +30,16 @@ class _GroupsView extends StatefulWidget {
 }
 
 class _GroupsViewState extends State<_GroupsView> {
+  late final GroupsRepository _repository;
+  late final Stream<List<GroupMembershipEntity>> _groupsStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _repository = locate<GroupsRepository>();
+    _groupsStream = _repository.watchMyGroups();
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -37,17 +47,17 @@ class _GroupsViewState extends State<_GroupsView> {
 
   @override
   Widget build(BuildContext context) {
-    final repository = locate<GroupsRepository>();
     return StreamBuilder<List<GroupMembershipEntity>>(
-      stream: repository.watchMyGroups(),
+      stream: _groupsStream,
       builder: (context, snapshot) {
         final groups = snapshot.data ?? const <GroupMembershipEntity>[];
+        final shouldShowBlockingError = snapshot.hasError && groups.isEmpty;
         return SearchableListPage<GroupMembershipEntity>(
           items: groups,
           isLoading: snapshot.connectionState == ConnectionState.waiting,
-          errorMessage: snapshot.hasError ? '${snapshot.error}' : null,
-          onRetry: () => repository.authRepository.refreshIdToken(),
-          onRefresh: () => repository.authRepository.refreshIdToken(),
+          errorMessage: shouldShowBlockingError ? '${snapshot.error}' : null,
+          onRetry: () => _repository.authRepository.refreshIdToken(),
+          onRefresh: () => _repository.authRepository.refreshIdToken(),
           searchEnabled: false,
           sortComparator: _compareGroups,
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
@@ -55,7 +65,7 @@ class _GroupsViewState extends State<_GroupsView> {
           gridSpacing: 24,
           headerBuilder: (context, total, visible) => GroupsHeroSection(
             groupCount: total,
-            onCreateGroup: () => _showCreateGroupDialog(context, repository),
+            onCreateGroup: () => _showCreateGroupDialog(context, _repository),
           ),
           emptyBuilder: (context, isSearchEmpty) {
             if (groups.isEmpty) {
@@ -81,6 +91,20 @@ class _GroupsViewState extends State<_GroupsView> {
             photoUrl: group.photoUrl,
             onTap: () => context.go(AppRoutes.groupPage(group.groupId)),
           ),
+          footerBuilder: (context) {
+            if (!snapshot.hasError || groups.isEmpty) {
+              return const SizedBox.shrink();
+            }
+            final textTheme = Theme.of(context).textTheme;
+            final errorColor = Theme.of(context).colorScheme.error;
+            return Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Error al actualizar grupos: ${snapshot.error}',
+                style: textTheme.bodySmall?.copyWith(color: errorColor),
+              ),
+            );
+          },
         );
       },
     );

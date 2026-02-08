@@ -29,15 +29,7 @@ class MusiciansRepository {
     final normalizedCity = _normalize(city);
     final normalizedProfileType = _normalize(profileType);
     final normalizedGender = _normalize(gender);
-    final snapshot = await _firestore
-        .collection(_collectionName)
-        .orderBy('name')
-        .limit(limit)
-        .get();
-    final musicians = snapshot.docs
-        .map(MusicianDto.fromDocument)
-        .map((dto) => dto.toEntity())
-        .toList();
+
     if (normalizedQuery.isEmpty &&
         normalizedInstrument.isEmpty &&
         normalizedStyle.isEmpty &&
@@ -45,7 +37,15 @@ class MusiciansRepository {
         normalizedCity.isEmpty &&
         normalizedProfileType.isEmpty &&
         normalizedGender.isEmpty) {
-      return musicians;
+      final snapshot = await _firestore
+          .collection(_collectionName)
+          .orderBy('name')
+          .limit(limit)
+          .get();
+      return snapshot.docs
+          .map(MusicianDto.fromDocument)
+          .map((dto) => dto.toEntity())
+          .toList();
     }
 
     List<String> provinceCities = const [];
@@ -53,40 +53,57 @@ class MusiciansRepository {
       provinceCities = await _fetchCitiesForProvince(province);
     }
 
-    return musicians.where((musician) {
-      if (normalizedQuery.isNotEmpty &&
-          !_matchesQuery(musician, normalizedQuery)) {
-        return false;
+    const pageSize = 100;
+    const maxPages = 12;
+    var pageCount = 0;
+    QueryDocumentSnapshot<Map<String, dynamic>>? cursor;
+    final matched = <MusicianEntity>[];
+
+    while (matched.length < limit && pageCount < maxPages) {
+      Query<Map<String, dynamic>> queryRef = _firestore
+          .collection(_collectionName)
+          .orderBy('name')
+          .limit(pageSize);
+      if (cursor != null) {
+        queryRef = queryRef.startAfterDocument(cursor);
       }
-      if (normalizedInstrument.isNotEmpty &&
-          !_matchesValue(musician.instrument, normalizedInstrument)) {
-        return false;
+
+      final snapshot = await queryRef.get();
+      if (snapshot.docs.isEmpty) {
+        break;
       }
-      if (normalizedStyle.isNotEmpty &&
-          !musician.styles.any(
-            (style) => _matchesValue(style, normalizedStyle),
-          )) {
-        return false;
+
+      final musicians = snapshot.docs
+          .map(MusicianDto.fromDocument)
+          .map((dto) => dto.toEntity());
+
+      for (final musician in musicians) {
+        if (_matchesSearchFilters(
+          musician: musician,
+          normalizedQuery: normalizedQuery,
+          normalizedInstrument: normalizedInstrument,
+          normalizedStyle: normalizedStyle,
+          normalizedProvince: normalizedProvince,
+          normalizedCity: normalizedCity,
+          normalizedProfileType: normalizedProfileType,
+          normalizedGender: normalizedGender,
+          provinceCities: provinceCities,
+        )) {
+          matched.add(musician);
+          if (matched.length >= limit) {
+            break;
+          }
+        }
       }
-      if (normalizedCity.isNotEmpty &&
-          !_matchesValue(musician.city, normalizedCity)) {
-        return false;
+
+      pageCount += 1;
+      cursor = snapshot.docs.last;
+      if (snapshot.docs.length < pageSize) {
+        break;
       }
-      if (normalizedProvince.isNotEmpty &&
-          !_matchesProvince(musician, normalizedProvince, provinceCities)) {
-        return false;
-      }
-      if (normalizedProfileType.isNotEmpty &&
-          !_matchesValue(musician.profileType ?? '', normalizedProfileType)) {
-        return false;
-      }
-      if (normalizedGender.isNotEmpty &&
-          normalizedGender != 'cualquiera' &&
-          !_matchesValue(musician.gender ?? '', normalizedGender)) {
-        return false;
-      }
-      return true;
-    }).toList();
+    }
+
+    return matched;
   }
 
   String _normalize(String value) => value.trim().toLowerCase();
@@ -116,6 +133,51 @@ class MusiciansRepository {
     }
     final musicianCity = _normalize(musician.city);
     return provinceCities.map(_normalize).any((city) => city == musicianCity);
+  }
+
+  bool _matchesSearchFilters({
+    required MusicianEntity musician,
+    required String normalizedQuery,
+    required String normalizedInstrument,
+    required String normalizedStyle,
+    required String normalizedProvince,
+    required String normalizedCity,
+    required String normalizedProfileType,
+    required String normalizedGender,
+    required List<String> provinceCities,
+  }) {
+    if (normalizedQuery.isNotEmpty &&
+        !_matchesQuery(musician, normalizedQuery)) {
+      return false;
+    }
+    if (normalizedInstrument.isNotEmpty &&
+        !_matchesValue(musician.instrument, normalizedInstrument)) {
+      return false;
+    }
+    if (normalizedStyle.isNotEmpty &&
+        !musician.styles.any(
+          (style) => _matchesValue(style, normalizedStyle),
+        )) {
+      return false;
+    }
+    if (normalizedCity.isNotEmpty &&
+        !_matchesValue(musician.city, normalizedCity)) {
+      return false;
+    }
+    if (normalizedProvince.isNotEmpty &&
+        !_matchesProvince(musician, normalizedProvince, provinceCities)) {
+      return false;
+    }
+    if (normalizedProfileType.isNotEmpty &&
+        !_matchesValue(musician.profileType ?? '', normalizedProfileType)) {
+      return false;
+    }
+    if (normalizedGender.isNotEmpty &&
+        normalizedGender != 'cualquiera' &&
+        !_matchesValue(musician.gender ?? '', normalizedGender)) {
+      return false;
+    }
+    return true;
   }
 
   Future<List<String>> _fetchCitiesForProvince(String province) async {

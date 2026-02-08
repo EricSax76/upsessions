@@ -71,18 +71,17 @@ class _SetlistWebTableState extends State<SetlistWebTable> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // If width is very small, we might need horizontal scroll
         final minWidth = 600.0;
         final shouldScroll = constraints.maxWidth < minWidth;
+        final useShrinkWrapFallback = !constraints.hasBoundedHeight;
 
-        Widget tableContent = Column(
+        final tableContent = Column(
           children: [
-            // Table Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
-                  const SizedBox(width: 40), // Drag handle space
+                  const SizedBox(width: 40),
                   SizedBox(
                     width: 40,
                     child: Text('#', style: _headerStyle(theme)),
@@ -103,56 +102,87 @@ class _SetlistWebTableState extends State<SetlistWebTable> {
                     flex: 4,
                     child: Text('Notas', style: _headerStyle(theme)),
                   ),
-                  const SizedBox(width: 48), // Actions space
+                  const SizedBox(width: 48),
                 ],
               ),
             ),
             const Divider(height: 1),
-            // List Items
-            ReorderableListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              buildDefaultDragHandles: false,
-              itemCount: _items.length,
-              onReorder: (oldIndex, newIndex) {
-                setState(() {
-                  if (newIndex > oldIndex) newIndex -= 1;
-                  final item = _items.removeAt(oldIndex);
-                  _items.insert(newIndex, item);
-                  _items = _withLocalOrders(_items);
-                });
-                widget.onReorderSetlist(_items.map((e) => e.id).toList());
-              },
-              itemBuilder: (context, index) {
-                final item = _items[index];
-                return ReorderableDelayedDragStartListener(
-                  key: ValueKey(item.id),
-                  index: index,
-                  child: _SetlistWebRow(
-                    item: item,
-                    index: index,
-                    onEdit: () => widget.onEditSong(item),
-                    onDelete: () => widget.onDeleteSong(item),
-                    theme: theme,
-                    scheme: scheme,
-                  ),
-                );
-              },
-            ),
+            if (useShrinkWrapFallback)
+              _buildReorderableList(
+                theme: theme,
+                scheme: scheme,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+              )
+            else
+              Expanded(
+                child: _buildReorderableList(
+                  theme: theme,
+                  scheme: scheme,
+                  shrinkWrap: false,
+                ),
+              ),
           ],
         );
 
         if (shouldScroll) {
+          if (useShrinkWrapFallback) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(width: minWidth, child: tableContent),
+            );
+          }
           return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SizedBox(
               width: minWidth,
+              height: constraints.maxHeight,
               child: tableContent,
             ),
           );
         }
 
         return tableContent;
+      },
+    );
+  }
+
+  Widget _buildReorderableList({
+    required ThemeData theme,
+    required ColorScheme scheme,
+    required bool shrinkWrap,
+    ScrollPhysics? physics,
+  }) {
+    return ReorderableListView.builder(
+      shrinkWrap: shrinkWrap,
+      physics: physics,
+      padding: EdgeInsets.zero,
+      primary: false,
+      buildDefaultDragHandles: false,
+      itemCount: _items.length,
+      onReorder: (oldIndex, newIndex) {
+        setState(() {
+          if (newIndex > oldIndex) newIndex -= 1;
+          final item = _items.removeAt(oldIndex);
+          _items.insert(newIndex, item);
+          _items = _withLocalOrders(_items);
+        });
+        widget.onReorderSetlist(_items.map((e) => e.id).toList());
+      },
+      itemBuilder: (context, index) {
+        final item = _items[index];
+        return ReorderableDelayedDragStartListener(
+          key: ValueKey(item.id),
+          index: index,
+          child: _SetlistWebRow(
+            item: item,
+            index: index,
+            onEdit: () => widget.onEditSong(item),
+            onDelete: () => widget.onDeleteSong(item),
+            theme: theme,
+            scheme: scheme,
+          ),
+        );
       },
     );
   }
@@ -184,7 +214,6 @@ class _SetlistWebRow extends StatefulWidget {
 
   @override
   State<_SetlistWebRow> createState() => _SetlistWebRowState();
-
 }
 
 class _SetlistWebRowState extends State<_SetlistWebRow> {
@@ -193,19 +222,31 @@ class _SetlistWebRowState extends State<_SetlistWebRow> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      onEnter: (_) => setState(() => _isHovering = true),
-      onExit: (_) => setState(() => _isHovering = false),
+      onEnter: (_) {
+        if (!mounted || _isHovering) return;
+        setState(() => _isHovering = true);
+      },
+      onExit: (_) {
+        if (!mounted || !_isHovering) return;
+        setState(() => _isHovering = false);
+      },
       child: Container(
-        color: _isHovering ? widget.scheme.surfaceContainerHighest.withValues(alpha: 0.3) : Colors.transparent,
+        color: _isHovering
+            ? widget.scheme.surfaceContainerHighest.withValues(alpha: 0.3)
+            : Colors.transparent,
         child: InkWell(
           onTap: widget.onEdit,
-           child: Padding(
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
                 ReorderableDragStartListener(
-                    index: widget.index,
-                    child: Icon(Icons.drag_indicator, color: widget.scheme.outline, size: 20),
+                  index: widget.index,
+                  child: Icon(
+                    Icons.drag_indicator,
+                    color: widget.scheme.outline,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 20),
                 SizedBox(
@@ -227,36 +268,43 @@ class _SetlistWebRowState extends State<_SetlistWebRow> {
                 Expanded(
                   flex: 2,
                   child: widget.item.keySignature.isNotEmpty
-                    ? Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: widget.scheme.secondaryContainer.withValues(alpha: 0.5),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          widget.item.keySignature,
-                          style: widget.theme.textTheme.bodySmall?.copyWith(
-                            color: widget.scheme.onSecondaryContainer,
-                            fontWeight: FontWeight.bold,
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                    : const SizedBox.shrink(),
+                          decoration: BoxDecoration(
+                            color: widget.scheme.secondaryContainer.withValues(
+                              alpha: 0.5,
+                            ),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            widget.item.keySignature,
+                            style: widget.theme.textTheme.bodySmall?.copyWith(
+                              color: widget.scheme.onSecondaryContainer,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : const SizedBox.shrink(),
                 ),
                 Expanded(
                   flex: 2,
                   child: Text(
-                    widget.item.tempoBpm != null ? '${widget.item.tempoBpm} BPM' : '-',
+                    widget.item.tempoBpm != null
+                        ? '${widget.item.tempoBpm} BPM'
+                        : '-',
                     style: widget.theme.textTheme.bodyMedium,
                   ),
                 ),
                 Expanded(
                   flex: 4,
-                   child: Text(
+                  child: Text(
                     widget.item.notes,
                     style: widget.theme.textTheme.bodySmall?.copyWith(
-                       color: widget.scheme.onSurfaceVariant,
+                      color: widget.scheme.onSurfaceVariant,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

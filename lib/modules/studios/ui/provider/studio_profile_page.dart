@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
+import 'package:upsessions/core/widgets/sm_avatar.dart';
 
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
@@ -130,10 +131,28 @@ class _StudioProfilePageState extends State<StudioProfilePage> {
                       children: [
                         if (studio.bannerUrl != null &&
                             studio.bannerUrl!.isNotEmpty)
-                          Image.network(studio.bannerUrl!, fit: BoxFit.cover)
+                          Image.network(
+                            studio.bannerUrl!,
+                            fit: BoxFit.cover,
+                            webHtmlElementStrategy:
+                                WebHtmlElementStrategy.prefer,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.primaryContainer,
+                                  child: const Icon(
+                                    Icons.broken_image_outlined,
+                                    size: 64,
+                                    color: Colors.black26,
+                                  ),
+                                ),
+                          )
                         else
                           Container(
-                            color: Theme.of(context).colorScheme.primaryContainer,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
                             child: const Icon(
                               Icons.image,
                               size: 64,
@@ -171,24 +190,24 @@ class _StudioProfilePageState extends State<StudioProfilePage> {
                           child: Stack(
                             children: [
                               CircleAvatar(
-                                radius: 50,
-                                backgroundImage:
-                                    studio.logoUrl != null &&
-                                        studio.logoUrl!.isNotEmpty
-                                    ? NetworkImage(studio.logoUrl!)
-                                    : null,
-                                child:
-                                    studio.logoUrl == null ||
-                                        studio.logoUrl!.isEmpty
-                                    ? const Icon(Icons.store, size: 50)
-                                    : null,
+                                radius: 52,
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.surface,
+                                child: SmAvatar(
+                                  radius: 50,
+                                  imageUrl: studio.logoUrl,
+                                  fallbackIcon: Icons.store,
+                                ),
                               ),
                               Positioned(
                                 bottom: 0,
                                 right: 0,
                                 child: CircleAvatar(
                                   radius: 18,
-                                  backgroundColor: Theme.of(context).primaryColor,
+                                  backgroundColor: Theme.of(
+                                    context,
+                                  ).primaryColor,
                                   child: IconButton(
                                     icon: const Icon(
                                       Icons.camera_alt,

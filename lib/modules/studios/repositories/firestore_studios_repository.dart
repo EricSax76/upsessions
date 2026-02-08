@@ -69,8 +69,11 @@ class FirestoreStudiosRepository implements StudiosRepository {
 
   @override
   Future<StudioEntity?> getStudioById(String studioId) async {
-    final docSnapshot = await _firestore.collection('studios').doc(studioId).get();
-    
+    final docSnapshot = await _firestore
+        .collection('studios')
+        .doc(studioId)
+        .get();
+
     if (!docSnapshot.exists || docSnapshot.data() == null) return null;
 
     final data = docSnapshot.data()!;
@@ -91,10 +94,22 @@ class FirestoreStudiosRepository implements StudiosRepository {
   }
 
   @override
-  Future<List<StudioEntity>> getAllStudios() async {
-    final querySnapshot = await _firestore.collection('studios').get();
+  Future<StudiosPage> getStudiosPage({String? cursor, int limit = 20}) async {
+    Query<Map<String, dynamic>> query = _firestore
+        .collection('studios')
+        .orderBy(FieldPath.documentId)
+        .limit(limit + 1);
+    final startAfterId = (cursor ?? '').trim();
+    if (startAfterId.isNotEmpty) {
+      query = query.startAfter([startAfterId]);
+    }
 
-    return querySnapshot.docs.map((doc) {
+    final querySnapshot = await query.get();
+    final docs = querySnapshot.docs;
+    final hasMore = docs.length > limit;
+    final pageDocs = hasMore ? docs.take(limit).toList() : docs;
+
+    final studios = pageDocs.map((doc) {
       final data = doc.data();
       return StudioEntity(
         id: data['id'] ?? doc.id,
@@ -110,6 +125,28 @@ class FirestoreStudiosRepository implements StudiosRepository {
         bannerUrl: data['bannerUrl'],
       );
     }).toList();
+
+    final nextCursor = hasMore && pageDocs.isNotEmpty ? pageDocs.last.id : null;
+    return StudiosPage(
+      items: studios,
+      hasMore: hasMore,
+      nextCursor: nextCursor,
+    );
+  }
+
+  @override
+  Future<List<StudioEntity>> getAllStudios() async {
+    final studios = <StudioEntity>[];
+    String? cursor;
+    while (true) {
+      final page = await getStudiosPage(cursor: cursor, limit: 100);
+      studios.addAll(page.items);
+      if (!page.hasMore || page.nextCursor == null) {
+        break;
+      }
+      cursor = page.nextCursor;
+    }
+    return studios;
   }
 
   @override
@@ -120,16 +157,16 @@ class FirestoreStudiosRepository implements StudiosRepository {
         .collection('rooms')
         .doc(room.id)
         .set({
-      'id': room.id,
-      'studioId': room.studioId,
-      'name': room.name,
-      'capacity': room.capacity,
-      'size': room.size,
-      'pricePerHour': room.pricePerHour,
-      'equipment': room.equipment,
-      'amenities': room.amenities,
-      'photos': room.photos,
-    });
+          'id': room.id,
+          'studioId': room.studioId,
+          'name': room.name,
+          'capacity': room.capacity,
+          'size': room.size,
+          'pricePerHour': room.pricePerHour,
+          'equipment': room.equipment,
+          'amenities': room.amenities,
+          'photos': room.photos,
+        });
   }
 
   @override
@@ -140,36 +177,39 @@ class FirestoreStudiosRepository implements StudiosRepository {
         .collection('rooms')
         .doc(room.id)
         .update({
-      'name': room.name,
-      'capacity': room.capacity,
-      'size': room.size,
-      'pricePerHour': room.pricePerHour,
-      'equipment': room.equipment,
-      'amenities': room.amenities,
-      'photos': room.photos,
-    });
+          'name': room.name,
+          'capacity': room.capacity,
+          'size': room.size,
+          'pricePerHour': room.pricePerHour,
+          'equipment': room.equipment,
+          'amenities': room.amenities,
+          'photos': room.photos,
+        });
   }
 
   @override
   Future<void> deleteRoom(String roomId) async {
     // Note: To properly delete, we usually need the studioId to construct the path.
-    // However, the interface only gives roomId. 
-    // Ideally we pass studioId or fetch the room first. 
+    // However, the interface only gives roomId.
+    // Ideally we pass studioId or fetch the room first.
     // Given the current architecture, assuming we can't easily change the interface right now without breaking existing code,
     // we might need to rely on a CollectionGroup query or adjust the interface.
     // BUT since this is MVP, let's assume the caller will likely have to handle this or we find the parent.
-    // For now, I'll use a CollectionGroup query to find the parent studio if needed, OR 
+    // For now, I'll use a CollectionGroup query to find the parent studio if needed, OR
     // update the interface to 'deleteRoom(String studioId, String roomId)' would be better.
-    // I will assume for now that I need to find the room first to delete it or just skip this edge case if not critical. 
+    // I will assume for now that I need to find the room first to delete it or just skip this edge case if not critical.
     // Actually, looking at the UI, we probably have the studio context.
     // For this exact implementation, I will implement a safety check:
     // "Warning: deleteRoom(roomId) is inefficient without studioId in Firestore structure."
     // Let's defer this complexity or just iterate studios (bad).
-    // Better approach: Since `edit_room_page` (caller) knows the studioId, 
+    // Better approach: Since `edit_room_page` (caller) knows the studioId,
     // I will assume for this step I should update the interface or just search.
     // Let's do a search for now to be safe without changing interface yet.
-    
-    final query = await _firestore.collectionGroup('rooms').where('id', isEqualTo: roomId).get();
+
+    final query = await _firestore
+        .collectionGroup('rooms')
+        .where('id', isEqualTo: roomId)
+        .get();
     for (var doc in query.docs) {
       await doc.reference.delete();
     }
@@ -187,7 +227,9 @@ class FirestoreStudiosRepository implements StudiosRepository {
       final data = doc.data();
       final legacyPhotoUrl = data['photoUrl'];
       final photos = List<String>.from(data['photos'] ?? []);
-      if (photos.isEmpty && legacyPhotoUrl is String && legacyPhotoUrl.isNotEmpty) {
+      if (photos.isEmpty &&
+          legacyPhotoUrl is String &&
+          legacyPhotoUrl.isNotEmpty) {
         photos.add(legacyPhotoUrl);
       }
       return RoomEntity(
@@ -229,8 +271,10 @@ class FirestoreStudiosRepository implements StudiosRepository {
 
   @override
   Future<BookingEntity?> getBookingById(String bookingId) async {
-    final docSnapshot =
-        await _firestore.collection('bookings').doc(bookingId).get();
+    final docSnapshot = await _firestore
+        .collection('bookings')
+        .doc(bookingId)
+        .get();
     if (!docSnapshot.exists || docSnapshot.data() == null) return null;
     return _mapBooking(docSnapshot);
   }
@@ -271,8 +315,8 @@ class FirestoreStudiosRepository implements StudiosRepository {
   BookingEntity _mapBooking(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
     // Fallback for existing data if studioId missing (shouldn't happen with new logic but safe)
-    final studioId = data['studioId'] as String? ?? ''; 
-    
+    final studioId = data['studioId'] as String? ?? '';
+
     return BookingEntity(
       id: data['id'] ?? doc.id,
       roomId: data['roomId'] ?? '',

@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 
+enum AnnouncementUiFilter { all, nearby, urgent }
+
 class AnnouncementFilterPanel extends StatefulWidget {
   const AnnouncementFilterPanel({super.key, required this.onChanged});
 
-  final ValueChanged<String> onChanged;
+  final ValueChanged<AnnouncementUiFilter> onChanged;
 
   @override
-  State<AnnouncementFilterPanel> createState() => _AnnouncementFilterPanelState();
+  State<AnnouncementFilterPanel> createState() =>
+      _AnnouncementFilterPanelState();
 }
 
 class _AnnouncementFilterPanelState extends State<AnnouncementFilterPanel> {
-  String? _selected;
-  final filters = const ['Todos', 'Cercanos', 'Urgentes'];
+  AnnouncementUiFilter _selected = AnnouncementUiFilter.all;
+  final filters = const <(AnnouncementUiFilter, String)>[
+    (AnnouncementUiFilter.all, 'Todos'),
+    (AnnouncementUiFilter.nearby, 'Cercanos'),
+    (AnnouncementUiFilter.urgent, 'Urgentes'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +31,11 @@ class _AnnouncementFilterPanelState extends State<AnnouncementFilterPanel> {
       children: filters
           .map(
             (filter) => ChoiceChip(
-              label: Text(filter),
-              selected: _selected == filter,
+              label: Text(filter.$2),
+              selected: _selected == filter.$1,
               onSelected: (_) {
-                setState(() => _selected = filter);
-                widget.onChanged(filter);
+                setState(() => _selected = filter.$1);
+                widget.onChanged(filter.$1);
               },
             ),
           )

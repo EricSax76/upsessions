@@ -38,7 +38,16 @@ class RoomDetailPage extends StatelessWidget {
               width: double.infinity,
               color: Colors.grey.shade300,
               child: room.photos.isNotEmpty
-                  ? Image.network(room.photos.first, fit: BoxFit.cover)
+                  ? Image.network(
+                      room.photos.first,
+                      fit: BoxFit.cover,
+                      webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.broken_image_outlined,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                    )
                   : const Icon(Icons.image, size: 50, color: Colors.grey),
             ),
             const SizedBox(height: 16),
@@ -69,9 +78,11 @@ class RoomDetailPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 onPressed: () => _showBookingDialog(context),
-                child: Text(rehearsalContext != null
-                    ? 'Reservar para Ensayo'
-                    : 'Book Room'),
+                child: Text(
+                  rehearsalContext != null
+                      ? 'Reservar para Ensayo'
+                      : 'Book Room',
+                ),
               ),
             ),
           ],
@@ -146,8 +157,9 @@ class _BookingDialogState extends State<_BookingDialog> {
       );
       // Calculate duration if end date is provided
       if (widget.rehearsalContext!.suggestedEndDate != null) {
-        final diff = widget.rehearsalContext!.suggestedEndDate!
-            .difference(rehearsalDate);
+        final diff = widget.rehearsalContext!.suggestedEndDate!.difference(
+          rehearsalDate,
+        );
         _durationHours = diff.inHours.clamp(1, 8);
       } else {
         _durationHours = 2;
@@ -237,24 +249,29 @@ class _BookingDialogState extends State<_BookingDialog> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(widget.rehearsalContext != null
-            ? '¡Sala reservada para el ensayo por ${_totalPrice.toStringAsFixed(2)}€!'
-            : 'Booking confirmed for ${_totalPrice.toStringAsFixed(2)}€!'),
+        content: Text(
+          widget.rehearsalContext != null
+              ? '¡Sala reservada para el ensayo por ${_totalPrice.toStringAsFixed(2)}€!'
+              : 'Booking confirmed for ${_totalPrice.toStringAsFixed(2)}€!',
+        ),
       ),
     );
 
     // If from rehearsal context, pop back to rehearsal detail
     if (widget.rehearsalContext != null) {
       // Pop studios list and rooms page to return to rehearsal
-      Navigator.of(context).popUntil((route) => route.isFirst || 
-          (route.settings.name?.contains('rehearsal') ?? false));
+      Navigator.of(context).popUntil(
+        (route) =>
+            route.isFirst ||
+            (route.settings.name?.contains('rehearsal') ?? false),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final isFromRehearsal = widget.rehearsalContext != null;
-    
+
     return AlertDialog(
       title: Text(isFromRehearsal ? 'Reservar para Ensayo' : 'Book Room'),
       content: SingleChildScrollView(
@@ -267,7 +284,9 @@ class _BookingDialogState extends State<_BookingDialog> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -343,7 +362,9 @@ class _BookingDialogState extends State<_BookingDialog> {
         ),
         FilledButton(
           onPressed: _confirmBooking,
-          child: Text(isFromRehearsal ? 'Confirmar Reserva' : 'Confirm Booking'),
+          child: Text(
+            isFromRehearsal ? 'Confirmar Reserva' : 'Confirm Booking',
+          ),
         ),
       ],
     );

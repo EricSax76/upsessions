@@ -39,7 +39,7 @@ class GroupRehearsalsPage extends StatelessWidget {
   }
 }
 
-class GroupRehearsalsView extends StatelessWidget {
+class GroupRehearsalsView extends StatefulWidget {
   const GroupRehearsalsView({
     super.key,
     required this.groupId,
@@ -54,20 +54,25 @@ class GroupRehearsalsView extends StatelessWidget {
   final EdgeInsets? padding;
 
   @override
-  Widget build(BuildContext context) {
-    final controller =
-        this.controller ?? GroupRehearsalsController.fromLocator();
+  State<GroupRehearsalsView> createState() => _GroupRehearsalsViewState();
+}
 
+class _GroupRehearsalsViewState extends State<GroupRehearsalsView> {
+  late final GroupRehearsalsController _controller =
+      widget.controller ?? GroupRehearsalsController.fromLocator();
+
+  @override
+  Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => GroupRehearsalsCubit(
-        groupId: groupId,
-        controller: controller,
+        groupId: widget.groupId,
+        controller: _controller,
       ),
       child: _GroupRehearsalsBody(
-        groupId: groupId,
-        controller: controller,
-        showHeader: showHeader,
-        padding: padding,
+        groupId: widget.groupId,
+        controller: _controller,
+        showHeader: widget.showHeader,
+        padding: widget.padding,
       ),
     );
   }
@@ -135,11 +140,7 @@ class _GroupRehearsalsBodyState extends State<_GroupRehearsalsBody> {
   }) {
     final now = DateTime.now();
     final canManageMembers = role == 'owner' || role == 'admin';
-    final filtered = applyRehearsalFilter(
-      rehearsals,
-      _filter,
-      now: now,
-    );
+    final filtered = applyRehearsalFilter(rehearsals, _filter, now: now);
 
     return LayoutBuilder(
       builder: (context, constraints) {

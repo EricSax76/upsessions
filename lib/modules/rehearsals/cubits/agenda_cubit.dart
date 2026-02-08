@@ -25,23 +25,37 @@ class AgendaCubit extends Cubit<AgendaState> {
   Future<void> fetchRehearsals() async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
     try {
-      final groups = await _groupsRepository.watchMyGroups().first;
-      final allRehearsals = <RehearsalEntity>[];
-      for (final group in groups) {
-        final rehearsals = await _rehearsalsRepository.getRehearsals(
-          group.groupId,
-        );
-        allRehearsals.addAll(rehearsals);
-      }
+      final allRehearsals = await _rehearsalsRepository.getMyRehearsals();
       allRehearsals.sort((a, b) => a.startsAt.compareTo(b.startsAt));
       emit(state.copyWith(isLoading: false, rehearsals: allRehearsals));
-    } catch (error) {
-      emit(
-        state.copyWith(
-          isLoading: false,
-          errorMessage: 'No pudimos cargar tu agenda. Intenta más tarde.',
-        ),
-      );
+    } catch (_) {
+      try {
+        final fallback = await _fetchRehearsalsByGroup();
+        fallback.sort((a, b) => a.startsAt.compareTo(b.startsAt));
+        emit(state.copyWith(isLoading: false, rehearsals: fallback));
+      } catch (_) {
+        emit(
+          state.copyWith(
+            isLoading: false,
+            errorMessage: 'No pudimos cargar tu agenda. Intenta más tarde.',
+          ),
+        );
+      }
     }
+  }
+
+  Future<List<RehearsalEntity>> _fetchRehearsalsByGroup() async {
+    final groups = await _groupsRepository.watchMyGroups().first;
+    final groupIds = groups.map((group) => group.groupId).toSet().toList();
+    final rehearsalsByGroup = await Future.wait(
+      groupIds.map((groupId) async {
+        try {
+          return await _rehearsalsRepository.getRehearsals(groupId);
+        } catch (_) {
+          return const <RehearsalEntity>[];
+        }
+      }),
+    );
+    return rehearsalsByGroup.expand((rehearsals) => rehearsals).toList();
   }
 }

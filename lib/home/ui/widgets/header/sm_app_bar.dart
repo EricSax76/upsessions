@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +33,9 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
             final displayName = user?.displayName ?? '';
             final appBarTheme = Theme.of(context).appBarTheme;
             final appBarBackground =
-                appBarTheme.backgroundColor ?? Theme.of(context).colorScheme.surface;
+                appBarTheme.backgroundColor ??
+                Theme.of(context).colorScheme.surface;
+            final useBackdropBlur = kIsWeb;
             final logo = AppLogo(
               label: 'UpSessions',
               textStyle: Theme.of(
@@ -46,14 +49,16 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
               backgroundColor: appBarBackground,
               elevation: 0,
               scrolledUnderElevation: 0,
-              flexibleSpace: ClipRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                  child: Container(
-                    color: appBarBackground.withValues(alpha: 0.9),
-                  ),
-                ),
-              ),
+              flexibleSpace: useBackdropBlur
+                  ? ClipRect(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                        child: Container(
+                          color: appBarBackground.withValues(alpha: 0.9),
+                        ),
+                      ),
+                    )
+                  : Container(color: appBarBackground.withValues(alpha: 0.95)),
               shape: Border(
                 bottom: BorderSide(
                   color: Theme.of(

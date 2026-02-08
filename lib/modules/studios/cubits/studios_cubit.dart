@@ -11,46 +11,100 @@ class StudiosCubit extends Cubit<StudiosState> {
   StudiosCubit({
     StudiosRepository? repository,
     StudioImageService? imageService,
-  })  : _repository = repository ?? locate<StudiosRepository>(),
-        _imageService = imageService ?? locate<StudioImageService>(),
-        super(const StudiosState());
+  }) : _repository = repository ?? locate<StudiosRepository>(),
+       _imageService = imageService ?? locate<StudioImageService>(),
+       super(const StudiosState());
 
   final StudiosRepository _repository;
   final StudioImageService _imageService;
+  static const _studiosPageSize = 20;
 
   void _safeEmit(StudiosState newState) {
     if (isClosed) return;
     emit(newState);
   }
 
-  Future<void> loadAllStudios() async {
-    _safeEmit(state.copyWith(status: StudiosStatus.loading));
+  Future<void> loadAllStudios({bool refresh = false}) async {
+    if (!refresh && (state.isLoadingStudiosMore || !state.hasMoreStudios)) {
+      return;
+    }
+    final isInitialLoad = refresh || state.studios.isEmpty;
+    _safeEmit(
+      state.copyWith(
+        status: isInitialLoad ? StudiosStatus.loading : state.status,
+        isLoadingStudiosMore: !isInitialLoad,
+        errorMessage: null,
+      ),
+    );
     try {
-      final studios = await _repository.getAllStudios();
-      _safeEmit(state.copyWith(status: StudiosStatus.success, studios: studios));
+      final page = await _repository.getStudiosPage(
+        cursor: isInitialLoad ? null : state.studiosCursor,
+        limit: _studiosPageSize,
+      );
+      final studios = isInitialLoad
+          ? page.items
+          : <StudioEntity>[...state.studios, ...page.items];
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.success,
+          studios: studios,
+          studiosCursor: page.nextCursor,
+          hasMoreStudios: page.hasMore,
+          isLoadingStudiosMore: false,
+          errorMessage: null,
+        ),
+      );
     } catch (e) {
-      _safeEmit(state.copyWith(status: StudiosStatus.failure, errorMessage: e.toString()));
+      _safeEmit(
+        state.copyWith(
+          status: isInitialLoad ? StudiosStatus.failure : state.status,
+          isLoadingStudiosMore: false,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
   Future<void> loadMyStudio(String userId) async {
-    _safeEmit(state.copyWith(status: StudiosStatus.loading));
+    _safeEmit(
+      state.copyWith(status: StudiosStatus.loading, errorMessage: null),
+    );
     try {
       final studio = await _repository.getStudioByOwner(userId);
       if (studio != null) {
-        final rooms = await _repository.getRoomsByStudio(studio.id);
-        _safeEmit(state.copyWith(
-          status: StudiosStatus.success,
-          myStudio: studio,
-          myRooms: rooms,
-        ));
-        // Chain loading bookings
-        loadStudioBookings(studio.id);
+        final results = await Future.wait([
+          _repository.getRoomsByStudio(studio.id),
+          _repository.getBookingsByStudio(studio.id),
+        ]);
+        final rooms = results[0] as List<RoomEntity>;
+        final bookings = results[1] as List<BookingEntity>;
+        _safeEmit(
+          state.copyWith(
+            status: StudiosStatus.success,
+            myStudio: studio,
+            myRooms: rooms,
+            studioBookings: bookings,
+            errorMessage: null,
+          ),
+        );
       } else {
-        _safeEmit(state.copyWith(status: StudiosStatus.success, myStudio: null, myRooms: []));
+        _safeEmit(
+          state.copyWith(
+            status: StudiosStatus.success,
+            myStudio: null,
+            myRooms: const [],
+            studioBookings: const [],
+            errorMessage: null,
+          ),
+        );
       }
     } catch (e) {
-      _safeEmit(state.copyWith(status: StudiosStatus.failure, errorMessage: e.toString()));
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -58,9 +112,16 @@ class StudiosCubit extends Cubit<StudiosState> {
     _safeEmit(state.copyWith(status: StudiosStatus.loading));
     try {
       await _repository.createStudio(studio);
-      _safeEmit(state.copyWith(status: StudiosStatus.success, myStudio: studio));
+      _safeEmit(
+        state.copyWith(status: StudiosStatus.success, myStudio: studio),
+      );
     } catch (e) {
-      _safeEmit(state.copyWith(status: StudiosStatus.failure, errorMessage: e.toString()));
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -68,9 +129,16 @@ class StudiosCubit extends Cubit<StudiosState> {
     _safeEmit(state.copyWith(status: StudiosStatus.loading));
     try {
       await _repository.updateStudio(studio);
-      _safeEmit(state.copyWith(status: StudiosStatus.success, myStudio: studio));
+      _safeEmit(
+        state.copyWith(status: StudiosStatus.success, myStudio: studio),
+      );
     } catch (e) {
-      _safeEmit(state.copyWith(status: StudiosStatus.failure, errorMessage: e.toString()));
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -81,12 +149,22 @@ class StudiosCubit extends Cubit<StudiosState> {
       if (url != null && state.myStudio != null) {
         final updatedStudio = state.myStudio!.copyWith(logoUrl: url);
         await _repository.updateStudio(updatedStudio);
-        _safeEmit(state.copyWith(status: StudiosStatus.success, myStudio: updatedStudio));
+        _safeEmit(
+          state.copyWith(
+            status: StudiosStatus.success,
+            myStudio: updatedStudio,
+          ),
+        );
       } else {
         _safeEmit(state.copyWith(status: StudiosStatus.success)); // No change
       }
     } catch (e) {
-      _safeEmit(state.copyWith(status: StudiosStatus.failure, errorMessage: e.toString()));
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -97,12 +175,22 @@ class StudiosCubit extends Cubit<StudiosState> {
       if (url != null && state.myStudio != null) {
         final updatedStudio = state.myStudio!.copyWith(bannerUrl: url);
         await _repository.updateStudio(updatedStudio);
-        _safeEmit(state.copyWith(status: StudiosStatus.success, myStudio: updatedStudio));
+        _safeEmit(
+          state.copyWith(
+            status: StudiosStatus.success,
+            myStudio: updatedStudio,
+          ),
+        );
       } else {
         _safeEmit(state.copyWith(status: StudiosStatus.success)); // No change
       }
     } catch (e) {
-      _safeEmit(state.copyWith(status: StudiosStatus.failure, errorMessage: e.toString()));
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -113,7 +201,12 @@ class StudiosCubit extends Cubit<StudiosState> {
       final rooms = await _repository.getRoomsByStudio(room.studioId);
       _safeEmit(state.copyWith(status: StudiosStatus.success, myRooms: rooms));
     } catch (e) {
-      _safeEmit(state.copyWith(status: StudiosStatus.failure, errorMessage: e.toString()));
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -123,7 +216,12 @@ class StudiosCubit extends Cubit<StudiosState> {
       await _repository.createBooking(booking);
       _safeEmit(state.copyWith(status: StudiosStatus.success));
     } catch (e) {
-      _safeEmit(state.copyWith(status: StudiosStatus.failure, errorMessage: e.toString()));
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -131,19 +229,47 @@ class StudiosCubit extends Cubit<StudiosState> {
     _safeEmit(state.copyWith(status: StudiosStatus.loading));
     try {
       final bookings = await _repository.getBookingsByUser(userId);
-      _safeEmit(state.copyWith(status: StudiosStatus.success, myBookings: bookings));
+      final now = DateTime.now();
+      final sortedBookings = List<BookingEntity>.from(bookings)
+        ..sort((a, b) => b.startTime.compareTo(a.startTime));
+      final upcoming =
+          sortedBookings
+              .where((booking) => !booking.startTime.isBefore(now))
+              .toList()
+            ..sort((a, b) => a.startTime.compareTo(b.startTime));
+      final past = sortedBookings
+          .where((booking) => booking.startTime.isBefore(now))
+          .toList();
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.success,
+          myBookings: sortedBookings,
+          upcomingMyBookings: upcoming,
+          pastMyBookings: past,
+        ),
+      );
     } catch (e) {
-      _safeEmit(state.copyWith(status: StudiosStatus.failure, errorMessage: e.toString()));
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
   Future<void> loadStudioBookings(String studioId) async {
-    _safeEmit(state.copyWith(status: StudiosStatus.loading));
     try {
       final bookings = await _repository.getBookingsByStudio(studioId);
-      _safeEmit(state.copyWith(status: StudiosStatus.success, studioBookings: bookings));
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.success,
+          studioBookings: bookings,
+          errorMessage: null,
+        ),
+      );
     } catch (e) {
-      _safeEmit(state.copyWith(status: StudiosStatus.failure, errorMessage: e.toString()));
+      _safeEmit(state.copyWith(errorMessage: e.toString()));
     }
   }
 
@@ -153,15 +279,22 @@ class StudiosCubit extends Cubit<StudiosState> {
       final studio = await _repository.getStudioById(studioId);
       if (studio != null) {
         final rooms = await _repository.getRoomsByStudio(studioId);
-        _safeEmit(state.copyWith(
-          status: StudiosStatus.success,
-          selectedStudio: studio,
-          myRooms: rooms,
-          bookings: [], // Reset current view bookings if any
-        ));
+        _safeEmit(
+          state.copyWith(
+            status: StudiosStatus.success,
+            selectedStudio: studio,
+            myRooms: rooms,
+            bookings: [], // Reset current view bookings if any
+          ),
+        );
       }
     } catch (e) {
-      _safeEmit(state.copyWith(status: StudiosStatus.failure, errorMessage: e.toString()));
+      _safeEmit(
+        state.copyWith(
+          status: StudiosStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 }

@@ -3,14 +3,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 
-class ProfileQuickActionsFab extends StatefulWidget {
+class ProfileQuickActionsFab extends StatelessWidget {
   const ProfileQuickActionsFab({super.key});
 
-  @override
-  State<ProfileQuickActionsFab> createState() => _ProfileQuickActionsFabState();
-}
-
-class _ProfileQuickActionsFabState extends State<ProfileQuickActionsFab> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
@@ -69,7 +64,6 @@ class _ProfileQuickActionsFabState extends State<ProfileQuickActionsFab> {
   }
 
   void _onAction(VoidCallback action) {
-    // Aquí ya no gestionamos _isOpen ni nada, solo ejecutamos la acción
     action();
   }
 

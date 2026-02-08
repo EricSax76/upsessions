@@ -3,11 +3,7 @@ import 'package:intl/intl.dart';
 import '../../../models/booking_entity.dart';
 
 class BookingCard extends StatelessWidget {
-  const BookingCard({
-    super.key,
-    required this.booking,
-    this.onTap,
-  });
+  const BookingCard({super.key, required this.booking, this.onTap});
 
   final BookingEntity booking;
   final VoidCallback? onTap;
@@ -17,6 +13,9 @@ class BookingCard extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final isConfirmed = booking.status == BookingStatus.confirmed;
+    final bookingIdLabel = booking.id.length > 6
+        ? booking.id.substring(0, 6)
+        : booking.id;
 
     Color statusColor;
     Color statusOnColor;
@@ -44,7 +43,7 @@ class BookingCard extends StatelessWidget {
 
     return Card(
       elevation: 0,
-       shape: RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
         side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.5)),
       ),
@@ -57,7 +56,7 @@ class BookingCard extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +82,9 @@ class BookingCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          DateFormat('MMM').format(booking.startTime).toUpperCase(),
+                          DateFormat(
+                            'MMM',
+                          ).format(booking.startTime).toUpperCase(),
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: scheme.primary,
                             fontWeight: FontWeight.bold,
@@ -95,7 +96,7 @@ class BookingCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  
+
                   // Main Info
                   Expanded(
                     child: Column(
@@ -122,10 +123,13 @@ class BookingCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   // Status Badge (Pill)
-                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: statusColor.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(20),
@@ -138,8 +142,12 @@ class BookingCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (isConfirmed) ...[
-                           Icon(Icons.check_circle, size: 12, color: statusOnColor),
-                           const SizedBox(width: 4),
+                          Icon(
+                            Icons.check_circle,
+                            size: 12,
+                            color: statusOnColor,
+                          ),
+                          const SizedBox(width: 4),
                         ],
                         Text(
                           statusText,
@@ -155,19 +163,26 @@ class BookingCard extends StatelessWidget {
                   ),
                 ],
               ),
-              
-              const Spacer(),
-              
+
+              const SizedBox(height: 16),
+
               // Footer: Time & Price & ID
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                 decoration: BoxDecoration(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
                   color: scheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.access_time_filled, size: 16, color: scheme.secondary),
+                    Icon(
+                      Icons.access_time_filled,
+                      size: 16,
+                      color: scheme.secondary,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       '${timeFormat.format(booking.startTime)} - ${timeFormat.format(booking.endTime)}',
@@ -176,23 +191,22 @@ class BookingCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const VerticalDivider(width: 24, thickness: 1), // Only visible if height set, hacks spacer
-                     Container(
-                      width: 1, 
-                      height: 12, 
-                      color: scheme.outlineVariant, 
-                      margin: const EdgeInsets.symmetric(horizontal: 12)
+                    Container(
+                      width: 1,
+                      height: 12,
+                      color: scheme.outlineVariant,
+                      margin: const EdgeInsets.symmetric(horizontal: 12),
                     ),
                     Text(
                       '${booking.totalPrice.toStringAsFixed(0)}€',
-                       style: theme.textTheme.labelLarge?.copyWith(
+                      style: theme.textTheme.labelLarge?.copyWith(
                         color: scheme.primary,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     const Spacer(),
                     Text(
-                      '#${booking.id.substring(0, 6)}',
+                      '#$bookingIdLabel',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: scheme.onSurfaceVariant.withValues(alpha: 0.5),
                         fontFamily: 'monospace',

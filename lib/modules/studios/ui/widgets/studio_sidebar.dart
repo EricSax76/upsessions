@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/theme/theme_cubit.dart';
 import 'package:upsessions/core/widgets/settings_tile.dart';
+import 'package:upsessions/core/widgets/sm_avatar.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import '../../../../modules/auth/cubits/auth_cubit.dart';
 import '../../../../modules/studios/cubits/studios_cubit.dart';
@@ -61,25 +62,18 @@ class _StudioSidebarHeader extends StatelessWidget {
     return BlocBuilder<StudiosCubit, StudiosState>(
       builder: (context, state) {
         final studio = state.myStudio;
-        
+
         return Container(
           padding: const EdgeInsets.all(20),
           color: colorScheme.surfaceContainerLow,
           child: Row(
             children: [
-              CircleAvatar(
+              SmAvatar(
                 radius: 24,
+                imageUrl: studio?.logoUrl,
+                fallbackIcon: Icons.store,
                 backgroundColor: colorScheme.primaryContainer,
-                backgroundImage: studio?.logoUrl != null
-                    ? NetworkImage(studio!.logoUrl!)
-                    : null,
-                child: studio?.logoUrl == null
-                    ? Icon(
-                        Icons.store,
-                        color: colorScheme.primary,
-                        size: 24,
-                      )
-                    : null,
+                foregroundColor: colorScheme.primary,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -113,26 +107,33 @@ class _StudioSidebarHeader extends StatelessWidget {
   }
 }
 
-class _StudioMenuList extends StatefulWidget {
+class _StudioMenuList extends StatelessWidget {
   const _StudioMenuList();
 
-  @override
-  State<_StudioMenuList> createState() => _StudioMenuListState();
-}
-
-class _StudioMenuListState extends State<_StudioMenuList> {
-  int _selectedIndex = 0;
-
-  final List<_MenuItem> _items = const [
-    _MenuItem(label: 'Panel', icon: Icons.dashboard_outlined, route: AppRoutes.studiosDashboard),
-    _MenuItem(label: 'Mis Reservas', icon: Icons.event_note_outlined, route: null), // Tab in dashboard
-    _MenuItem(label: 'Mis Salas', icon: Icons.meeting_room_outlined, route: null), // Tab in dashboard  
-    _MenuItem(label: 'Perfil del Estudio', icon: Icons.store_outlined, route: '/studios/profile'),
+  static const List<_MenuItem> _items = [
+    _MenuItem(
+      label: 'Panel',
+      icon: Icons.dashboard_outlined,
+      route: AppRoutes.studiosDashboard,
+    ),
+    _MenuItem(
+      label: 'Mis Reservas',
+      icon: Icons.event_note_outlined,
+      route: null,
+    ), // Tab in dashboard
+    _MenuItem(
+      label: 'Mis Salas',
+      icon: Icons.meeting_room_outlined,
+      route: null,
+    ), // Tab in dashboard
+    _MenuItem(
+      label: 'Perfil del Estudio',
+      icon: Icons.store_outlined,
+      route: '/studios/profile',
+    ),
   ];
 
   void _handleTap(BuildContext context, int index) {
-    setState(() => _selectedIndex = index);
-
     final item = _items[index];
     final route = item.route;
     if (route == null) {
@@ -145,10 +146,18 @@ class _StudioMenuListState extends State<_StudioMenuList> {
     router.go(route);
   }
 
+  bool _isSelectedRoute(String currentPath, String route) {
+    if (currentPath == route) {
+      return true;
+    }
+    return currentPath.startsWith('$route/');
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final location = GoRouterState.of(context).uri.path;
 
     return Column(
       children: [
@@ -156,22 +165,38 @@ class _StudioMenuListState extends State<_StudioMenuList> {
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: ListTile(
-              selected: i == _selectedIndex,
+              selected:
+                  _items[i].route != null &&
+                  _isSelectedRoute(location, _items[i].route!),
               leading: Icon(
                 _items[i].icon,
-                color: i == _selectedIndex ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                color:
+                    (_items[i].route != null &&
+                        _isSelectedRoute(location, _items[i].route!))
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
               ),
               title: Text(
                 _items[i].label,
                 style: TextStyle(
-                  fontWeight: i == _selectedIndex ? FontWeight.bold : FontWeight.normal,
-                  color: i == _selectedIndex ? colorScheme.primary : colorScheme.onSurface,
+                  fontWeight:
+                      (_items[i].route != null &&
+                          _isSelectedRoute(location, _items[i].route!))
+                      ? FontWeight.bold
+                      : FontWeight.normal,
+                  color:
+                      (_items[i].route != null &&
+                          _isSelectedRoute(location, _items[i].route!))
+                      ? colorScheme.primary
+                      : colorScheme.onSurface,
                 ),
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              selectedTileColor: colorScheme.primaryContainer.withValues(alpha: 0.3),
+              selectedTileColor: colorScheme.primaryContainer.withValues(
+                alpha: 0.3,
+              ),
               onTap: () => _handleTap(context, i),
             ),
           ),
@@ -213,7 +238,8 @@ class _SidebarThemeToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeMode>(
       builder: (context, themeMode) {
-        final isDark = themeMode == ThemeMode.dark ||
+        final isDark =
+            themeMode == ThemeMode.dark ||
             (themeMode == ThemeMode.system &&
                 MediaQuery.of(context).platformBrightness == Brightness.dark);
         final theme = Theme.of(context);

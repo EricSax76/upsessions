@@ -65,8 +65,14 @@ class _MusicianTileState extends State<_MusicianTile> {
     final colorScheme = theme.colorScheme;
 
     return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
+      onEnter: (_) {
+        if (!mounted || _isHovered) return;
+        setState(() => _isHovered = true);
+      },
+      onExit: (_) {
+        if (!mounted || !_isHovered) return;
+        setState(() => _isHovered = false);
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
@@ -152,10 +158,7 @@ class _MusicianTileState extends State<_MusicianTile> {
                 ],
               ),
             ),
-            MusicianLikeButton(
-              musician: likedMusician,
-              iconSize: 20,
-            ),
+            MusicianLikeButton(musician: likedMusician, iconSize: 20),
           ],
         ),
       ),

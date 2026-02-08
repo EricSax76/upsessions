@@ -29,6 +29,13 @@ class InviteToGroupDialog extends StatefulWidget {
 
 class _InviteToGroupDialogState extends State<InviteToGroupDialog> {
   bool _loading = false;
+  late final Stream<List<GroupMembershipEntity>> _myGroupsStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _myGroupsStream = widget.groupsRepository.watchMyGroups();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +60,7 @@ class _InviteToGroupDialogState extends State<InviteToGroupDialog> {
               if (_loading) const LinearProgressIndicator(),
               const SizedBox(height: 12),
               StreamBuilder<List<GroupMembershipEntity>>(
-                stream: widget.groupsRepository.watchMyGroups(),
+                stream: _myGroupsStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Text(

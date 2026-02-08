@@ -19,23 +19,7 @@ class UserShellPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isWideLayout = kIsWeb ? width >= 700 : width >= 1200;
-
-    Widget body;
-    if (isWideLayout) {
-      body = Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            width: 300,
-            child: Material(elevation: 0, child: UserSidebar()),
-          ),
-          const VerticalDivider(width: 1, thickness: 1),
-          Expanded(child: Scaffold(body: child)),
-        ],
-      );
-    } else {
-      body = child;
-    }
+    final showTopAppBar = kIsWeb || !isWideLayout;
 
     return BlocListener<AuthCubit, AuthState>(
       listenWhen: (previous, current) => previous.status != current.status,
@@ -45,13 +29,23 @@ class UserShellPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        drawer: isWideLayout && !kIsWeb
+        drawer: isWideLayout
             ? null
             : const Drawer(child: SafeArea(child: UserSidebar())),
-        appBar: isWideLayout && !kIsWeb
-            ? null
-            : const SmAppBar(showMenuButton: true),
-        body: body,
+        appBar: showTopAppBar ? SmAppBar(showMenuButton: !isWideLayout) : null,
+        body: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (isWideLayout) ...[
+              const SizedBox(
+                width: 300,
+                child: Material(elevation: 0, child: UserSidebar()),
+              ),
+              const VerticalDivider(width: 1, thickness: 1),
+            ],
+            Expanded(key: const ValueKey('user-shell-content'), child: child),
+          ],
+        ),
         bottomNavigationBar: null,
         floatingActionButton: isWideLayout
             ? null

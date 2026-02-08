@@ -21,30 +21,7 @@ class StudioShellPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isWideLayout = kIsWeb ? width >= 700 : width >= 1200;
-
-    Widget body;
-    if (isWideLayout) {
-      body = Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            width: 300,
-            child: Material(
-              elevation: 0,
-              child: StudioSidebar(),
-            ),
-          ),
-          const VerticalDivider(width: 1, thickness: 1),
-          Expanded(
-            child: Scaffold(
-              body: child,
-            ),
-          ),
-        ],
-      );
-    } else {
-      body = child;
-    }
+    final showTopAppBar = kIsWeb || !isWideLayout;
 
     return BlocListener<AuthCubit, AuthState>(
       listenWhen: (previous, current) => previous.status != current.status,
@@ -56,26 +33,25 @@ class StudioShellPage extends StatelessWidget {
       child: Scaffold(
         drawer: isWideLayout
             ? null
-            : const Drawer(
-                child: SafeArea(child: StudioSidebar()),
-              ),
-        appBar: isWideLayout
-            ? null
-            : AppBar(
+            : const Drawer(child: SafeArea(child: StudioSidebar())),
+        appBar: showTopAppBar
+            ? AppBar(
                 centerTitle: true,
                 title: AppLogo(
                   label: 'UpSessions',
-                  textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  textStyle: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   iconSize: 22,
                 ),
-                leading: Builder(
-                  builder: (context) => IconButton(
-                    icon: const Icon(Icons.menu),
-                    onPressed: () => Scaffold.of(context).openDrawer(),
-                  ),
-                ),
+                leading: isWideLayout
+                    ? null
+                    : Builder(
+                        builder: (context) => IconButton(
+                          icon: const Icon(Icons.menu),
+                          onPressed: () => Scaffold.of(context).openDrawer(),
+                        ),
+                      ),
                 actions: [
                   Padding(
                     padding: const EdgeInsets.only(right: 16),
@@ -83,8 +59,9 @@ class StudioShellPage extends StatelessWidget {
                       builder: (context, state) {
                         final studio = state.myStudio;
                         final name = studio?.name ?? '';
-                        final initials =
-                            name.trim().isEmpty ? '' : name.trim()[0];
+                        final initials = name.trim().isEmpty
+                            ? ''
+                            : name.trim()[0];
                         return InkWell(
                           onTap: () {
                             context.push(
@@ -104,8 +81,21 @@ class StudioShellPage extends StatelessWidget {
                     ),
                   ),
                 ],
+              )
+            : null,
+        body: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (isWideLayout) ...[
+              const SizedBox(
+                width: 300,
+                child: Material(elevation: 0, child: StudioSidebar()),
               ),
-        body: body,
+              const VerticalDivider(width: 1, thickness: 1),
+            ],
+            Expanded(key: const ValueKey('studio-shell-content'), child: child),
+          ],
+        ),
       ),
     );
   }

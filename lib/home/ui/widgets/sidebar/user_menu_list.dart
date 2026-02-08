@@ -18,20 +18,63 @@ class UserMenuList extends StatefulWidget {
 
 class _UserMenuListState extends State<UserMenuList> {
   final List<_MenuItem> _items = const [
-    _MenuItem(label: 'Inicio', icon: Icons.home_outlined, route: AppRoutes.userHome),
-    _MenuItem(label: 'Músicos', icon: Icons.person_search_outlined, route: AppRoutes.musicians),
-    _MenuItem(label: 'Anuncios', icon: Icons.campaign_outlined, route: AppRoutes.announcements),
-    _MenuItem(label: 'Eventos', icon: Icons.event_outlined, route: AppRoutes.events),
-    _MenuItem(label: 'Mensajes', icon: Icons.mail_outline, route: AppRoutes.messages),
-    _MenuItem(label: 'Notificaciones', icon: Icons.notifications_outlined, route: AppRoutes.notifications),
-    _MenuItem(label: 'Calendario', icon: Icons.calendar_month_outlined, route: AppRoutes.calendar),
-    _MenuItem(label: 'Contactos', icon: Icons.people_outline, route: AppRoutes.contacts),
-    _MenuItem(label: 'Mis grupos', icon: Icons.group_outlined, route: AppRoutes.rehearsals),
-    _MenuItem(label: 'Salas de Ensayo', icon: Icons.music_note_outlined, route: AppRoutes.studios),
-    _MenuItem(label: 'Mis Reservas', icon: Icons.bookmark_added_outlined, route: AppRoutes.myBookings),
+    _MenuItem(
+      label: 'Inicio',
+      icon: Icons.home_outlined,
+      route: AppRoutes.userHome,
+    ),
+    _MenuItem(
+      label: 'Músicos',
+      icon: Icons.person_search_outlined,
+      route: AppRoutes.musicians,
+    ),
+    _MenuItem(
+      label: 'Anuncios',
+      icon: Icons.campaign_outlined,
+      route: AppRoutes.announcements,
+    ),
+    _MenuItem(
+      label: 'Eventos',
+      icon: Icons.event_outlined,
+      route: AppRoutes.events,
+    ),
+    _MenuItem(
+      label: 'Mensajes',
+      icon: Icons.mail_outline,
+      route: AppRoutes.messages,
+    ),
+    _MenuItem(
+      label: 'Notificaciones',
+      icon: Icons.notifications_outlined,
+      route: AppRoutes.notifications,
+    ),
+    _MenuItem(
+      label: 'Calendario',
+      icon: Icons.calendar_month_outlined,
+      route: AppRoutes.calendar,
+    ),
+    _MenuItem(
+      label: 'Contactos',
+      icon: Icons.people_outline,
+      route: AppRoutes.contacts,
+    ),
+    _MenuItem(
+      label: 'Mis grupos',
+      icon: Icons.group_outlined,
+      route: AppRoutes.rehearsals,
+    ),
+    _MenuItem(
+      label: 'Salas de Ensayo',
+      icon: Icons.music_note_outlined,
+      route: AppRoutes.studios,
+    ),
+    _MenuItem(
+      label: 'Mis Reservas',
+      icon: Icons.bookmark_added_outlined,
+      route: AppRoutes.myBookings,
+    ),
   ];
   late final LikedMusiciansController _likedController;
-  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -53,8 +96,6 @@ class _UserMenuListState extends State<UserMenuList> {
   }
 
   void _handleTap(BuildContext context, int index) {
-    setState(() => _selectedIndex = index);
-
     final item = _items[index];
     final route = item.route;
     if (route == null) {
@@ -67,11 +108,19 @@ class _UserMenuListState extends State<UserMenuList> {
     router.go(route);
   }
 
+  bool _isSelectedRoute(String currentPath, String route) {
+    if (currentPath == route) {
+      return true;
+    }
+    return currentPath.startsWith('$route/');
+  }
+
   @override
   Widget build(BuildContext context) {
     final contactsTotal = _likedController.total;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final location = GoRouterState.of(context).uri.path;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,18 +129,32 @@ class _UserMenuListState extends State<UserMenuList> {
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: ListTile(
-              selected: i == _selectedIndex,
+              selected:
+                  _items[i].route != null &&
+                  _isSelectedRoute(location, _items[i].route!),
               leading: Icon(
                 _items[i].icon,
-                color: i == _selectedIndex ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                color:
+                    (_items[i].route != null &&
+                        _isSelectedRoute(location, _items[i].route!))
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
               ),
               title: Text(
                 _items[i].route == AppRoutes.contacts
                     ? 'Contactos ($contactsTotal)'
                     : _items[i].label,
                 style: TextStyle(
-                  fontWeight: i == _selectedIndex ? FontWeight.bold : FontWeight.normal,
-                  color: i == _selectedIndex ? colorScheme.primary : colorScheme.onSurface,
+                  fontWeight:
+                      (_items[i].route != null &&
+                          _isSelectedRoute(location, _items[i].route!))
+                      ? FontWeight.bold
+                      : FontWeight.normal,
+                  color:
+                      (_items[i].route != null &&
+                          _isSelectedRoute(location, _items[i].route!))
+                      ? colorScheme.primary
+                      : colorScheme.onSurface,
                 ),
               ),
               trailing: _items[i].route == AppRoutes.notifications
@@ -100,7 +163,9 @@ class _UserMenuListState extends State<UserMenuList> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              selectedTileColor: colorScheme.primaryContainer.withValues(alpha: 0.3),
+              selectedTileColor: colorScheme.primaryContainer.withValues(
+                alpha: 0.3,
+              ),
               onTap: () => _handleTap(context, i),
             ),
           ),

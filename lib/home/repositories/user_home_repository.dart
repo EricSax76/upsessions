@@ -119,9 +119,42 @@ class UserHomeRepository {
     if (user == null) {
       return [];
     }
+    final now = Timestamp.fromDate(DateTime.now());
+    try {
+      final snapshot = await _firestore
+          .collectionGroup('rehearsals')
+          .where('startsAt', isGreaterThanOrEqualTo: now)
+          .orderBy('startsAt')
+          .limit(limit)
+          .get();
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs
+            .map((doc) {
+              final groupId = doc.reference.parent.parent?.id ?? '';
+              if (groupId.isEmpty) return null;
+              return _mapRehearsal(doc, groupId: groupId);
+            })
+            .whereType<RehearsalEntity>()
+            .toList();
+      }
+      return [];
+    } on FirebaseException {
+      return _fetchUpcomingRehearsalsByMembershipLookup(
+        ownerId: user.id,
+        now: now,
+        limit: limit,
+      );
+    }
+  }
+
+  Future<List<RehearsalEntity>> _fetchUpcomingRehearsalsByMembershipLookup({
+    required String ownerId,
+    required Timestamp now,
+    required int limit,
+  }) async {
     final memberships = await _firestore
         .collectionGroup('members')
-        .where('ownerId', isEqualTo: user.id)
+        .where('ownerId', isEqualTo: ownerId)
         .where('status', isEqualTo: 'active')
         .get();
     final groupIds = memberships.docs
@@ -132,7 +165,6 @@ class UserHomeRepository {
     if (groupIds.isEmpty) {
       return [];
     }
-    final now = Timestamp.fromDate(DateTime.now());
 
     // Fetch a few upcoming from each group to ensure we get the overall top ones
     // We fetch 'limit' from each group to be safe, though this might be over-fetching slightly,

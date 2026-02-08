@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upsessions/core/theme/theme_cubit.dart';
 import 'package:upsessions/core/widgets/settings_tile.dart';
 import 'package:upsessions/home/ui/widgets/sidebar/language_selector.dart';
-import 'package:upsessions/home/ui/widgets/sidebar/user_sidebar_header.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
 import 'package:upsessions/modules/rehearsals/ui/widgets/rehearsals_sidebar_section.dart';
@@ -16,11 +15,9 @@ class UserSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    
+
     return Column(
       children: [
-        const UserSidebarHeader(),
-        const Divider(height: 1),
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -62,7 +59,8 @@ class _SidebarThemeToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeMode>(
       builder: (context, themeMode) {
-        final isDark = themeMode == ThemeMode.dark ||
+        final isDark =
+            themeMode == ThemeMode.dark ||
             (themeMode == ThemeMode.system &&
                 MediaQuery.of(context).platformBrightness == Brightness.dark);
         final theme = Theme.of(context);

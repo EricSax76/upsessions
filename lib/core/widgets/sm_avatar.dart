@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class SmAvatar extends StatelessWidget {
@@ -66,6 +67,9 @@ class SmAvatar extends StatelessWidget {
               ? Image.network(
                   imageUrl!.trim(),
                   fit: BoxFit.cover,
+                  webHtmlElementStrategy: kIsWeb
+                      ? WebHtmlElementStrategy.prefer
+                      : WebHtmlElementStrategy.never,
                   errorBuilder: (context, error, stackTrace) =>
                       Center(child: _fallback(context)),
                   loadingBuilder: (context, child, loadingProgress) {
@@ -78,7 +82,7 @@ class SmAvatar extends StatelessWidget {
                           strokeWidth: 2,
                           value: loadingProgress.expectedTotalBytes != null
                               ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
+                                    loadingProgress.expectedTotalBytes!
                               : null,
                         ),
                       ),
@@ -91,4 +95,3 @@ class SmAvatar extends StatelessWidget {
     );
   }
 }
-

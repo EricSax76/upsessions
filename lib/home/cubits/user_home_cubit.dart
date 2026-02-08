@@ -20,13 +20,21 @@ class UserHomeCubit extends Cubit<UserHomeState> {
     }
     emit(state.copyWith(status: UserHomeStatus.loading, errorMessage: null));
     try {
-      final recommended = await _repository.fetchRecommendedMusicians();
-      final newMusicians = await _repository.fetchNewMusicians();
-      final announcements = await _repository.fetchRecentAnnouncements();
-      final categories = await _repository.fetchInstrumentCategories();
-      final events = await _repository.fetchUpcomingEvents();
-      final upcomingRehearsals = await _repository.fetchUpcomingRehearsals();
-      final provinces = await _repository.fetchProvinces();
+      final recommendedFuture = _repository.fetchRecommendedMusicians();
+      final newMusiciansFuture = _repository.fetchNewMusicians();
+      final announcementsFuture = _repository.fetchRecentAnnouncements();
+      final categoriesFuture = _repository.fetchInstrumentCategories();
+      final eventsFuture = _repository.fetchUpcomingEvents();
+      final upcomingRehearsalsFuture = _repository.fetchUpcomingRehearsals();
+      final provincesFuture = _repository.fetchProvinces();
+
+      final recommended = await recommendedFuture;
+      final newMusicians = await newMusiciansFuture;
+      final announcements = await announcementsFuture;
+      final categories = await categoriesFuture;
+      final events = await eventsFuture;
+      final upcomingRehearsals = await upcomingRehearsalsFuture;
+      final provinces = await provincesFuture;
       if (isClosed) {
         return;
       }

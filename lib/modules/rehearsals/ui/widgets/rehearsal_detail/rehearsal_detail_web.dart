@@ -40,50 +40,62 @@ class RehearsalDetailWebLayout extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 800;
-        final theme = Theme.of(context);
-        final scheme = theme.colorScheme;
+        final scheme = Theme.of(context).colorScheme;
         final listPadding = isWide
             ? const EdgeInsets.symmetric(horizontal: 40, vertical: 32)
-            : const EdgeInsets.symmetric(horizontal: 16, vertical: 24);
+            : const EdgeInsets.fromLTRB(16, 24, 16, 112);
 
         return Scaffold(
           backgroundColor: scheme.surface,
-          body: SingleChildScrollView(
-            padding: listPadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeader(context),
-                SizedBox(height: isWide ? 32 : 24),
-                if (isWide)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(flex: 3, child: _buildSetlistSection(context)),
-                      const SizedBox(width: 32),
-                      Expanded(flex: 1, child: _buildSidePanel(context)),
-                    ],
+          body: SafeArea(
+            child: isWide
+                ? Padding(
+                    padding: listPadding,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildHeader(context),
+                        const SizedBox(height: 32),
+                        Expanded(child: _buildWideContent(context)),
+                      ],
+                    ),
                   )
-                else
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // On mobile, show logistics first
-                      _buildSidePanel(context),
-                      const SizedBox(height: 24),
-                      _buildSetlistSection(context),
-                    ],
+                : SingleChildScrollView(
+                    padding: listPadding,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildHeader(context),
+                        const SizedBox(height: 24),
+                        _buildSidePanel(context),
+                        const SizedBox(height: 24),
+                        _buildSetlistSection(context, expands: false),
+                      ],
+                    ),
                   ),
-              ],
-            ),
           ),
         );
       },
     );
   }
 
+  Widget _buildWideContent(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(flex: 3, child: _buildSetlistSection(context)),
+        const SizedBox(width: 32),
+        Expanded(
+          flex: 1,
+          child: SingleChildScrollView(child: _buildSidePanel(context)),
+        ),
+      ],
+    );
+  }
+
   Widget _buildSidePanel(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildLogisticsCard(context),
         const SizedBox(height: 24),
@@ -99,56 +111,118 @@ class RehearsalDetailWebLayout extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: scheme.primaryContainer.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(Icons.event_note, color: scheme.primary, size: 32),
-        ),
-        const SizedBox(width: 16),
-        Column(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final useCompactActions = constraints.maxWidth < 640;
+        return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Ensayo',
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: scheme.onSurface,
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: scheme.primaryContainer.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.event_note, color: scheme.primary, size: 32),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Ensayo',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                  Text(
+                    formatDateTime(rehearsal.startsAt),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                  if (useCompactActions) ...[
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: onEditRehearsal,
+                          icon: const Icon(Icons.edit_outlined, size: 18),
+                          label: const Text('Editar'),
+                        ),
+                        if (onDeleteRehearsal != null)
+                          IconButton(
+                            onPressed: onDeleteRehearsal,
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: scheme.error,
+                            ),
+                            tooltip: 'Eliminar ensayo',
+                          ),
+                      ],
+                    ),
+                  ],
+                ],
               ),
             ),
-            Text(
-              formatDateTime(rehearsal.startsAt),
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: scheme.onSurfaceVariant,
+            if (!useCompactActions) ...[
+              const SizedBox(width: 16),
+              OutlinedButton.icon(
+                onPressed: onEditRehearsal,
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                label: const Text('Editar'),
               ),
-            ),
+              if (onDeleteRehearsal != null) ...[
+                const SizedBox(width: 12),
+                IconButton(
+                  onPressed: onDeleteRehearsal,
+                  icon: Icon(Icons.delete_outline, color: scheme.error),
+                  tooltip: 'Eliminar ensayo',
+                ),
+              ],
+            ],
           ],
-        ),
-        const Spacer(),
-        OutlinedButton.icon(
-          onPressed: onEditRehearsal,
-          icon: const Icon(Icons.edit_outlined, size: 18),
-          label: const Text('Editar'),
-        ),
-        if (onDeleteRehearsal != null) ...[
-          const SizedBox(width: 12),
-          IconButton(
-            onPressed: onDeleteRehearsal,
-            icon: Icon(Icons.delete_outline, color: scheme.error),
-            tooltip: 'Eliminar ensayo',
-          ),
-        ],
-      ],
+        );
+      },
     );
   }
 
-  Widget _buildSetlistSection(BuildContext context) {
+  Widget _buildSetlistSection(BuildContext context, {bool expands = true}) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final setlistBody = setlist.isEmpty
+        ? Padding(
+            padding: const EdgeInsets.all(48),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.queue_music,
+                    size: 48,
+                    color: scheme.onSurfaceVariant.withValues(alpha: 0.5),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No hay canciones en el setlist',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        : SetlistWebTable(
+            setlist: setlist,
+            onEditSong: onEditSong,
+            onDeleteSong: onDeleteSong,
+            onReorderSetlist: onReorderSetlist,
+          );
 
     return Container(
       decoration: BoxDecoration(
@@ -162,72 +236,79 @@ class RehearsalDetailWebLayout extends StatelessWidget {
           // Toolbar
           Padding(
             padding: const EdgeInsets.all(16),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final useShortLabels = constraints.maxWidth < 500;
-                return Row(
-                  children: [
-                    Text(
-                      'Setlist (${setlist.length})',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    if (setlist.isEmpty)
-                      TextButton.icon(
-                        onPressed: onCopyFromLast,
-                        icon: const Icon(Icons.copy_all, size: 18),
-                        label: Text(
-                          useShortLabels ? 'Copiar' : 'Copiar del anterior',
-                        ),
-                      ),
-                    const SizedBox(width: 8),
-                    FilledButton.icon(
-                      onPressed: onAddSong,
-                      icon: const Icon(Icons.add, size: 18),
-                      label: Text(
-                        useShortLabels ? 'Agregar' : 'Agregar Canción',
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
+            child: _buildSetlistToolbar(context, theme),
           ),
           const Divider(height: 1),
-          // Setlist Items
-          if (setlist.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(48),
-              child: Center(
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.queue_music,
-                      size: 48,
-                      color: scheme.onSurfaceVariant.withValues(alpha: 0.5),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No hay canciones en el setlist',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
-            SetlistWebTable(
-              setlist: setlist,
-              onEditSong: onEditSong,
-              onDeleteSong: onDeleteSong,
-              onReorderSetlist: onReorderSetlist,
-            ),
+          if (expands) Expanded(child: setlistBody) else setlistBody,
         ],
       ),
+    );
+  }
+
+  Widget _buildSetlistToolbar(BuildContext context, ThemeData theme) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final useShortLabels = constraints.maxWidth < 500;
+        final useStackedToolbar = constraints.maxWidth < 640;
+
+        if (useStackedToolbar) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Setlist (${setlist.length})',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  if (setlist.isEmpty)
+                    TextButton.icon(
+                      onPressed: onCopyFromLast,
+                      icon: const Icon(Icons.copy_all, size: 18),
+                      label: Text(
+                        useShortLabels ? 'Copiar' : 'Copiar del anterior',
+                      ),
+                    ),
+                  FilledButton.icon(
+                    onPressed: onAddSong,
+                    icon: const Icon(Icons.add, size: 18),
+                    label: Text(useShortLabels ? 'Agregar' : 'Agregar canción'),
+                  ),
+                ],
+              ),
+            ],
+          );
+        }
+
+        return Row(
+          children: [
+            Text(
+              'Setlist (${setlist.length})',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Spacer(),
+            if (setlist.isEmpty)
+              TextButton.icon(
+                onPressed: onCopyFromLast,
+                icon: const Icon(Icons.copy_all, size: 18),
+                label: Text(useShortLabels ? 'Copiar' : 'Copiar del anterior'),
+              ),
+            const SizedBox(width: 8),
+            FilledButton.icon(
+              onPressed: onAddSong,
+              icon: const Icon(Icons.add, size: 18),
+              label: Text(useShortLabels ? 'Agregar' : 'Agregar canción'),
+            ),
+          ],
+        );
+      },
     );
   }
 

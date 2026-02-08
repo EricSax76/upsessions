@@ -2,13 +2,26 @@ import '../models/studio_entity.dart';
 import '../models/room_entity.dart';
 import '../models/booking_entity.dart';
 
+class StudiosPage {
+  const StudiosPage({
+    required this.items,
+    required this.hasMore,
+    this.nextCursor,
+  });
+
+  final List<StudioEntity> items;
+  final bool hasMore;
+  final String? nextCursor;
+}
+
 abstract class StudiosRepository {
   Future<void> createStudio(StudioEntity studio);
   Future<void> updateStudio(StudioEntity studio);
   Future<StudioEntity?> getStudioByOwner(String userId);
   Future<StudioEntity?> getStudioById(String studioId);
+  Future<StudiosPage> getStudiosPage({String? cursor, int limit = 20});
   Future<List<StudioEntity>> getAllStudios();
-  
+
   Future<void> createRoom(RoomEntity room);
   Future<void> updateRoom(RoomEntity room);
   Future<void> deleteRoom(String roomId);
@@ -59,6 +72,34 @@ class MockStudiosRepository implements StudiosRepository {
     } catch (_) {
       return null;
     }
+  }
+
+  @override
+  Future<StudiosPage> getStudiosPage({String? cursor, int limit = 20}) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final sorted = List<StudioEntity>.from(_studios)
+      ..sort((a, b) => a.id.compareTo(b.id));
+    var startIndex = 0;
+    if ((cursor ?? '').isNotEmpty) {
+      final index = sorted.indexWhere((studio) => studio.id == cursor);
+      if (index >= 0) {
+        startIndex = index + 1;
+      }
+    }
+    final remaining = sorted.length - startIndex;
+    final takeCount = remaining > limit ? limit : remaining;
+    final pageItems = takeCount <= 0
+        ? const <StudioEntity>[]
+        : sorted.sublist(startIndex, startIndex + takeCount);
+    final hasMore = startIndex + takeCount < sorted.length;
+    final nextCursor = hasMore && pageItems.isNotEmpty
+        ? pageItems.last.id
+        : null;
+    return StudiosPage(
+      items: pageItems,
+      hasMore: hasMore,
+      nextCursor: nextCursor,
+    );
   }
 
   @override
