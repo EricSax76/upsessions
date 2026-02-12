@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/locator/locator.dart';
+import 'package:upsessions/core/constants/app_routes.dart';
 import '../../../auth/repositories/auth_repository.dart';
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
 import '../widgets/studio_shell_page.dart';
-import 'edit_room_page.dart';
 
 class StudioDashboardPage extends StatelessWidget {
   const StudioDashboardPage({super.key});
@@ -50,7 +50,7 @@ class StudioDashboardPage extends StatelessWidget {
                     const SizedBox(height: 32),
                     FilledButton.icon(
                       onPressed: () async {
-                         await context.push('/studios/create');
+                         await context.push(AppRoutes.studiosCreate);
                          if (!context.mounted) return;
                          context.read<StudiosCubit>().loadMyStudio(userId);
                       },
@@ -115,8 +115,8 @@ class StudioDashboardPage extends StatelessWidget {
             )),
             FilledButton.icon(
               onPressed: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => EditRoomPage(studioId: state.myStudio!.id)),
+                await context.push(
+                  AppRoutes.studiosRoomCreatePath(state.myStudio!.id),
                 );
                 if (!context.mounted) return;
                 context.read<StudiosCubit>().loadMyStudio(userId);
@@ -174,12 +174,10 @@ class StudioDashboardPage extends StatelessWidget {
               trailing: IconButton(
                 icon: const Icon(Icons.edit_outlined),
                 onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => EditRoomPage(
-                        studioId: state.myStudio!.id,
-                        room: room,
-                      ),
+                  await context.push(
+                    AppRoutes.studiosRoomEditPath(
+                      studioId: state.myStudio!.id,
+                      roomId: room.id,
                     ),
                   );
                   if (!context.mounted) return;

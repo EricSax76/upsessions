@@ -8,7 +8,6 @@ import 'package:upsessions/core/widgets/app_card.dart';
 import 'package:upsessions/core/widgets/date_badge.dart';
 import 'package:upsessions/core/widgets/section_card.dart';
 import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
-import 'package:upsessions/features/messaging/ui/pages/messages_page.dart';
 
 import '../../models/announcement_entity.dart';
 
@@ -33,10 +32,7 @@ class _AnnouncementDetailPageState extends State<AnnouncementDetailPage> {
         participantName: widget.announcement.author,
       );
       if (!mounted) return;
-      context.push(
-        AppRoutes.messages,
-        extra: MessagesPageArgs(initialThreadId: thread.id),
-      );
+      context.push(AppRoutes.messagesThreadPath(thread.id));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

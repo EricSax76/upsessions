@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/sm_avatar.dart';
 import '../../../../core/constants/app_routes.dart';
-import '../../../messaging/ui/pages/messages_page.dart';
 import '../../controllers/contact_card_controller.dart';
 import '../../models/liked_musician.dart';
 import 'musician_like_button.dart';
@@ -26,10 +25,7 @@ class _ContactCardState extends State<ContactCard> {
     try {
       final threadId = await _controller.ensureThreadId(widget.musician);
       if (!mounted) return;
-      context.push(
-        AppRoutes.messages,
-        extra: MessagesPageArgs(initialThreadId: threadId),
-      );
+      context.push(AppRoutes.messagesThreadPath(threadId));
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

@@ -15,6 +15,7 @@ class MusicianEntity {
     this.profileType,
     this.gender,
     this.rating,
+    this.influences = const {},
   });
 
   final String id;
@@ -29,4 +30,5 @@ class MusicianEntity {
   final String? profileType;
   final String? gender;
   final double? rating;
+  final Map<String, List<String>> influences;
 }

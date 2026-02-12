@@ -16,6 +16,7 @@ class MusicianDto {
     this.profileType,
     this.gender,
     this.rating,
+    this.influences = const {},
   });
 
   factory MusicianDto.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -36,6 +37,13 @@ class MusicianDto {
       profileType: data['profileType'] as String?,
       gender: data['gender'] as String?,
       rating: (data['rating'] as num?)?.toDouble(),
+      influences: (data['influences'] as Map<String, dynamic>?)?.map(
+            (key, value) => MapEntry(
+              key,
+              (value as List<dynamic>).map((e) => e.toString()).toList(),
+            ),
+          ) ??
+          const {},
     );
   }
 
@@ -51,6 +59,7 @@ class MusicianDto {
   final String? profileType;
   final String? gender;
   final double? rating;
+  final Map<String, List<String>> influences;
 
   MusicianEntity toEntity() {
     return MusicianEntity(
@@ -66,6 +75,7 @@ class MusicianDto {
       profileType: profileType,
       gender: gender,
       rating: rating,
+      influences: influences,
     );
   }
 }

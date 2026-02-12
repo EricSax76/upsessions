@@ -15,6 +15,9 @@ import '../features/events/models/event_entity.dart';
 import '../features/events/ui/pages/create_event_page.dart';
 import '../features/events/ui/pages/event_detail_page.dart';
 import '../features/events/ui/pages/events_page.dart';
+import '../features/messaging/models/chat_thread.dart';
+import '../features/messaging/repositories/chat_repository.dart';
+import '../features/messaging/ui/pages/chat_thread_detail_page.dart';
 import '../features/messaging/ui/pages/messages_page.dart';
 import '../features/onboarding/ui/pages/app_welcome_page.dart';
 import '../features/onboarding/ui/pages/musician_onboarding_page.dart';
@@ -42,11 +45,16 @@ import '../modules/profile/ui/pages/account_page.dart';
 import '../modules/profile/ui/pages/profile_edit_page.dart';
 import '../modules/profile/ui/pages/profile_overview_page.dart';
 import 'package:upsessions/core/locator/locator.dart';
+import '../modules/matching/ui/pages/matching_page.dart';
 import '../features/contacts/ui/pages/contacts_page.dart';
 import '../modules/studios/ui/consumer/studios_list_page.dart';
+import '../modules/studios/ui/consumer/room_detail_page.dart';
 import '../modules/studios/cubits/studios_cubit.dart';
+import '../modules/studios/models/room_entity.dart';
+import '../modules/studios/repositories/studios_repository.dart';
 import '../modules/studios/ui/provider/create_studio_page.dart';
 import '../modules/studios/ui/provider/studio_dashboard_page.dart';
+import '../modules/studios/ui/provider/edit_room_page.dart';
 import '../modules/studios/ui/auth/studio_login_page.dart';
 import '../modules/studios/ui/auth/studio_register_page.dart';
 import '../modules/studios/ui/provider/studio_profile_page.dart';
@@ -119,6 +127,10 @@ class AppRouter {
           builder: _buildMusicianDetail,
         ),
         GoRoute(
+          path: AppRoutes.musicianDetailLegacyRoute,
+          builder: _buildMusicianDetail,
+        ),
+        GoRoute(
           path: AppRoutes.announcements,
           builder: (context, state) => const AnnouncementsHubPage(),
         ),
@@ -141,13 +153,15 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.messages,
-          builder: (context, state) {
-            final extra = state.extra;
-            if (extra is MessagesPageArgs) {
-              return MessagesPage(initialThreadId: extra.initialThreadId);
-            }
-            return const MessagesPage();
-          },
+          builder: _buildMessages,
+        ),
+        GoRoute(
+          path: AppRoutes.messagesThreadRoute,
+          builder: _buildMessages,
+        ),
+        GoRoute(
+          path: AppRoutes.messagesThreadDetailRoute,
+          builder: _buildChatThreadDetail,
         ),
         GoRoute(
           path: AppRoutes.contacts,
@@ -163,7 +177,8 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.createEvent,
-          builder: (context, state) => const CreateEventPage(),
+          builder: (context, state) =>
+              const UserShellPage(child: CreateEventPage()),
         ),
         GoRoute(
           path: AppRoutes.notifications,
@@ -200,11 +215,11 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.invite,
-          builder: (context, state) {
-            final groupId = state.uri.queryParameters['groupId'] ?? '';
-            final inviteId = state.uri.queryParameters['inviteId'] ?? '';
-            return InviteAcceptPage(groupId: groupId, inviteId: inviteId);
-          },
+          builder: _buildInviteAccept,
+        ),
+        GoRoute(
+          path: AppRoutes.inviteRoute,
+          builder: _buildInviteAccept,
         ),
         GoRoute(path: AppRoutes.eventDetail, builder: _buildEventDetail),
         GoRoute(path: AppRoutes.eventDetailRoute, builder: _buildEventDetail),
@@ -230,8 +245,23 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.studios,
-          builder: (context, state) =>
-              const UserShellPage(child: StudiosListPage()),
+          builder: _buildStudiosList,
+        ),
+        GoRoute(
+          path: AppRoutes.studiosRoomsRoute,
+          builder: _buildStudiosRooms,
+        ),
+        GoRoute(
+          path: AppRoutes.studiosRoomCreateRoute,
+          builder: _buildStudiosRoomCreate,
+        ),
+        GoRoute(
+          path: AppRoutes.studiosRoomEditRoute,
+          builder: _buildStudiosRoomEdit,
+        ),
+        GoRoute(
+          path: AppRoutes.studiosRoomDetailRoute,
+          builder: _buildStudiosRoomDetail,
         ),
         GoRoute(
           path: AppRoutes.studiosLogin,
@@ -250,7 +280,7 @@ class AppRouter {
           builder: (context, state) => const StudioDashboardPage(),
         ),
         GoRoute(
-          path: '/studios/profile', // Ideally add to AppRoutes constant
+          path: AppRoutes.studiosProfile,
           builder: (context, state) {
             final extra = state.extra;
             if (extra is StudiosCubit) {
@@ -279,6 +309,11 @@ class AppRouter {
           builder: (context, state) =>
               UserShellPage(child: const MusicianBookingsPage()),
         ),
+        GoRoute(
+          path: AppRoutes.matching,
+          builder: (context, state) =>
+              const UserShellPage(child: MatchingPage()),
+        ),
       ],
       errorBuilder: (context, state) => _UnknownRouteScreen(
         name: state.uri.toString(),
@@ -295,7 +330,7 @@ Widget _buildMusicianDetail(BuildContext context, GoRouterState state) {
   if (musician is MusicianEntity) {
     return UserShellPage(child: MusicianDetailPage(musician: musician));
   }
-  final musicianId = state.pathParameters['musicianId'];
+  final musicianId = _musicianIdFromState(state);
   if (musicianId != null && musicianId.isNotEmpty) {
     return _MusicianDetailLoader(
       musicianId: musicianId,
@@ -315,7 +350,7 @@ Widget _buildAnnouncementDetail(BuildContext context, GoRouterState state) {
       child: AnnouncementDetailPage(announcement: announcement),
     );
   }
-  final announcementId = state.pathParameters['announcementId'];
+  final announcementId = _announcementIdFromState(state);
   if (announcementId != null && announcementId.isNotEmpty) {
     return _AnnouncementDetailLoader(
       announcementId: announcementId,
@@ -331,15 +366,249 @@ Widget _buildAnnouncementDetail(BuildContext context, GoRouterState state) {
 Widget _buildEventDetail(BuildContext context, GoRouterState state) {
   final extra = state.extra;
   if (extra is EventEntity) {
-    return EventDetailPage(event: extra);
+    return UserShellPage(child: EventDetailPage(event: extra));
   }
-  final eventId = state.pathParameters['eventId'];
+  final eventId = _eventIdFromState(state);
   if (eventId != null && eventId.isNotEmpty) {
-    return _EventDetailLoader(eventId: eventId, location: state.uri.toString());
+    return UserShellPage(
+      child: _EventDetailLoader(eventId: eventId, location: state.uri.toString()),
+    );
   }
   return _UnknownRouteScreen(
     name: state.uri.toString(),
     message: 'Missing EventEntity for ${state.uri}',
+  );
+}
+
+Widget _buildStudiosList(BuildContext context, GoRouterState state) {
+  final rehearsalContext = _rehearsalContextFromState(state);
+  return UserShellPage(child: StudiosListPage(rehearsalContext: rehearsalContext));
+}
+
+Widget _buildStudiosRooms(BuildContext context, GoRouterState state) {
+  final studioId = state.pathParameters['studioId']?.trim();
+  if (studioId == null || studioId.isEmpty) {
+    return _UnknownRouteScreen(
+      name: state.uri.toString(),
+      message: 'Missing studioId for ${state.uri}',
+    );
+  }
+  final rehearsalContext = _rehearsalContextFromState(state);
+  return UserShellPage(
+    child: StudioRoomsPage(
+      studioId: studioId,
+      rehearsalContext: rehearsalContext,
+    ),
+  );
+}
+
+Widget _buildStudiosRoomDetail(BuildContext context, GoRouterState state) {
+  final studioId = state.pathParameters['studioId']?.trim();
+  final roomId = state.pathParameters['roomId']?.trim();
+  if (studioId == null ||
+      studioId.isEmpty ||
+      roomId == null ||
+      roomId.isEmpty) {
+    return _UnknownRouteScreen(
+      name: state.uri.toString(),
+      message: 'Missing studioId/roomId for ${state.uri}',
+    );
+  }
+  final rehearsalContext = _rehearsalContextFromState(state);
+  return UserShellPage(
+    child: _StudioRoomDetailLoader(
+      studioId: studioId,
+      roomId: roomId,
+      rehearsalContext: rehearsalContext,
+      location: state.uri.toString(),
+    ),
+  );
+}
+
+Widget _buildStudiosRoomCreate(BuildContext context, GoRouterState state) {
+  final studioId = state.pathParameters['studioId']?.trim();
+  if (studioId == null || studioId.isEmpty) {
+    return _UnknownRouteScreen(
+      name: state.uri.toString(),
+      message: 'Missing studioId for ${state.uri}',
+    );
+  }
+  return EditRoomPage(studioId: studioId);
+}
+
+Widget _buildStudiosRoomEdit(BuildContext context, GoRouterState state) {
+  final studioId = state.pathParameters['studioId']?.trim();
+  final roomId = state.pathParameters['roomId']?.trim();
+  if (studioId == null ||
+      studioId.isEmpty ||
+      roomId == null ||
+      roomId.isEmpty) {
+    return _UnknownRouteScreen(
+      name: state.uri.toString(),
+      message: 'Missing studioId/roomId for ${state.uri}',
+    );
+  }
+  return _StudioRoomEditorLoader(
+    studioId: studioId,
+    roomId: roomId,
+    location: state.uri.toString(),
+  );
+}
+
+Widget _buildMessages(BuildContext context, GoRouterState state) {
+  final threadId = _threadIdFromState(state);
+  if (threadId == null || threadId.isEmpty) {
+    return const MessagesPage();
+  }
+  return MessagesPage(initialThreadId: threadId);
+}
+
+Widget _buildChatThreadDetail(BuildContext context, GoRouterState state) {
+  final threadId = _threadIdFromState(state);
+  if (threadId == null || threadId.isEmpty) {
+    return _UnknownRouteScreen(
+      name: state.uri.toString(),
+      message: 'Missing threadId for ${state.uri}',
+    );
+  }
+  final extra = state.extra;
+  final initialThread = extra is ChatThread ? extra : null;
+  return _ChatThreadDetailLoader(
+    threadId: threadId,
+    initialThread: initialThread,
+    location: state.uri.toString(),
+  );
+}
+
+Widget _buildInviteAccept(BuildContext context, GoRouterState state) {
+  final groupId = _inviteGroupIdFromState(state) ?? '';
+  final inviteId = _inviteIdFromState(state) ?? '';
+  return InviteAcceptPage(groupId: groupId, inviteId: inviteId);
+}
+
+String? _musicianIdFromState(GoRouterState state) {
+  final pathId = state.pathParameters['musicianId']?.trim();
+  if (pathId != null && pathId.isNotEmpty) {
+    return pathId;
+  }
+  final queryId = state.uri.queryParameters['musicianId']?.trim();
+  if (queryId != null && queryId.isNotEmpty) {
+    return queryId;
+  }
+  final extra = state.extra;
+  if (extra is MusicianEntity && extra.id.trim().isNotEmpty) {
+    return extra.id.trim();
+  }
+  return null;
+}
+
+String? _announcementIdFromState(GoRouterState state) {
+  final pathId = state.pathParameters['announcementId']?.trim();
+  if (pathId != null && pathId.isNotEmpty) {
+    return pathId;
+  }
+  final queryId = state.uri.queryParameters['announcementId']?.trim();
+  if (queryId != null && queryId.isNotEmpty) {
+    return queryId;
+  }
+  final extra = state.extra;
+  if (extra is AnnouncementEntity && extra.id.trim().isNotEmpty) {
+    return extra.id.trim();
+  }
+  return null;
+}
+
+String? _eventIdFromState(GoRouterState state) {
+  final pathId = state.pathParameters['eventId']?.trim();
+  if (pathId != null && pathId.isNotEmpty) {
+    return pathId;
+  }
+  final queryId = state.uri.queryParameters['eventId']?.trim();
+  if (queryId != null && queryId.isNotEmpty) {
+    return queryId;
+  }
+  final extra = state.extra;
+  if (extra is EventEntity && extra.id.trim().isNotEmpty) {
+    return extra.id.trim();
+  }
+  return null;
+}
+
+String? _threadIdFromState(GoRouterState state) {
+  final pathId = state.pathParameters['threadId']?.trim();
+  if (pathId != null && pathId.isNotEmpty) {
+    return pathId;
+  }
+  final queryId = state.uri.queryParameters['threadId']?.trim();
+  if (queryId != null && queryId.isNotEmpty) {
+    return queryId;
+  }
+  final extra = state.extra;
+  if (extra is MessagesPageArgs) {
+    final threadId = extra.initialThreadId?.trim();
+    if (threadId != null && threadId.isNotEmpty) {
+      return threadId;
+    }
+  }
+  if (extra is ChatThread && extra.id.trim().isNotEmpty) {
+    return extra.id.trim();
+  }
+  if (extra is String && extra.trim().isNotEmpty) {
+    return extra.trim();
+  }
+  return null;
+}
+
+String? _inviteGroupIdFromState(GoRouterState state) {
+  final pathId = state.pathParameters['groupId']?.trim();
+  if (pathId != null && pathId.isNotEmpty) {
+    return pathId;
+  }
+  final queryId = state.uri.queryParameters['groupId']?.trim();
+  if (queryId != null && queryId.isNotEmpty) {
+    return queryId;
+  }
+  return null;
+}
+
+String? _inviteIdFromState(GoRouterState state) {
+  final pathId = state.pathParameters['inviteId']?.trim();
+  if (pathId != null && pathId.isNotEmpty) {
+    return pathId;
+  }
+  final queryId = state.uri.queryParameters['inviteId']?.trim();
+  if (queryId != null && queryId.isNotEmpty) {
+    return queryId;
+  }
+  return null;
+}
+
+RehearsalBookingContext? _rehearsalContextFromState(GoRouterState state) {
+  final extra = state.extra;
+  if (extra is RehearsalBookingContext) {
+    return extra;
+  }
+
+  final groupId = state.uri.queryParameters['groupId']?.trim() ?? '';
+  final rehearsalId = state.uri.queryParameters['rehearsalId']?.trim() ?? '';
+  final suggestedDateRaw = state.uri.queryParameters['suggestedDate']?.trim();
+  if (groupId.isEmpty || rehearsalId.isEmpty || suggestedDateRaw == null) {
+    return null;
+  }
+  final suggestedDate = DateTime.tryParse(suggestedDateRaw);
+  if (suggestedDate == null) {
+    return null;
+  }
+  final suggestedEndDateRaw = state.uri.queryParameters['suggestedEndDate']?.trim();
+  final suggestedEndDate = suggestedEndDateRaw == null || suggestedEndDateRaw.isEmpty
+      ? null
+      : DateTime.tryParse(suggestedEndDateRaw);
+
+  return RehearsalBookingContext(
+    groupId: groupId,
+    rehearsalId: rehearsalId,
+    suggestedDate: suggestedDate,
+    suggestedEndDate: suggestedEndDate,
   );
 }
 
@@ -456,9 +725,7 @@ class _EventDetailLoader extends StatelessWidget {
       future: locate<EventsRepository>().findById(eventId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
         final event = snapshot.data;
         if (snapshot.hasError || event == null) {
@@ -470,6 +737,165 @@ class _EventDetailLoader extends StatelessWidget {
           );
         }
         return EventDetailPage(event: event);
+      },
+    );
+  }
+}
+
+class _StudioRoomDetailData {
+  const _StudioRoomDetailData({required this.room, required this.studioName});
+
+  final RoomEntity room;
+  final String studioName;
+}
+
+class _ChatThreadDetailLoader extends StatelessWidget {
+  const _ChatThreadDetailLoader({
+    required this.threadId,
+    required this.location,
+    this.initialThread,
+  });
+
+  final String threadId;
+  final String location;
+  final ChatThread? initialThread;
+
+  Future<ChatThread?> _loadThread() async {
+    final seedThread = initialThread;
+    if (seedThread != null && seedThread.id == threadId) {
+      return seedThread;
+    }
+    return locate<ChatRepository>().fetchThread(threadId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<ChatThread?>(
+      future: _loadThread(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+        final thread = snapshot.data;
+        if (snapshot.hasError || thread == null) {
+          return _UnknownRouteScreen(
+            name: location,
+            message: snapshot.hasError
+                ? snapshot.error.toString()
+                : 'No se encontro el chat solicitado.',
+          );
+        }
+        final currentUserId = locate<AuthRepository>().currentUser?.id ?? '';
+        return ChatThreadDetailPage(
+          thread: thread,
+          threadTitle: thread.titleFor(currentUserId),
+        );
+      },
+    );
+  }
+}
+
+class _StudioRoomDetailLoader extends StatelessWidget {
+  const _StudioRoomDetailLoader({
+    required this.studioId,
+    required this.roomId,
+    required this.location,
+    this.rehearsalContext,
+  });
+
+  final String studioId;
+  final String roomId;
+  final String location;
+  final RehearsalBookingContext? rehearsalContext;
+
+  Future<_StudioRoomDetailData?> _loadRoomDetail() async {
+    final repository = locate<StudiosRepository>();
+    final studio = await repository.getStudioById(studioId);
+    final rooms = await repository.getRoomsByStudio(studioId);
+    RoomEntity? room;
+    for (final candidate in rooms) {
+      if (candidate.id == roomId) {
+        room = candidate;
+        break;
+      }
+    }
+    if (room == null) {
+      return null;
+    }
+    final resolvedStudioName = (studio?.name ?? '').trim();
+    return _StudioRoomDetailData(
+      room: room,
+      studioName: resolvedStudioName.isEmpty ? 'Studio' : resolvedStudioName,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<_StudioRoomDetailData?>(
+      future: _loadRoomDetail(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final data = snapshot.data;
+        if (snapshot.hasError || data == null) {
+          return _UnknownRouteScreen(
+            name: location,
+            message: snapshot.hasError
+                ? snapshot.error.toString()
+                : 'No se encontro la sala solicitada.',
+          );
+        }
+        return RoomDetailPage(
+          room: data.room,
+          studioName: data.studioName,
+          rehearsalContext: rehearsalContext,
+        );
+      },
+    );
+  }
+}
+
+class _StudioRoomEditorLoader extends StatelessWidget {
+  const _StudioRoomEditorLoader({
+    required this.studioId,
+    required this.roomId,
+    required this.location,
+  });
+
+  final String studioId;
+  final String roomId;
+  final String location;
+
+  Future<RoomEntity?> _loadRoom() async {
+    final repository = locate<StudiosRepository>();
+    final rooms = await repository.getRoomsByStudio(studioId);
+    for (final candidate in rooms) {
+      if (candidate.id == roomId) {
+        return candidate;
+      }
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<RoomEntity?>(
+      future: _loadRoom(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+        final room = snapshot.data;
+        if (snapshot.hasError || room == null) {
+          return _UnknownRouteScreen(
+            name: location,
+            message: snapshot.hasError
+                ? snapshot.error.toString()
+                : 'No se encontro la sala solicitada.',
+          );
+        }
+        return EditRoomPage(studioId: studioId, room: room);
       },
     );
   }

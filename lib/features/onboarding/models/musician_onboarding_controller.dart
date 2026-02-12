@@ -6,6 +6,7 @@ class MusicianOnboardingController extends ChangeNotifier {
   final basicInfoKey = GlobalKey<FormState>();
   final experienceKey = GlobalKey<FormState>();
   final extrasKey = GlobalKey<FormState>();
+  final influencesKey = GlobalKey<FormState>();
 
   final nameController = TextEditingController();
   final instrumentController = TextEditingController();
@@ -14,6 +15,30 @@ class MusicianOnboardingController extends ChangeNotifier {
   final yearsController = TextEditingController(text: '0');
   final photoUrlController = TextEditingController();
   final bioController = TextEditingController();
+
+  final Map<String, List<String>> _influences = {};
+  Map<String, List<String>> get influences => Map.unmodifiable(_influences);
+
+  void addInfluence(String style, String artist) {
+    if (style.trim().isEmpty || artist.trim().isEmpty) return;
+    if (!_influences.containsKey(style)) {
+      _influences[style] = [];
+    }
+    if (!_influences[style]!.contains(artist)) {
+      _influences[style]!.add(artist);
+      _safeNotify();
+    }
+  }
+
+  void removeInfluence(String style, String artist) {
+    if (_influences.containsKey(style)) {
+      _influences[style]!.remove(artist);
+      if (_influences[style]!.isEmpty) {
+        _influences.remove(style);
+      }
+      _safeNotify();
+    }
+  }
 
   bool _isDisposed = false;
   int _currentStep = 0;
@@ -42,6 +67,8 @@ class MusicianOnboardingController extends ChangeNotifier {
       case 1:
         return experienceKey.currentState?.validate() ?? false;
       case 2:
+        return true; // Influences step is optional
+      case 3:
         return extrasKey.currentState?.validate() ?? true;
       default:
         return true;
@@ -85,6 +112,7 @@ class MusicianOnboardingController extends ChangeNotifier {
         experienceYears: parsedExperienceYears,
         photoUrl: photoUrlOrNull,
         bio: bioOrNull,
+        influences: _influences,
       );
     } finally {
       _setSaving(false);

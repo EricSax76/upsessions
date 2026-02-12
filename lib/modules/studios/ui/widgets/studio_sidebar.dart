@@ -129,7 +129,7 @@ class _StudioMenuList extends StatelessWidget {
     _MenuItem(
       label: 'Perfil del Estudio',
       icon: Icons.store_outlined,
-      route: '/studios/profile',
+      route: AppRoutes.studiosProfile,
     ),
   ];
 

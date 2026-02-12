@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
+import 'package:upsessions/core/constants/music_styles.dart';
 
 import 'filter_dropdown.dart';
 import 'gender_radio_group.dart';
@@ -27,34 +28,7 @@ const _instrumentOptions = <String>[
   'Producción',
 ];
 
-const _styleOptions = <String>[
-  'Rock',
-  'Pop',
-  'Indie',
-  'Funk',
-  'Soul',
-  'R&B',
-  'Jazz',
-  'Blues',
-  'Hip-Hop',
-  'Rap',
-  'Reggaetón',
-  'Trap',
-  'Electrónica',
-  'House',
-  'Techno',
-  'Reggae',
-  'Ska',
-  'Punk',
-  'Metal',
-  'Clásica',
-  'Flamenco',
-  'Folklore',
-  'Latino',
-  'Salsa',
-  'Bachata',
-  'Country',
-];
+const _styleOptions = musicStyles;
 
 const _profileTypeOptions = <String>['Solista', 'Banda', 'Productor'];
 

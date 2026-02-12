@@ -132,8 +132,11 @@ class _InviteToGroupDialogState extends State<InviteToGroupDialog> {
         groupId: groupId,
         targetUid: widget.targetUid,
       );
-      final link =
-          '$appLinkScheme:///invite?groupId=$groupId&inviteId=$inviteId';
+      final invitePath = AppRoutes.invitePath(
+        groupId: groupId,
+        inviteId: inviteId,
+      );
+      final link = '$appLinkScheme://$invitePath';
       if (!context.mounted) return;
 
       final dialogWidth = math.min(
@@ -172,9 +175,7 @@ class _InviteToGroupDialogState extends State<InviteToGroupDialog> {
                     OutlinedButton.icon(
                       onPressed: () {
                         Navigator.of(context).pop();
-                        GoRouter.of(context).go(
-                          '${AppRoutes.invite}?groupId=$groupId&inviteId=$inviteId',
-                        );
+                        GoRouter.of(context).go(invitePath);
                       },
                       icon: const Icon(Icons.open_in_new),
                       label: const Text('Probar aquí'),

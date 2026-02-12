@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/features/contacts/ui/widgets/musician_like_button.dart';
-import 'package:upsessions/features/messaging/ui/pages/messages_page.dart';
 
 import '../../models/musician_entity.dart';
 import '../../controllers/musician_detail_controller.dart';
@@ -31,10 +30,7 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
     try {
       final threadId = await _controller.ensureThreadId(widget.musician);
       if (!mounted) return;
-      context.push(
-        AppRoutes.messages,
-        extra: MessagesPageArgs(initialThreadId: threadId),
-      );
+      context.push(AppRoutes.messagesThreadPath(threadId));
     } catch (error) {
       debugPrint('Error contacting musician: $error');
       if (!mounted) return;

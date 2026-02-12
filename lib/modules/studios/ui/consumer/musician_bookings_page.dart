@@ -39,9 +39,7 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
   Widget build(BuildContext context) {
     final userId = _userId;
     if (userId == null) {
-      return const Scaffold(
-        body: Center(child: Text('Please login to view bookings')),
-      );
+      return const Center(child: Text('Please login to view bookings'));
     }
 
     return BlocProvider.value(

@@ -10,7 +10,6 @@ import '../../repositories/announcements_repository.dart';
 import '../../models/announcement_entity.dart';
 import '../widgets/announcement_filter_panel.dart';
 import '../widgets/announcements_hero_section.dart';
-import 'announcement_form_page.dart';
 
 class AnnouncementsListPage extends StatefulWidget {
   const AnnouncementsListPage({super.key, this.showAppBar = true});
@@ -91,11 +90,7 @@ class _AnnouncementsListPageState extends State<AnnouncementsListPage> {
   }
 
   void _openForm() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => AnnouncementFormPage(repository: _repository),
-      ),
-    );
+    await context.push(AppRoutes.announcementForm);
     if (!mounted) return;
     _load(refresh: true);
   }

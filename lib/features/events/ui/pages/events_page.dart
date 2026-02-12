@@ -19,38 +19,36 @@ class EventsPage extends StatelessWidget {
     return BlocProvider(
       create: (_) =>
           EventsPageCubit(repository: locate<EventsRepository>())..load(),
-      child: BlocListener<EventsPageCubit, EventsPageState>(
-        listenWhen: (previous, current) =>
-            previous.draftSavedCount != current.draftSavedCount,
-        listener: (context, state) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Ficha de evento lista para compartir.'),
-            ),
-          );
-        },
-        child: Scaffold(
-          body: UserShellPage(
-            child: BlocBuilder<EventsPageCubit, EventsPageState>(
-              builder: (context, state) {
-                final cubit = context.read<EventsPageCubit>();
-                return EventsDashboard(
-                  events: state.events,
-                  loading: state.loading || state.savingDraft,
-                  eventsCount: state.events.length,
-                  thisWeekCount: state.thisWeekCount,
-                  totalCapacity: state.totalCapacity,
-                  ownerId: ownerId,
-                  onRefresh: cubit.load,
-                  onSelectForPreview: cubit.selectPreview,
-                  onCreateEvent: () => context.push(AppRoutes.createEvent),
-                  onViewDetails: (event) => context.push(
-                    AppRoutes.eventDetailPath(event.id),
-                    extra: event,
-                  ),
-                );
-              },
-            ),
+      child: UserShellPage(
+        child: BlocListener<EventsPageCubit, EventsPageState>(
+          listenWhen: (previous, current) =>
+              previous.draftSavedCount != current.draftSavedCount,
+          listener: (context, state) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Ficha de evento lista para compartir.'),
+              ),
+            );
+          },
+          child: BlocBuilder<EventsPageCubit, EventsPageState>(
+            builder: (context, state) {
+              final cubit = context.read<EventsPageCubit>();
+              return EventsDashboard(
+                events: state.events,
+                loading: state.loading || state.savingDraft,
+                eventsCount: state.events.length,
+                thisWeekCount: state.thisWeekCount,
+                totalCapacity: state.totalCapacity,
+                ownerId: ownerId,
+                onRefresh: cubit.load,
+                onSelectForPreview: cubit.selectPreview,
+                onCreateEvent: () => context.push(AppRoutes.createEvent),
+                onViewDetails: (event) => context.push(
+                  AppRoutes.eventDetailPath(event.id),
+                  extra: event,
+                ),
+              );
+            },
           ),
         ),
       ),

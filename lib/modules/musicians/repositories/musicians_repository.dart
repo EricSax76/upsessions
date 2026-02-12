@@ -236,6 +236,7 @@ class MusiciansRepository {
     String? province,
     String? profileType,
     String? gender,
+    Map<String, List<String>> influences = const {},
   }) async {
     final now = FieldValue.serverTimestamp();
     await _firestore.collection(_collectionName).doc(musicianId).set({
@@ -250,6 +251,7 @@ class MusiciansRepository {
       if (province != null) 'province': province,
       if (profileType != null) 'profileType': profileType,
       if (gender != null) 'gender': gender,
+      'influences': influences,
       'ownerId': musicianId,
       'createdAt': now,
       'updatedAt': now,

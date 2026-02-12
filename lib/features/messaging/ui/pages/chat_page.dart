@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
@@ -9,7 +11,6 @@ import '../../models/chat_thread.dart';
 import '../widgets/chat_input_field.dart';
 import '../widgets/chat_thread_list_item.dart';
 import '../widgets/message_bubble.dart';
-import 'chat_thread_detail_page.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key, this.showAppBar = true, this.initialThreadId});
@@ -78,9 +79,8 @@ class _ChatPageState extends State<ChatPage> {
             if (!mounted) return;
             final isCompact = MediaQuery.sizeOf(context).width < 720;
             final thread = _selectedThread;
-            final currentUserId = _authRepository.currentUser?.id ?? '';
             if (isCompact && thread != null) {
-              _openThreadDetail(thread, currentUserId);
+              _openThreadDetail(thread);
             }
           });
         }
@@ -217,17 +217,10 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  Future<void> _openThreadDetail(
-    ChatThread thread,
-    String currentUserId,
-  ) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ChatThreadDetailPage(
-          thread: thread,
-          threadTitle: thread.titleFor(currentUserId),
-        ),
-      ),
+  Future<void> _openThreadDetail(ChatThread thread) async {
+    await context.push(
+      AppRoutes.messagesThreadDetailPath(thread.id),
+      extra: thread,
     );
     if (!mounted) return;
     await _loadThreads(preferThreadId: thread.id);
@@ -331,7 +324,7 @@ class _ChatPageState extends State<ChatPage> {
             selected: !isCompact && thread.id == _selectedThread?.id,
             onTap: () {
               if (isCompact) {
-                _openThreadDetail(thread, currentUserId);
+                _openThreadDetail(thread);
               } else {
                 setState(() => _selectedThread = thread);
                 _loadMessages(thread.id);

@@ -29,6 +29,11 @@ class _UserMenuListState extends State<UserMenuList> {
       route: AppRoutes.musicians,
     ),
     _MenuItem(
+      label: 'Afinidad',
+      icon: Icons.hub_outlined,
+      route: AppRoutes.matching,
+    ),
+    _MenuItem(
       label: 'Anuncios',
       icon: Icons.campaign_outlined,
       route: AppRoutes.announcements,

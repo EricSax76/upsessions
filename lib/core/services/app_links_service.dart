@@ -47,8 +47,10 @@ class _AppLinksListenerState extends State<AppLinksListener> {
     if (uri.scheme != appLinkScheme) return null;
 
     // Support both:
-    // - com.example.musicintouch:///invite?groupId=...&inviteId=...
-    // - com.example.musicintouch://invite?groupId=...&inviteId=...
+    // - com.example.musicintouch:///invite/{groupId}/{inviteId}
+    // - com.example.musicintouch://invite/{groupId}/{inviteId}
+    // - com.example.musicintouch:///invite?groupId=...&inviteId=... (legacy)
+    // - com.example.musicintouch://invite?groupId=...&inviteId=... (legacy)
     final path = uri.path.isNotEmpty ? uri.path : '/${uri.host}';
     if (path.isEmpty || path == '/') return null;
 

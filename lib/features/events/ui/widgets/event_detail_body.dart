@@ -19,46 +19,66 @@ class _EventDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final meta = _buildEventDetailMeta(context, event);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(event.title),
-        actions: [
-          IconButton(
-            tooltip: 'Copiar formato',
-            onPressed: () => onCopyTemplate(),
-            icon: const Icon(Icons.copy_all_outlined),
-          ),
-          IconButton(
-            tooltip: 'Compartir',
-            onPressed: onShare,
-            icon: const Icon(Icons.share_outlined),
-          ),
-          const SizedBox(width: 6),
-        ],
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final horizontalPadding = constraints.maxWidth < 420
-              ? 16.0
-              : (constraints.maxWidth < 720 ? 20.0 : 24.0);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final horizontalPadding = constraints.maxWidth < 420
+            ? 16.0
+            : (constraints.maxWidth < 720 ? 20.0 : 24.0);
 
-          return Align(
-            alignment: Alignment.topCenter,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 860),
-              child: _EventDetailList(
-                event: event,
-                meta: meta,
-                isUploadingBanner: isUploadingBanner,
-                onUploadBanner: onUploadBanner,
-                onCopyTemplate: onCopyTemplate,
-                onShare: onShare,
-                horizontalPadding: horizontalPadding,
-              ),
+        return Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 860),
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    16,
+                    horizontalPadding,
+                    8,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          event.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        tooltip: 'Copiar formato',
+                        onPressed: () => onCopyTemplate(),
+                        icon: const Icon(Icons.copy_all_outlined),
+                      ),
+                      IconButton(
+                        tooltip: 'Compartir',
+                        onPressed: onShare,
+                        icon: const Icon(Icons.share_outlined),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: _EventDetailList(
+                    event: event,
+                    meta: meta,
+                    isUploadingBanner: isUploadingBanner,
+                    onUploadBanner: onUploadBanner,
+                    onCopyTemplate: onCopyTemplate,
+                    onShare: onShare,
+                    horizontalPadding: horizontalPadding,
+                  ),
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

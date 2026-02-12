@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:upsessions/core/constants/app_link_scheme.dart';
+import 'package:upsessions/core/constants/app_routes.dart';
 
 import '../../musicians/models/musician_entity.dart';
 
@@ -43,6 +44,5 @@ class InviteLinkData {
   final String groupId;
   final String inviteId;
 
-  String get url =>
-      '$appLinkScheme:///invite?groupId=$groupId&inviteId=$inviteId';
+  String get url => '$appLinkScheme://${AppRoutes.invitePath(groupId: groupId, inviteId: inviteId)}';
 }

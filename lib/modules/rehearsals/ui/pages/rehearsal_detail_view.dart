@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
 
+import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../core/widgets/loading_indicator.dart';
 import '../../../auth/cubits/auth_cubit.dart';
@@ -49,7 +51,10 @@ class RehearsalDetailView extends StatelessWidget {
         setlistRepository: setlistRepository ?? locate<SetlistRepository>(),
         studiosRepository: studiosRepository ?? locate<StudiosRepository>(),
       ),
-      child: _RehearsalDetailViewBody(groupId: groupId, rehearsalId: rehearsalId),
+      child: _RehearsalDetailViewBody(
+        groupId: groupId,
+        rehearsalId: rehearsalId,
+      ),
     );
   }
 }
@@ -63,17 +68,18 @@ class _RehearsalDetailViewBody extends StatelessWidget {
   final String groupId;
   final String rehearsalId;
 
-  void _navigateToStudios(BuildContext context, DateTime rehearsalDate, DateTime? rehearsalEndDate) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => StudiosListPage(
-          rehearsalContext: RehearsalBookingContext(
-            groupId: groupId,
-            rehearsalId: rehearsalId,
-            suggestedDate: rehearsalDate,
-            suggestedEndDate: rehearsalEndDate,
-          ),
-        ),
+  void _navigateToStudios(
+    BuildContext context,
+    DateTime rehearsalDate,
+    DateTime? rehearsalEndDate,
+  ) {
+    context.push(
+      AppRoutes.studios,
+      extra: RehearsalBookingContext(
+        groupId: groupId,
+        rehearsalId: rehearsalId,
+        suggestedDate: rehearsalDate,
+        suggestedEndDate: rehearsalEndDate,
       ),
     );
   }

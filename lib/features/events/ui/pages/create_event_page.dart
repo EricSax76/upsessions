@@ -15,27 +15,37 @@ class CreateEventPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => EventsPageCubit(repository: locate<EventsRepository>()),
-      child: Builder(
-        builder: (context) => Scaffold(
-          appBar: AppBar(title: const Text('Crear evento')),
-          body: BlocListener<EventsPageCubit, EventsPageState>(
-            listenWhen: (previous, current) =>
-                previous.draftSavedCount != current.draftSavedCount,
-            listener: (context, state) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Ficha de evento lista para compartir.'),
-                ),
-              );
-              context.pop();
-            },
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: EventFormCard(
-                ownerId: locate<AuthRepository>().currentUser?.id,
-                onGenerateDraft: (event) {
-                  context.read<EventsPageCubit>().generateDraft(event);
-                },
+      child: BlocListener<EventsPageCubit, EventsPageState>(
+        listenWhen: (previous, current) =>
+            previous.draftSavedCount != current.draftSavedCount,
+        listener: (context, state) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Ficha de evento lista para compartir.'),
+            ),
+          );
+          context.pop();
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 860),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Crear evento',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 16),
+                  EventFormCard(
+                    ownerId: locate<AuthRepository>().currentUser?.id,
+                    onGenerateDraft: (event) {
+                      context.read<EventsPageCubit>().generateDraft(event);
+                    },
+                  ),
+                ],
               ),
             ),
           ),

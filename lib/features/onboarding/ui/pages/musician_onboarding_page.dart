@@ -10,6 +10,7 @@ import '../widgets/musician_onboarding_missing_session_view.dart';
 import '../widgets/musician_basic_info_step.dart';
 import '../widgets/musician_experience_step.dart';
 import '../widgets/musician_extras_step.dart';
+import '../widgets/musician_influences_step.dart';
 
 class MusicianOnboardingPage extends StatefulWidget {
   const MusicianOnboardingPage({super.key});
@@ -110,6 +111,7 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
     return [
       MusicianBasicInfoStep(controller: _controller),
       MusicianExperienceStep(controller: _controller),
+      MusicianInfluencesStep(controller: _controller),
       MusicianExtrasStep(controller: _controller),
     ];
   }

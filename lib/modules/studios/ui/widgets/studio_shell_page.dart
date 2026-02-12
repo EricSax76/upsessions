@@ -65,7 +65,7 @@ class StudioShellPage extends StatelessWidget {
                         return InkWell(
                           onTap: () {
                             context.push(
-                              '/studios/profile',
+                              AppRoutes.studiosProfile,
                               extra: context.read<StudiosCubit>(),
                             );
                           },

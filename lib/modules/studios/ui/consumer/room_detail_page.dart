@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../../cubits/studios_cubit.dart';
@@ -7,6 +8,7 @@ import '../../cubits/studios_cubit.dart';
 import '../../models/room_entity.dart';
 import '../../models/booking_entity.dart';
 import '../../../auth/repositories/auth_repository.dart';
+import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../rehearsals/repositories/rehearsals_repository.dart';
 import 'studios_list_page.dart';
@@ -25,67 +27,73 @@ class RoomDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(room.name)),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Placeholder for image
-            Container(
-              height: 200,
-              width: double.infinity,
-              color: Colors.grey.shade300,
-              child: room.photos.isNotEmpty
-                  ? Image.network(
-                      room.photos.first,
-                      fit: BoxFit.cover,
-                      webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
-                      errorBuilder: (context, error, stackTrace) => const Icon(
-                        Icons.broken_image_outlined,
-                        size: 50,
-                        color: Colors.grey,
-                      ),
-                    )
-                  : const Icon(Icons.image, size: 50, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            Text(room.name, style: Theme.of(context).textTheme.headlineMedium),
-            Text(
-              '${room.pricePerHour}€ / hour',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Theme.of(context).primaryColor,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1000),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Placeholder for image
+              Container(
+                height: 200,
+                width: double.infinity,
+                color: Colors.grey.shade300,
+                child: room.photos.isNotEmpty
+                    ? Image.network(
+                        room.photos.first,
+                        fit: BoxFit.cover,
+                        webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.broken_image_outlined,
+                              size: 50,
+                              color: Colors.grey,
+                            ),
+                      )
+                    : const Icon(Icons.image, size: 50, color: Colors.grey),
               ),
-            ),
-            const SizedBox(height: 16),
-            _buildInfoRow(Icons.people, 'Capacity: ${room.capacity} people'),
-            _buildInfoRow(Icons.square_foot, 'Size: ${room.size}'),
-            const SizedBox(height: 24),
-            Text('Equipment', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: room.equipment
-                  .map((e) => Chip(label: Text(e)))
-                  .toList(),
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                onPressed: () => _showBookingDialog(context),
-                child: Text(
-                  rehearsalContext != null
-                      ? 'Reservar para Ensayo'
-                      : 'Book Room',
+              const SizedBox(height: 16),
+              Text(
+                room.name,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Text(
+                '${room.pricePerHour}€ / hour',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              _buildInfoRow(Icons.people, 'Capacity: ${room.capacity} people'),
+              _buildInfoRow(Icons.square_foot, 'Size: ${room.size}'),
+              const SizedBox(height: 24),
+              Text('Equipment', style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: room.equipment
+                    .map((e) => Chip(label: Text(e)))
+                    .toList(),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: () => _showBookingDialog(context),
+                  child: Text(
+                    rehearsalContext != null
+                        ? 'Reservar para Ensayo'
+                        : 'Book Room',
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -257,13 +265,14 @@ class _BookingDialogState extends State<_BookingDialog> {
       ),
     );
 
-    // If from rehearsal context, pop back to rehearsal detail
+    // If from rehearsal context, go back to the rehearsal detail route.
     if (widget.rehearsalContext != null) {
-      // Pop studios list and rooms page to return to rehearsal
-      Navigator.of(context).popUntil(
-        (route) =>
-            route.isFirst ||
-            (route.settings.name?.contains('rehearsal') ?? false),
+      final rehearsalContext = widget.rehearsalContext!;
+      context.go(
+        AppRoutes.rehearsalDetail(
+          groupId: rehearsalContext.groupId,
+          rehearsalId: rehearsalContext.rehearsalId,
+        ),
       );
     }
   }
