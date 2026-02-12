@@ -6,12 +6,14 @@ class AccountProfileDetailsCard extends StatelessWidget {
     required this.bio,
     required this.location,
     required this.skills,
+    required this.influences,
     required this.links,
   });
 
   final String bio;
   final String location;
   final List<String> skills;
+  final Map<String, List<String>> influences;
   final Map<String, String> links;
 
   @override
@@ -65,6 +67,13 @@ class AccountProfileDetailsCard extends StatelessWidget {
             const Divider(height: 32),
             _buildDetailSection(
               context,
+              icon: Icons.hub_outlined,
+              label: 'Afinidades',
+              value: _formatInfluences(influences),
+            ),
+            const Divider(height: 32),
+            _buildDetailSection(
+              context,
               icon: Icons.link,
               label: 'Enlaces',
               value: links.isNotEmpty
@@ -107,5 +116,25 @@ class AccountProfileDetailsCard extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _formatInfluences(Map<String, List<String>> data) {
+    if (data.isEmpty) {
+      return 'Sin afinidades registradas';
+    }
+
+    final lines = <String>[];
+    final styles = data.keys.toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+
+    for (final style in styles) {
+      final artists = data[style] ?? const <String>[];
+      if (artists.isEmpty) {
+        continue;
+      }
+      lines.add('$style: ${artists.join(', ')}');
+    }
+
+    return lines.isEmpty ? 'Sin afinidades registradas' : lines.join('\n');
   }
 }

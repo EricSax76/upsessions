@@ -15,6 +15,7 @@ import 'package:upsessions/features/media/repositories/media_repository.dart';
 import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/features/events/repositories/events_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';
 import 'package:upsessions/home/repositories/user_home_repository.dart';
 import 'package:upsessions/features/contacts/controllers/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/repositories/contacts_repository.dart';
@@ -53,6 +54,9 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<LocaleCubit>(() => LocaleCubit())
     ..registerLazySingleton<ThemeCubit>(() => ThemeCubit())
     ..registerLazySingleton<MusiciansRepository>(() => MusiciansRepository())
+    ..registerLazySingleton<AffinityOptionsRepository>(
+      () => AffinityOptionsRepository(),
+    )
     ..registerLazySingleton<AnnouncementsRepository>(
       () => AnnouncementsRepository(),
     )
@@ -91,7 +95,9 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<SetlistRepository>(
       () => SetlistRepository(authRepository: getIt<AuthRepository>()),
     )
-    ..registerLazySingleton<StudiosRepository>(() => FirestoreStudiosRepository())
+    ..registerLazySingleton<StudiosRepository>(
+      () => FirestoreStudiosRepository(),
+    )
     ..registerLazySingleton<StudioImageService>(() => StudioImageService())
     ..registerLazySingleton<LikedMusiciansController>(
       () => LikedMusiciansController(

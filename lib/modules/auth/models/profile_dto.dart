@@ -9,6 +9,7 @@ class ProfileDto {
     required this.skills,
     required this.links,
     this.photoUrl,
+    this.influences = const {},
   });
 
   final String id;
@@ -18,6 +19,7 @@ class ProfileDto {
   final List<String> skills;
   final Map<String, String> links;
   final String? photoUrl;
+  final Map<String, List<String>> influences;
 
   ProfileEntity toEntity() {
     return ProfileEntity(
@@ -28,6 +30,7 @@ class ProfileDto {
       skills: skills,
       links: links,
       photoUrl: photoUrl,
+      influences: influences,
     );
   }
 }

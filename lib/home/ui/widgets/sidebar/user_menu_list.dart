@@ -174,8 +174,6 @@ class _UserMenuListState extends State<UserMenuList> {
               onTap: () => _handleTap(context, i),
             ),
           ),
-        const SizedBox(height: 12),
-        _ContactsPreview(controller: _likedController),
       ],
     );
   }
@@ -187,43 +185,6 @@ class _MenuItem {
   final String label;
   final IconData icon;
   final String? route;
-}
-
-class _ContactsPreview extends StatelessWidget {
-  const _ContactsPreview({required this.controller});
-
-  final LikedMusiciansController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final contacts = controller.contacts;
-    if (contacts.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Text(
-          'Guarda músicos con el corazón para tener accesos rápidos aquí.',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: contacts
-            .map(
-              (musician) => InputChip(
-                avatar: const Icon(Icons.favorite, size: 16),
-                label: Text(musician.name),
-                onPressed: () => GoRouter.of(context).go(AppRoutes.contacts),
-                onDeleted: () => controller.remove(musician.id),
-              ),
-            )
-            .toList(),
-      ),
-    );
-  }
 }
 
 class _NotificationsMenuBadge extends StatefulWidget {

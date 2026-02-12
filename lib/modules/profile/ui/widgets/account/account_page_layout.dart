@@ -52,7 +52,10 @@ class AccountPageLayout extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 1100),
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
                 child: isDesktop
                     ? AccountDesktopLayout(
                         profile: profile,
@@ -159,6 +162,7 @@ class AccountDesktopLayout extends StatelessWidget {
                 bio: profile.bio,
                 location: profile.location,
                 skills: profile.skills,
+                influences: profile.influences,
                 links: profile.links,
               ),
               const SizedBox(height: 24),
@@ -234,6 +238,7 @@ class AccountMobileLayout extends StatelessWidget {
           bio: profile.bio,
           location: profile.location,
           skills: profile.skills,
+          influences: profile.influences,
           links: profile.links,
         ),
         const SizedBox(height: 24),

@@ -212,6 +212,11 @@ service cloud.firestore {
       allow read: if true;
     }
 
+    match /affinity_options/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /chat_threads/{threadId} {
       function isOwnUnreadCountUpdateOnly() {
         let before =

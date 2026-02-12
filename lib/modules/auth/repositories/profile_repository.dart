@@ -54,6 +54,7 @@ class ProfileRepository {
       skills: _stringList(data['styles']),
       links: _stringMap(data['links']),
       photoUrl: data['photoUrl'] as String?,
+      influences: _influencesMap(data['influences']),
     );
   }
 
@@ -65,6 +66,7 @@ class ProfileRepository {
       'styles': profile.skills,
       'links': profile.links,
       'photoUrl': profile.photoUrl,
+      'influences': profile.influences,
     };
     await _firestore
         .collection('musicians')
@@ -77,6 +79,8 @@ class ProfileRepository {
       location: profile.location,
       skills: profile.skills,
       links: profile.links,
+      photoUrl: profile.photoUrl,
+      influences: profile.influences,
     );
   }
 
@@ -134,6 +138,26 @@ class ProfileRepository {
       );
     }
     return const {};
+  }
+
+  static Map<String, List<String>> _influencesMap(dynamic raw) {
+    if (raw is! Map) {
+      return const {};
+    }
+    final mapped = <String, List<String>>{};
+    raw.forEach((key, value) {
+      if (value is! Iterable) {
+        return;
+      }
+      final artists = value
+          .map((element) => element.toString().trim())
+          .where((element) => element.isNotEmpty)
+          .toList();
+      if (artists.isNotEmpty) {
+        mapped[key.toString()] = artists;
+      }
+    });
+    return mapped;
   }
 
   static String _normalizeExtension(String input) {

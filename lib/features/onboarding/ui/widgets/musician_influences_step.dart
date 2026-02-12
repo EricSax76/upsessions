@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/locator/locator.dart';
 import '../../../../core/constants/music_styles.dart';
+import '../../../../modules/musicians/repositories/affinity_options_repository.dart';
 import '../../models/musician_onboarding_controller.dart';
 import 'musician_onboarding_step_card.dart';
 
@@ -15,7 +17,17 @@ class MusicianInfluencesStep extends StatefulWidget {
 
 class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
   final _artistController = TextEditingController();
+  late final AffinityOptionsRepository _affinityOptionsRepository;
   String? _selectedStyle;
+  List<String> _styleArtistOptions = const [];
+  bool _loadingStyleOptions = false;
+  int _loadRequestId = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _affinityOptionsRepository = locate<AffinityOptionsRepository>();
+  }
 
   @override
   void dispose() {
@@ -23,21 +35,87 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
     super.dispose();
   }
 
-  void _addInfluence() {
+  bool _isArtistSelected(String style, String artist) {
+    final artists = widget.controller.influences[style] ?? const <String>[];
+    return artists.any(
+      (current) => current.toLowerCase() == artist.toLowerCase(),
+    );
+  }
+
+  void _addInfluence({String? artistName}) {
     final style = _selectedStyle;
-    final artist = _artistController.text.trim();
+    final artist = (artistName ?? _artistController.text).trim();
 
     if (style != null && artist.isNotEmpty) {
       widget.controller.addInfluence(style, artist);
-      _artistController.clear();
       setState(() {
-        _selectedStyle = null;
+        _artistController.clear();
       });
     }
   }
 
+  List<String> _suggestedArtists() {
+    final style = _selectedStyle;
+    if (style == null) {
+      return const [];
+    }
+
+    final options = _styleArtistOptions;
+    if (options.isEmpty) {
+      return const [];
+    }
+
+    final query = _artistController.text.trim().toLowerCase();
+    if (query.isEmpty) {
+      return options;
+    }
+
+    return options
+        .where((artist) => artist.toLowerCase().contains(query))
+        .toList();
+  }
+
+  Future<void> _onStyleChanged(String? style) async {
+    final normalized = style?.trim();
+    if (!mounted) {
+      return;
+    }
+
+    if (normalized == null || normalized.isEmpty) {
+      _loadRequestId++;
+      setState(() {
+        _selectedStyle = null;
+        _artistController.clear();
+        _styleArtistOptions = const [];
+        _loadingStyleOptions = false;
+      });
+      return;
+    }
+
+    final requestId = ++_loadRequestId;
+    setState(() {
+      _selectedStyle = normalized;
+      _artistController.clear();
+      _styleArtistOptions = const [];
+      _loadingStyleOptions = true;
+    });
+
+    final remoteOrFallback = await _affinityOptionsRepository
+        .fetchArtistOptionsForStyle(normalized);
+    if (!mounted || requestId != _loadRequestId) {
+      return;
+    }
+
+    setState(() {
+      _styleArtistOptions = remoteOrFallback;
+      _loadingStyleOptions = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final suggestedArtists = _suggestedArtists();
+
     return Form(
       key: widget.controller.influencesKey,
       child: MusicianOnboardingStepCard(
@@ -55,7 +133,10 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                     initialValue: _selectedStyle,
                     decoration: const InputDecoration(
                       labelText: 'Estilo',
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                     ),
                     items: musicStyles
                         .map(
@@ -65,11 +146,7 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                           ),
                         )
                         .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedStyle = value;
-                      });
-                    },
+                    onChanged: _onStyleChanged,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -79,8 +156,12 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                     controller: _artistController,
                     decoration: const InputDecoration(
                       labelText: 'Artista / Banda',
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                     ),
+                    onChanged: (_) => setState(() {}),
                     onFieldSubmitted: (_) => _addInfluence(),
                   ),
                 ),
@@ -91,6 +172,60 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                 ),
               ],
             ),
+            if (_selectedStyle != null) ...[
+              const SizedBox(height: 12),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Opciones sugeridas',
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (_loadingStyleOptions)
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              else if (suggestedArtists.isEmpty)
+                Text(
+                  'Sin coincidencias para este estilo.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                )
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: suggestedArtists
+                      .map(
+                        (artist) => FilterChip(
+                          label: Text(artist),
+                          selected: _isArtistSelected(_selectedStyle!, artist),
+                          onSelected: (selected) {
+                            if (_selectedStyle == null) {
+                              return;
+                            }
+                            if (selected) {
+                              _addInfluence(artistName: artist);
+                              return;
+                            }
+                            widget.controller.removeInfluence(
+                              _selectedStyle!,
+                              artist,
+                            );
+                            setState(() {
+                              _artistController.clear();
+                            });
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+            ],
             const SizedBox(height: 24),
             AnimatedBuilder(
               animation: widget.controller,
@@ -103,8 +238,8 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                       child: Text(
                         'Aún no has agregado influencias.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   );
@@ -122,7 +257,8 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                         children: [
                           Text(
                             style,
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
@@ -136,7 +272,10 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                                   (artist) => Chip(
                                     label: Text(artist),
                                     onDeleted: () {
-                                      widget.controller.removeInfluence(style, artist);
+                                      widget.controller.removeInfluence(
+                                        style,
+                                        artist,
+                                      );
                                     },
                                   ),
                                 )

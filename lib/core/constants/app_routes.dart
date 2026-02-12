@@ -10,11 +10,9 @@ class AppRoutes {
   static const musicianOnboarding = '/onboarding/musician';
   static const userHome = '/home';
   static const musicians = '/musicians';
-  static const musicianDetail = '/musicians/detail';
   static const musicianDetailRoute = '/musicians/:musicianId';
   static const musicianDetailLegacyRoute = '/musicians/:musicianId/:musicianName';
   static const announcements = '/announcements';
-  static const announcementDetail = '/announcements/detail';
   static const announcementDetailRoute = '/announcements/:announcementId';
   static const announcementForm = '/announcements/form';
   static const media = '/media';
@@ -24,7 +22,6 @@ class AppRoutes {
   static const contacts = '/contacts';
   static const calendar = '/calendar';
   static const events = '/events';
-  static const eventDetail = '/events/detail';
   static const eventDetailRoute = '/events/:eventId';
   static const createEvent = '/events/create';
   static const rehearsals = '/rehearsals';

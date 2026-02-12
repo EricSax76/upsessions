@@ -7,6 +7,28 @@
 .env.*
 *.env
 
+# Service accounts / cloud credentials
+*firebase-adminsdk-*.json
+*service-account*.json
+*serviceaccount*.json
+service-account.json
+serviceAccountKey.json
+google-credentials.json
+gcp-credentials.json
+gcloud-service-key.json
+
+# Private keys / certificates / signing material
+*.pem
+*.key
+*.p12
+*.pfx
+*.p8
+*.crt
+*.cer
+*.der
+*.csr
+*.keystore
+
 # Miscellaneous
 *.class
 *.lock
