@@ -9,6 +9,7 @@ import '../../../modules/auth/cubits/auth_cubit.dart';
 import '../widgets/header/sm_app_bar.dart';
 import '../widgets/profile/profile_quick_actions_fab.dart';
 import '../widgets/sidebar/user_sidebar.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class UserShellPage extends StatelessWidget {
   const UserShellPage({super.key, required this.child});
@@ -46,7 +47,7 @@ class UserShellPage extends StatelessWidget {
             Expanded(key: const ValueKey('user-shell-content'), child: child),
           ],
         ),
-        bottomNavigationBar: null,
+        bottomNavigationBar: isWideLayout ? null : const UserBottomNavBar(),
         floatingActionButton: isWideLayout
             ? null
             : const ProfileQuickActionsFab(),

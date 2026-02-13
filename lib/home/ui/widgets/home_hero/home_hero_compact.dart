@@ -16,29 +16,18 @@ class HomeHeroCompact extends StatelessWidget {
 
     return Column(
       children: [
-        Container(
-          alignment: Alignment.center,
-          child: Text(
-            'Dashboard',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-        ),
-        if (viewModel.upcomingRehearsals.isNotEmpty) ...[
-          const SizedBox(height: AppSpacing.lg),
+        if (viewModel.upcomingRehearsals.isNotEmpty)
           viewModel.upcomingRehearsals.length > 1
               ? RehearsalsQuickView(rehearsals: viewModel.upcomingRehearsals)
               : HomeHeroNextRehearsalCard(rehearsal: viewModel.nextRehearsal),
-        ],
         const SizedBox(height: AppSpacing.lg),
         Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.center,
           child: Text(
-            'Acciones rápidas',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
+            'EXPLORAR',
+            style: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
               color: theme.colorScheme.onSurface,
             ),
           ),

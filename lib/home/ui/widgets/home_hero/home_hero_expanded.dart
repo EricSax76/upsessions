@@ -27,9 +27,10 @@ class HomeHeroExpanded extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Acciones rápidas',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
+              'EXPLORAR',
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
                 color: colorScheme.onSurface,
               ),
             ),

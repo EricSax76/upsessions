@@ -175,25 +175,25 @@ class HomeHeroQuickActionsGrid extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       children: [
         _HomeHeroQuickActionTile(
-          icon: Icons.people_alt_outlined,
+
           label: loc.navMusicians,
           imagePath: 'assets/images/home/quick_actions/quick_musicians.png',
           onTap: () => context.push(AppRoutes.musicians),
         ),
         _HomeHeroQuickActionTile(
-          icon: Icons.campaign_outlined,
+
           label: loc.navAnnouncements,
           imagePath: 'assets/images/home/quick_actions/quick_announcements.png',
           onTap: () => context.push(AppRoutes.announcements),
         ),
         _HomeHeroQuickActionTile(
-          icon: Icons.event_note_outlined,
+
           label: loc.navEvents,
           imagePath: 'assets/images/home/quick_actions/quick_events.png',
           onTap: () => context.push(AppRoutes.events),
         ),
         _HomeHeroQuickActionTile(
-          icon: Icons.music_note_outlined,
+
           label: loc.navRehearsals,
           imagePath: 'assets/images/home/quick_actions/quick_rehearsals.png',
           onTap: () => context.push(AppRoutes.rehearsals),
@@ -205,13 +205,13 @@ class HomeHeroQuickActionsGrid extends StatelessWidget {
 
 class _HomeHeroQuickActionTile extends StatelessWidget {
   const _HomeHeroQuickActionTile({
-    required this.icon,
+
     required this.label,
     required this.imagePath,
     required this.onTap,
   });
 
-  final IconData icon;
+
   final String label;
   final String imagePath;
   final VoidCallback onTap;
@@ -253,15 +253,6 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, size: 20, color: Colors.white),
-              ),
               const Spacer(),
               Text(
                 label,

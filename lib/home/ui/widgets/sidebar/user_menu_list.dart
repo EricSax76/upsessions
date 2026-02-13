@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,7 +18,7 @@ class UserMenuList extends StatefulWidget {
 }
 
 class _UserMenuListState extends State<UserMenuList> {
-  final List<_MenuItem> _items = const [
+  static const List<_MenuItem> _allNavItems = [
     _MenuItem(
       label: 'Inicio',
       icon: Icons.home_outlined,
@@ -79,6 +80,7 @@ class _UserMenuListState extends State<UserMenuList> {
       route: AppRoutes.myBookings,
     ),
   ];
+
   late final LikedMusiciansController _likedController;
 
   @override
@@ -100,8 +102,7 @@ class _UserMenuListState extends State<UserMenuList> {
     super.dispose();
   }
 
-  void _handleTap(BuildContext context, int index) {
-    final item = _items[index];
+  void _handleTap(BuildContext context, _MenuItem item) {
     final route = item.route;
     if (route == null) {
       return;
@@ -126,43 +127,49 @@ class _UserMenuListState extends State<UserMenuList> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final location = GoRouterState.of(context).uri.path;
+    final width = MediaQuery.of(context).size.width;
+    final isWideLayout = kIsWeb ? width >= 700 : width >= 1200;
+
+    final visibleItems = isWideLayout
+        ? _allNavItems
+        : _allNavItems.where((item) {
+            return item.route != AppRoutes.userHome &&
+                item.route != AppRoutes.messages &&
+                item.route != AppRoutes.calendar;
+          }).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (var i = 0; i < _items.length; i++)
+        for (final item in visibleItems)
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: ListTile(
               selected:
-                  _items[i].route != null &&
-                  _isSelectedRoute(location, _items[i].route!),
+                  item.route != null && _isSelectedRoute(location, item.route!),
               leading: Icon(
-                _items[i].icon,
-                color:
-                    (_items[i].route != null &&
-                        _isSelectedRoute(location, _items[i].route!))
+                item.icon,
+                color: (item.route != null &&
+                        _isSelectedRoute(location, item.route!))
                     ? colorScheme.primary
                     : colorScheme.onSurfaceVariant,
               ),
               title: Text(
-                _items[i].route == AppRoutes.contacts
+                item.route == AppRoutes.contacts
                     ? 'Contactos ($contactsTotal)'
-                    : _items[i].label,
+                    : item.label,
                 style: TextStyle(
-                  fontWeight:
-                      (_items[i].route != null &&
-                          _isSelectedRoute(location, _items[i].route!))
+                  fontWeight: (item.route != null &&
+                          _isSelectedRoute(location, item.route!))
                       ? FontWeight.bold
                       : FontWeight.normal,
-                  color:
-                      (_items[i].route != null &&
-                          _isSelectedRoute(location, _items[i].route!))
+                  color: (item.route != null &&
+                          _isSelectedRoute(location, item.route!))
                       ? colorScheme.primary
                       : colorScheme.onSurface,
                 ),
               ),
-              trailing: _items[i].route == AppRoutes.notifications
+              trailing: item.route == AppRoutes.notifications
                   ? const _NotificationsMenuBadge()
                   : null,
               shape: RoundedRectangleBorder(
@@ -171,7 +178,7 @@ class _UserMenuListState extends State<UserMenuList> {
               selectedTileColor: colorScheme.primaryContainer.withValues(
                 alpha: 0.3,
               ),
-              onTap: () => _handleTap(context, i),
+              onTap: () => _handleTap(context, item),
             ),
           ),
       ],

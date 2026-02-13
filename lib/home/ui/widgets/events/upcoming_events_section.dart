@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/constants/app_routes.dart';
 
 import '../../../models/home_event_model.dart';
 
@@ -70,7 +73,7 @@ class _EventCard extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: () => context.push(AppRoutes.eventDetailPath(event.id)),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
