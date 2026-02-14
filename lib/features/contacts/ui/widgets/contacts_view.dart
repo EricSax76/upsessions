@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../controllers/liked_musicians_controller.dart';
+import '../../logic/liked_musicians_controller.dart';
 import 'contact_card.dart';
 import 'contacts_header.dart';
 import 'empty_contacts.dart';

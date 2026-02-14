@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
-import '../../../../features/contacts/controllers/liked_musicians_controller.dart';
+import '../../../../features/contacts/logic/liked_musicians_controller.dart';
 import '../../../../features/messaging/repositories/chat_repository.dart';
 import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
 

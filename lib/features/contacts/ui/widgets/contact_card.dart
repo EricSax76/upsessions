@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/sm_avatar.dart';
 import '../../../../core/constants/app_routes.dart';
-import '../../controllers/contact_card_controller.dart';
+import '../../logic/contact_card_controller.dart';
 import '../../models/liked_musician.dart';
-import 'musician_like_button.dart';
+import 'contact_card_actions.dart';
+import 'contact_card_header.dart';
 
 class ContactCard extends StatefulWidget {
   const ContactCard({super.key, required this.musician});
@@ -52,8 +52,6 @@ class _ContactCardState extends State<ContactCard> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final musician = widget.musician;
-    final styles = musician.nonEmptyStyles;
 
     return Card(
       elevation: 0,
@@ -71,101 +69,12 @@ class _ContactCardState extends State<ContactCard> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SmAvatar(
-                    radius: 24,
-                    imageUrl: musician.photoUrl,
-                    initials: musician.initials,
-                    backgroundColor: colorScheme.primaryContainer,
-                    foregroundColor: colorScheme.onPrimaryContainer,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                musician.name,
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            MusicianLikeButton(
-                              musician: musician,
-                              iconSize: 20,
-                              padding: EdgeInsets.zero,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '${musician.instrument} · ${musician.city}',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (styles.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            styles.take(3).join(" · "),
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: colorScheme.secondary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              ContactCardHeader(musician: widget.musician),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _viewProfile,
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        visualDensity: VisualDensity.compact,
-                        side: BorderSide(color: colorScheme.outline.withValues(alpha: 0.3)),
-                      ),
-                      child: const Text('Ver perfil'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: FilledButton.tonalIcon(
-                      onPressed: _isContacting ? null : _contact,
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      icon: _isContacting
-                          ? const SizedBox(
-                              width: 12,
-                              height: 12,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.chat_bubble_outline_rounded, size: 16),
-                      label: Text(
-                        _isContacting ? '...' : 'Contactar',
-                        style: const TextStyle(fontSize: 13),
-                      ),
-                    ),
-                  ),
-                ],
+              ContactCardActions(
+                onViewProfile: _viewProfile,
+                onContact: _contact,
+                isContacting: _isContacting,
               ),
             ],
           ),

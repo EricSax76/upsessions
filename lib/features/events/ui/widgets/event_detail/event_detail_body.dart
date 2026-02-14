@@ -1,7 +1,12 @@
-part of '../pages/event_detail_page.dart';
+import 'package:flutter/material.dart';
 
-class _EventDetailBody extends StatelessWidget {
-  const _EventDetailBody({
+import '../../../models/event_entity.dart';
+import 'event_detail_helpers.dart';
+import 'event_detail_list.dart';
+
+class EventDetailBody extends StatelessWidget {
+  const EventDetailBody({
+    super.key,
     required this.event,
     required this.isUploadingBanner,
     required this.onUploadBanner,
@@ -17,7 +22,7 @@ class _EventDetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final meta = _buildEventDetailMeta(context, event);
+    final meta = buildEventDetailMeta(context, event);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -64,7 +69,7 @@ class _EventDetailBody extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: _EventDetailList(
+                  child: EventDetailList(
                     event: event,
                     meta: meta,
                     isUploadingBanner: isUploadingBanner,

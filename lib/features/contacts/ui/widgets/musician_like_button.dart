@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/locator/locator.dart';
-import '../../controllers/liked_musicians_controller.dart';
+import '../../logic/liked_musicians_controller.dart';
 import '../../models/liked_musician.dart';
 
 class MusicianLikeButton extends StatefulWidget {

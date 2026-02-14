@@ -1,7 +1,8 @@
-part of '../pages/event_detail_page.dart';
+import 'package:flutter/material.dart';
 
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({
+class EventSectionCard extends StatelessWidget {
+  const EventSectionCard({
+    super.key,
     required this.icon,
     required this.title,
     required this.child,
@@ -55,8 +56,12 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-class _EmptySection extends StatelessWidget {
-  const _EmptySection({required this.icon, required this.message});
+class EventEmptySection extends StatelessWidget {
+  const EventEmptySection({
+    super.key,
+    required this.icon,
+    required this.message,
+  });
 
   final IconData icon;
   final String message;
@@ -93,8 +98,8 @@ class _EmptySection extends StatelessWidget {
   }
 }
 
-class _ChipWrap extends StatelessWidget {
-  const _ChipWrap({required this.values});
+class EventChipWrap extends StatelessWidget {
+  const EventChipWrap({super.key, required this.values});
 
   final Iterable<String> values;
 
@@ -125,8 +130,8 @@ class _ChipWrap extends StatelessWidget {
   }
 }
 
-class _InfoPill extends StatelessWidget {
-  const _InfoPill({required this.icon, required this.label});
+class EventInfoPill extends StatelessWidget {
+  const EventInfoPill({super.key, required this.icon, required this.label});
 
   final IconData icon;
   final String label;
@@ -165,8 +170,9 @@ class _InfoPill extends StatelessWidget {
   }
 }
 
-class _CopyPill extends StatelessWidget {
-  const _CopyPill({
+class EventCopyPill extends StatelessWidget {
+  const EventCopyPill({
+    super.key,
     required this.icon,
     required this.label,
     required this.onCopy,

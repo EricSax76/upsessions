@@ -7,7 +7,7 @@ import '../../../../core/locator/locator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
 import '../../../../modules/auth/repositories/auth_repository.dart';
 import '../../repositories/events_repository.dart';
-import '../../cubit/events_page_cubit.dart';
+import '../../logic/events_page_cubit.dart';
 import '../widgets/events_dashboard.dart';
 
 class EventsPage extends StatelessWidget {

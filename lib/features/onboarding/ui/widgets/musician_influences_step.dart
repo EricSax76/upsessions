@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../core/constants/music_styles.dart';
 import '../../../../modules/musicians/repositories/affinity_options_repository.dart';
-import '../../models/musician_onboarding_controller.dart';
+import '../../logic/musician_onboarding_controller.dart';
 import 'musician_onboarding_step_card.dart';
 
 class MusicianInfluencesStep extends StatefulWidget {

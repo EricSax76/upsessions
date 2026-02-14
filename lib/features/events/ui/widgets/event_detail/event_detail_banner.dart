@@ -1,8 +1,9 @@
-part of '../pages/event_detail_page.dart';
+import 'package:flutter/material.dart';
 
 /// Widget que muestra el banner del evento con opción de subir/cambiar imagen
-class _EventBanner extends StatelessWidget {
-  const _EventBanner({
+class EventBanner extends StatelessWidget {
+  const EventBanner({
+    super.key,
     required this.imageUrl,
     required this.isUploading,
     required this.onUpload,

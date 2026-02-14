@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../models/musician_onboarding_controller.dart';
+import '../../logic/musician_onboarding_controller.dart';
 import 'musician_onboarding_step_card.dart';
 
 class MusicianExperienceStep extends StatelessWidget {

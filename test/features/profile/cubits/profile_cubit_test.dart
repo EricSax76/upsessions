@@ -11,14 +11,17 @@ import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 import 'package:upsessions/modules/auth/models/profile_entity.dart';
 import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
+import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 class _MockProfileRepository extends Mock implements ProfileRepository {}
+class _MockStudiosRepository extends Mock implements StudiosRepository {}
 
 void main() {
   late _MockAuthRepository authRepository;
   late _MockProfileRepository profileRepository;
+  late _MockStudiosRepository studiosRepository;
   late StreamController<UserEntity?> authChangesController;
 
   const user = UserEntity(
@@ -55,6 +58,7 @@ void main() {
   setUp(() {
     authRepository = _MockAuthRepository();
     profileRepository = _MockProfileRepository();
+    studiosRepository = _MockStudiosRepository();
     authChangesController = StreamController<UserEntity?>.broadcast();
 
     when(
@@ -64,6 +68,9 @@ void main() {
     when(
       () => profileRepository.fetchProfile(profileId: any(named: 'profileId')),
     ).thenAnswer((_) async => profileDto);
+    when(
+      () => studiosRepository.getStudioByOwner(any()),
+    ).thenAnswer((_) async => null);
   });
 
   tearDown(() async {
@@ -75,7 +82,7 @@ void main() {
       'carga el perfil si el usuario ya está autenticado al crearse',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        final authCubit = AuthCubit(authRepository: authRepository);
+        final authCubit = AuthCubit(authRepository: authRepository, studiosRepository: studiosRepository);
         addTearDown(authCubit.close);
         return ProfileCubit(
           profileRepository: profileRepository,
@@ -97,7 +104,7 @@ void main() {
     blocTest<ProfileCubit, ProfileState>(
       'carga el perfil cuando AuthCubit emite un usuario después del login',
       build: () {
-        final authCubit = AuthCubit(authRepository: authRepository);
+        final authCubit = AuthCubit(authRepository: authRepository, studiosRepository: studiosRepository);
         addTearDown(authCubit.close);
         return ProfileCubit(
           profileRepository: profileRepository,
@@ -123,7 +130,7 @@ void main() {
       'limpia el perfil cuando el usuario cierra sesión',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        final authCubit = AuthCubit(authRepository: authRepository);
+        final authCubit = AuthCubit(authRepository: authRepository, studiosRepository: studiosRepository);
         addTearDown(authCubit.close);
         return ProfileCubit(
           profileRepository: profileRepository,

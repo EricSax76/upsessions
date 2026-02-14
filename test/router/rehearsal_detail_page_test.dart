@@ -7,11 +7,12 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/features/contacts/controllers/liked_musicians_controller.dart';
+import 'package:upsessions/features/contacts/logic/liked_musicians_controller.dart';
 import 'package:upsessions/features/contacts/models/liked_musician.dart';
 import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/features/notifications/models/invite_notification_entity.dart';
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
+import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/modules/groups/models/group_dtos.dart';
@@ -40,6 +41,8 @@ class MockChatRepository extends Mock implements ChatRepository {}
 
 class MockInviteNotificationsRepository extends Mock
     implements InviteNotificationsRepository {}
+
+class MockStudiosRepository extends Mock implements StudiosRepository {}
 
 class FakeLikedMusiciansController extends ChangeNotifier
     implements LikedMusiciansController {
@@ -70,6 +73,7 @@ void main() {
   late MockGroupsRepository groupsRepository;
   late MockChatRepository chatRepository;
   late MockInviteNotificationsRepository invitesRepository;
+  late MockStudiosRepository studiosRepository;
 
   setUp(() async {
     authCubit = MockAuthCubit();
@@ -141,6 +145,10 @@ void main() {
     ).thenAnswer((_) => Stream.value(0));
 
     invitesRepository = MockInviteNotificationsRepository();
+    studiosRepository = MockStudiosRepository();
+    when(() => studiosRepository.getStudioByOwner(any())).thenAnswer(
+      (_) async => null,
+    );
     when(() => invitesRepository.watchMyInvites()).thenAnswer(
       (_) => Stream<List<InviteNotificationEntity>>.value(
         const <InviteNotificationEntity>[],
@@ -154,6 +162,7 @@ void main() {
       ..registerSingleton<GroupsRepository>(groupsRepository)
       ..registerSingleton<ChatRepository>(chatRepository)
       ..registerSingleton<InviteNotificationsRepository>(invitesRepository)
+      ..registerSingleton<StudiosRepository>(studiosRepository)
       ..registerSingleton<LikedMusiciansController>(
         FakeLikedMusiciansController(),
       );
@@ -164,6 +173,13 @@ void main() {
   });
 
   testWidgets('RehearsalDetailPage can be built', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     final router = GoRouter(
       initialLocation: AppRoutes.rehearsalDetail(
         groupId: '1',

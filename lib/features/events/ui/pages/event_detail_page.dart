@@ -1,20 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../../../core/locator/locator.dart';
-
-import '../../../../core/widgets/empty_state_card.dart';
-import '../../repositories/events_repository.dart';
-import '../../services/image_upload_service.dart';
+import '../../logic/event_detail_controller.dart';
 import '../../models/event_entity.dart';
+import '../../repositories/events_repository.dart';
 import '../widgets/event_text_template_card.dart';
-
-part '../widgets/event_detail_body.dart';
-part '../widgets/event_detail_models.dart';
-part '../widgets/event_detail_logic.dart';
-part '../widgets/event_detail_banner.dart';
-part '../widgets/event_detail_components.dart';
-part '../widgets/event_detail_sections.dart';
+import '../widgets/event_detail/event_detail_body.dart';
 
 class EventDetailPage extends StatefulWidget {
   const EventDetailPage({super.key, required this.event});
@@ -26,113 +17,76 @@ class EventDetailPage extends StatefulWidget {
 }
 
 class _EventDetailPageState extends State<EventDetailPage> {
-  late EventEntity _currentEvent;
-  bool _isUploadingBanner = false;
-  final ImageUploadService _imageUploadService = ImageUploadService();
-  final EventsRepository _eventsRepository = locate<EventsRepository>();
+  late final EventDetailController _controller;
 
   @override
   void initState() {
     super.initState();
-    _currentEvent = widget.event;
-  }
-
-  Future<void> _copyEventTemplate(EventEntity event) async {
-    final template = buildEventTextTemplate(context, event);
-    await Clipboard.setData(ClipboardData(text: template));
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Ficha copiada al portapapeles')),
+    _controller = EventDetailController(
+      event: widget.event,
+      repository: locate<EventsRepository>(),
     );
+    _controller.addListener(_handleControllerUpdate);
   }
 
-  void _showShareComingSoon() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Compartir: próximamente')));
+  @override
+  void dispose() {
+    _controller.removeListener(_handleControllerUpdate);
+    _controller.dispose();
+    super.dispose();
   }
 
-  Future<void> _uploadBanner() async {
-    debugPrint('🎯 [EventDetail] Iniciando proceso de subida de banner');
-
-    setState(() {
-      _isUploadingBanner = true;
-    });
-
-    try {
-      debugPrint(
-        '📸 [EventDetail] Llamando a uploadEventBanner con ID: ${_currentEvent.id}',
+  void _handleControllerUpdate() {
+    final error = _controller.consumeError();
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ Error al subir el banner: $error'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+        ),
       );
-      final imageUrl = await _imageUploadService.uploadEventBanner(
-        _currentEvent.id,
-      );
+      return;
+    }
 
-      if (imageUrl != null) {
-        debugPrint('✅ [EventDetail] URL recibida: $imageUrl');
-        debugPrint(
-          '💾 [EventDetail] Guardando evento actualizado en Firestore',
-        );
+    final effect = _controller.consumeEffect();
+    if (effect == null) return;
 
-        final updatedEvent = _currentEvent.copyWith(bannerImageUrl: imageUrl);
-        final savedEvent = await _eventsRepository.saveDraft(updatedEvent);
-
-        setState(() {
-          _currentEvent = savedEvent;
-          _isUploadingBanner = false;
-        });
-
-        debugPrint('🎉 [EventDetail] Banner actualizado exitosamente');
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Banner actualizado exitosamente'),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
-      } else {
-        debugPrint('⚠️ [EventDetail] No se recibió URL (usuario canceló)');
-        setState(() {
-          _isUploadingBanner = false;
-        });
-      }
-    } catch (e, stackTrace) {
-      debugPrint('❌ [EventDetail] Error al subir banner: $e');
-      debugPrint('Stack trace: $stackTrace');
-
-      setState(() {
-        _isUploadingBanner = false;
-      });
-
-      if (mounted) {
+    switch (effect) {
+      case EventDetailEffect.bannerUpdated:
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ Error al subir el banner: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-            action: SnackBarAction(
-              label: 'Ver detalles',
-              textColor: Colors.white,
-              onPressed: () {
-                debugPrint('Detalles del error: $stackTrace');
-              },
-            ),
+          const SnackBar(
+            content: Text('✅ Banner actualizado exitosamente'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
           ),
         );
-      }
+      case EventDetailEffect.templateCopied:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ficha copiada al portapapeles')),
+        );
+      case EventDetailEffect.shareComingSoon:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Compartir: próximamente')),
+        );
+      case EventDetailEffect.bannerCancelled:
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return _EventDetailBody(
-      event: _currentEvent,
-      isUploadingBanner: _isUploadingBanner,
-      onUploadBanner: _uploadBanner,
-      onCopyTemplate: () => _copyEventTemplate(_currentEvent),
-      onShare: _showShareComingSoon,
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) => EventDetailBody(
+        event: _controller.currentEvent,
+        isUploadingBanner: _controller.isUploadingBanner,
+        onUploadBanner: _controller.uploadBanner,
+        onCopyTemplate: () => _controller.copyEventTemplate(
+          (event) => buildEventTextTemplate(context, event),
+        ),
+        onShare: _controller.shareEvent,
+      ),
     );
   }
 }

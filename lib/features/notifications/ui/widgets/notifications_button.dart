@@ -6,6 +6,7 @@ import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
+import 'notification_badge.dart';
 
 class NotificationsButton extends StatelessWidget {
   const NotificationsButton({super.key});
@@ -93,42 +94,15 @@ class _NotificationsButtonBodyState extends State<_NotificationsButtonBody> {
                 Positioned(
                   right: -2,
                   top: -2,
-                  child: _NotificationBadge(count: unreadTotal),
+                  child: NotificationBadge(
+                    count: unreadTotal,
+                    showBorder: true,
+                  ),
                 ),
             ],
           ),
         );
       },
-    );
-  }
-}
-
-class _NotificationBadge extends StatelessWidget {
-  const _NotificationBadge({required this.count});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final label = count > 99 ? '99+' : count.toString();
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.error,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: theme.colorScheme.surface, width: 1.5),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        label,
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: theme.colorScheme.onError,
-          fontWeight: FontWeight.w700,
-          height: 1,
-        ),
-      ),
     );
   }
 }

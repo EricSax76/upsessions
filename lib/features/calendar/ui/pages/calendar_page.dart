@@ -5,7 +5,7 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
 import '../../../events/models/event_entity.dart';
-import '../../models/calendar_controller.dart';
+import '../../logic/calendar_controller.dart';
 import 'calendar_dashboard.dart';
 
 class CalendarPage extends StatefulWidget {

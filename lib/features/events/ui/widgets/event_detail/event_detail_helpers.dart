@@ -1,11 +1,26 @@
-part of '../pages/event_detail_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-_EventDetailMeta _buildEventDetailMeta(
+import '../../../models/event_entity.dart';
+
+class EventDetailMeta {
+  const EventDetailMeta({
+    required this.dateLabel,
+    required this.startTime,
+    required this.endTime,
+  });
+
+  final String dateLabel;
+  final String startTime;
+  final String endTime;
+}
+
+EventDetailMeta buildEventDetailMeta(
   BuildContext context,
   EventEntity event,
 ) {
   final loc = MaterialLocalizations.of(context);
-  return _EventDetailMeta(
+  return EventDetailMeta(
     dateLabel: loc.formatFullDate(event.start),
     startTime: loc.formatTimeOfDay(
       TimeOfDay.fromDateTime(event.start),
@@ -18,7 +33,7 @@ _EventDetailMeta _buildEventDetailMeta(
   );
 }
 
-Future<void> _copyToClipboard(
+Future<void> copyToClipboard(
   BuildContext context,
   String value, {
   required String message,
