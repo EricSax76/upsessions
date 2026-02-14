@@ -4,14 +4,14 @@ import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import '../models/event_entity.dart';
 import '../models/event_dto.dart';
 
+
+
 class EventsRepository {
   EventsRepository({
-    FirebaseFirestore? firestore,
-    AuthRepository? authRepository,
-  }) : _collection = (firestore ?? FirebaseFirestore.instance).collection(
-         'events',
-       ),
-       _authRepository = authRepository ?? AuthRepository();
+    required FirebaseFirestore firestore,
+    required AuthRepository authRepository,
+  }) : _collection = firestore.collection('events'),
+       _authRepository = authRepository;
 
   final CollectionReference<Map<String, dynamic>> _collection;
   final AuthRepository _authRepository;

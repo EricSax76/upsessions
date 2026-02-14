@@ -9,6 +9,9 @@ import 'package:upsessions/core/services/remote_config_service.dart';
 import 'package:upsessions/l10n/cubit/locale_cubit.dart';
 import 'package:upsessions/core/theme/theme_cubit.dart';
 import 'package:upsessions/modules/announcements/repositories/announcements_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 import 'package:upsessions/features/media/repositories/media_repository.dart';
@@ -27,6 +30,7 @@ import 'package:upsessions/features/notifications/repositories/invite_notificati
 import 'package:upsessions/modules/studios/repositories/firestore_studios_repository.dart';
 import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
 import 'package:upsessions/modules/studios/services/studio_image_service.dart';
+import 'package:upsessions/modules/matching/repositories/matching_repository.dart';
 
 final GetIt getIt = GetIt.instance;
 final Set<String> _loggedLocateTypes = <String>{};
@@ -40,7 +44,12 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<FirebaseInitializer>(
       () => const FirebaseInitializer(),
     )
-    ..registerLazySingleton<AuthRepository>(() => AuthRepository())
+    ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
+    ..registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance)
+    ..registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance)
+    ..registerLazySingleton<AuthRepository>(
+      () => AuthRepository(firebaseAuth: getIt<FirebaseAuth>()),
+    )
     ..registerLazySingleton<CloudFunctionsService>(
       () => CloudFunctionsService(),
     )
@@ -53,36 +62,66 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<LocaleCubit>(() => LocaleCubit())
     ..registerLazySingleton<ThemeCubit>(() => ThemeCubit())
-    ..registerLazySingleton<MusiciansRepository>(() => MusiciansRepository())
+    ..registerLazySingleton<MusiciansRepository>(
+      () => MusiciansRepository(firestore: getIt<FirebaseFirestore>()),
+    )
     ..registerLazySingleton<AffinityOptionsRepository>(
-      () => AffinityOptionsRepository(),
+      () => AffinityOptionsRepository(firestore: getIt<FirebaseFirestore>()),
     )
     ..registerLazySingleton<AnnouncementsRepository>(
-      () => AnnouncementsRepository(),
+      () => AnnouncementsRepository(firestore: getIt<FirebaseFirestore>()),
     )
     ..registerLazySingleton<UserHomeRepository>(
-      () => UserHomeRepository(authRepository: getIt<AuthRepository>()),
+      () => UserHomeRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        authRepository: getIt<AuthRepository>(),
+      ),
     )
     ..registerLazySingleton<ProfileRepository>(
-      () => ProfileRepository(authRepository: getIt<AuthRepository>()),
+      () => ProfileRepository(
+        authRepository: getIt<AuthRepository>(),
+        firestore: getIt<FirebaseFirestore>(),
+        storage: getIt<FirebaseStorage>(),
+      ),
     )
     ..registerLazySingleton<ChatRepository>(
       () => ChatRepository(
+        firestore: getIt<FirebaseFirestore>(),
         authRepository: getIt<AuthRepository>(),
         cloudFunctionsService: getIt<CloudFunctionsService>(),
       ),
     )
-    ..registerLazySingleton<MediaRepository>(() => MediaRepository())
+    ..registerLazySingleton<MediaRepository>(
+      () => MediaRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        storage: getIt<FirebaseStorage>(),
+      ),
+    )
     ..registerLazySingleton<EventsRepository>(
-      () => EventsRepository(authRepository: getIt<AuthRepository>()),
+      () => EventsRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        authRepository: getIt<AuthRepository>(),
+      ),
     )
-    ..registerLazySingleton<ContactsRepository>(() => ContactsRepository())
+    ..registerLazySingleton<ContactsRepository>(
+      () => ContactsRepository(firestore: getIt<FirebaseFirestore>()),
+    )
     ..registerLazySingleton<GroupsRepository>(
-      () => GroupsRepository(authRepository: getIt<AuthRepository>()),
+      () => GroupsRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        authRepository: getIt<AuthRepository>(),
+        storage: getIt<FirebaseStorage>(),
+      ),
     )
-    ..registerLazySingleton<RehearsalsRepository>(() => RehearsalsRepository())
+    ..registerLazySingleton<RehearsalsRepository>(
+      () => RehearsalsRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        authRepository: getIt<AuthRepository>(),
+      ),
+    )
     ..registerLazySingleton<InviteNotificationsRepository>(
       () => InviteNotificationsRepository(
+        firestore: getIt<FirebaseFirestore>(),
         authRepository: getIt<AuthRepository>(),
       ),
     )
@@ -93,17 +132,25 @@ Future<void> setupServiceLocator() async {
       ),
     )
     ..registerLazySingleton<SetlistRepository>(
-      () => SetlistRepository(authRepository: getIt<AuthRepository>()),
+      () => SetlistRepository(
+        authRepository: getIt<AuthRepository>(),
+        firestore: getIt<FirebaseFirestore>(),
+      ),
     )
     ..registerLazySingleton<StudiosRepository>(
-      () => FirestoreStudiosRepository(),
+      () => FirestoreStudiosRepository(firestore: getIt<FirebaseFirestore>()),
     )
-    ..registerLazySingleton<StudioImageService>(() => StudioImageService())
+    ..registerLazySingleton<StudioImageService>(
+      () => StudioImageService(storage: getIt<FirebaseStorage>()),
+    )
     ..registerLazySingleton<LikedMusiciansController>(
       () => LikedMusiciansController(
         contactsRepository: getIt<ContactsRepository>(),
         authRepository: getIt<AuthRepository>(),
       ),
+    )
+    ..registerLazySingleton<MatchingRepository>(
+      () => MatchingRepository(firestore: getIt<FirebaseFirestore>()),
     );
 }
 

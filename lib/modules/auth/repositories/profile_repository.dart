@@ -10,12 +10,12 @@ import '../models/profile_dto.dart';
 
 class ProfileRepository {
   ProfileRepository({
-    FirebaseFirestore? firestore,
-    AuthRepository? authRepository,
-    FirebaseStorage? storage,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance,
-       _authRepository = authRepository ?? AuthRepository(),
-       _storage = storage ?? FirebaseStorage.instance;
+    required FirebaseFirestore firestore,
+    required AuthRepository authRepository,
+    required FirebaseStorage storage,
+  }) : _firestore = firestore,
+       _authRepository = authRepository,
+       _storage = storage;
 
   final FirebaseFirestore _firestore;
   final AuthRepository _authRepository;

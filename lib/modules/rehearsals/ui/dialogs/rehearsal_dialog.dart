@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
-import '../../../core/services/dialog_service.dart';
-import '../utils/rehearsal_date_utils.dart';
+import '../../../../core/services/dialog_service.dart';
+import '../../utils/rehearsal_date_utils.dart';
 
 class RehearsalDraft {
   const RehearsalDraft({

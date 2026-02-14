@@ -8,7 +8,7 @@ import '../../../auth/cubits/auth_cubit.dart';
 import '../../models/account_missing_profile_view.dart';
 import '../widgets/account/account_page_layout.dart';
 import '../widgets/account/account_photo_flow.dart';
-import '../widgets/account/account_photo_options_sheet.dart';
+import '../dialogs/account_photo_options_sheet.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 
 class AccountPageView extends StatefulWidget {

@@ -4,8 +4,8 @@ import '../../musicians/models/musician_dto.dart';
 import '../../musicians/models/musician_entity.dart';
 
 class MatchingRepository {
-  MatchingRepository({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+  MatchingRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
 
   final FirebaseFirestore _firestore;
 

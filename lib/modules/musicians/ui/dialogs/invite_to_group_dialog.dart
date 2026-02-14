@@ -9,7 +9,7 @@ import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/groups/models/group_membership_entity.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 
-import '../../../models/musician_entity.dart';
+import '../../models/musician_entity.dart';
 
 class InviteToGroupDialog extends StatefulWidget {
   const InviteToGroupDialog({

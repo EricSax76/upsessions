@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'create_group_dialog_controller.dart';
-import '../models/create_group_dialog_view.dart';
+import '../../controllers/create_group_dialog_controller.dart';
+import 'create_group_dialog_view.dart';
 
 class CreateGroupDialog extends StatefulWidget {
   const CreateGroupDialog({super.key});

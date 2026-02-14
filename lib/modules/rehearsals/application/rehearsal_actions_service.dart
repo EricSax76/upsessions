@@ -6,7 +6,7 @@ import '../../../core/constants/app_routes.dart';
 import '../../../core/services/dialog_service.dart';
 import '../models/rehearsal_entity.dart';
 import '../repositories/rehearsals_repository.dart';
-import '../controllers/rehearsal_dialog.dart';
+import '../ui/dialogs/rehearsal_dialog.dart';
 
 class RehearsalActionsService {
   RehearsalActionsService({required RehearsalsRepository repository})

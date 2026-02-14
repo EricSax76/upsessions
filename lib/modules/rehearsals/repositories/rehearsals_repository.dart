@@ -4,6 +4,11 @@ import '../models/rehearsal_entity.dart';
 import 'rehearsals_repository_base.dart';
 
 class RehearsalsRepository extends RehearsalsRepositoryBase {
+  RehearsalsRepository({
+    required super.firestore,
+    required super.authRepository,
+  });
+
   Future<List<RehearsalEntity>> getMyRehearsals() async {
     await requireMusicianUid();
     logFirestore('getMyRehearsals');

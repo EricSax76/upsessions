@@ -9,12 +9,14 @@ import '../models/announcement_model.dart';
 import '../models/home_event_model.dart';
 import '../models/instrument_category_model.dart';
 
+
+
 class UserHomeRepository {
   UserHomeRepository({
-    FirebaseFirestore? firestore,
-    AuthRepository? authRepository,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance,
-       _authRepository = authRepository ?? AuthRepository();
+    required FirebaseFirestore firestore,
+    required AuthRepository authRepository,
+  }) : _firestore = firestore,
+       _authRepository = authRepository;
 
   final FirebaseFirestore _firestore;
   final AuthRepository _authRepository;

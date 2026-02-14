@@ -5,6 +5,7 @@ import 'package:upsessions/modules/matching/repositories/matching_repository.dar
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
+import 'package:upsessions/core/locator/locator.dart';
 import '../widgets/matched_musician_card.dart';
 
 class MatchingPage extends StatefulWidget {
@@ -35,7 +36,7 @@ class _MatchingPageState extends State<MatchingPage> {
       return [];
     }
 
-    final matchingRepo = MatchingRepository();
+    final matchingRepo = locate<MatchingRepository>();
     return matchingRepo.findMatches(
       myInfluences: myProfile.influences,
       myId: user.id,

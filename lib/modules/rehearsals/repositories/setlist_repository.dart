@@ -7,8 +7,8 @@ import 'rehearsals_repository_base.dart';
 
 class SetlistRepository extends RehearsalsRepositoryBase {
   SetlistRepository({
-    super.firestore,
-    super.authRepository,
+    required super.firestore,
+    required super.authRepository,
     FirebaseStorage? storage,
   }) : _storage = storage ?? FirebaseStorage.instance;
 

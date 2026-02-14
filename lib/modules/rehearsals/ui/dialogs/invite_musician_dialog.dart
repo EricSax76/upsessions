@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../musicians/models/musician_entity.dart';
-import '../../../core/services/dialog_service.dart';
-import 'group_rehearsals_controller.dart';
-import 'invite_musician_controller.dart';
-import '../ui/widgets/invite_musician_dialog_widgets.dart';
+import '../../../musicians/models/musician_entity.dart';
+import '../../../../core/services/dialog_service.dart';
+import '../../controllers/group_rehearsals_controller.dart';
+import '../../controllers/invite_musician_controller.dart';
+import '../widgets/invite_musician_dialog_widgets.dart';
 
 class InviteMusicianDialog extends StatefulWidget {
   const InviteMusicianDialog({

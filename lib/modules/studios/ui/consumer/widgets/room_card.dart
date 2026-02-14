@@ -68,7 +68,7 @@ class RoomCard extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.8),
+                          Colors.black.withValues(alpha: 0.8),
                         ],
                         stops: const [0.5, 1.0],
                       ),
@@ -183,7 +183,7 @@ class RoomCard extends StatelessWidget {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: room.amenities.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      separatorBuilder: (context, index) => const SizedBox(width: 8),
                       // Show all amenities scrolling horizontally
                       itemBuilder: (context, index) {
                         final amenity = room.amenities[index];

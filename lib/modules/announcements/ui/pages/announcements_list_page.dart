@@ -8,8 +8,9 @@ import '../../../../core/widgets/announcement_card.dart';
 import '../../../../core/widgets/layout/searchable_list_page.dart';
 import '../../repositories/announcements_repository.dart';
 import '../../models/announcement_entity.dart';
-import '../widgets/announcement_filter_panel.dart';
-import '../widgets/announcements_hero_section.dart';
+import '../widgets/announcement_list/announcement_filter_panel.dart';
+import '../widgets/announcement_list/announcements_hero_section.dart';
+import '../widgets/announcement_list/announcements_list_footer.dart';
 
 class AnnouncementsListPage extends StatefulWidget {
   const AnnouncementsListPage({super.key, this.showAppBar = true});
@@ -121,44 +122,15 @@ class _AnnouncementsListPageState extends State<AnnouncementsListPage> {
   }
 
   Widget _buildFooter(BuildContext context) {
-    if (_loading || (_errorMessage != null && _announcements.isEmpty)) {
-      return const SizedBox.shrink();
-    }
-    if (_loadingMore) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 12),
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
-    if (_loadMoreErrorMessage != null) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            _loadMoreErrorMessage!,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: _loadMore,
-            icon: const Icon(Icons.refresh),
-            label: const Text('Reintentar'),
-          ),
-        ],
-      );
-    }
-    if (!_hasMore) {
-      return const SizedBox.shrink();
-    }
-    return Center(
-      child: OutlinedButton.icon(
-        onPressed: _loadMore,
-        icon: const Icon(Icons.expand_more),
-        label: const Text('Cargar más'),
-      ),
+    return AnnouncementsListFooter(
+      isLoading: _loading,
+      isLoadingMore: _loadingMore,
+      hasMore: _hasMore,
+      isEmpty: _announcements.isEmpty,
+      errorMessage: _errorMessage,
+      loadMoreErrorMessage: _loadMoreErrorMessage,
+      onRetryLoadMore: _loadMore,
+      onLoadMore: _loadMore,
     );
   }
 

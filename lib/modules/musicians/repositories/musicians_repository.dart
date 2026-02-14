@@ -5,8 +5,8 @@ import '../models/musician_entity.dart';
 import '../models/musician_dto.dart';
 
 class MusiciansRepository {
-  MusiciansRepository({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance;
+  MusiciansRepository({required FirebaseFirestore firestore})
+    : _firestore = firestore;
 
   final FirebaseFirestore _firestore;
 

@@ -7,6 +7,9 @@ import '../../../auth/repositories/auth_repository.dart';
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
 import '../widgets/studio_shell_page.dart';
+import '../widgets/empty_states/no_bookings_empty_state.dart';
+import '../widgets/empty_states/no_rooms_empty_state.dart';
+import '../widgets/empty_states/no_studio_empty_state.dart';
 
 class StudioDashboardPage extends StatelessWidget {
   const StudioDashboardPage({super.key});
@@ -26,39 +29,12 @@ class StudioDashboardPage extends StatelessWidget {
           
           if (state.myStudio == null) {
             return StudioShellPage(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.store_outlined,
-                      size: 80,
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Aún no has registrado tu estudio',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Crea tu perfil de estudio para empezar a recibir reservas',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    FilledButton.icon(
-                      onPressed: () async {
-                         await context.push(AppRoutes.studiosCreate);
-                         if (!context.mounted) return;
-                         context.read<StudiosCubit>().loadMyStudio(userId);
-                      },
-                      icon: const Icon(Icons.add),
-                      label: const Text('Registrar Estudio'),
-                    ),
-                  ],
-                ),
+              child: NoStudioEmptyState(
+                onRegister: () async {
+                  await context.push(AppRoutes.studiosCreate);
+                  if (!context.mounted) return;
+                  context.read<StudiosCubit>().loadMyStudio(userId);
+                },
               ),
             );
           }
@@ -128,33 +104,7 @@ class StudioDashboardPage extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         if (state.myRooms.isEmpty)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.meeting_room_outlined,
-                    size: 48,
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No tienes salas registradas',
-                    style: theme.textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Añade tu primera sala para comenzar a recibir reservas',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-          )
+          const NoRoomsEmptyState()
         else
           ...state.myRooms.map((room) => Card(
             margin: const EdgeInsets.only(bottom: 12),
@@ -195,30 +145,7 @@ class StudioDashboardPage extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     if (state.studioBookings.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.event_available_outlined,
-              size: 64,
-              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Sin reservas pendientes',
-              style: theme.textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Cuando recibas reservas aparecerán aquí',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      );
+      return const NoBookingsEmptyState();
     }
 
     return ListView.builder(

@@ -3,10 +3,10 @@ import '../repositories/rehearsals_repository.dart';
 
 class CreateRehearsalUseCase {
   CreateRehearsalUseCase({
-    GroupsRepository? groupsRepository,
-    RehearsalsRepository? rehearsalsRepository,
-  }) : _groupsRepository = groupsRepository ?? GroupsRepository(),
-       _rehearsalsRepository = rehearsalsRepository ?? RehearsalsRepository();
+    required GroupsRepository groupsRepository,
+    required RehearsalsRepository rehearsalsRepository,
+  }) : _groupsRepository = groupsRepository,
+       _rehearsalsRepository = rehearsalsRepository;
 
   final GroupsRepository _groupsRepository;
   final RehearsalsRepository _rehearsalsRepository;

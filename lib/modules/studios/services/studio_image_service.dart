@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 class StudioImageService {
-  StudioImageService({FirebaseStorage? storage})
-      : _storage = storage ?? FirebaseStorage.instance;
+  StudioImageService({required FirebaseStorage storage})
+      : _storage = storage;
 
   final FirebaseStorage _storage;
   final ImagePicker _picker = ImagePicker();

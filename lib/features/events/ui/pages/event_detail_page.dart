@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/locator/locator.dart';
+
 import '../../../../core/widgets/empty_state_card.dart';
 import '../../repositories/events_repository.dart';
 import '../../services/image_upload_service.dart';
@@ -27,7 +29,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
   late EventEntity _currentEvent;
   bool _isUploadingBanner = false;
   final ImageUploadService _imageUploadService = ImageUploadService();
-  final EventsRepository _eventsRepository = EventsRepository();
+  final EventsRepository _eventsRepository = locate<EventsRepository>();
 
   @override
   void initState() {

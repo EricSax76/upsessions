@@ -17,6 +17,7 @@ import 'package:upsessions/home/ui/widgets/musicians/musicians_by_instrument_sec
 import 'package:upsessions/home/ui/widgets/musicians/new_musicians_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/recommended_users_section.dart';
 import 'package:upsessions/home/ui/pages/user_shell_page.dart';
+import 'package:upsessions/home/ui/widgets/studios/studios_promo_card.dart';
 
 class UserHomePage extends StatelessWidget {
   const UserHomePage({super.key});
@@ -118,43 +119,7 @@ class UserHomePage extends StatelessWidget {
                         icon: const Icon(Icons.arrow_outward),
                         label: Text(loc.viewAll),
                       ),
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        child: InkWell(
-                          onTap: () => context.push(AppRoutes.studios),
-                          child: Container(
-                            height: 150,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  colorScheme.primaryContainer,
-                                  colorScheme.tertiaryContainer,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.music_note, size: 48, color: colorScheme.onPrimaryContainer),
-                                const SizedBox(height: 8),
-                                  Text(
-                                    loc.studiosSubtitle,
-                                    style: (isCompact
-                                            ? Theme.of(context).textTheme.titleSmall
-                                            : Theme.of(context).textTheme.titleMedium)
-                                        ?.copyWith(
-                                      color: colorScheme.onPrimaryContainer,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                      child: StudiosPromoCard(isCompact: isCompact),
                     ),
                     const SizedBox(height: 48),
                     SectionCard(

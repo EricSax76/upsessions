@@ -6,7 +6,7 @@ import 'package:upsessions/features/contacts/ui/widgets/musician_like_button.dar
 import '../../models/musician_entity.dart';
 import '../../controllers/musician_detail_controller.dart';
 import '../../models/musician_liked_musician_mapper.dart';
-import '../widgets/invite/invite_to_group_dialog.dart';
+import '../dialogs/invite_to_group_dialog.dart';
 import '../widgets/musicians/musician_contact_card.dart';
 import '../widgets/musicians/musician_highlights_grid.dart';
 import '../widgets/musicians/musician_profile_header.dart';

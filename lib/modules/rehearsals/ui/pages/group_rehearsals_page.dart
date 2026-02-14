@@ -5,15 +5,14 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/loading_indicator.dart';
-import '../../../../core/widgets/empty_state_card.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
 import '../../models/rehearsal_entity.dart';
 import '../../cubits/group_rehearsals_cubit.dart';
 import '../../cubits/group_rehearsals_state.dart';
 import '../../controllers/group_rehearsals_controller.dart';
-import '../../controllers/invite_musician_dialog.dart';
+import '../dialogs/invite_musician_dialog.dart';
 import '../../../groups/models/group_dtos.dart';
-import '../../controllers/rehearsal_dialog.dart';
+import '../dialogs/rehearsal_dialog.dart';
 import '../../utils/rehearsal_date_utils.dart';
 import '../widgets/rehearsals_hero_section.dart';
 import '../widgets/rehearsal_list_card.dart';
@@ -78,18 +77,6 @@ class _GroupRehearsalsViewState extends State<GroupRehearsalsView> {
   }
 }
 
-class EmptyRehearsalsCard extends StatelessWidget {
-  const EmptyRehearsalsCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const EmptyStateCard(
-      icon: Icons.event_available_outlined,
-      title: 'Todavía no hay ensayos',
-      subtitle: 'Crea el primero para empezar a armar el setlist.',
-    );
-  }
-}
 
 class _GroupRehearsalsBody extends StatefulWidget {
   const _GroupRehearsalsBody({

@@ -3,12 +3,14 @@ import 'package:flutter/foundation.dart';
 
 import '../../auth/repositories/auth_repository.dart';
 
+
+
 class RehearsalsRepositoryBase {
   RehearsalsRepositoryBase({
-    FirebaseFirestore? firestore,
-    AuthRepository? authRepository,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance,
-       _authRepository = authRepository ?? AuthRepository();
+    required FirebaseFirestore firestore,
+    required AuthRepository authRepository,
+  }) : _firestore = firestore,
+       _authRepository = authRepository;
 
   final FirebaseFirestore _firestore;
   final AuthRepository _authRepository;

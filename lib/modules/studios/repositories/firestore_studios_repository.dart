@@ -5,7 +5,10 @@ import '../models/booking_entity.dart';
 import 'studios_repository.dart';
 
 class FirestoreStudiosRepository implements StudiosRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirestoreStudiosRepository({required FirebaseFirestore firestore})
+      : _firestore = firestore;
+
+  final FirebaseFirestore _firestore;
 
   @override
   Future<void> createStudio(StudioEntity studio) async {
@@ -189,22 +192,7 @@ class FirestoreStudiosRepository implements StudiosRepository {
 
   @override
   Future<void> deleteRoom(String roomId) async {
-    // Note: To properly delete, we usually need the studioId to construct the path.
-    // However, the interface only gives roomId.
-    // Ideally we pass studioId or fetch the room first.
-    // Given the current architecture, assuming we can't easily change the interface right now without breaking existing code,
-    // we might need to rely on a CollectionGroup query or adjust the interface.
-    // BUT since this is MVP, let's assume the caller will likely have to handle this or we find the parent.
-    // For now, I'll use a CollectionGroup query to find the parent studio if needed, OR
-    // update the interface to 'deleteRoom(String studioId, String roomId)' would be better.
-    // I will assume for now that I need to find the room first to delete it or just skip this edge case if not critical.
-    // Actually, looking at the UI, we probably have the studio context.
-    // For this exact implementation, I will implement a safety check:
-    // "Warning: deleteRoom(roomId) is inefficient without studioId in Firestore structure."
-    // Let's defer this complexity or just iterate studios (bad).
-    // Better approach: Since `edit_room_page` (caller) knows the studioId,
-    // I will assume for this step I should update the interface or just search.
-    // Let's do a search for now to be safe without changing interface yet.
+
 
     final query = await _firestore
         .collectionGroup('rooms')

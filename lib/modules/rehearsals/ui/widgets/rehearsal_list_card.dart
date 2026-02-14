@@ -8,7 +8,7 @@ import '../../models/rehearsal_entity.dart';
 import '../../controllers/rehearsal_filter.dart';
 import 'rehearsal_card.dart';
 import 'rehearsal_filter_chips.dart';
-import '../pages/group_rehearsals_page.dart';
+import 'empty_rehearsals_card.dart';
 
 /// Main content card displaying rehearsal list with filters.
 class RehearsalListCard extends StatelessWidget {

@@ -18,10 +18,8 @@ class AnnouncementPage {
 }
 
 class AnnouncementsRepository {
-  AnnouncementsRepository({FirebaseFirestore? firestore})
-    : _collection = (firestore ?? FirebaseFirestore.instance).collection(
-        'announcements',
-      );
+  AnnouncementsRepository({required FirebaseFirestore firestore})
+    : _collection = firestore.collection('announcements');
 
   final CollectionReference<Map<String, dynamic>> _collection;
 

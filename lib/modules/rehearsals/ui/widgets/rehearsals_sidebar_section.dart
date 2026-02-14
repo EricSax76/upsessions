@@ -6,8 +6,9 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../groups/models/group_membership_entity.dart';
+import '../../../groups/models/create_group_draft.dart';
 import '../../../groups/repositories/groups_repository.dart';
-import '../../../groups/ui/widgets/group_dialogs.dart';
+import '../../../groups/ui/dialogs/create_group_dialog.dart';
 
 class RehearsalsSidebarSection extends StatefulWidget {
   const RehearsalsSidebarSection({super.key});
@@ -163,9 +164,19 @@ class _RehearsalsSidebarSectionState extends State<RehearsalsSidebarSection> {
 
     final loc = AppLocalizations.of(context);
     try {
-      final result = await showCreateGroupDialog(context);
-      if (result == null || result.trim().isEmpty) return;
-      final groupId = await repository.createGroup(name: result);
+      final result = await showDialog<CreateGroupDraft>(
+        context: context,
+        builder: (context) => const CreateGroupDialog(),
+      );
+      if (result == null || result.name.trim().isEmpty) return;
+      final groupId = await repository.createGroup(
+        name: result.name,
+        genre: result.genre,
+        link1: result.link1,
+        link2: result.link2,
+        photoBytes: result.photoBytes,
+        photoFileExtension: result.photoFileExtension,
+      );
       if (!context.mounted) return;
       GoRouter.of(context).go(AppRoutes.groupPage(groupId));
     } catch (error) {

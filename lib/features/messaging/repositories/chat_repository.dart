@@ -7,12 +7,11 @@ import '../models/chat_thread.dart';
 
 class ChatRepository extends ChatRepositoryBase {
   ChatRepository({
-    super.firestore,
-    super.authRepository,
-    super.cloudFunctionsService,
+    required super.firestore,
+    required super.authRepository,
+    required super.cloudFunctionsService,
     ChatFirestoreMapper? mapper,
-  }) : _mapper = mapper ?? const ChatFirestoreMapper(),
-       super();
+  }) : _mapper = mapper ?? const ChatFirestoreMapper();
 
   final ChatFirestoreMapper _mapper;
 

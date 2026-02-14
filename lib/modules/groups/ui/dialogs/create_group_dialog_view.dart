@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
-import '../controllers/create_group_dialog_controller.dart';
-import 'create_group_draft.dart';
+import '../../controllers/create_group_dialog_controller.dart';
+import '../../models/create_group_draft.dart';
 
 const _dialogMaxWidth = 520.0;
 const _avatarRadius = 22.0;

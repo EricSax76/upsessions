@@ -7,12 +7,14 @@ import '../../../modules/auth/models/user_entity.dart';
 import '../repositories/contacts_repository.dart';
 import '../models/liked_musician.dart';
 
+
+
 class LikedMusiciansController extends ChangeNotifier {
   LikedMusiciansController({
-    ContactsRepository? contactsRepository,
-    AuthRepository? authRepository,
-  }) : _contactsRepository = contactsRepository ?? ContactsRepository(),
-       _authRepository = authRepository ?? AuthRepository() {
+    required ContactsRepository contactsRepository,
+    required AuthRepository authRepository,
+  }) : _contactsRepository = contactsRepository,
+       _authRepository = authRepository {
     _authSubscription = _authRepository.authStateChanges.listen(_handleAuth);
     _handleAuth(_authRepository.currentUser);
   }

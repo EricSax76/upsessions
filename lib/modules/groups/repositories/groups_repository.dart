@@ -17,10 +17,10 @@ class GroupsRepository extends GroupsRepositoryBase
         GroupsRepositoryInvites,
         GroupsRepositoryMemberships {
   GroupsRepository({
-    super.firestore,
-    super.authRepository,
-    FirebaseStorage? storage,
-  }) : _storage = storage ?? FirebaseStorage.instance;
+    required super.firestore,
+    required super.authRepository,
+    required FirebaseStorage storage,
+  }) : _storage = storage;
 
   final FirebaseStorage _storage;
 

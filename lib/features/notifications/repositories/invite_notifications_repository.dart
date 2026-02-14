@@ -4,7 +4,10 @@ import '../../../modules/rehearsals/repositories/rehearsals_repository_base.dart
 import '../models/invite_notification_entity.dart';
 
 class InviteNotificationsRepository extends RehearsalsRepositoryBase {
-  InviteNotificationsRepository({super.firestore, super.authRepository});
+  InviteNotificationsRepository({
+    required super.firestore,
+    required super.authRepository,
+  });
 
   CollectionReference<Map<String, dynamic>> _invitesRef(String uid) {
     return firestore.collection('musicians').doc(uid).collection('invites');

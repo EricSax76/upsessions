@@ -7,8 +7,8 @@ import '../models/user_entity.dart';
 import '../models/auth_exceptions.dart';
 
 class AuthRepository {
-  AuthRepository({FirebaseAuth? firebaseAuth})
-    : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  AuthRepository({required FirebaseAuth firebaseAuth})
+    : _firebaseAuth = firebaseAuth;
 
   final FirebaseAuth _firebaseAuth;
 

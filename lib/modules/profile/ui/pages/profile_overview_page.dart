@@ -5,6 +5,7 @@ import 'package:upsessions/modules/auth/models/profile_entity.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 import '../widgets/profile/profile_header.dart';
 import '../widgets/profile/profile_stats_row.dart';
+import '../widgets/profile/profile_empty_state.dart';
 
 class ProfileOverviewPage extends StatelessWidget {
   const ProfileOverviewPage({super.key});
@@ -29,14 +30,14 @@ class ProfileOverviewPage extends StatelessWidget {
             case ProfileStatus.loading:
               return const Center(child: CircularProgressIndicator());
             case ProfileStatus.failure:
-              return _ProfileEmptyState(
+              return ProfileEmptyState(
                 error: state.errorMessage,
                 onRetry: () => context.read<ProfileCubit>().refreshProfile(),
               );
             case ProfileStatus.success:
               final profile = state.profile;
               if (profile == null) {
-                return _ProfileEmptyState(
+                return ProfileEmptyState(
                   onRetry: () => context.read<ProfileCubit>().refreshProfile(),
                 );
               }
@@ -71,29 +72,4 @@ class _ProfileContentView extends StatelessWidget {
   }
 }
 
-class _ProfileEmptyState extends StatelessWidget {
-  const _ProfileEmptyState({required this.onRetry, this.error});
 
-  final String? error;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.person_off,
-            size: 64,
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-          const SizedBox(height: 12),
-          Text(error ?? 'No pudimos cargar tu perfil.'),
-          const SizedBox(height: 12),
-          FilledButton(onPressed: onRetry, child: const Text('Reintentar')),
-        ],
-      ),
-    );
-  }
-}
