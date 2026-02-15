@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
+
+import '../../../../modules/musicians/repositories/affinity_options_repository.dart';
 import '../../cubits/musician_onboarding_cubit.dart';
 import '../../cubits/musician_onboarding_state.dart';
 import '../widgets/musician_onboarding_missing_session_view.dart';
@@ -14,7 +16,12 @@ import '../widgets/musician_extras_step.dart';
 import '../widgets/musician_influences_step.dart';
 
 class MusicianOnboardingPage extends StatefulWidget {
-  const MusicianOnboardingPage({super.key});
+  const MusicianOnboardingPage({
+    super.key,
+    required this.affinityOptionsRepository,
+  });
+
+  final AffinityOptionsRepository affinityOptionsRepository;
 
   @override
   State<MusicianOnboardingPage> createState() => _MusicianOnboardingPageState();
@@ -52,8 +59,7 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
       .where((s) => s.isNotEmpty)
       .toList();
 
-  int get _parsedExperienceYears =>
-      int.tryParse(_yearsController.text) ?? 0;
+  int get _parsedExperienceYears => int.tryParse(_yearsController.text) ?? 0;
 
   String? get _photoUrlOrNull {
     final value = _photoUrlController.text.trim();
@@ -102,7 +108,8 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                    'No pudimos guardar tu perfil: ${state.errorMessage}'),
+                  'No pudimos guardar tu perfil: ${state.errorMessage}',
+                ),
               ),
             );
           }
@@ -117,7 +124,8 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
               appBar: AppBar(
                 automaticallyImplyLeading: false,
                 title: const Text(
-                    'Cuéntanos sobre ti y tu pasión por la música'),
+                  'Cuéntanos sobre ti y tu pasión por la música',
+                ),
               ),
               body: SafeArea(
                 child: Padding(
@@ -138,21 +146,21 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
                         children: [
                           if (state.currentStep > 0)
                             OutlinedButton(
-                              onPressed:
-                                  state.isSaving ? null : cubit.previousStep,
+                              onPressed: state.isSaving
+                                  ? null
+                                  : cubit.previousStep,
                               child: const Text('Atrás'),
                             ),
-                          if (state.currentStep > 0)
-                            const SizedBox(width: 12),
+                          if (state.currentStep > 0) const SizedBox(width: 12),
                           Expanded(
                             child: ElevatedButton(
                               onPressed: state.isSaving
                                   ? null
                                   : () => _handleContinue(
-                                        context,
-                                        steps.length,
-                                        user.id,
-                                      ),
+                                      context,
+                                      steps.length,
+                                      user.id,
+                                    ),
                               child: Text(
                                 state.currentStep == steps.length - 1
                                     ? 'Finalizar'
@@ -195,6 +203,7 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
       MusicianInfluencesStep(
         formKey: _influencesKey,
         cubit: cubit,
+        affinityOptionsRepository: widget.affinityOptionsRepository,
       ),
       MusicianExtrasStep(
         formKey: _extrasKey,
@@ -205,7 +214,10 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
   }
 
   void _handleContinue(
-      BuildContext context, int totalSteps, String musicianId) {
+    BuildContext context,
+    int totalSteps,
+    String musicianId,
+  ) {
     final cubit = context.read<MusicianOnboardingCubit>();
 
     if (!_validateCurrentStep(cubit.state.currentStep)) return;

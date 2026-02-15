@@ -12,16 +12,36 @@ import '../../../../core/widgets/layout/searchable_list_page.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
 
 import '../../models/group_membership_entity.dart';
-// import '../../repositories/groups_repository.dart';
+import '../../../../modules/groups/repositories/groups_repository.dart';
+import '../../../../features/messaging/repositories/chat_repository.dart';
+import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
+import '../../../../features/contacts/cubits/liked_musicians_cubit.dart';
 import '../widgets/groups_widgets.dart';
 import '../widgets/groups_list/groups_hero_section.dart';
 
 class GroupsPage extends StatelessWidget {
-  const GroupsPage({super.key});
+  const GroupsPage({
+    super.key,
+    required this.groupsRepository,
+    required this.chatRepository,
+    required this.inviteNotificationsRepository,
+    required this.likedMusiciansCubit,
+  });
+
+  final GroupsRepository groupsRepository;
+  final ChatRepository chatRepository;
+  final InviteNotificationsRepository inviteNotificationsRepository;
+  final LikedMusiciansCubit likedMusiciansCubit;
 
   @override
   Widget build(BuildContext context) {
-    return const UserShellPage(child: _GroupsView());
+    return UserShellPage(
+      groupsRepository: groupsRepository,
+      chatRepository: chatRepository,
+      inviteNotificationsRepository: inviteNotificationsRepository,
+      likedMusiciansCubit: likedMusiciansCubit,
+      child: const _GroupsView(),
+    );
   }
 }
 

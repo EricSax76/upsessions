@@ -1,0 +1,6 @@
+Analyzing upsessions...                                         
+
+warning • Duplicate import • lib/features/onboarding/ui/pages/musician_onboarding_page.dart:8:8 • duplicate_import
+  error • The name 'AffinityOptionsRepository' isn't a type, so it can't be used as a type argument • lib/router/app_router_routes.dart:95:49 • non_type_as_type_argument
+
+2 issues found. (ran in 2.7s)

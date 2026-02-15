@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
-import '../../../../core/locator/locator.dart';
+
 import '../../../messaging/repositories/chat_repository.dart';
 import '../../../../modules/auth/repositories/auth_repository.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
@@ -11,18 +11,50 @@ import '../../models/invite_notification_entity.dart';
 import '../../repositories/invite_notifications_repository.dart';
 import '../widgets/invites_section.dart';
 import '../widgets/unread_threads_section.dart';
+import '../../../../modules/groups/repositories/groups_repository.dart';
+import '../../../../features/contacts/cubits/liked_musicians_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NotificationsPage extends StatelessWidget {
-  const NotificationsPage({super.key});
+  const NotificationsPage({
+    super.key,
+    required this.groupsRepository,
+    required this.chatRepository,
+    required this.inviteNotificationsRepository,
+    required this.likedMusiciansCubit,
+  });
+
+  final GroupsRepository groupsRepository;
+  final ChatRepository chatRepository;
+  final InviteNotificationsRepository inviteNotificationsRepository;
+  final LikedMusiciansCubit likedMusiciansCubit;
 
   @override
   Widget build(BuildContext context) {
-    return const UserShellPage(child: _NotificationsView());
+    return UserShellPage(
+      groupsRepository: groupsRepository,
+      chatRepository: chatRepository,
+      inviteNotificationsRepository: inviteNotificationsRepository,
+      likedMusiciansCubit: likedMusiciansCubit,
+      child: _NotificationsView(
+        chatRepository: chatRepository,
+        inviteNotificationsRepository: inviteNotificationsRepository,
+        authRepository: context.read<AuthRepository>(),
+      ),
+    );
   }
 }
 
 class _NotificationsView extends StatefulWidget {
-  const _NotificationsView();
+  const _NotificationsView({
+    required this.chatRepository,
+    required this.inviteNotificationsRepository,
+    required this.authRepository,
+  });
+
+  final ChatRepository chatRepository;
+  final InviteNotificationsRepository inviteNotificationsRepository;
+  final AuthRepository authRepository;
 
   @override
   State<_NotificationsView> createState() => _NotificationsViewState();
@@ -35,9 +67,9 @@ class _NotificationsViewState extends State<_NotificationsView> {
   void initState() {
     super.initState();
     _controller = NotificationsController(
-      chatRepository: locate<ChatRepository>(),
-      inviteRepository: locate<InviteNotificationsRepository>(),
-      authRepository: locate<AuthRepository>(),
+      chatRepository: widget.chatRepository,
+      inviteRepository: widget.inviteNotificationsRepository,
+      authRepository: widget.authRepository,
     );
   }
 
@@ -91,10 +123,7 @@ class _NotificationsViewState extends State<_NotificationsView> {
               currentUserId: vm.currentUserId,
               onOpenThread: _onOpenThread,
             ),
-            InvitesSection(
-              invites: vm.invites,
-              onOpenInvite: _onOpenInvite,
-            ),
+            InvitesSection(invites: vm.invites, onOpenInvite: _onOpenInvite),
           ],
         );
       },

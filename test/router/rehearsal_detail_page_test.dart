@@ -188,6 +188,10 @@ void main() {
             return RehearsalDetailPage(
               groupId: groupId,
               rehearsalId: rehearsalId,
+              groupsRepository: groupsRepository,
+              chatRepository: chatRepository,
+              inviteNotificationsRepository: invitesRepository,
+              likedMusiciansCubit: likedMusiciansCubit,
             );
           },
         ),

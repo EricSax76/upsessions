@@ -7,6 +7,7 @@ import '../features/events/ui/pages/event_detail_page.dart';
 import '../features/messaging/models/chat_thread.dart';
 import '../features/messaging/repositories/chat_repository.dart';
 import '../features/messaging/ui/pages/chat_thread_detail_page.dart';
+
 import '../home/ui/pages/user_shell_page.dart';
 import '../modules/announcements/models/announcement_entity.dart';
 import '../modules/announcements/repositories/announcements_repository.dart';
@@ -20,6 +21,10 @@ import '../modules/studios/repositories/studios_repository.dart';
 import '../modules/studios/ui/consumer/room_detail_page.dart';
 import '../modules/studios/ui/consumer/studios_list_page.dart';
 import '../modules/studios/ui/provider/edit_room_page.dart';
+import '../modules/groups/repositories/groups_repository.dart';
+import '../features/notifications/repositories/invite_notifications_repository.dart';
+import '../features/contacts/cubits/liked_musicians_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UnknownRouteScreen extends StatelessWidget {
   const UnknownRouteScreen({super.key, required this.name, this.message});
@@ -69,8 +74,12 @@ class MusicianDetailLoader extends StatelessWidget {
       future: locate<MusiciansRepository>().findById(musicianId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const UserShellPage(
-            child: Center(child: CircularProgressIndicator()),
+          return UserShellPage(
+            groupsRepository: context.read<GroupsRepository>(),
+            chatRepository: context.read<ChatRepository>(),
+            inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
+            likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+            child: const Center(child: CircularProgressIndicator()),
           );
         }
 
@@ -84,7 +93,13 @@ class MusicianDetailLoader extends StatelessWidget {
           );
         }
 
-        return UserShellPage(child: MusicianDetailPage(musician: musician));
+        return UserShellPage(
+          groupsRepository: context.read<GroupsRepository>(),
+          chatRepository: context.read<ChatRepository>(),
+          inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
+          likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+          child: MusicianDetailPage(musician: musician),
+        );
       },
     );
   }
@@ -106,8 +121,12 @@ class AnnouncementDetailLoader extends StatelessWidget {
       future: locate<AnnouncementsRepository>().findById(announcementId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return const UserShellPage(
-            child: Center(child: CircularProgressIndicator()),
+          return UserShellPage(
+            groupsRepository: context.read<GroupsRepository>(),
+            chatRepository: context.read<ChatRepository>(),
+            inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
+            likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+            child: const Center(child: CircularProgressIndicator()),
           );
         }
 
@@ -121,6 +140,10 @@ class AnnouncementDetailLoader extends StatelessWidget {
         }
 
         return UserShellPage(
+          groupsRepository: context.read<GroupsRepository>(),
+          chatRepository: context.read<ChatRepository>(),
+          inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
+          likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
           child: AnnouncementDetailPage(announcement: snapshot.data!),
         );
       },
@@ -141,7 +164,12 @@ class EventDetailLoader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<EventEntity?>(
-      future: locate<EventsRepository>().findById(eventId),
+      // TODO: This should ideally come from a repository passed in constructor
+      // but since this is a static method we can't easily injection it without
+      // refactoring the whole loader pattern.
+      // However, we can use context.read if we wrap this in a builder or similar.
+      // Wait, EventDetailLoader is a Widget. We can access context.
+      future: context.read<EventsRepository>().findById(eventId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
@@ -157,7 +185,10 @@ class EventDetailLoader extends StatelessWidget {
           );
         }
 
-        return EventDetailPage(event: event);
+        return EventDetailPage(
+          event: event,
+          eventsRepository: context.read<EventsRepository>(),
+        );
       },
     );
   }
@@ -168,8 +199,13 @@ class ChatThreadDetailLoader extends StatelessWidget {
     super.key,
     required this.threadId,
     required this.location,
+    required this.chatRepository,
+    required this.authRepository,
     this.initialThread,
   });
+
+  final ChatRepository chatRepository;
+  final AuthRepository authRepository;
 
   final String threadId;
   final String location;
@@ -180,7 +216,7 @@ class ChatThreadDetailLoader extends StatelessWidget {
     if (seedThread != null && seedThread.id == threadId) {
       return seedThread;
     }
-    return locate<ChatRepository>().fetchThread(threadId);
+    return chatRepository.fetchThread(threadId);
   }
 
   @override
@@ -204,10 +240,11 @@ class ChatThreadDetailLoader extends StatelessWidget {
           );
         }
 
-        final currentUserId = locate<AuthRepository>().currentUser?.id ?? '';
+        final currentUserId = authRepository.currentUser?.id ?? '';
         return ChatThreadDetailPage(
           thread: thread,
           threadTitle: thread.titleFor(currentUserId),
+          chatRepository: chatRepository,
         );
       },
     );

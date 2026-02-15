@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/locator/locator.dart';
 import '../../../../core/constants/music_styles.dart';
 import '../../../../modules/musicians/repositories/affinity_options_repository.dart';
 import '../../cubits/musician_onboarding_cubit.dart';
@@ -13,10 +12,12 @@ class MusicianInfluencesStep extends StatefulWidget {
     super.key,
     required this.formKey,
     required this.cubit,
+    required this.affinityOptionsRepository,
   });
 
   final GlobalKey<FormState> formKey;
   final MusicianOnboardingCubit cubit;
+  final AffinityOptionsRepository affinityOptionsRepository;
 
   @override
   State<MusicianInfluencesStep> createState() => _MusicianInfluencesStepState();
@@ -24,7 +25,6 @@ class MusicianInfluencesStep extends StatefulWidget {
 
 class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
   final _artistController = TextEditingController();
-  late final AffinityOptionsRepository _affinityOptionsRepository;
   String? _selectedStyle;
   List<String> _styleArtistOptions = const [];
   bool _loadingStyleOptions = false;
@@ -33,7 +33,6 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
   @override
   void initState() {
     super.initState();
-    _affinityOptionsRepository = locate<AffinityOptionsRepository>();
   }
 
   @override
@@ -100,7 +99,7 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
       _loadingStyleOptions = true;
     });
 
-    final remoteOrFallback = await _affinityOptionsRepository
+    final remoteOrFallback = await widget.affinityOptionsRepository
         .fetchArtistOptionsForStyle(normalized);
     if (!mounted || requestId != _loadRequestId) return;
 

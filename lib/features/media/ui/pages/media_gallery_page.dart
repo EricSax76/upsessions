@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:upsessions/core/locator/locator.dart';
 import '../../cubits/media_gallery_cubit.dart';
 import '../../cubits/media_gallery_state.dart';
 import '../../repositories/media_repository.dart';
 import '../widgets/media_grid.dart';
 
 class MediaGalleryPage extends StatelessWidget {
-  const MediaGalleryPage({super.key});
+  const MediaGalleryPage({super.key, required this.repository});
+
+  final MediaRepository repository;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => MediaGalleryCubit(
-        repository: locate<MediaRepository>(),
+        repository: repository,
       )..load(),
       child: Scaffold(
         appBar: AppBar(title: const Text('Galería')),

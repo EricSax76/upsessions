@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
-import 'package:upsessions/core/locator/locator.dart';
+
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 
@@ -13,7 +13,18 @@ import '../widgets/chat_conversation_pane.dart';
 import '../widgets/chat_threads_list_view.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key, this.showAppBar = true, this.initialThreadId});
+  const ChatPage({
+    super.key,
+    required this.chatRepository,
+    required this.authRepository,
+    required this.profileRepository,
+    this.showAppBar = true,
+    this.initialThreadId,
+  });
+
+  final ChatRepository chatRepository;
+  final AuthRepository authRepository;
+  final ProfileRepository profileRepository;
 
   final bool showAppBar;
   final String? initialThreadId;
@@ -30,9 +41,9 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     _cubit = ChatPageCubit(
-      chatRepository: locate<ChatRepository>(),
-      authRepository: locate<AuthRepository>(),
-      profileRepository: locate<ProfileRepository>(),
+      chatRepository: widget.chatRepository,
+      authRepository: widget.authRepository,
+      profileRepository: widget.profileRepository,
     );
     _cubit.loadThreads(preferThreadId: widget.initialThreadId).then((_) {
       _tryAutoOpenInitialThread();
@@ -74,9 +85,9 @@ class _ChatPageState extends State<ChatPage> {
         listenWhen: (prev, curr) => prev.errorMessage != curr.errorMessage,
         listener: (context, state) {
           if (state.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.errorMessage!)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
           }
         },
         builder: (context, state) {

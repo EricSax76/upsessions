@@ -14,14 +14,29 @@ import 'package:upsessions/home/ui/widgets/footer/bottom_cookie_bar.dart';
 import 'package:upsessions/core/widgets/section_card.dart';
 import 'package:upsessions/home/ui/widgets/home_hero_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/musicians_by_instrument_section.dart';
-import 'package:upsessions/home/repositories/user_home_repository.dart';
-import 'package:upsessions/home/ui/widgets/musicians/new_musicians_section.dart';
-import 'package:upsessions/home/ui/widgets/musicians/recommended_users_section.dart';
 import 'package:upsessions/home/ui/pages/user_shell_page.dart';
 import 'package:upsessions/home/ui/widgets/studios/studios_promo_card.dart';
+import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
+import 'package:upsessions/features/contacts/cubits/liked_musicians_cubit.dart';
+import 'package:upsessions/home/repositories/user_home_repository.dart';
+import 'package:upsessions/home/ui/widgets/musicians/recommended_users_section.dart';
+import 'package:upsessions/home/ui/widgets/musicians/new_musicians_section.dart';
 
 class UserHomePage extends StatelessWidget {
-  const UserHomePage({super.key});
+  const UserHomePage({
+    super.key,
+    required this.groupsRepository,
+    required this.chatRepository,
+    required this.inviteNotificationsRepository,
+    required this.likedMusiciansCubit,
+  });
+
+  final GroupsRepository groupsRepository;
+  final ChatRepository chatRepository;
+  final InviteNotificationsRepository inviteNotificationsRepository;
+  final LikedMusiciansCubit likedMusiciansCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +45,10 @@ class UserHomePage extends StatelessWidget {
         repository: context.read<UserHomeRepository>(),
       )..loadHome(),
       child: UserShellPage(
+        groupsRepository: groupsRepository,
+        chatRepository: chatRepository,
+        inviteNotificationsRepository: inviteNotificationsRepository,
+        likedMusiciansCubit: likedMusiciansCubit,
         child: BlocBuilder<UserHomeCubit, UserHomeState>(
           builder: (context, state) {
             if (state.isLoading) {

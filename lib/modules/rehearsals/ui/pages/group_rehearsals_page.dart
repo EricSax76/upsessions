@@ -6,11 +6,15 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/loading_indicator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
-import '../../../../core/locator/locator.dart';
+
 import '../../../auth/repositories/auth_repository.dart';
 import '../../models/rehearsal_filter.dart';
 import '../../../groups/models/group_dtos.dart';
 import '../../../groups/repositories/groups_repository.dart';
+import '../../../../features/messaging/repositories/chat_repository.dart';
+import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
+import '../../../../features/contacts/cubits/liked_musicians_cubit.dart';
+import '../../../musicians/repositories/musicians_repository.dart';
 
 import '../dialogs/invite_musician_dialog.dart';
 import '../dialogs/rehearsal_dialog.dart';
@@ -22,16 +26,34 @@ import '../../cubits/group_rehearsals_cubit.dart';
 import '../../cubits/group_rehearsals_state.dart';
 import '../../models/rehearsal_entity.dart';
 import '../../repositories/rehearsals_repository.dart';
+import '../../use_cases/create_rehearsal_use_case.dart';
 import '../../utils/rehearsal_date_utils.dart';
 
 class GroupRehearsalsPage extends StatelessWidget {
-  const GroupRehearsalsPage({super.key, required this.groupId});
+  const GroupRehearsalsPage({
+    super.key,
+    required this.groupId,
+    required this.groupsRepository,
+    required this.chatRepository,
+    required this.inviteNotificationsRepository,
+    required this.likedMusiciansCubit,
+  });
 
   final String groupId;
+  final GroupsRepository groupsRepository;
+  final ChatRepository chatRepository;
+  final InviteNotificationsRepository inviteNotificationsRepository;
+  final LikedMusiciansCubit likedMusiciansCubit;
 
   @override
   Widget build(BuildContext context) {
-    return UserShellPage(child: GroupRehearsalsView(groupId: groupId));
+    return UserShellPage(
+      groupsRepository: groupsRepository,
+      chatRepository: chatRepository,
+      inviteNotificationsRepository: inviteNotificationsRepository,
+      likedMusiciansCubit: likedMusiciansCubit,
+      child: GroupRehearsalsView(groupId: groupId),
+    );
   }
 }
 
@@ -57,11 +79,11 @@ class _GroupRehearsalsViewState extends State<GroupRehearsalsView> {
     return BlocProvider(
       create: (_) => GroupRehearsalsCubit(
         groupId: widget.groupId,
-        groupsRepository: locate<GroupsRepository>(),
-        rehearsalsRepository: locate<RehearsalsRepository>(),
-        createRehearsalUseCase: locate(),
-        musiciansRepository: locate(),
-        authRepository: locate<AuthRepository>(),
+        groupsRepository: context.read<GroupsRepository>(),
+        rehearsalsRepository: context.read<RehearsalsRepository>(),
+        createRehearsalUseCase: context.read<CreateRehearsalUseCase>(),
+        musiciansRepository: context.read<MusiciansRepository>(),
+        authRepository: context.read<AuthRepository>(),
       ),
       child: _GroupRehearsalsBody(
         groupId: widget.groupId,

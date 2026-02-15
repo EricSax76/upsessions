@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/locator/locator.dart';
 import '../../cubits/event_detail_cubit.dart';
 import '../../cubits/event_detail_state.dart';
 import '../../models/event_entity.dart';
@@ -10,16 +9,21 @@ import '../widgets/event_text_template_card.dart';
 import '../widgets/event_detail/event_detail_body.dart';
 
 class EventDetailPage extends StatelessWidget {
-  const EventDetailPage({super.key, required this.event});
+  const EventDetailPage({
+    super.key,
+    required this.event,
+    required this.eventsRepository,
+  });
 
   final EventEntity event;
+  final EventsRepository eventsRepository;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => EventDetailCubit(
         event: event,
-        repository: locate<EventsRepository>(),
+        repository: eventsRepository,
       ),
       child: BlocListener<EventDetailCubit, EventDetailState>(
         listenWhen: (previous, current) =>

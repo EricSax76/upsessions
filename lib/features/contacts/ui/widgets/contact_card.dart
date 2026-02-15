@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
-import '../../../../core/locator/locator.dart';
+
 import '../../../messaging/repositories/chat_repository.dart';
 import '../../cubits/contact_card_cubit.dart';
 import '../../cubits/contact_card_state.dart';
@@ -12,16 +12,21 @@ import 'contact_card_actions.dart';
 import 'contact_card_header.dart';
 
 class ContactCard extends StatelessWidget {
-  const ContactCard({super.key, required this.musician});
+  const ContactCard({
+    super.key,
+    required this.musician,
+    required this.chatRepository,
+  });
 
   final LikedMusician musician;
+  final ChatRepository chatRepository;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return BlocProvider(
-      create: (_) => ContactCardCubit(chatRepository: locate<ChatRepository>()),
+      create: (_) => ContactCardCubit(chatRepository: chatRepository),
       child: BlocListener<ContactCardCubit, ContactCardState>(
         listener: (context, state) {
           if (state.status == ContactCardStatus.success &&

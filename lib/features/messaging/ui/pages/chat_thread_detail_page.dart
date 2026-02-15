@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:upsessions/core/locator/locator.dart';
 
 import '../../logic/chat_thread_detail_cubit.dart';
 import '../../models/chat_thread.dart';
@@ -13,7 +12,10 @@ class ChatThreadDetailPage extends StatelessWidget {
     super.key,
     required this.thread,
     required this.threadTitle,
+    required this.chatRepository,
   });
+
+  final ChatRepository chatRepository;
 
   final ChatThread thread;
   final String threadTitle;
@@ -21,9 +23,9 @@ class ChatThreadDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ChatThreadDetailCubit(
-        chatRepository: locate<ChatRepository>(),
-      )..loadMessages(thread.id, unreadCount: thread.unreadCount),
+      create: (_) =>
+          ChatThreadDetailCubit(chatRepository: chatRepository)
+            ..loadMessages(thread.id, unreadCount: thread.unreadCount),
       child: _ChatThreadDetailView(
         threadId: thread.id,
         threadTitle: threadTitle,
@@ -49,9 +51,9 @@ class _ChatThreadDetailView extends StatelessWidget {
         listenWhen: (prev, curr) => prev.errorMessage != curr.errorMessage,
         listener: (context, state) {
           if (state.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.errorMessage!)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
           }
         },
         builder: (context, state) {

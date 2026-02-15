@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 
 import '../widgets/profile/profile_form.dart';
 
 class ProfileEditPage extends StatelessWidget {
-  const ProfileEditPage({super.key});
+  const ProfileEditPage({
+    super.key,
+    required this.affinityOptionsRepository,
+  });
+
+  final AffinityOptionsRepository affinityOptionsRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +59,7 @@ class ProfileEditPage extends StatelessWidget {
                   profile: profile,
                   onSave: (updated) =>
                       context.read<ProfileCubit>().updateProfile(updated),
-                  affinityRepository: locate<AffinityOptionsRepository>(),
+                  affinityRepository: affinityOptionsRepository,
                 ),
               ),
               if (state.status == ProfileStatus.loading)

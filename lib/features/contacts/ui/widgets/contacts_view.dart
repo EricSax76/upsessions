@@ -3,12 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../cubits/liked_musicians_cubit.dart';
 import '../../cubits/liked_musicians_state.dart';
-import 'contact_card.dart';
+import '../widgets/contact_card.dart';
 import 'contacts_header.dart';
 import 'empty_contacts.dart';
+import '../../../messaging/repositories/chat_repository.dart';
 
 class ContactsView extends StatelessWidget {
-  const ContactsView({super.key});
+  const ContactsView({super.key, required this.chatRepository});
+
+  final ChatRepository chatRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +35,10 @@ class ContactsView extends StatelessWidget {
                       separatorBuilder: (_, _) => const SizedBox(height: 16),
                       itemBuilder: (context, index) {
                         final contact = contacts[index];
-                        return ContactCard(musician: contact);
+                        return ContactCard(
+                          musician: contact,
+                          chatRepository: chatRepository,
+                        );
                       },
                     ),
                   ),

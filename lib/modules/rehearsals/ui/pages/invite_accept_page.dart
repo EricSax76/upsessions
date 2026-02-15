@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
-import '../../../../core/locator/locator.dart';
 import '../../../auth/cubits/auth_cubit.dart';
 import '../../../auth/repositories/auth_repository.dart';
 import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
@@ -15,19 +14,22 @@ class InviteAcceptPage extends StatefulWidget {
     super.key,
     required this.groupId,
     required this.inviteId,
+    required this.groupsRepository,
+    required this.inviteNotificationsRepository,
+    required this.authRepository,
   });
 
   final String groupId;
   final String inviteId;
+  final GroupsRepository groupsRepository;
+  final InviteNotificationsRepository inviteNotificationsRepository;
+  final AuthRepository authRepository;
 
   @override
   State<InviteAcceptPage> createState() => _InviteAcceptPageState();
 }
 
 class _InviteAcceptPageState extends State<InviteAcceptPage> {
-  final _groupsRepository = locate<GroupsRepository>();
-  final _inviteNotificationsRepository =
-      locate<InviteNotificationsRepository>();
   bool _loading = false;
 
   @override
@@ -35,7 +37,7 @@ class _InviteAcceptPageState extends State<InviteAcceptPage> {
     final authState = context.watch<AuthCubit>().state;
     final isAuthenticated =
         authState.status == AuthStatus.authenticated &&
-        locate<AuthRepository>().currentUser != null;
+        widget.authRepository.currentUser != null;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Invitación')),
@@ -85,11 +87,11 @@ class _InviteAcceptPageState extends State<InviteAcceptPage> {
   Future<void> _accept(BuildContext context) async {
     setState(() => _loading = true);
     try {
-      await _groupsRepository.acceptInvite(
+      await widget.groupsRepository.acceptInvite(
         groupId: widget.groupId,
         inviteId: widget.inviteId,
       );
-      await _inviteNotificationsRepository.updateStatus(
+      await widget.inviteNotificationsRepository.updateStatus(
         widget.inviteId,
         'accepted',
       );
