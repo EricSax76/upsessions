@@ -7,9 +7,14 @@ import '../widgets/announcement_form/image_section.dart';
 import '../widgets/announcement_form/location_instrument_section.dart';
 
 class AnnouncementForm extends StatefulWidget {
-  const AnnouncementForm({super.key, required this.onSubmit});
+  const AnnouncementForm({
+    super.key,
+    required this.onSubmit,
+    this.isLoading = false,
+  });
 
   final void Function(AnnouncementEntity, XFile?) onSubmit;
+  final bool isLoading;
 
   @override
   State<AnnouncementForm> createState() => _AnnouncementFormState();
@@ -37,12 +42,14 @@ class _AnnouncementFormState extends State<AnnouncementForm> {
   }
 
   void _submit() {
+    if (widget.isLoading) return;
     if (!_formKey.currentState!.validate()) return;
-    final styles = _stylesController.text
-        .split(',')
-        .map((e) => e.trim())
-        .where((e) => e.isNotEmpty)
-        .toList();
+    final styles =
+        _stylesController.text
+            .split(',')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList();
     final entity = AnnouncementEntity(
       id: '',
       title: _titleController.text.trim(),
@@ -85,15 +92,24 @@ class _AnnouncementFormState extends State<AnnouncementForm> {
           Align(
             alignment: Alignment.centerRight,
             child: FilledButton.icon(
-              onPressed: _submit,
+              onPressed: widget.isLoading ? null : _submit,
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
                   vertical: 16,
                 ),
               ),
-              icon: const Icon(Icons.check_circle_outline),
-              label: const Text('Publicar anuncio'),
+              icon:
+                  widget.isLoading
+                      ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : const Icon(Icons.check_circle_outline),
+              label: Text(
+                widget.isLoading ? 'Publicando...' : 'Publicar anuncio',
+              ),
             ),
           ),
           const SizedBox(height: 48),

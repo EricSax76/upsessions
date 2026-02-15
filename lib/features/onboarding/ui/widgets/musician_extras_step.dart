@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 
-import '../../logic/musician_onboarding_controller.dart';
 import 'musician_onboarding_step_card.dart';
 
 class MusicianExtrasStep extends StatelessWidget {
-  const MusicianExtrasStep({super.key, required this.controller});
+  const MusicianExtrasStep({
+    super.key,
+    required this.formKey,
+    required this.photoUrlController,
+    required this.bioController,
+  });
 
-  final MusicianOnboardingController controller;
+  final GlobalKey<FormState> formKey;
+  final TextEditingController photoUrlController;
+  final TextEditingController bioController;
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: controller.extrasKey,
+      key: formKey,
       child: MusicianOnboardingStepCard(
         title: 'Tu sello personal',
         description:
@@ -19,14 +25,14 @@ class MusicianExtrasStep extends StatelessWidget {
         child: Column(
           children: [
             TextFormField(
-              controller: controller.photoUrlController,
+              controller: photoUrlController,
               decoration: const InputDecoration(
                 labelText: 'URL de tu foto (opcional)',
               ),
             ),
             const SizedBox(height: 16),
             TextFormField(
-              controller: controller.bioController,
+              controller: bioController,
               minLines: 3,
               maxLines: 5,
               decoration: const InputDecoration(

@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
 
-import '../../logic/musician_onboarding_controller.dart';
 import 'musician_onboarding_step_card.dart';
 
 class MusicianBasicInfoStep extends StatelessWidget {
-  const MusicianBasicInfoStep({super.key, required this.controller});
+  const MusicianBasicInfoStep({
+    super.key,
+    required this.formKey,
+    required this.nameController,
+    required this.instrumentController,
+    required this.cityController,
+    required this.stylesController,
+  });
 
-  final MusicianOnboardingController controller;
+  final GlobalKey<FormState> formKey;
+  final TextEditingController nameController;
+  final TextEditingController instrumentController;
+  final TextEditingController cityController;
+  final TextEditingController stylesController;
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: controller.basicInfoKey,
+      key: formKey,
       child: MusicianOnboardingStepCard(
         title: 'Tu identidad musical',
         description:
@@ -19,7 +29,7 @@ class MusicianBasicInfoStep extends StatelessWidget {
         child: Column(
           children: [
             TextFormField(
-              controller: controller.nameController,
+              controller: nameController,
               decoration: const InputDecoration(labelText: 'Nombre artístico'),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? 'Ingresa tu nombre'
@@ -27,7 +37,7 @@ class MusicianBasicInfoStep extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextFormField(
-              controller: controller.instrumentController,
+              controller: instrumentController,
               decoration: const InputDecoration(
                 labelText: 'Instrumento principal',
               ),

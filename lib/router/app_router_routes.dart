@@ -149,7 +149,7 @@ List<GoRoute> buildAppRoutes() {
     ),
     GoRoute(
       path: AppRoutes.contacts,
-      builder: (context, state) => ContactsPage(controller: locate()),
+      builder: (context, state) => const ContactsPage(),
     ),
     GoRoute(
       path: AppRoutes.calendar,

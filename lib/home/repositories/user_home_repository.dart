@@ -5,7 +5,7 @@ import '../../modules/auth/repositories/auth_repository.dart';
 import '../../modules/musicians/models/musician_dto.dart';
 import '../../modules/musicians/models/musician_entity.dart';
 import '../../modules/rehearsals/models/rehearsal_entity.dart';
-import '../models/announcement_model.dart';
+import '../../modules/announcements/models/announcement_entity.dart';
 import '../models/home_event_model.dart';
 import '../models/instrument_category_model.dart';
 
@@ -39,7 +39,7 @@ class UserHomeRepository {
     return snapshot.docs.map(_mapMusician).toList();
   }
 
-  Future<List<AnnouncementModel>> fetchRecentAnnouncements() async {
+  Future<List<AnnouncementEntity>> fetchRecentAnnouncements() async {
     final snapshot = await _firestore
         .collection('announcements')
         .orderBy('publishedAt', descending: true)
@@ -47,12 +47,18 @@ class UserHomeRepository {
         .get();
     return snapshot.docs.map((doc) {
       final data = doc.data();
-      return AnnouncementModel(
+      return AnnouncementEntity(
         id: doc.id,
         title: (data['title'] ?? '') as String,
-        description: (data['body'] ?? data['description'] ?? '') as String,
+        body: (data['body'] ?? data['description'] ?? '') as String,
         city: (data['city'] ?? '') as String,
-        date: _parseTimestamp(data['publishedAt']),
+        author: (data['author'] ?? 'Unknown') as String,
+        authorId: (data['authorId'] ?? '') as String,
+        province: (data['province'] ?? '') as String,
+        instrument: (data['instrument'] ?? '') as String,
+        styles: _stringList(data['styles']),
+        publishedAt: _parseTimestamp(data['publishedAt']),
+        imageUrl: data['imageUrl'] as String?,
       );
     }).toList();
   }

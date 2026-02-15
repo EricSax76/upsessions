@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/locator/locator.dart';
-import '../../logic/liked_musicians_controller.dart';
+import '../../cubits/liked_musicians_cubit.dart';
+import '../../cubits/liked_musicians_state.dart';
 import '../../models/liked_musician.dart';
 
-class MusicianLikeButton extends StatefulWidget {
+class MusicianLikeButton extends StatelessWidget {
   const MusicianLikeButton({
     super.key,
     required this.musician,
@@ -19,35 +20,23 @@ class MusicianLikeButton extends StatefulWidget {
   final BoxConstraints? constraints;
 
   @override
-  State<MusicianLikeButton> createState() => _MusicianLikeButtonState();
-}
-
-class _MusicianLikeButtonState extends State<MusicianLikeButton> {
-  late final LikedMusiciansController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = locate<LikedMusiciansController>();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        final isLiked = _controller.isLiked(widget.musician.id);
+    return BlocBuilder<LikedMusiciansCubit, LikedMusiciansState>(
+      buildWhen: (previous, current) =>
+          previous.isLiked(musician.id) != current.isLiked(musician.id),
+      builder: (context, state) {
+        final isLiked = state.isLiked(musician.id);
         return IconButton(
           tooltip: isLiked ? 'Quitar de contactos' : 'Añadir a contactos',
           color: isLiked ? colorScheme.primary : null,
-          iconSize: widget.iconSize,
-          padding: widget.padding ?? EdgeInsets.zero,
-          constraints:
-              widget.constraints ??
+          iconSize: iconSize,
+          padding: padding ?? EdgeInsets.zero,
+          constraints: constraints ??
               const BoxConstraints(minHeight: 32, minWidth: 32),
-          onPressed: () => _controller.toggleLike(widget.musician),
+          onPressed: () =>
+              context.read<LikedMusiciansCubit>().toggleLike(musician),
           icon: Icon(isLiked ? Icons.favorite : Icons.favorite_border),
         );
       },

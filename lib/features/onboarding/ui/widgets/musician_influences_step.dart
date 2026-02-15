@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/locator/locator.dart';
 import '../../../../core/constants/music_styles.dart';
 import '../../../../modules/musicians/repositories/affinity_options_repository.dart';
-import '../../logic/musician_onboarding_controller.dart';
+import '../../cubits/musician_onboarding_cubit.dart';
+import '../../cubits/musician_onboarding_state.dart';
 import 'musician_onboarding_step_card.dart';
 
 class MusicianInfluencesStep extends StatefulWidget {
-  const MusicianInfluencesStep({super.key, required this.controller});
+  const MusicianInfluencesStep({
+    super.key,
+    required this.formKey,
+    required this.cubit,
+  });
 
-  final MusicianOnboardingController controller;
+  final GlobalKey<FormState> formKey;
+  final MusicianOnboardingCubit cubit;
 
   @override
   State<MusicianInfluencesStep> createState() => _MusicianInfluencesStepState();
@@ -36,7 +43,8 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
   }
 
   bool _isArtistSelected(String style, String artist) {
-    final artists = widget.controller.influences[style] ?? const <String>[];
+    final artists =
+        widget.cubit.state.influences[style] ?? const <String>[];
     return artists.any(
       (current) => current.toLowerCase() == artist.toLowerCase(),
     );
@@ -47,7 +55,7 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
     final artist = (artistName ?? _artistController.text).trim();
 
     if (style != null && artist.isNotEmpty) {
-      widget.controller.addInfluence(style, artist);
+      widget.cubit.addInfluence(style, artist);
       setState(() {
         _artistController.clear();
       });
@@ -56,19 +64,13 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
 
   List<String> _suggestedArtists() {
     final style = _selectedStyle;
-    if (style == null) {
-      return const [];
-    }
+    if (style == null) return const [];
 
     final options = _styleArtistOptions;
-    if (options.isEmpty) {
-      return const [];
-    }
+    if (options.isEmpty) return const [];
 
     final query = _artistController.text.trim().toLowerCase();
-    if (query.isEmpty) {
-      return options;
-    }
+    if (query.isEmpty) return options;
 
     return options
         .where((artist) => artist.toLowerCase().contains(query))
@@ -77,9 +79,7 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
 
   Future<void> _onStyleChanged(String? style) async {
     final normalized = style?.trim();
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
 
     if (normalized == null || normalized.isEmpty) {
       _loadRequestId++;
@@ -102,9 +102,7 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
 
     final remoteOrFallback = await _affinityOptionsRepository
         .fetchArtistOptionsForStyle(normalized);
-    if (!mounted || requestId != _loadRequestId) {
-      return;
-    }
+    if (!mounted || requestId != _loadRequestId) return;
 
     setState(() {
       _styleArtistOptions = remoteOrFallback;
@@ -117,7 +115,7 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
     final suggestedArtists = _suggestedArtists();
 
     return Form(
-      key: widget.controller.influencesKey,
+      key: widget.formKey,
       child: MusicianOnboardingStepCard(
         title: 'Tus influencias',
         description:
@@ -142,7 +140,8 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                         .map(
                           (style) => DropdownMenuItem(
                             value: style,
-                            child: Text(style, overflow: TextOverflow.ellipsis),
+                            child: Text(style,
+                                overflow: TextOverflow.ellipsis),
                           ),
                         )
                         .toList(),
@@ -204,19 +203,16 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                       .map(
                         (artist) => FilterChip(
                           label: Text(artist),
-                          selected: _isArtistSelected(_selectedStyle!, artist),
+                          selected:
+                              _isArtistSelected(_selectedStyle!, artist),
                           onSelected: (selected) {
-                            if (_selectedStyle == null) {
-                              return;
-                            }
+                            if (_selectedStyle == null) return;
                             if (selected) {
                               _addInfluence(artistName: artist);
                               return;
                             }
-                            widget.controller.removeInfluence(
-                              _selectedStyle!,
-                              artist,
-                            );
+                            widget.cubit
+                                .removeInfluence(_selectedStyle!, artist);
                             setState(() {
                               _artistController.clear();
                             });
@@ -227,19 +223,26 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                 ),
             ],
             const SizedBox(height: 24),
-            AnimatedBuilder(
-              animation: widget.controller,
-              builder: (context, _) {
-                final influences = widget.controller.influences;
+            BlocBuilder<MusicianOnboardingCubit, MusicianOnboardingState>(
+              bloc: widget.cubit,
+              buildWhen: (prev, curr) =>
+                  prev.influences != curr.influences,
+              builder: (context, state) {
+                final influences = state.influences;
                 if (influences.isEmpty) {
                   return Center(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
                         'Aún no has agregado influencias.',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
                       ),
                     ),
                   );
@@ -257,10 +260,13 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                         children: [
                           Text(
                             style,
-                            style: Theme.of(context).textTheme.titleSmall
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
                                 ?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color:
+                                      Theme.of(context).colorScheme.primary,
                                 ),
                           ),
                           const SizedBox(height: 8),
@@ -272,7 +278,7 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
                                   (artist) => Chip(
                                     label: Text(artist),
                                     onDeleted: () {
-                                      widget.controller.removeInfluence(
+                                      widget.cubit.removeInfluence(
                                         style,
                                         artist,
                                       );

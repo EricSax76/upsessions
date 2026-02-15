@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
-import '../../cubits/studios_cubit.dart';
 
+import '../../cubits/booking_cubit.dart';
 import '../../models/room_entity.dart';
-import '../../models/booking_entity.dart';
-import '../../../auth/repositories/auth_repository.dart';
 import '../../../../core/constants/app_routes.dart';
-import '../../../../core/locator/locator.dart';
-import '../../../rehearsals/repositories/rehearsals_repository.dart';
 import 'studios_list_page.dart';
 
 class RoomDetailPage extends StatelessWidget {
@@ -100,16 +95,18 @@ class RoomDetailPage extends StatelessWidget {
   }
 
   void _showBookingDialog(BuildContext context) {
-    final cubit = context.read<StudiosCubit>();
     showDialog(
       context: context,
-      builder: (context) => BlocProvider.value(
-        value: cubit, // Pass the cubit to dialog
-        child: _BookingDialog(
-          room: room,
+      builder: (dialogContext) => BlocProvider(
+        create: (context) => BookingCubit(
+          roomPricePerHour: room.pricePerHour,
+          roomId: room.id,
+          roomName: room.name,
+          studioId: room.studioId,
           studioName: studioName,
           rehearsalContext: rehearsalContext,
         ),
+        child: const _BookingDialog(),
       ),
     );
   }
@@ -128,254 +125,184 @@ class RoomDetailPage extends StatelessWidget {
   }
 }
 
-class _BookingDialog extends StatefulWidget {
-  const _BookingDialog({
-    required this.room,
-    required this.studioName,
-    this.rehearsalContext,
-  });
-
-  final RoomEntity room;
-  final String studioName;
-  final RehearsalBookingContext? rehearsalContext;
-
-  @override
-  State<_BookingDialog> createState() => _BookingDialogState();
-}
-
-class _BookingDialogState extends State<_BookingDialog> {
-  late DateTime _selectedDate;
-  late TimeOfDay _selectedTime;
-  late int _durationHours;
-
-  @override
-  void initState() {
-    super.initState();
-    // If coming from rehearsal, use rehearsal date/time
-    if (widget.rehearsalContext != null) {
-      final rehearsalDate = widget.rehearsalContext!.suggestedDate;
-      _selectedDate = DateTime(
-        rehearsalDate.year,
-        rehearsalDate.month,
-        rehearsalDate.day,
-      );
-      _selectedTime = TimeOfDay(
-        hour: rehearsalDate.hour,
-        minute: rehearsalDate.minute,
-      );
-      // Calculate duration if end date is provided
-      if (widget.rehearsalContext!.suggestedEndDate != null) {
-        final diff = widget.rehearsalContext!.suggestedEndDate!.difference(
-          rehearsalDate,
-        );
-        _durationHours = diff.inHours.clamp(1, 8);
-      } else {
-        _durationHours = 2;
-      }
-    } else {
-      _selectedDate = DateTime.now();
-      _selectedTime = const TimeOfDay(hour: 10, minute: 0);
-      _durationHours = 2;
-    }
-  }
-
-  double get _totalPrice => widget.room.pricePerHour * _durationHours;
-
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 30)),
-    );
-    if (picked != null) setState(() => _selectedDate = picked);
-  }
-
-  Future<void> _pickTime() async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: _selectedTime,
-    );
-    if (picked != null) setState(() => _selectedTime = picked);
-  }
-
-  Future<void> _confirmBooking() async {
-    final authRepo = locate<AuthRepository>();
-    final user = authRepo.currentUser;
-
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to book a room')),
-      );
-      return;
-    }
-
-    final startDateTime = DateTime(
-      _selectedDate.year,
-      _selectedDate.month,
-      _selectedDate.day,
-      _selectedTime.hour,
-      _selectedTime.minute,
-    );
-
-    final endDateTime = startDateTime.add(Duration(hours: _durationHours));
-    final bookingId = const Uuid().v4();
-
-    final booking = BookingEntity(
-      id: bookingId,
-      roomId: widget.room.id,
-      roomName: widget.room.name,
-      studioId: widget.room.studioId,
-      studioName: widget.studioName,
-      ownerId: user.id,
-      startTime: startDateTime,
-      endTime: endDateTime,
-      status: BookingStatus.confirmed, // Auto-confirm for MVP
-      totalPrice: _totalPrice,
-      rehearsalId: widget.rehearsalContext?.rehearsalId,
-      groupId: widget.rehearsalContext?.groupId,
-    );
-
-    context.read<StudiosCubit>().createBooking(booking);
-
-    // If booking from rehearsal, update the rehearsal with the booking ID
-    if (widget.rehearsalContext != null) {
-      try {
-        final rehearsalsRepo = locate<RehearsalsRepository>();
-        await rehearsalsRepo.updateRehearsalBooking(
-          groupId: widget.rehearsalContext!.groupId,
-          rehearsalId: widget.rehearsalContext!.rehearsalId,
-          bookingId: bookingId,
-        );
-      } catch (e) {
-        debugPrint('Failed to update rehearsal with booking: $e');
-      }
-    }
-
-    if (!mounted) return;
-    Navigator.pop(context); // Close dialog
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          widget.rehearsalContext != null
-              ? '¡Sala reservada para el ensayo por ${_totalPrice.toStringAsFixed(2)}€!'
-              : 'Booking confirmed for ${_totalPrice.toStringAsFixed(2)}€!',
-        ),
-      ),
-    );
-
-    // If from rehearsal context, go back to the rehearsal detail route.
-    if (widget.rehearsalContext != null) {
-      final rehearsalContext = widget.rehearsalContext!;
-      context.go(
-        AppRoutes.rehearsalDetail(
-          groupId: rehearsalContext.groupId,
-          rehearsalId: rehearsalContext.rehearsalId,
-        ),
-      );
-    }
-  }
+class _BookingDialog extends StatelessWidget {
+  const _BookingDialog();
 
   @override
   Widget build(BuildContext context) {
-    final isFromRehearsal = widget.rehearsalContext != null;
+    final cubit = context.read<BookingCubit>();
+    final isFromRehearsal = cubit.rehearsalContext != null;
 
-    return AlertDialog(
-      title: Text(isFromRehearsal ? 'Reservar para Ensayo' : 'Book Room'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (isFromRehearsal)
-              Container(
-                padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.primaryContainer.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 20,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Fecha y hora pre-rellenadas desde el ensayo',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+    return BlocListener<BookingCubit, BookingState>(
+      listener: (context, state) {
+        if (state.status == BookingFormStatus.success) {
+          Navigator.pop(context); // Close dialog
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                isFromRehearsal
+                    ? '¡Sala reservada para el ensayo por ${state.totalPrice.toStringAsFixed(2)}€!'
+                    : 'Booking confirmed for ${state.totalPrice.toStringAsFixed(2)}€!',
+              ),
+            ),
+          );
+
+          if (isFromRehearsal) {
+             context.go(
+              AppRoutes.rehearsalDetail(
+                groupId: cubit.rehearsalContext!.groupId,
+                rehearsalId: cubit.rehearsalContext!.rehearsalId,
+              ),
+            );
+          }
+        } else if (state.status == BookingFormStatus.failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.errorMessage ?? 'Error booking room')),
+          );
+        }
+      },
+      child: AlertDialog(
+        title: Text(isFromRehearsal ? 'Reservar para Ensayo' : 'Book Room'),
+        content: BlocBuilder<BookingCubit, BookingState>(
+          builder: (context, state) {
+            if (state.status == BookingFormStatus.loading) {
+              return const SizedBox(
+                height: 200,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                   if (isFromRehearsal)
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Fecha y hora pre-rellenadas desde el ensayo',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ListTile(
-              title: const Text('Date'),
-              subtitle: Text(DateFormat('EEE, MMM d, y').format(_selectedDate)),
-              trailing: const Icon(Icons.calendar_today),
-              onTap: _pickDate,
-            ),
-            ListTile(
-              title: const Text('Start Time'),
-              subtitle: Text(_selectedTime.format(context)),
-              trailing: const Icon(Icons.access_time),
-              onTap: _pickTime,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Duration: $_durationHours hours',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            Slider(
-              value: _durationHours.toDouble(),
-              min: 1,
-              max: 8,
-              divisions: 7,
-              label: '$_durationHours h',
-              onChanged: (val) => setState(() => _durationHours = val.toInt()),
-            ),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Total Price:',
-                    style: Theme.of(context).textTheme.titleMedium,
+                  ListTile(
+                    title: const Text('Date'),
+                    subtitle: Text(
+                      state.selectedDate != null
+                          ? DateFormat('EEE, MMM d, y').format(state.selectedDate!)
+                          : 'Select Date',
+                    ),
+                    trailing: const Icon(Icons.calendar_today),
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: state.selectedDate ?? DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 30)),
+                      );
+                      if (picked != null) {
+                        if (!context.mounted) return;
+                        context.read<BookingCubit>().dateChanged(picked);
+                      }
+                    },
                   ),
+                  ListTile(
+                    title: const Text('Start Time'),
+                    subtitle: Text(
+                      state.selectedTime?.format(context) ?? 'Select Time',
+                    ),
+                    trailing: const Icon(Icons.access_time),
+                    onTap: () async {
+                      final picked = await showTimePicker(
+                        context: context,
+                        initialTime: state.selectedTime ?? TimeOfDay.now(),
+                      );
+                      if (picked != null) {
+                        if (!context.mounted) return;
+                        context.read<BookingCubit>().timeChanged(picked);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
                   Text(
-                    '${_totalPrice.toStringAsFixed(2)}€',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Theme.of(context).primaryColor,
+                    'Duration: ${state.durationHours} hours',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  Slider(
+                    value: state.durationHours.toDouble(),
+                    min: 1,
+                    max: 8,
+                    divisions: 7,
+                    label: '${state.durationHours} h',
+                    onChanged: (val) => context
+                        .read<BookingCubit>()
+                        .durationChanged(val.toInt()),
+                  ),
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Total Price:',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text(
+                          '${state.totalPrice.toStringAsFixed(2)}€',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+            );
+          },
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        FilledButton(
-          onPressed: _confirmBooking,
-          child: Text(
-            isFromRehearsal ? 'Confirmar Reserva' : 'Confirm Booking',
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
           ),
-        ),
-      ],
+          BlocBuilder<BookingCubit, BookingState>(
+            builder: (context, state) {
+              return FilledButton(
+                onPressed: state.status == BookingFormStatus.loading
+                    ? null
+                    : () => context.read<BookingCubit>().confirmBooking(),
+                child: Text(
+                  isFromRehearsal ? 'Confirmar Reserva' : 'Confirm Booking',
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

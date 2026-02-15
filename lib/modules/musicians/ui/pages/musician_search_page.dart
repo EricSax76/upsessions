@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/core/locator/locator.dart';
+import 'package:upsessions/home/repositories/user_home_repository.dart';
 
 import '../../cubits/musician_search_cubit.dart';
 import '../../repositories/musicians_repository.dart';
-import '../../models/musician_search_filters_controller.dart';
 
 import '../widgets/search/musician_search_filter_panel.dart';
 import '../widgets/search/musician_search_layout.dart';
@@ -23,53 +24,45 @@ class MusicianSearchPage extends StatefulWidget {
 
 class _MusicianSearchPageState extends State<MusicianSearchPage> {
   final _searchController = TextEditingController();
-  late final MusicianSearchFiltersController _filters;
 
   @override
   void dispose() {
-    _filters.dispose();
     _searchController.dispose();
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _filters = MusicianSearchFiltersController()..load();
   }
 
   void _search(BuildContext context) {
     FocusScope.of(context).unfocus();
     context.read<MusicianSearchCubit>().search(
           query: _searchController.text.trim(),
-          instrument: _filters.instrument,
-          style: _filters.style,
-          province: _filters.province,
-          city: _filters.city,
-          profileType: _filters.profileType,
-          gender: _filters.gender,
         );
   }
 
   void _clearFilters(BuildContext context) {
     _searchController.clear();
-    _filters.resetFilters();
-    _search(context);
+    context.read<MusicianSearchCubit>().clearFilters();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          MusicianSearchCubit(repository: context.read<MusiciansRepository>())
-            ..search(),
+      create: (context) => MusicianSearchCubit(
+        repository: context.read<MusiciansRepository>(),
+        userHomeRepository: locate<UserHomeRepository>(),
+      )
+        ..loadFilters()
+        ..search(),
       child: Builder(builder: (context) {
-        return MusicianSearchView(
-          showAppBar: widget.showAppBar,
-          searchController: _searchController,
-          filters: _filters,
-          onSearch: () => _search(context),
-          onClearFilters: () => _clearFilters(context),
+        return BlocBuilder<MusicianSearchCubit, MusicianSearchState>(
+          builder: (context, state) {
+            return MusicianSearchView(
+              showAppBar: widget.showAppBar,
+              searchController: _searchController,
+              state: state,
+              onSearch: () => _search(context),
+              onClearFilters: () => _clearFilters(context),
+            );
+          },
         );
       }),
     );
@@ -81,33 +74,47 @@ class MusicianSearchView extends StatelessWidget {
     super.key,
     this.showAppBar = true,
     required this.searchController,
-    required this.filters,
+    required this.state,
     required this.onSearch,
     required this.onClearFilters,
   });
 
   final bool showAppBar;
   final TextEditingController searchController;
-  final MusicianSearchFiltersController filters;
+  final MusicianSearchState state;
   final VoidCallback onSearch;
   final VoidCallback onClearFilters;
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<MusicianSearchCubit>();
+
     final body = MusicianSearchLayout(
       topBar: MusicianSearchTopBar(
         controller: searchController,
         onSubmitted: (_) => onSearch(),
         onPressed: onSearch,
-        filters: filters,
+        state: state,
         onClearFilters: onClearFilters,
+        onInstrumentChanged: cubit.setInstrument,
+        onStyleChanged: cubit.setStyle,
+        onProfileTypeChanged: cubit.setProfileType,
+        onGenderChanged: cubit.setGender,
+        onProvinceChanged: cubit.setProvince,
+        onCityChanged: cubit.setCity,
       ),
       filterPanelBuilder: (context, isWide) {
         return MusicianSearchFilterPanel(
-          filters: filters,
+          state: state,
           isWide: isWide,
           onSearch: onSearch,
           onClear: onClearFilters,
+          onInstrumentChanged: cubit.setInstrument,
+          onStyleChanged: cubit.setStyle,
+          onProfileTypeChanged: cubit.setProfileType,
+          onGenderChanged: cubit.setGender,
+          onProvinceChanged: cubit.setProvince,
+          onCityChanged: cubit.setCity,
         );
       },
       results: MusicianSearchResultsList(

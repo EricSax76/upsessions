@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/announcement_model.dart';
+import '../../../../modules/announcements/models/announcement_entity.dart';
 
 class NewAnnouncementsSection extends StatelessWidget {
   const NewAnnouncementsSection({
@@ -9,8 +9,8 @@ class NewAnnouncementsSection extends StatelessWidget {
     required this.builder,
   });
 
-  final List<AnnouncementModel> announcements;
-  final Widget Function(AnnouncementModel announcement) builder;
+  final List<AnnouncementEntity> announcements;
+  final Widget Function(AnnouncementEntity announcement) builder;
 
   @override
   Widget build(BuildContext context) {

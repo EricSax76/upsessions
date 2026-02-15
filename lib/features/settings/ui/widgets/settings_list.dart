@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../../logic/settings_controller.dart';
-
 class SettingsList extends StatelessWidget {
-  const SettingsList({super.key, required this.controller});
+  const SettingsList({
+    super.key,
+    required this.darkMode,
+    required this.notifications,
+    required this.onDarkModeChanged,
+    required this.onNotificationsChanged,
+  });
 
-  final SettingsController controller;
+  final bool darkMode;
+  final bool notifications;
+  final ValueChanged<bool> onDarkModeChanged;
+  final ValueChanged<bool> onNotificationsChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +20,13 @@ class SettingsList extends StatelessWidget {
       children: [
         SwitchListTile(
           title: const Text('Modo oscuro'),
-          value: controller.darkMode,
-          onChanged: controller.toggleDarkMode,
+          value: darkMode,
+          onChanged: onDarkModeChanged,
         ),
         SwitchListTile(
           title: const Text('Notificaciones'),
-          value: controller.notifications,
-          onChanged: controller.toggleNotifications,
+          value: notifications,
+          onChanged: onNotificationsChanged,
         ),
       ],
     );

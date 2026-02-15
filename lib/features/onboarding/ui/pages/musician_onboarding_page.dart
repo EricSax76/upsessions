@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
-import '../../logic/musician_onboarding_controller.dart';
+import '../../cubits/musician_onboarding_cubit.dart';
+import '../../cubits/musician_onboarding_state.dart';
 import '../widgets/musician_onboarding_missing_session_view.dart';
 import '../widgets/musician_basic_info_step.dart';
 import '../widgets/musician_experience_step.dart';
@@ -20,18 +21,63 @@ class MusicianOnboardingPage extends StatefulWidget {
 }
 
 class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
-  late final MusicianOnboardingController _controller;
+  final _basicInfoKey = GlobalKey<FormState>();
+  final _experienceKey = GlobalKey<FormState>();
+  final _extrasKey = GlobalKey<FormState>();
+  final _influencesKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = MusicianOnboardingController();
-  }
+  final _nameController = TextEditingController();
+  final _instrumentController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _stylesController = TextEditingController();
+  final _yearsController = TextEditingController(text: '0');
+  final _photoUrlController = TextEditingController();
+  final _bioController = TextEditingController();
 
   @override
   void dispose() {
-    _controller.dispose();
+    _nameController.dispose();
+    _instrumentController.dispose();
+    _cityController.dispose();
+    _stylesController.dispose();
+    _yearsController.dispose();
+    _photoUrlController.dispose();
+    _bioController.dispose();
     super.dispose();
+  }
+
+  List<String> get _parsedStyles => _stylesController.text
+      .split(',')
+      .map((s) => s.trim())
+      .where((s) => s.isNotEmpty)
+      .toList();
+
+  int get _parsedExperienceYears =>
+      int.tryParse(_yearsController.text) ?? 0;
+
+  String? get _photoUrlOrNull {
+    final value = _photoUrlController.text.trim();
+    return value.isEmpty ? null : value;
+  }
+
+  String? get _bioOrNull {
+    final value = _bioController.text.trim();
+    return value.isEmpty ? null : value;
+  }
+
+  bool _validateCurrentStep(int step) {
+    switch (step) {
+      case 0:
+        return _basicInfoKey.currentState?.validate() ?? false;
+      case 1:
+        return _experienceKey.currentState?.validate() ?? false;
+      case 2:
+        return true;
+      case 3:
+        return _extrasKey.currentState?.validate() ?? true;
+      default:
+        return true;
+    }
   }
 
   @override
@@ -43,100 +89,143 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
       return const MusicianOnboardingMissingSessionView();
     }
 
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        final steps = _buildSteps();
-        final progress = (_controller.currentStep + 1) / steps.length;
+    return BlocProvider(
+      create: (_) => MusicianOnboardingCubit(),
+      child: BlocListener<MusicianOnboardingCubit, MusicianOnboardingState>(
+        listenWhen: (prev, curr) =>
+            curr.status == MusicianOnboardingStatus.saved ||
+            curr.status == MusicianOnboardingStatus.error,
+        listener: (context, state) {
+          if (state.status == MusicianOnboardingStatus.saved) {
+            context.go(AppRoutes.userHome);
+          } else if (state.status == MusicianOnboardingStatus.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'No pudimos guardar tu perfil: ${state.errorMessage}'),
+              ),
+            );
+          }
+        },
+        child: BlocBuilder<MusicianOnboardingCubit, MusicianOnboardingState>(
+          builder: (context, state) {
+            final cubit = context.read<MusicianOnboardingCubit>();
+            final steps = _buildSteps(cubit);
+            final progress = (state.currentStep + 1) / steps.length;
 
-        return Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: const Text('Cuéntanos sobre ti y tu pasión por la música'),
-          ),
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  LinearProgressIndicator(value: progress),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 250),
-                      child: steps[_controller.currentStep],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
+            return Scaffold(
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                title: const Text(
+                    'Cuéntanos sobre ti y tu pasión por la música'),
+              ),
+              body: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      if (_controller.currentStep > 0)
-                        OutlinedButton(
-                          onPressed: _controller.isSaving
-                              ? null
-                              : _controller.previousStep,
-                          child: const Text('Atrás'),
-                        ),
-                      if (_controller.currentStep > 0)
-                        const SizedBox(width: 12),
+                      LinearProgressIndicator(value: progress),
+                      const SizedBox(height: 16),
                       Expanded(
-                        child: ElevatedButton(
-                          onPressed: _controller.isSaving
-                              ? null
-                              : () => _handleContinue(steps.length, user.id),
-                          child: Text(
-                            _controller.currentStep == steps.length - 1
-                                ? 'Finalizar'
-                                : 'Continuar',
-                          ),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 250),
+                          child: steps[state.currentStep],
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          if (state.currentStep > 0)
+                            OutlinedButton(
+                              onPressed:
+                                  state.isSaving ? null : cubit.previousStep,
+                              child: const Text('Atrás'),
+                            ),
+                          if (state.currentStep > 0)
+                            const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: state.isSaving
+                                  ? null
+                                  : () => _handleContinue(
+                                        context,
+                                        steps.length,
+                                        user.id,
+                                      ),
+                              child: Text(
+                                state.currentStep == steps.length - 1
+                                    ? 'Finalizar'
+                                    : 'Continuar',
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (state.isSaving) ...[
+                        const SizedBox(height: 12),
+                        const Center(child: CircularProgressIndicator()),
+                      ],
                     ],
                   ),
-                  if (_controller.isSaving) ...[
-                    const SizedBox(height: 12),
-                    const Center(child: CircularProgressIndicator()),
-                  ],
-                ],
+                ),
               ),
-            ),
-          ),
-        );
-      },
+            );
+          },
+        ),
+      ),
     );
   }
 
-  List<Widget> _buildSteps() {
+  List<Widget> _buildSteps(MusicianOnboardingCubit cubit) {
     return [
-      MusicianBasicInfoStep(controller: _controller),
-      MusicianExperienceStep(controller: _controller),
-      MusicianInfluencesStep(controller: _controller),
-      MusicianExtrasStep(controller: _controller),
+      MusicianBasicInfoStep(
+        formKey: _basicInfoKey,
+        nameController: _nameController,
+        instrumentController: _instrumentController,
+        cityController: _cityController,
+        stylesController: _stylesController,
+      ),
+      MusicianExperienceStep(
+        formKey: _experienceKey,
+        cityController: _cityController,
+        stylesController: _stylesController,
+        yearsController: _yearsController,
+      ),
+      MusicianInfluencesStep(
+        formKey: _influencesKey,
+        cubit: cubit,
+      ),
+      MusicianExtrasStep(
+        formKey: _extrasKey,
+        photoUrlController: _photoUrlController,
+        bioController: _bioController,
+      ),
     ];
   }
 
-  Future<void> _handleContinue(int totalSteps, String musicianId) async {
-    if (!_controller.validateCurrentStep()) {
-      return;
-    }
+  void _handleContinue(
+      BuildContext context, int totalSteps, String musicianId) {
+    final cubit = context.read<MusicianOnboardingCubit>();
 
-    if (_controller.currentStep < totalSteps - 1) {
-      _controller.nextStep();
+    if (!_validateCurrentStep(cubit.state.currentStep)) return;
+
+    if (cubit.state.currentStep < totalSteps - 1) {
+      cubit.nextStep();
       return;
     }
 
     final repository = context.read<MusiciansRepository>();
-
-    try {
-      await _controller.submit(repository: repository, musicianId: musicianId);
-      if (!mounted) return;
-      context.go(AppRoutes.userHome);
-    } catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No pudimos guardar tu perfil: $error')),
-      );
-    }
+    cubit.submit(
+      repository: repository,
+      musicianId: musicianId,
+      name: _nameController.text.trim(),
+      instrument: _instrumentController.text.trim(),
+      city: _cityController.text.trim(),
+      styles: _parsedStyles,
+      experienceYears: _parsedExperienceYears,
+      photoUrl: _photoUrlOrNull,
+      bio: _bioOrNull,
+    );
   }
 }

@@ -1,37 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:upsessions/core/locator/locator.dart';
+import '../../cubits/media_gallery_cubit.dart';
+import '../../cubits/media_gallery_state.dart';
 import '../../repositories/media_repository.dart';
-import '../../models/media_item.dart';
 import '../widgets/media_grid.dart';
 
-class MediaGalleryPage extends StatefulWidget {
+class MediaGalleryPage extends StatelessWidget {
   const MediaGalleryPage({super.key});
 
   @override
-  State<MediaGalleryPage> createState() => _MediaGalleryPageState();
-}
-
-class _MediaGalleryPageState extends State<MediaGalleryPage> {
-  final MediaRepository _repository = locate();
-  List<MediaItem> _media = const [];
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    final items = await _repository.fetchMedia();
-    setState(() => _media = items);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Galería')),
-      body: MediaGrid(items: _media),
+    return BlocProvider(
+      create: (_) => MediaGalleryCubit(
+        repository: locate<MediaRepository>(),
+      )..load(),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Galería')),
+        body: BlocBuilder<MediaGalleryCubit, MediaGalleryState>(
+          builder: (context, state) {
+            return MediaGrid(
+              items: state.items,
+              isLoading: state.isLoading,
+            );
+          },
+        ),
+      ),
     );
   }
 }

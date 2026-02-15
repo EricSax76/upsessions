@@ -7,8 +7,8 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/features/contacts/logic/liked_musicians_controller.dart';
-import 'package:upsessions/features/contacts/models/liked_musician.dart';
+import 'package:upsessions/features/contacts/cubits/liked_musicians_cubit.dart';
+import 'package:upsessions/features/contacts/cubits/liked_musicians_state.dart';
 import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/features/notifications/models/invite_notification_entity.dart';
 import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
@@ -43,27 +43,8 @@ class MockInviteNotificationsRepository extends Mock
     implements InviteNotificationsRepository {}
 
 class MockStudiosRepository extends Mock implements StudiosRepository {}
-
-class FakeLikedMusiciansController extends ChangeNotifier
-    implements LikedMusiciansController {
-  @override
-  List<LikedMusician> get contacts => const [];
-
-  @override
-  bool isLiked(String id) => false;
-
-  @override
-  int get total => 0;
-
-  @override
-  Future<void> toggleLike(LikedMusician musician) async {}
-
-  @override
-  Future<void> remove(String musicianId) async {}
-
-  @override
-  void sync(LikedMusician musician) {}
-}
+class MockLikedMusiciansCubit extends MockCubit<LikedMusiciansState>
+    implements LikedMusiciansCubit {}
 
 void main() {
   late MockAuthCubit authCubit;
@@ -74,6 +55,7 @@ void main() {
   late MockChatRepository chatRepository;
   late MockInviteNotificationsRepository invitesRepository;
   late MockStudiosRepository studiosRepository;
+  late MockLikedMusiciansCubit likedMusiciansCubit;
 
   setUp(() async {
     authCubit = MockAuthCubit();
@@ -146,6 +128,14 @@ void main() {
 
     invitesRepository = MockInviteNotificationsRepository();
     studiosRepository = MockStudiosRepository();
+    likedMusiciansCubit = MockLikedMusiciansCubit();
+    const likedState = LikedMusiciansState();
+    when(() => likedMusiciansCubit.state).thenReturn(likedState);
+    whenListen(
+      likedMusiciansCubit,
+      const Stream<LikedMusiciansState>.empty(),
+      initialState: likedState,
+    );
     when(() => studiosRepository.getStudioByOwner(any())).thenAnswer(
       (_) async => null,
     );
@@ -163,8 +153,8 @@ void main() {
       ..registerSingleton<ChatRepository>(chatRepository)
       ..registerSingleton<InviteNotificationsRepository>(invitesRepository)
       ..registerSingleton<StudiosRepository>(studiosRepository)
-      ..registerSingleton<LikedMusiciansController>(
-        FakeLikedMusiciansController(),
+      ..registerSingleton<LikedMusiciansCubit>(
+        likedMusiciansCubit,
       );
   });
 

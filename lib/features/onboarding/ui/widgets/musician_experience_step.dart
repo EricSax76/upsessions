@@ -1,43 +1,53 @@
 import 'package:flutter/material.dart';
 
-import '../../logic/musician_onboarding_controller.dart';
 import 'musician_onboarding_step_card.dart';
 
 class MusicianExperienceStep extends StatelessWidget {
-  const MusicianExperienceStep({super.key, required this.controller});
+  const MusicianExperienceStep({
+    super.key,
+    required this.formKey,
+    required this.yearsController,
+    this.cityController,
+    this.stylesController,
+  });
 
-  final MusicianOnboardingController controller;
+  final GlobalKey<FormState> formKey;
+  final TextEditingController yearsController;
+  final TextEditingController? cityController;
+  final TextEditingController? stylesController;
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: controller.experienceKey,
+      key: formKey,
       child: MusicianOnboardingStepCard(
         title: 'Tu trayectoria musical',
         description:
             '¿Qué estilos te definen? Usa comas para separar varios estilos.',
         child: Column(
           children: [
-            TextFormField(
-              controller: controller.cityController,
-              decoration: const InputDecoration(labelText: 'Ciudad'),
-              validator: (value) => (value == null || value.trim().isEmpty)
-                  ? 'Ingresa tu ciudad'
-                  : null,
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: controller.stylesController,
-              decoration: const InputDecoration(
-                labelText: 'Estilos (ej: Rock, Blues)',
+            if (cityController != null)
+              TextFormField(
+                controller: cityController,
+                decoration: const InputDecoration(labelText: 'Ciudad'),
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? 'Ingresa tu ciudad'
+                    : null,
               ),
-              validator: (value) => (value == null || value.trim().isEmpty)
-                  ? 'Al menos un estilo'
-                  : null,
-            ),
-            const SizedBox(height: 16),
+            if (cityController != null) const SizedBox(height: 16),
+            if (stylesController != null)
+              TextFormField(
+                controller: stylesController,
+                decoration: const InputDecoration(
+                  labelText: 'Estilos (ej: Rock, Blues)',
+                ),
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? 'Al menos un estilo'
+                    : null,
+              ),
+            if (stylesController != null) const SizedBox(height: 16),
             TextFormField(
-              controller: controller.yearsController,
+              controller: yearsController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 labelText: 'Años de experiencia',

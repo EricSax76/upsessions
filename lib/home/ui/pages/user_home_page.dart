@@ -171,8 +171,8 @@ class UserHomePage extends StatelessWidget {
         announcements: state.announcements,
         builder: (announcement) => AnnouncementCard(
           title: announcement.title,
-          subtitle: '${announcement.city} · ${announcement.description}',
-          dateText: '${announcement.date.day}/${announcement.date.month}',
+          subtitle: '${announcement.city} · ${announcement.body}',
+          dateText: '${announcement.publishedAt.day}/${announcement.publishedAt.month}',
           dense: true,
         ),
       ),

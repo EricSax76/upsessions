@@ -1,63 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
-import '../../../models/musician_search_filters_controller.dart';
+import '../../../cubits/musician_search_cubit.dart';
 import '../../../../../home/ui/widgets/search/advanced_search_box.dart';
 
 class MusicianSearchFilterPanel extends StatelessWidget {
   const MusicianSearchFilterPanel({
     super.key,
-    required this.filters,
+    required this.state,
     required this.isWide,
     required this.onSearch,
     required this.onClear,
+    required this.onInstrumentChanged,
+    required this.onStyleChanged,
+    required this.onProfileTypeChanged,
+    required this.onGenderChanged,
+    required this.onProvinceChanged,
+    required this.onCityChanged,
   });
 
-  final MusicianSearchFiltersController filters;
+  final MusicianSearchState state;
   final bool isWide;
   final VoidCallback onSearch;
   final VoidCallback onClear;
+  final ValueChanged<String> onInstrumentChanged;
+  final ValueChanged<String> onStyleChanged;
+  final ValueChanged<String> onProfileTypeChanged;
+  final ValueChanged<String> onGenderChanged;
+  final ValueChanged<String> onProvinceChanged;
+  final ValueChanged<String> onCityChanged;
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    return AnimatedBuilder(
-      animation: filters,
-      builder: (context, _) {
-        final filtersReady = !filters.isLoading;
-        final box = AdvancedSearchBox(
-          selectedInstrument: filters.instrument,
-          selectedStyle: filters.style,
-          selectedProfileType: filters.profileType,
-          selectedGender: filters.gender,
-          selectedProvince: filters.province,
-          selectedCity: filters.city,
-          provinces: filters.provinces,
-          cities: filters.cities,
-          onInstrumentChanged: filters.selectInstrument,
-          onStyleChanged: filters.selectStyle,
-          onProfileTypeChanged: filters.selectProfileType,
-          onGenderChanged: filters.selectGender,
-          onProvinceChanged: filters.selectProvince,
-          onCityChanged: filters.selectCity,
-          onSearch: filtersReady ? onSearch : null,
-          onClear: filtersReady ? onClear : null,
-        );
 
-        if (isWide) {
-          return box;
-        }
+    final box = AdvancedSearchBox(
+      selectedInstrument: state.instrument,
+      selectedStyle: state.style,
+      selectedProfileType: state.profileType,
+      selectedGender: state.gender,
+      selectedProvince: state.province,
+      selectedCity: state.city,
+      provinces: state.provinces,
+      cities: state.cities,
+      onInstrumentChanged: onInstrumentChanged,
+      onStyleChanged: onStyleChanged,
+      onProfileTypeChanged: onProfileTypeChanged,
+      onGenderChanged: onGenderChanged,
+      onProvinceChanged: onProvinceChanged,
+      onCityChanged: onCityChanged,
+      onSearch: onSearch,
+      onClear: onClear,
+    );
 
-        return Card(
-          margin: EdgeInsets.zero,
-          child: ExpansionTile(
-            title: Text(loc.searchAdvancedFiltersTitle),
-            subtitle: Text(loc.searchAdvancedFiltersSubtitle),
-            childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            children: [box],
-          ),
-        );
-      },
+    if (isWide) {
+      return box;
+    }
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: ExpansionTile(
+        title: Text(loc.searchAdvancedFiltersTitle),
+        subtitle: Text(loc.searchAdvancedFiltersSubtitle),
+        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        children: [box],
+      ),
     );
   }
 }

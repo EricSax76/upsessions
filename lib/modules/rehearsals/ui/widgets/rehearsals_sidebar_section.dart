@@ -4,41 +4,39 @@ import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
-import '../../../../core/locator/locator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../modules/groups/cubits/my_groups_cubit.dart';
+import '../../../../modules/groups/cubits/my_groups_state.dart';
+// import '../../../../core/locator/locator.dart'; // Removed
 import '../../../groups/models/group_membership_entity.dart';
 import '../../../groups/models/create_group_draft.dart';
-import '../../../groups/repositories/groups_repository.dart';
+// import '../../../groups/repositories/groups_repository.dart'; // Removed
 import '../../../groups/ui/dialogs/create_group_dialog.dart';
 
-class RehearsalsSidebarSection extends StatefulWidget {
+class RehearsalsSidebarSection extends StatelessWidget {
   const RehearsalsSidebarSection({super.key});
-
-  @override
-  State<RehearsalsSidebarSection> createState() =>
-      _RehearsalsSidebarSectionState();
-}
-
-class _RehearsalsSidebarSectionState extends State<RehearsalsSidebarSection> {
-  late final GroupsRepository _repository;
-  late final Stream<List<GroupMembershipEntity>> _groupsStream;
-
-  @override
-  void initState() {
-    super.initState();
-    _repository = locate<GroupsRepository>();
-    _groupsStream = _repository.watchMyGroups();
-  }
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    return StreamBuilder<List<GroupMembershipEntity>>(
-      stream: _groupsStream,
-      builder: (context, snapshot) {
-        final groups = snapshot.data ?? const <GroupMembershipEntity>[];
-        if (snapshot.hasError) {
+    return BlocBuilder<MyGroupsCubit, MyGroupsState>(
+      builder: (context, state) {
+        // Default values
+        var groups = <GroupMembershipEntity>[];
+        String? error;
+        
+        if (state is MyGroupsLoaded) {
+          groups = state.groups;
+        } else if (state is MyGroupsError) {
+          error = state.message;
+          // Subtly we might want to show cached groups if available, but for now strict state
+        }
+        
+        final hasError = state is MyGroupsError;
+
+        if (hasError) {
           if (groups.isNotEmpty) {
-            return ExpansionTile(
+             return ExpansionTile(
               title: Text(loc.navRehearsals),
               leading: const Icon(Icons.event_note_outlined),
               childrenPadding: const EdgeInsets.only(
@@ -55,7 +53,7 @@ class _RehearsalsSidebarSectionState extends State<RehearsalsSidebarSection> {
                 ListTile(
                   leading: const Icon(Icons.group_add_outlined),
                   title: Text(loc.rehearsalsSidebarNewGroupLabel),
-                  onTap: () => _createGroup(context, _repository),
+                  onTap: () => _createGroup(context),
                 ),
                 for (final group in groups)
                   ListTile(
@@ -74,7 +72,7 @@ class _RehearsalsSidebarSectionState extends State<RehearsalsSidebarSection> {
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                   child: Text(
                     loc.rehearsalsSidebarErrorLoading(
-                      snapshot.error.toString(),
+                      error.toString(),
                     ),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.error,
@@ -101,12 +99,12 @@ class _RehearsalsSidebarSectionState extends State<RehearsalsSidebarSection> {
               ListTile(
                 leading: const Icon(Icons.group_add_outlined),
                 title: Text(loc.rehearsalsSidebarNewGroupLabel),
-                onTap: () => _createGroup(context, _repository),
+                onTap: () => _createGroup(context),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                 child: Text(
-                  loc.rehearsalsSidebarErrorLoading(snapshot.error.toString()),
+                  loc.rehearsalsSidebarErrorLoading(error.toString()),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -126,7 +124,7 @@ class _RehearsalsSidebarSectionState extends State<RehearsalsSidebarSection> {
             ListTile(
               leading: const Icon(Icons.group_add_outlined),
               title: Text(loc.rehearsalsSidebarNewGroupLabel),
-              onTap: () => _createGroup(context, _repository),
+              onTap: () => _createGroup(context),
             ),
             if (groups.isEmpty)
               Padding(
@@ -157,7 +155,6 @@ class _RehearsalsSidebarSectionState extends State<RehearsalsSidebarSection> {
 
   Future<void> _createGroup(
     BuildContext context,
-    GroupsRepository repository,
   ) async {
     final scaffoldState = Scaffold.maybeOf(context);
     scaffoldState?.closeDrawer();
@@ -169,7 +166,10 @@ class _RehearsalsSidebarSectionState extends State<RehearsalsSidebarSection> {
         builder: (context) => const CreateGroupDialog(),
       );
       if (result == null || result.name.trim().isEmpty) return;
-      final groupId = await repository.createGroup(
+      if (!context.mounted) return;
+      
+      final cubit = context.read<MyGroupsCubit>();
+      final groupId = await cubit.createGroup(
         name: result.name,
         genre: result.genre,
         link1: result.link1,

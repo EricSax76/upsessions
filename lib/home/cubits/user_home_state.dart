@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 import '../../modules/musicians/models/musician_entity.dart';
-import '../models/announcement_model.dart';
 import '../models/instrument_category_model.dart';
+import '../../modules/announcements/models/announcement_entity.dart';
 import '../models/home_event_model.dart';
 import '../../modules/rehearsals/models/rehearsal_entity.dart';
 
@@ -40,7 +40,7 @@ class UserHomeState extends Equatable {
   final String gender;
   final List<MusicianEntity> recommended;
   final List<MusicianEntity> newMusicians;
-  final List<AnnouncementModel> announcements;
+  final List<AnnouncementEntity> announcements;
   final List<InstrumentCategoryModel> categories;
   final List<String> provinces;
   final List<String> cities;
@@ -61,7 +61,7 @@ class UserHomeState extends Equatable {
     String? gender,
     List<MusicianEntity>? recommended,
     List<MusicianEntity>? newMusicians,
-    List<AnnouncementModel>? announcements,
+    List<AnnouncementEntity>? announcements,
     List<InstrumentCategoryModel>? categories,
     List<String>? provinces,
     List<String>? cities,

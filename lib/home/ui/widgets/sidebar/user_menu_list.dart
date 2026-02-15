@@ -1,14 +1,17 @@
-import 'dart:async';
+// import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
-import '../../../../core/locator/locator.dart';
-import '../../../../features/contacts/logic/liked_musicians_controller.dart';
-import '../../../../features/messaging/repositories/chat_repository.dart';
-import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
+
+import '../../../../features/contacts/cubits/liked_musicians_cubit.dart';
+
+// import '../../../../features/messaging/repositories/chat_repository.dart'; // Removed
+// import '../../../../features/notifications/repositories/invite_notifications_repository.dart'; // Removed
+import '../../../../features/notifications/cubits/notifications_status_cubit.dart';
 
 class UserMenuList extends StatefulWidget {
   const UserMenuList({super.key});
@@ -81,27 +84,6 @@ class _UserMenuListState extends State<UserMenuList> {
     ),
   ];
 
-  late final LikedMusiciansController _likedController;
-
-  @override
-  void initState() {
-    super.initState();
-    _likedController = locate<LikedMusiciansController>()
-      ..addListener(_onContactsChanged);
-  }
-
-  void _onContactsChanged() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  @override
-  void dispose() {
-    _likedController.removeListener(_onContactsChanged);
-    super.dispose();
-  }
-
   void _handleTap(BuildContext context, _MenuItem item) {
     final route = item.route;
     if (route == null) {
@@ -123,7 +105,7 @@ class _UserMenuListState extends State<UserMenuList> {
 
   @override
   Widget build(BuildContext context) {
-    final contactsTotal = _likedController.total;
+    final contactsTotal = context.watch<LikedMusiciansCubit>().state.total;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final location = GoRouterState.of(context).uri.path;
@@ -149,7 +131,8 @@ class _UserMenuListState extends State<UserMenuList> {
                   item.route != null && _isSelectedRoute(location, item.route!),
               leading: Icon(
                 item.icon,
-                color: (item.route != null &&
+                color:
+                    (item.route != null &&
                         _isSelectedRoute(location, item.route!))
                     ? colorScheme.primary
                     : colorScheme.onSurfaceVariant,
@@ -159,11 +142,13 @@ class _UserMenuListState extends State<UserMenuList> {
                     ? 'Contactos ($contactsTotal)'
                     : item.label,
                 style: TextStyle(
-                  fontWeight: (item.route != null &&
+                  fontWeight:
+                      (item.route != null &&
                           _isSelectedRoute(location, item.route!))
                       ? FontWeight.bold
                       : FontWeight.normal,
-                  color: (item.route != null &&
+                  color:
+                      (item.route != null &&
                           _isSelectedRoute(location, item.route!))
                       ? colorScheme.primary
                       : colorScheme.onSurface,
@@ -194,66 +179,13 @@ class _MenuItem {
   final String? route;
 }
 
-class _NotificationsMenuBadge extends StatefulWidget {
+class _NotificationsMenuBadge extends StatelessWidget {
   const _NotificationsMenuBadge();
 
   @override
-  State<_NotificationsMenuBadge> createState() =>
-      _NotificationsMenuBadgeState();
-}
-
-class _NotificationsMenuBadgeState extends State<_NotificationsMenuBadge> {
-  late final ChatRepository _chatRepository;
-  late final InviteNotificationsRepository _invitesRepository;
-  final _totalUnreadController = StreamController<int>();
-  final _subscriptions = <StreamSubscription>[];
-
-  int _unreadChats = 0;
-  int _unreadInvites = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _chatRepository = locate<ChatRepository>();
-    _invitesRepository = locate<InviteNotificationsRepository>();
-
-    _subscriptions.add(
-      _chatRepository.watchUnreadTotal().listen((count) {
-        _unreadChats = count;
-        _emitTotal();
-      }),
-    );
-
-    _subscriptions.add(
-      _invitesRepository.watchMyInvites().listen((invites) {
-        _unreadInvites = invites.where((i) => !i.read).length;
-        _emitTotal();
-      }),
-    );
-  }
-
-  void _emitTotal() {
-    if (!_totalUnreadController.isClosed) {
-      _totalUnreadController.add(_unreadChats + _unreadInvites);
-    }
-  }
-
-  @override
-  void dispose() {
-    for (final s in _subscriptions) {
-      s.cancel();
-    }
-    _totalUnreadController.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return StreamBuilder<int>(
-      stream: _totalUnreadController.stream,
-      initialData: 0,
-      builder: (context, snapshot) {
-        final unreadTotal = snapshot.data ?? 0;
+    return BlocBuilder<NotificationsStatusCubit, int>(
+      builder: (context, unreadTotal) {
         if (unreadTotal <= 0) return const SizedBox.shrink();
         final label = unreadTotal > 99 ? '99+' : unreadTotal.toString();
         final theme = Theme.of(context);

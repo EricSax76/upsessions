@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/constants/app_spacing.dart';
-import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/modules/announcements/cubits/announcement_detail_cubit.dart';
 
 import '../../models/announcement_entity.dart';
 import '../widgets/announcement_detail/announcement_contact_card.dart';
@@ -12,43 +12,43 @@ import '../widgets/announcement_detail/announcement_header_card.dart';
 import '../widgets/announcement_detail/announcement_image_card.dart';
 import '../widgets/announcement_detail/announcement_styles_card.dart';
 
-class AnnouncementDetailPage extends StatefulWidget {
+class AnnouncementDetailPage extends StatelessWidget {
   const AnnouncementDetailPage({super.key, required this.announcement});
 
   final AnnouncementEntity announcement;
 
   @override
-  State<AnnouncementDetailPage> createState() => _AnnouncementDetailPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => AnnouncementDetailCubit(),
+      child: BlocListener<AnnouncementDetailCubit, AnnouncementDetailState>(
+        listener: (context, state) {
+          if (state.status == AnnouncementDetailStatus.success &&
+              state.threadId != null) {
+            context.push(AppRoutes.messagesThreadPath(state.threadId!));
+          } else if (state.status == AnnouncementDetailStatus.failure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'No se pudo iniciar el chat: ${state.errorMessage}',
+                ),
+              ),
+            );
+          }
+        },
+        child: _AnnouncementDetailContent(announcement: announcement),
+      ),
+    );
+  }
 }
 
-class _AnnouncementDetailPageState extends State<AnnouncementDetailPage> {
-  final ChatRepository _chatRepository = locate();
-  bool _isContacting = false;
+class _AnnouncementDetailContent extends StatelessWidget {
+  const _AnnouncementDetailContent({required this.announcement});
 
-  Future<void> _contactAuthor() async {
-    setState(() => _isContacting = true);
-    try {
-      final thread = await _chatRepository.ensureThreadWithParticipant(
-        participantId: widget.announcement.authorId,
-        participantName: widget.announcement.author,
-      );
-      if (!mounted) return;
-      context.push(AppRoutes.messagesThreadPath(thread.id));
-    } catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudo iniciar el chat: $error')),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isContacting = false);
-      }
-    }
-  }
+  final AnnouncementEntity announcement;
 
   @override
   Widget build(BuildContext context) {
-    final announcement = widget.announcement;
     final imageUrl = announcement.imageUrl?.trim();
 
     return LayoutBuilder(
@@ -84,10 +84,24 @@ class _AnnouncementDetailPageState extends State<AnnouncementDetailPage> {
                       AnnouncementStylesCard(styles: announcement.styles),
                     ],
                     const SizedBox(height: AppSpacing.md),
-                    AnnouncementContactCard(
-                      author: announcement.author,
-                      isLoading: _isContacting,
-                      onContact: _isContacting ? null : _contactAuthor,
+                    BlocBuilder<AnnouncementDetailCubit, AnnouncementDetailState>(
+                      builder: (context, state) {
+                        final isContacting =
+                            state.status == AnnouncementDetailStatus.contacting;
+                        return AnnouncementContactCard(
+                          author: announcement.author,
+                          isLoading: isContacting,
+                          onContact:
+                              isContacting
+                                  ? null
+                                  : () => context
+                                      .read<AnnouncementDetailCubit>()
+                                      .contactAuthor(
+                                        authorId: announcement.authorId,
+                                        authorName: announcement.author,
+                                      ),
+                        );
+                      },
                     ),
                   ],
                 ),

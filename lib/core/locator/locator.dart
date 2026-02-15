@@ -20,7 +20,7 @@ import 'package:upsessions/features/events/repositories/events_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';
 import 'package:upsessions/home/repositories/user_home_repository.dart';
-import 'package:upsessions/features/contacts/logic/liked_musicians_controller.dart';
+import 'package:upsessions/features/contacts/cubits/liked_musicians_cubit.dart';
 import 'package:upsessions/features/contacts/repositories/contacts_repository.dart';
 import 'package:upsessions/modules/rehearsals/use_cases/create_rehearsal_use_case.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
@@ -143,8 +143,8 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<StudioImageService>(
       () => StudioImageService(storage: getIt<FirebaseStorage>()),
     )
-    ..registerLazySingleton<LikedMusiciansController>(
-      () => LikedMusiciansController(
+    ..registerLazySingleton<LikedMusiciansCubit>(
+      () => LikedMusiciansCubit(
         contactsRepository: getIt<ContactsRepository>(),
         authRepository: getIt<AuthRepository>(),
       ),

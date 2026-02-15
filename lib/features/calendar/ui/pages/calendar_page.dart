@@ -1,47 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
-import '../../../events/models/event_entity.dart';
-import '../../logic/calendar_controller.dart';
+import '../../../events/repositories/events_repository.dart';
+import '../../cubits/calendar_cubit.dart';
+import '../../cubits/calendar_state.dart';
 import 'calendar_dashboard.dart';
 
-class CalendarPage extends StatefulWidget {
+class CalendarPage extends StatelessWidget {
   const CalendarPage({super.key});
 
   @override
-  State<CalendarPage> createState() => _CalendarPageState();
-}
-
-class _CalendarPageState extends State<CalendarPage> {
-  late final CalendarController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = CalendarController(repository: locate());
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _viewEvent(EventEntity event) {
-    if (!mounted) return;
-    context.push(AppRoutes.eventDetailPath(event.id), extra: event);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return UserShellPage(
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) =>
-            CalendarDashboard(controller: _controller, onViewEvent: _viewEvent),
+    return BlocProvider(
+      create: (_) => CalendarCubit(
+        repository: locate<EventsRepository>(),
+      ),
+      child: UserShellPage(
+        child: BlocBuilder<CalendarCubit, CalendarState>(
+          builder: (context, state) {
+            final cubit = context.read<CalendarCubit>();
+            return CalendarDashboard(
+              state: state,
+              onRefresh: cubit.refresh,
+              onPreviousMonth: cubit.previousMonth,
+              onNextMonth: cubit.nextMonth,
+              onSelectDay: cubit.selectDay,
+              onGoToToday: cubit.goToToday,
+              onViewEvent: (event) {
+                context.push(
+                    AppRoutes.eventDetailPath(event.id), extra: event);
+              },
+            );
+          },
+        ),
       ),
     );
   }

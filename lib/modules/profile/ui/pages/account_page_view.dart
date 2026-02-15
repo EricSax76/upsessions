@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:upsessions/modules/profile/cubit/account_settings_cubit.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../auth/cubits/auth_cubit.dart';
@@ -11,17 +12,27 @@ import '../widgets/account/account_photo_flow.dart';
 import '../dialogs/account_photo_options_sheet.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 
-class AccountPageView extends StatefulWidget {
+class AccountPageView extends StatelessWidget {
   const AccountPageView({super.key});
 
   @override
-  State<AccountPageView> createState() => _AccountPageViewState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => AccountSettingsCubit(),
+      child: const _AccountPageViewContent(),
+    );
+  }
 }
 
-class _AccountPageViewState extends State<AccountPageView> {
+class _AccountPageViewContent extends StatefulWidget {
+  const _AccountPageViewContent();
+
+  @override
+  State<_AccountPageViewContent> createState() => _AccountPageViewContentState();
+}
+
+class _AccountPageViewContentState extends State<_AccountPageViewContent> {
   final AccountPhotoFlow _photoFlow = AccountPhotoFlow();
-  bool _twoFactor = false;
-  bool _newsletter = true;
 
   Future<void> _pickAndUploadPhoto(ImageSource source) async {
     try {
@@ -87,20 +98,24 @@ class _AccountPageViewState extends State<AccountPageView> {
           final uploadingPhoto = profileState.status == ProfileStatus.loading;
           final avatarUrl = profile.photoUrl ?? user.photoUrl;
 
-          return AccountPageLayout(
-            profile: profile,
-            user: user,
-            avatarUrl: avatarUrl,
-            uploadingPhoto: uploadingPhoto,
-            onChangePhoto: _openPhotoOptions,
-            onEditProfile: () => context.push(AppRoutes.profileEdit),
-            onSignOut: () => context.read<AuthCubit>().signOut(),
-            twoFactor: _twoFactor,
-            newsletter: _newsletter,
-            onTwoFactorChanged: (value) =>
-                setState(() => _twoFactor = value),
-            onNewsletterChanged: (value) =>
-                setState(() => _newsletter = value),
+          return BlocBuilder<AccountSettingsCubit, AccountSettingsState>(
+             builder: (context, settingsState) {
+                return AccountPageLayout(
+                  profile: profile,
+                  user: user,
+                  avatarUrl: avatarUrl,
+                  uploadingPhoto: uploadingPhoto,
+                  onChangePhoto: _openPhotoOptions,
+                  onEditProfile: () => context.push(AppRoutes.profileEdit),
+                  onSignOut: () => context.read<AuthCubit>().signOut(),
+                  twoFactor: settingsState.twoFactorEnabled,
+                  newsletter: settingsState.newsletterEnabled,
+                  onTwoFactorChanged: (value) =>
+                      context.read<AccountSettingsCubit>().toggleTwoFactor(value),
+                  onNewsletterChanged: (value) =>
+                      context.read<AccountSettingsCubit>().toggleNewsletter(value),
+                );
+             },
           );
         },
       ),

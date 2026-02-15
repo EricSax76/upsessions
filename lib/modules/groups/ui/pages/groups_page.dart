@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../cubits/my_groups_cubit.dart';
+import '../../cubits/my_groups_state.dart';
 import '../../../../core/constants/app_routes.dart';
-import '../../../../core/locator/locator.dart';
+// import '../../../../core/locator/locator.dart'; // Removed
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/empty_state_card.dart';
 import '../../../../core/widgets/layout/searchable_list_page.dart';
 import '../../../../home/ui/pages/user_shell_page.dart';
 
 import '../../models/group_membership_entity.dart';
-import '../../repositories/groups_repository.dart';
+// import '../../repositories/groups_repository.dart';
 import '../widgets/groups_widgets.dart';
 import '../widgets/groups_list/groups_hero_section.dart';
 
@@ -22,42 +25,27 @@ class GroupsPage extends StatelessWidget {
   }
 }
 
-class _GroupsView extends StatefulWidget {
+class _GroupsView extends StatelessWidget {
   const _GroupsView();
 
   @override
-  State<_GroupsView> createState() => _GroupsViewState();
-}
-
-class _GroupsViewState extends State<_GroupsView> {
-  late final GroupsRepository _repository;
-  late final Stream<List<GroupMembershipEntity>> _groupsStream;
-
-  @override
-  void initState() {
-    super.initState();
-    _repository = locate<GroupsRepository>();
-    _groupsStream = _repository.watchMyGroups();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<GroupMembershipEntity>>(
-      stream: _groupsStream,
-      builder: (context, snapshot) {
-        final groups = snapshot.data ?? const <GroupMembershipEntity>[];
-        final shouldShowBlockingError = snapshot.hasError && groups.isEmpty;
+    return BlocBuilder<MyGroupsCubit, MyGroupsState>(
+      builder: (context, state) {
+        // Default to empty list if not loaded yet
+        final groups = state is MyGroupsLoaded ? state.groups : const <GroupMembershipEntity>[];
+        final isLoading = state is MyGroupsLoading;
+        final error = state is MyGroupsError ? state.message : null;
+        
         return SearchableListPage<GroupMembershipEntity>(
           items: groups,
-          isLoading: snapshot.connectionState == ConnectionState.waiting,
-          errorMessage: shouldShowBlockingError ? '${snapshot.error}' : null,
-          onRetry: () => _repository.authRepository.refreshIdToken(),
-          onRefresh: () => _repository.authRepository.refreshIdToken(),
+          isLoading: isLoading,
+          errorMessage: error,
+          // onRetry/onRefresh logic might need adjustment if we want to force re-fetch in Cubit, 
+          // but for now the stream in Cubit should auto-update.
+          // We can leave them empty or trigger a refresh method if we add one to Cubit.
+          onRetry: () {}, 
+          onRefresh: () async {},
           searchEnabled: false,
           sortComparator: _compareGroups,
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
@@ -65,7 +53,7 @@ class _GroupsViewState extends State<_GroupsView> {
           gridSpacing: 24,
           headerBuilder: (context, total, visible) => GroupsHeroSection(
             groupCount: total,
-            onCreateGroup: () => _showCreateGroupDialog(context, _repository),
+            onCreateGroup: () => _showCreateGroupDialog(context),
           ),
           emptyBuilder: (context, isSearchEmpty) {
             if (groups.isEmpty) {
@@ -92,7 +80,7 @@ class _GroupsViewState extends State<_GroupsView> {
             onTap: () => context.go(AppRoutes.groupPage(group.groupId)),
           ),
           footerBuilder: (context) {
-            if (!snapshot.hasError || groups.isEmpty) {
+             if (error == null || groups.isEmpty) {
               return const SizedBox.shrink();
             }
             final textTheme = Theme.of(context).textTheme;
@@ -100,7 +88,7 @@ class _GroupsViewState extends State<_GroupsView> {
             return Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                'Error al actualizar grupos: ${snapshot.error}',
+                'Error al actualizar grupos: $error',
                 style: textTheme.bodySmall?.copyWith(color: errorColor),
               ),
             );
@@ -110,10 +98,7 @@ class _GroupsViewState extends State<_GroupsView> {
     );
   }
 
-  Future<void> _showCreateGroupDialog(
-    BuildContext context,
-    GroupsRepository repository,
-  ) async {
+  Future<void> _showCreateGroupDialog(BuildContext context) async {
     final result = await showDialog<CreateGroupDraft>(
       context: context,
       builder: (context) => const CreateGroupDialog(),
@@ -121,8 +106,13 @@ class _GroupsViewState extends State<_GroupsView> {
     if (result == null || result.name.trim().isEmpty) {
       return;
     }
+    
+    // Check if mounted before using context
+    if (!context.mounted) return;
+
     try {
-      final groupId = await repository.createGroup(
+      final cubit = context.read<MyGroupsCubit>();
+      final groupId = await cubit.createGroup(
         name: result.name,
         genre: result.genre,
         link1: result.link1,

@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/locator/locator.dart';
 import '../../../../modules/auth/repositories/auth_repository.dart';
 import '../../repositories/events_repository.dart';
-import '../../logic/events_page_cubit.dart';
+import '../../cubits/events_page_cubit.dart';
 import '../widgets/event_form_card.dart';
 
 class CreateEventPage extends StatelessWidget {

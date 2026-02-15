@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../../core/widgets/forms/search_field.dart';
-import '../../../models/musician_search_filters_controller.dart';
+import '../../../cubits/musician_search_cubit.dart';
 import '../../../../../home/ui/widgets/search/advanced_search_box.dart';
 
 class MusicianSearchTopBar extends StatelessWidget {
@@ -12,20 +12,32 @@ class MusicianSearchTopBar extends StatelessWidget {
     required this.controller,
     required this.onSubmitted,
     required this.onPressed,
-    this.filters,
+    this.state,
     this.onClearFilters,
+    this.onInstrumentChanged,
+    this.onStyleChanged,
+    this.onProfileTypeChanged,
+    this.onGenderChanged,
+    this.onProvinceChanged,
+    this.onCityChanged,
   });
 
   final TextEditingController controller;
   final ValueChanged<String> onSubmitted;
   final VoidCallback onPressed;
-  final MusicianSearchFiltersController? filters;
+  final MusicianSearchState? state;
   final VoidCallback? onClearFilters;
+  final ValueChanged<String>? onInstrumentChanged;
+  final ValueChanged<String>? onStyleChanged;
+  final ValueChanged<String>? onProfileTypeChanged;
+  final ValueChanged<String>? onGenderChanged;
+  final ValueChanged<String>? onProvinceChanged;
+  final ValueChanged<String>? onCityChanged;
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    final showWebFilters = kIsWeb && filters != null && onClearFilters != null;
+    final showWebFilters = kIsWeb && state != null && onClearFilters != null;
     return Material(
       color: Theme.of(context).colorScheme.surface,
       elevation: 1,
@@ -45,9 +57,15 @@ class MusicianSearchTopBar extends StatelessWidget {
             const SizedBox(width: 8),
             if (showWebFilters) ...[
               _WebFiltersMenu(
-                filters: filters!,
+                state: state!,
                 onSearch: onPressed,
                 onClear: onClearFilters!,
+                onInstrumentChanged: onInstrumentChanged!,
+                onStyleChanged: onStyleChanged!,
+                onProfileTypeChanged: onProfileTypeChanged!,
+                onGenderChanged: onGenderChanged!,
+                onProvinceChanged: onProvinceChanged!,
+                onCityChanged: onCityChanged!,
               ),
               const SizedBox(width: 8),
             ],
@@ -70,14 +88,26 @@ class MusicianSearchTopBar extends StatelessWidget {
 
 class _WebFiltersMenu extends StatefulWidget {
   const _WebFiltersMenu({
-    required this.filters,
+    required this.state,
     required this.onSearch,
     required this.onClear,
+    required this.onInstrumentChanged,
+    required this.onStyleChanged,
+    required this.onProfileTypeChanged,
+    required this.onGenderChanged,
+    required this.onProvinceChanged,
+    required this.onCityChanged,
   });
 
-  final MusicianSearchFiltersController filters;
+  final MusicianSearchState state;
   final VoidCallback onSearch;
   final VoidCallback onClear;
+  final ValueChanged<String> onInstrumentChanged;
+  final ValueChanged<String> onStyleChanged;
+  final ValueChanged<String> onProfileTypeChanged;
+  final ValueChanged<String> onGenderChanged;
+  final ValueChanged<String> onProvinceChanged;
+  final ValueChanged<String> onCityChanged;
 
   @override
   State<_WebFiltersMenu> createState() => _WebFiltersMenuState();
@@ -90,82 +120,76 @@ class _WebFiltersMenuState extends State<_WebFiltersMenu> {
     WidgetsBinding.instance.addPostFrameCallback((_) => action());
   }
 
-  int _activeFilterCount(MusicianSearchFiltersController filters) {
+  int _activeFilterCount(MusicianSearchState state) {
     var count = 0;
-    if (filters.instrument.isNotEmpty) count++;
-    if (filters.style.isNotEmpty) count++;
-    if (filters.profileType.isNotEmpty) count++;
-    if (filters.gender.isNotEmpty) count++;
-    if (filters.province.isNotEmpty) count++;
-    if (filters.city.isNotEmpty) count++;
+    if (state.instrument.isNotEmpty) count++;
+    if (state.style.isNotEmpty) count++;
+    if (state.profileType.isNotEmpty) count++;
+    if (state.gender.isNotEmpty) count++;
+    if (state.province.isNotEmpty) count++;
+    if (state.city.isNotEmpty) count++;
     return count;
   }
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    return AnimatedBuilder(
-      animation: widget.filters,
-      builder: (context, _) {
-        final filtersReady = !widget.filters.isLoading;
-        final activeCount = _activeFilterCount(widget.filters);
-        final label = activeCount == 0
-            ? loc.searchFiltersTitle
-            : loc.searchFiltersWithCount(activeCount);
+    final filtersReady = !widget.state.areFiltersLoading;
+    final activeCount = _activeFilterCount(widget.state);
+    final label = activeCount == 0
+        ? loc.searchFiltersTitle
+        : loc.searchFiltersWithCount(activeCount);
 
-        return MenuAnchor(
-          controller: _menuController,
-          menuChildren: [
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 320),
-              child: Material(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
-                child: AdvancedSearchBox(
-                  variant: AdvancedSearchBoxVariant.popover,
-                  selectedInstrument: widget.filters.instrument,
-                  selectedStyle: widget.filters.style,
-                  selectedProfileType: widget.filters.profileType,
-                  selectedGender: widget.filters.gender,
-                  selectedProvince: widget.filters.province,
-                  selectedCity: widget.filters.city,
-                  provinces: widget.filters.provinces,
-                  cities: widget.filters.cities,
-                  onInstrumentChanged: widget.filters.selectInstrument,
-                  onStyleChanged: widget.filters.selectStyle,
-                  onProfileTypeChanged: widget.filters.selectProfileType,
-                  onGenderChanged: widget.filters.selectGender,
-                  onProvinceChanged: widget.filters.selectProvince,
-                  onCityChanged: widget.filters.selectCity,
-                  onSearch: filtersReady
-                      ? () {
-                          widget.onSearch();
-                          _defer(_menuController.close);
-                        }
-                      : null,
-                  onClear: filtersReady
-                      ? () {
-                          widget.onClear();
-                          _defer(_menuController.close);
-                        }
-                      : null,
-                ),
-              ),
+    return MenuAnchor(
+      controller: _menuController,
+      menuChildren: [
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 320),
+          child: Material(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            child: AdvancedSearchBox(
+              variant: AdvancedSearchBoxVariant.popover,
+              selectedInstrument: widget.state.instrument,
+              selectedStyle: widget.state.style,
+              selectedProfileType: widget.state.profileType,
+              selectedGender: widget.state.gender,
+              selectedProvince: widget.state.province,
+              selectedCity: widget.state.city,
+              provinces: widget.state.provinces,
+              cities: widget.state.cities,
+              onInstrumentChanged: widget.onInstrumentChanged,
+              onStyleChanged: widget.onStyleChanged,
+              onProfileTypeChanged: widget.onProfileTypeChanged,
+              onGenderChanged: widget.onGenderChanged,
+              onProvinceChanged: widget.onProvinceChanged,
+              onCityChanged: widget.onCityChanged,
+              onSearch: filtersReady
+                  ? () {
+                      widget.onSearch();
+                      _defer(_menuController.close);
+                    }
+                  : null,
+              onClear: filtersReady
+                  ? () {
+                      widget.onClear();
+                      _defer(_menuController.close);
+                    }
+                  : null,
             ),
-          ],
-          builder: (context, controller, child) {
-            return OutlinedButton.icon(
-              onPressed: () => _defer(
-                () => controller.isOpen ? controller.close() : controller.open(),
-              ),
-              icon: const Icon(Icons.tune),
-              label: Text(label),
-              style: OutlinedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              ),
-            );
-          },
+          ),
+        ),
+      ],
+      builder: (context, controller, child) {
+        return OutlinedButton.icon(
+          onPressed: () => _defer(
+            () => controller.isOpen ? controller.close() : controller.open(),
+          ),
+          icon: const Icon(Icons.tune),
+          label: Text(label),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          ),
         );
       },
     );
