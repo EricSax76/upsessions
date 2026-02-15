@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/constants/app_spacing.dart';
+import 'package:upsessions/core/locator/locator.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/announcements/cubits/announcement_detail_cubit.dart';
 
 import '../../models/announcement_entity.dart';
@@ -20,7 +22,10 @@ class AnnouncementDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => AnnouncementDetailCubit(),
+      create:
+          (_) => AnnouncementDetailCubit(
+            chatRepository: locate<ChatRepository>(),
+          ),
       child: BlocListener<AnnouncementDetailCubit, AnnouncementDetailState>(
         listener: (context, state) {
           if (state.status == AnnouncementDetailStatus.success &&

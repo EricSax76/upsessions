@@ -1,14 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../../core/locator/locator.dart';
+
 import '../../../../features/messaging/repositories/chat_repository.dart';
 
 part 'announcement_detail_state.dart';
 
 class AnnouncementDetailCubit extends Cubit<AnnouncementDetailState> {
-  AnnouncementDetailCubit({ChatRepository? chatRepository})
-    : _chatRepository = chatRepository ?? locate<ChatRepository>(),
+  AnnouncementDetailCubit({required ChatRepository chatRepository})
+    : _chatRepository = chatRepository,
       super(const AnnouncementDetailState());
 
   final ChatRepository _chatRepository;

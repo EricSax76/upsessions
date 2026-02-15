@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/locator/locator.dart';
+
 import '../repositories/groups_repository.dart';
 import 'group_members_state.dart';
 
 class GroupMembersCubit extends Cubit<GroupMembersState> {
   GroupMembersCubit({
     required String groupId,
-    GroupsRepository? groupsRepository,
+    required GroupsRepository groupsRepository,
   })  : _groupId = groupId,
-        _groupsRepository = groupsRepository ?? locate<GroupsRepository>(),
+        _groupsRepository = groupsRepository,
         super(const GroupMembersLoading()) {
     _init();
   }

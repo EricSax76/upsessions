@@ -29,8 +29,8 @@ import '../modules/musicians/ui/pages/musicians_hub_page.dart';
 import '../modules/profile/ui/pages/account_page.dart';
 import '../modules/profile/ui/pages/profile_edit_page.dart';
 import '../modules/profile/ui/pages/profile_overview_page.dart';
-import '../modules/studios/ui/auth/studio_login_page.dart';
-import '../modules/studios/ui/auth/studio_register_page.dart';
+import '../modules/studios/ui/pages/studio_login_page.dart';
+import '../modules/studios/ui/pages/studio_register_page.dart';
 import '../modules/studios/ui/consumer/musician_bookings_page.dart';
 import '../modules/studios/ui/provider/create_studio_page.dart';
 import '../modules/studios/ui/provider/studio_dashboard_page.dart';
@@ -130,12 +130,16 @@ List<GoRoute> buildAppRoutes() {
       },
     ),
     GoRoute(
-      path: AppRoutes.announcementDetailRoute,
-      builder: buildAnnouncementDetailRoute,
+      path: AppRoutes.announcementForm,
+      builder:
+          (context, state) => AnnouncementFormPage(
+            repository: locate(),
+            imageService: locate(),
+          ),
     ),
     GoRoute(
-      path: AppRoutes.announcementForm,
-      builder: (context, state) => AnnouncementFormPage(repository: locate()),
+      path: AppRoutes.announcementDetailRoute,
+      builder: buildAnnouncementDetailRoute,
     ),
     GoRoute(
       path: AppRoutes.media,

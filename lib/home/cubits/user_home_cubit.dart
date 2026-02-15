@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 
-import '../../core/locator/locator.dart';
+
 
 import '../repositories/user_home_repository.dart';
 import 'user_home_state.dart';
 
 class UserHomeCubit extends Cubit<UserHomeState> {
-  UserHomeCubit({UserHomeRepository? repository})
-    : _repository = repository ?? locate<UserHomeRepository>(),
+  UserHomeCubit({required UserHomeRepository repository})
+    : _repository = repository,
       super(const UserHomeState());
 
   final UserHomeRepository _repository;

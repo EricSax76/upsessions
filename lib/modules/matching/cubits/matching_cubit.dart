@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:upsessions/core/locator/locator.dart';
+
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/matching/repositories/matching_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
@@ -9,12 +9,12 @@ part 'matching_state.dart';
 
 class MatchingCubit extends Cubit<MatchingState> {
   MatchingCubit({
-    MatchingRepository? matchingRepository,
-    AuthRepository? authRepository,
-    MusiciansRepository? musiciansRepository,
-  }) : _matchingRepository = matchingRepository ?? locate<MatchingRepository>(),
-       _authRepository = authRepository ?? locate<AuthRepository>(),
-       _musiciansRepository = musiciansRepository ?? locate<MusiciansRepository>(),
+    required MatchingRepository matchingRepository,
+    required AuthRepository authRepository,
+    required MusiciansRepository musiciansRepository,
+  }) : _matchingRepository = matchingRepository,
+       _authRepository = authRepository,
+       _musiciansRepository = musiciansRepository,
        super(const MatchingState());
 
   final MatchingRepository _matchingRepository;

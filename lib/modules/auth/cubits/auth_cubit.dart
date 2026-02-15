@@ -9,17 +9,17 @@ import '../repositories/auth_repository.dart';
 import '../models/user_entity.dart';
 import '../../../core/services/push_notifications_service.dart';
 import '../../studios/repositories/studios_repository.dart';
-import '../../../core/locator/locator.dart';
+
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit({
     required AuthRepository authRepository,
-    StudiosRepository? studiosRepository,
-    PushNotificationsService? pushNotificationsService,
+    required StudiosRepository studiosRepository,
+    required PushNotificationsService pushNotificationsService,
   }) : _authRepository = authRepository,
-       _studiosRepository = studiosRepository ?? locate<StudiosRepository>(), // Helper locator or GetIt
+       _studiosRepository = studiosRepository,
        _pushNotificationsService = pushNotificationsService,
        super(const AuthState()) {
     _authSubscription = _authRepository.authStateChanges.listen(
@@ -34,7 +34,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   final AuthRepository _authRepository;
-  final PushNotificationsService? _pushNotificationsService;
+  final PushNotificationsService _pushNotificationsService;
   final StudiosRepository _studiosRepository;
   StreamSubscription<UserEntity?>? _authSubscription;
 
@@ -125,7 +125,7 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> signOut() async {
     log('[AuthCubit] Signing out...');
     final userId = state.user?.id;
-    if (userId != null && _pushNotificationsService != null) {
+    if (userId != null) {
       unawaited(_pushNotificationsService.unregisterUser(userId));
     }
     emit(state.copyWith(lastAction: AuthAction.signOut));
@@ -185,9 +185,7 @@ class AuthCubit extends Cubit<AuthState> {
       ),
     );
     if (user != null) {
-      if (_pushNotificationsService != null) {
-        unawaited(_pushNotificationsService.registerForUser(user.id));
-      }
+      unawaited(_pushNotificationsService.registerForUser(user.id));
     }
   }
 

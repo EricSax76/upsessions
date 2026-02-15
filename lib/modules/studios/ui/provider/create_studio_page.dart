@@ -6,6 +6,8 @@ import '../../../auth/repositories/auth_repository.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
+import '../../repositories/studios_repository.dart';
+import '../../services/studio_image_service.dart';
 import '../../models/studio_entity.dart';
 
 class CreateStudioPage extends StatefulWidget {
@@ -31,7 +33,10 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Register Studio')),
       body: BlocProvider(
-        create: (context) => StudiosCubit(),
+        create: (context) => StudiosCubit(
+          repository: locate<StudiosRepository>(),
+          imageService: locate<StudioImageService>(),
+        ),
         child: BlocConsumer<StudiosCubit, StudiosState>(
           listener: (context, state) {
             if (state.status == StudiosStatus.success) {

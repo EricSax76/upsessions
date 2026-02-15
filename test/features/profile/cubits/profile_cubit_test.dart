@@ -12,16 +12,19 @@ import 'package:upsessions/modules/auth/models/profile_entity.dart';
 import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
+import 'package:upsessions/core/services/push_notifications_service.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 class _MockProfileRepository extends Mock implements ProfileRepository {}
 class _MockStudiosRepository extends Mock implements StudiosRepository {}
+class _MockPushNotificationsService extends Mock implements PushNotificationsService {}
 
 void main() {
   late _MockAuthRepository authRepository;
   late _MockProfileRepository profileRepository;
   late _MockStudiosRepository studiosRepository;
+  late _MockPushNotificationsService pushNotificationsService;
   late StreamController<UserEntity?> authChangesController;
 
   const user = UserEntity(
@@ -59,6 +62,7 @@ void main() {
     authRepository = _MockAuthRepository();
     profileRepository = _MockProfileRepository();
     studiosRepository = _MockStudiosRepository();
+    pushNotificationsService = _MockPushNotificationsService();
     authChangesController = StreamController<UserEntity?>.broadcast();
 
     when(
@@ -71,6 +75,8 @@ void main() {
     when(
       () => studiosRepository.getStudioByOwner(any()),
     ).thenAnswer((_) async => null);
+    when(() => pushNotificationsService.registerForUser(any())).thenAnswer((_) async {});
+    when(() => pushNotificationsService.unregisterUser(any())).thenAnswer((_) async {});
   });
 
   tearDown(() async {
@@ -82,7 +88,11 @@ void main() {
       'carga el perfil si el usuario ya está autenticado al crearse',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        final authCubit = AuthCubit(authRepository: authRepository, studiosRepository: studiosRepository);
+        final authCubit = AuthCubit(
+          authRepository: authRepository, 
+          studiosRepository: studiosRepository,
+          pushNotificationsService: pushNotificationsService,
+        );
         addTearDown(authCubit.close);
         return ProfileCubit(
           profileRepository: profileRepository,
@@ -104,7 +114,11 @@ void main() {
     blocTest<ProfileCubit, ProfileState>(
       'carga el perfil cuando AuthCubit emite un usuario después del login',
       build: () {
-        final authCubit = AuthCubit(authRepository: authRepository, studiosRepository: studiosRepository);
+        final authCubit = AuthCubit(
+          authRepository: authRepository, 
+          studiosRepository: studiosRepository,
+          pushNotificationsService: pushNotificationsService,
+        );
         addTearDown(authCubit.close);
         return ProfileCubit(
           profileRepository: profileRepository,
@@ -130,7 +144,11 @@ void main() {
       'limpia el perfil cuando el usuario cierra sesión',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        final authCubit = AuthCubit(authRepository: authRepository, studiosRepository: studiosRepository);
+        final authCubit = AuthCubit(
+          authRepository: authRepository, 
+          studiosRepository: studiosRepository,
+          pushNotificationsService: pushNotificationsService,
+        );
         addTearDown(authCubit.close);
         return ProfileCubit(
           profileRepository: profileRepository,

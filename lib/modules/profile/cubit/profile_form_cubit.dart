@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:upsessions/core/locator/locator.dart';
+
 import 'package:upsessions/modules/auth/models/profile_entity.dart';
 import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';
 
@@ -9,8 +9,8 @@ part 'profile_form_state.dart';
 class ProfileFormCubit extends Cubit<ProfileFormState> {
   ProfileFormCubit({
     required ProfileEntity profile,
-    AffinityOptionsRepository? affinityRepository,
-  })  : _affinityRepository = affinityRepository ?? locate<AffinityOptionsRepository>(),
+    required AffinityOptionsRepository affinityRepository,
+  })  : _affinityRepository = affinityRepository,
         super(ProfileFormState(
           bio: profile.bio,
           location: profile.location,

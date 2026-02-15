@@ -4,11 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:upsessions/core/constants/app_routes.dart';
+import 'package:upsessions/core/locator/locator.dart';
 
 import '../../../auth/cubits/auth_cubit.dart';
 
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
+import '../../repositories/studios_repository.dart';
+import '../../services/studio_image_service.dart';
 import '../../models/studio_entity.dart';
 
 class StudioRegisterPage extends StatefulWidget {
@@ -40,7 +43,14 @@ class _StudioRegisterPageState extends State<StudioRegisterPage> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => StudiosCubit())],
+      providers: [
+        BlocProvider(
+          create: (context) => StudiosCubit(
+            repository: locate<StudiosRepository>(),
+            imageService: locate<StudioImageService>(),
+          ),
+        ),
+      ],
       child: BlocListener<AuthCubit, AuthState>(
         listener: (context, authState) {
           if (authState.status == AuthStatus.authenticated &&

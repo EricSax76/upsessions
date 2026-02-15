@@ -14,6 +14,7 @@ import 'package:upsessions/home/ui/widgets/footer/bottom_cookie_bar.dart';
 import 'package:upsessions/core/widgets/section_card.dart';
 import 'package:upsessions/home/ui/widgets/home_hero_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/musicians_by_instrument_section.dart';
+import 'package:upsessions/home/repositories/user_home_repository.dart';
 import 'package:upsessions/home/ui/widgets/musicians/new_musicians_section.dart';
 import 'package:upsessions/home/ui/widgets/musicians/recommended_users_section.dart';
 import 'package:upsessions/home/ui/pages/user_shell_page.dart';
@@ -25,7 +26,9 @@ class UserHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => UserHomeCubit()..loadHome(),
+      create: (context) => UserHomeCubit(
+        repository: context.read<UserHomeRepository>(),
+      )..loadHome(),
       child: UserShellPage(
         child: BlocBuilder<UserHomeCubit, UserHomeState>(
           builder: (context, state) {

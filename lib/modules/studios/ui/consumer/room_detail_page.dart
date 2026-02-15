@@ -7,6 +7,10 @@ import '../../cubits/booking_cubit.dart';
 import '../../models/room_entity.dart';
 import '../../../../core/constants/app_routes.dart';
 import 'studios_list_page.dart';
+import '../../../auth/repositories/auth_repository.dart';
+import '../../repositories/studios_repository.dart';
+import '../../../rehearsals/repositories/rehearsals_repository.dart';
+import '../../../../core/locator/locator.dart';
 
 class RoomDetailPage extends StatelessWidget {
   const RoomDetailPage({
@@ -105,6 +109,9 @@ class RoomDetailPage extends StatelessWidget {
           studioId: room.studioId,
           studioName: studioName,
           rehearsalContext: rehearsalContext,
+          authRepository: locate<AuthRepository>(),
+          studiosRepository: locate<StudiosRepository>(),
+          rehearsalsRepository: locate<RehearsalsRepository>(),
         ),
         child: const _BookingDialog(),
       ),

@@ -6,6 +6,8 @@ import 'package:upsessions/core/constants/app_routes.dart';
 import '../../../auth/repositories/auth_repository.dart';
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
+import '../../repositories/studios_repository.dart';
+import '../../services/studio_image_service.dart';
 import '../widgets/studio_shell_page.dart';
 import '../widgets/empty_states/no_bookings_empty_state.dart';
 import '../widgets/empty_states/no_rooms_empty_state.dart';
@@ -20,7 +22,10 @@ class StudioDashboardPage extends StatelessWidget {
     final userId = authRepo.currentUser?.id ?? 'mock_user_id';
 
     return BlocProvider(
-      create: (context) => StudiosCubit()..loadMyStudio(userId),
+      create: (context) => StudiosCubit(
+        repository: locate<StudiosRepository>(),
+        imageService: locate<StudioImageService>(),
+      )..loadMyStudio(userId),
       child: BlocBuilder<StudiosCubit, StudiosState>(
         builder: (context, state) {
           if (state.status == StudiosStatus.loading) {

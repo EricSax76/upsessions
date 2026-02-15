@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
-import 'package:upsessions/core/locator/locator.dart';
+
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/studios/models/booking_entity.dart';
 import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
@@ -20,12 +20,12 @@ class BookingCubit extends Cubit<BookingState> {
     required this.studioId,
     required this.studioName,
     this.rehearsalContext,
-    AuthRepository? authRepository,
-    StudiosRepository? studiosRepository,
-    RehearsalsRepository? rehearsalsRepository,
-  })  : _authRepository = authRepository ?? locate<AuthRepository>(),
-        _studiosRepository = studiosRepository ?? locate<StudiosRepository>(),
-        _rehearsalsRepository = rehearsalsRepository ?? locate<RehearsalsRepository>(),
+    required AuthRepository authRepository,
+    required StudiosRepository studiosRepository,
+    required RehearsalsRepository rehearsalsRepository,
+  })  : _authRepository = authRepository,
+        _studiosRepository = studiosRepository,
+        _rehearsalsRepository = rehearsalsRepository,
         super(const BookingState()) {
     _initialize();
   }

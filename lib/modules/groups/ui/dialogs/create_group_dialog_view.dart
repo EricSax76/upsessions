@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
-import '../../controllers/create_group_dialog_controller.dart';
-import '../../models/create_group_draft.dart';
+import '../../cubits/create_group_cubit.dart';
+import '../../cubits/create_group_state.dart';
+
 
 const _dialogMaxWidth = 520.0;
 const _avatarRadius = 22.0;
@@ -11,22 +13,30 @@ const _avatarRadius = 22.0;
 class CreateGroupDialogView extends StatelessWidget {
   const CreateGroupDialogView({
     super.key,
-    required this.controller,
+    required this.nameController,
+    required this.genreController,
+    required this.link1Controller,
+    required this.link2Controller,
     required this.onCancel,
     required this.onSubmit,
+    required this.canSubmit,
   });
 
-  final CreateGroupDialogController controller;
+  final TextEditingController nameController;
+  final TextEditingController genreController;
+  final TextEditingController link1Controller;
+  final TextEditingController link2Controller;
   final VoidCallback onCancel;
-  final ValueChanged<CreateGroupDraft> onSubmit;
+  final VoidCallback? onSubmit;
+  final bool canSubmit;
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (context, _) {
-        final canSubmit = controller.canSubmit;
+    final cubit = context.read<CreateGroupCubit>();
+
+    return BlocBuilder<CreateGroupCubit, CreateGroupState>(
+      builder: (context, state) {
         return AlertDialog(
           title: Row(
             children: [
@@ -42,17 +52,19 @@ class CreateGroupDialogView extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: _dialogMaxWidth),
             child: SingleChildScrollView(
               child: _DialogContent(
-                controller: controller,
-                onShowPhotoOptions: () => _showPhotoOptions(context),
+                state: state,
+                nameController: nameController,
+                genreController: genreController,
+                link1Controller: link1Controller,
+                link2Controller: link2Controller,
+                onShowPhotoOptions: () => _showPhotoOptions(context, cubit, state),
               ),
             ),
           ),
           actions: [
             TextButton(onPressed: onCancel, child: Text(loc.cancel)),
             FilledButton(
-              onPressed: canSubmit
-                  ? () => onSubmit(controller.buildDraft())
-                  : null,
+              onPressed: canSubmit && !state.isPickingPhoto ? onSubmit : null,
               child: Text(loc.create),
             ),
           ],
@@ -61,26 +73,39 @@ class CreateGroupDialogView extends StatelessWidget {
     );
   }
 
-  void _showPhotoOptions(BuildContext context) {
+  void _showPhotoOptions(
+    BuildContext context,
+    CreateGroupCubit cubit,
+    CreateGroupState state,
+  ) {
     showModalBottomSheet<void>(
       context: context,
-      builder: (context) => _PhotoOptionsSheet(
-        hasPhoto: controller.photoBytes != null,
-        onPickGallery: () => controller.pickPhoto(ImageSource.gallery),
-        onPickCamera: () => controller.pickPhoto(ImageSource.camera),
-        onRemove: controller.clearPhoto,
-      ),
+      builder:
+          (context) => _PhotoOptionsSheet(
+            hasPhoto: state.photoBytes != null,
+            onPickGallery: () => cubit.pickPhoto(ImageSource.gallery),
+            onPickCamera: () => cubit.pickPhoto(ImageSource.camera),
+            onRemove: cubit.clearPhoto,
+          ),
     );
   }
 }
 
 class _DialogContent extends StatelessWidget {
   const _DialogContent({
-    required this.controller,
+    required this.state,
+    required this.nameController,
+    required this.genreController,
+    required this.link1Controller,
+    required this.link2Controller,
     required this.onShowPhotoOptions,
   });
 
-  final CreateGroupDialogController controller;
+  final CreateGroupState state;
+  final TextEditingController nameController;
+  final TextEditingController genreController;
+  final TextEditingController link1Controller;
+  final TextEditingController link2Controller;
   final VoidCallback onShowPhotoOptions;
 
   @override
@@ -92,32 +117,32 @@ class _DialogContent extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         _PhotoTile(
-          controller: controller,
-          onTap: controller.isPickingPhoto ? null : onShowPhotoOptions,
+          state: state,
+          onTap: state.isPickingPhoto ? null : onShowPhotoOptions,
         ),
         gapSmall,
         _CreateGroupTextField(
-          controller: controller.nameController,
+          controller: nameController,
           labelText: 'Nombre',
           hintText: 'Ej. Banda X',
           autofocus: true,
         ),
         gapMedium,
         _CreateGroupTextField(
-          controller: controller.genreController,
+          controller: genreController,
           labelText: 'Género',
           hintText: 'Ej. Rock / Jazz',
         ),
         gapMedium,
         _CreateGroupTextField(
-          controller: controller.link1Controller,
+          controller: link1Controller,
           labelText: 'Enlace 1',
           hintText: 'https://...',
           keyboardType: TextInputType.url,
         ),
         gapMedium,
         _CreateGroupTextField(
-          controller: controller.link2Controller,
+          controller: link2Controller,
           labelText: 'Enlace 2',
           hintText: 'https://...',
           keyboardType: TextInputType.url,
@@ -128,9 +153,9 @@ class _DialogContent extends StatelessWidget {
 }
 
 class _PhotoTile extends StatelessWidget {
-  const _PhotoTile({required this.controller, required this.onTap});
+  const _PhotoTile({required this.state, required this.onTap});
 
-  final CreateGroupDialogController controller;
+  final CreateGroupState state;
   final VoidCallback? onTap;
 
   @override
@@ -139,24 +164,23 @@ class _PhotoTile extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
         radius: _avatarRadius,
-        backgroundImage: controller.photoBytes == null
-            ? null
-            : MemoryImage(controller.photoBytes!),
-        child: controller.photoBytes == null
-            ? const Icon(Icons.groups_outlined)
-            : null,
+        backgroundImage:
+            state.photoBytes == null ? null : MemoryImage(state.photoBytes!),
+        child:
+            state.photoBytes == null ? const Icon(Icons.groups_outlined) : null,
       ),
       title: const Text('Foto del grupo'),
       subtitle: Text(
-        controller.photoBytes == null ? 'Opcional' : 'Seleccionada',
+        state.photoBytes == null ? 'Opcional' : 'Seleccionada',
       ),
-      trailing: controller.isPickingPhoto
-          ? const SizedBox(
-              height: 18,
-              width: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : const Icon(Icons.edit_outlined),
+      trailing:
+          state.isPickingPhoto
+              ? const SizedBox(
+                height: 18,
+                width: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+              : const Icon(Icons.edit_outlined),
       onTap: onTap,
     );
   }

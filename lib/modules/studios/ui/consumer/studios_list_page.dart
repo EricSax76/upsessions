@@ -9,6 +9,9 @@ import '../../models/room_entity.dart';
 import '../../models/studio_entity.dart';
 import 'widgets/room_card.dart';
 import 'widgets/studio_card.dart';
+import '../../repositories/studios_repository.dart';
+import '../../services/studio_image_service.dart';
+import '../../../../core/locator/locator.dart';
 
 /// Context for booking from a rehearsal
 class RehearsalBookingContext {
@@ -34,7 +37,10 @@ class StudiosListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => StudiosCubit()..loadAllStudios(refresh: true),
+      create: (context) => StudiosCubit(
+        repository: locate<StudiosRepository>(),
+        imageService: locate<StudioImageService>(),
+      )..loadAllStudios(refresh: true),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -183,7 +189,10 @@ class StudioRoomsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => StudiosCubit()..selectStudio(studioId),
+      create: (context) => StudiosCubit(
+        repository: locate<StudiosRepository>(),
+        imageService: locate<StudioImageService>(),
+      )..selectStudio(studioId),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

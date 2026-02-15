@@ -24,7 +24,11 @@ class GroupInfoTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => GroupMembersCubit(groupId: group.id),
+      create:
+          (_) => GroupMembersCubit(
+            groupId: group.id,
+            groupsRepository: locate<GroupsRepository>(),
+          ),
       child: _GroupInfoContent(group: group),
     );
   }

@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
+import 'package:upsessions/core/locator/locator.dart';
+import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/matching/cubits/matching_cubit.dart';
+import 'package:upsessions/modules/matching/repositories/matching_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import '../widgets/matched_musician_card.dart';
 
 class MatchingPage extends StatelessWidget {
@@ -11,7 +15,12 @@ class MatchingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MatchingCubit()..loadMatches(),
+      create:
+          (context) => MatchingCubit(
+            matchingRepository: locate<MatchingRepository>(),
+            authRepository: locate<AuthRepository>(),
+            musiciansRepository: locate<MusiciansRepository>(),
+          )..loadMatches(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

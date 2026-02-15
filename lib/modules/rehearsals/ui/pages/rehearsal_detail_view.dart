@@ -5,7 +5,6 @@ import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
 
 import '../../../../core/constants/app_routes.dart';
-import '../../../../core/locator/locator.dart';
 import '../../../../core/widgets/loading_indicator.dart';
 import '../../../auth/cubits/auth_cubit.dart';
 import '../../../groups/repositories/groups_repository.dart';
@@ -23,18 +22,18 @@ class RehearsalDetailView extends StatelessWidget {
     super.key,
     required this.groupId,
     required this.rehearsalId,
-    this.rehearsalsRepository,
-    this.setlistRepository,
-    this.groupsRepository,
-    this.studiosRepository,
+    required this.rehearsalsRepository,
+    required this.setlistRepository,
+    required this.groupsRepository,
+    required this.studiosRepository,
   });
 
   final String groupId;
   final String rehearsalId;
-  final RehearsalsRepository? rehearsalsRepository;
-  final SetlistRepository? setlistRepository;
-  final GroupsRepository? groupsRepository;
-  final StudiosRepository? studiosRepository;
+  final RehearsalsRepository rehearsalsRepository;
+  final SetlistRepository setlistRepository;
+  final GroupsRepository groupsRepository;
+  final StudiosRepository studiosRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +44,10 @@ class RehearsalDetailView extends StatelessWidget {
         groupId: groupId,
         rehearsalId: rehearsalId,
         userId: userId,
-        groupsRepository: groupsRepository ?? locate<GroupsRepository>(),
-        rehearsalsRepository:
-            rehearsalsRepository ?? locate<RehearsalsRepository>(),
-        setlistRepository: setlistRepository ?? locate<SetlistRepository>(),
-        studiosRepository: studiosRepository ?? locate<StudiosRepository>(),
+        groupsRepository: groupsRepository,
+        rehearsalsRepository: rehearsalsRepository,
+        setlistRepository: setlistRepository,
+        studiosRepository: studiosRepository,
       ),
       child: _RehearsalDetailViewBody(
         groupId: groupId,

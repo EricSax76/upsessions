@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
 import 'widgets/booking_card.dart';
+import '../../repositories/studios_repository.dart';
+import '../../services/studio_image_service.dart';
 import '../../../auth/repositories/auth_repository.dart';
 import '../../../../core/locator/locator.dart';
 
@@ -25,7 +27,10 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
     _userId = authRepo.currentUser?.id;
     final userId = _userId;
     if (userId != null) {
-      _cubit = StudiosCubit()..loadMyBookings(userId);
+      _cubit = StudiosCubit(
+        repository: locate<StudiosRepository>(),
+        imageService: locate<StudioImageService>(),
+      )..loadMyBookings(userId);
     }
   }
 

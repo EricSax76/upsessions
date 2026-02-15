@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:upsessions/core/locator/locator.dart';
+
 import '../models/studio_entity.dart';
 import '../models/booking_entity.dart';
 import '../models/room_entity.dart';
@@ -9,10 +9,10 @@ import 'studios_state.dart';
 
 class StudiosCubit extends Cubit<StudiosState> {
   StudiosCubit({
-    StudiosRepository? repository,
-    StudioImageService? imageService,
-  }) : _repository = repository ?? locate<StudiosRepository>(),
-       _imageService = imageService ?? locate<StudioImageService>(),
+    required StudiosRepository repository,
+    required StudioImageService imageService,
+  }) : _repository = repository,
+       _imageService = imageService,
        super(const StudiosState());
 
   final StudiosRepository _repository;

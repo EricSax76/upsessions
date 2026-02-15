@@ -21,6 +21,8 @@ import '../modules/studios/cubits/studios_cubit.dart';
 import '../modules/studios/ui/consumer/studios_list_page.dart';
 import '../modules/studios/ui/provider/edit_room_page.dart';
 import '../modules/studios/ui/provider/studio_profile_page.dart';
+import '../modules/studios/repositories/studios_repository.dart';
+import '../modules/studios/services/studio_image_service.dart';
 import 'app_router_loaders.dart';
 import 'app_router_parsers.dart';
 
@@ -227,7 +229,10 @@ Widget buildStudiosProfileRoute(BuildContext context, GoRouterState state) {
   final userId = authRepo.currentUser?.id;
   return BlocProvider(
     create: (_) {
-      final cubit = StudiosCubit();
+      final cubit = StudiosCubit(
+        repository: locate<StudiosRepository>(),
+        imageService: locate<StudioImageService>(),
+      );
       if (userId != null && userId.isNotEmpty) {
         cubit.loadMyStudio(userId);
       }

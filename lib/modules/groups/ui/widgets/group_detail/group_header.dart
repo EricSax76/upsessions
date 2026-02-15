@@ -1,19 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../../core/widgets/gap.dart';
 import '../../../../../core/widgets/sm_avatar.dart';
 import '../../../models/group_dtos.dart';
-import '../../../controllers/group_page_controller.dart';
+import '../../../cubits/group_cubit.dart';
 
 class GroupHeader extends StatelessWidget {
-  const GroupHeader({super.key, required this.group, required this.controller});
+  const GroupHeader({super.key, required this.group});
 
   final GroupDoc group;
-  final GroupPageController controller;
 
   Future<void> _handlePhotoTap(BuildContext context) async {
+    final cubit = context.read<GroupCubit>();
     try {
-      final image = await controller.pickGroupPhoto(context);
+      final source = await showModalBottomSheet<ImageSource>(
+        context: context,
+        builder: (context) => SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Cámara'),
+                onTap: () => Navigator.pop(context, ImageSource.camera),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Galería'),
+                onTap: () => Navigator.pop(context, ImageSource.gallery),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      if (source == null) return;
+
+      final image = await cubit.pickPhoto(source);
       if (image == null) return;
 
       if (!context.mounted) return;
@@ -21,7 +46,7 @@ class GroupHeader extends StatelessWidget {
         context,
       ).showSnackBar(const SnackBar(content: Text('Subiendo imagen...')));
 
-      await controller.uploadGroupPhoto(groupId: group.id, image: image);
+      await cubit.uploadPhoto(image: image);
 
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -34,6 +59,7 @@ class GroupHeader extends StatelessWidget {
       ).showSnackBar(SnackBar(content: Text('Error al subir imagen: $e')));
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

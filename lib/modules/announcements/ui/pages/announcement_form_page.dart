@@ -7,12 +7,18 @@ import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 
 import '../../models/announcement_entity.dart';
 import '../../repositories/announcements_repository.dart';
+import '../../services/announcement_image_service.dart';
 import 'announcement_form.dart';
 
 class AnnouncementFormPage extends StatelessWidget {
-  const AnnouncementFormPage({super.key, required this.repository});
+  const AnnouncementFormPage({
+    super.key,
+    required this.repository,
+    required this.imageService,
+  });
 
   final AnnouncementsRepository repository;
+  final AnnouncementImageService imageService;
 
   Future<void> _submit(
     BuildContext context,
@@ -36,7 +42,11 @@ class AnnouncementFormPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AnnouncementFormCubit(repository: repository),
+      create:
+          (context) => AnnouncementFormCubit(
+            repository: repository,
+            imageService: imageService,
+          ),
       child: BlocConsumer<AnnouncementFormCubit, AnnouncementFormState>(
         listener: (context, state) {
           if (state.status == AnnouncementFormStatus.success) {

@@ -1,5 +1,5 @@
 import '../models/rehearsal_entity.dart';
-import '../controllers/rehearsal_filter.dart';
+import '../models/rehearsal_filter.dart';
 
 RehearsalEntity? nextUpcomingRehearsal(
   List<RehearsalEntity> rehearsals, {

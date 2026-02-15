@@ -4,6 +4,9 @@ import 'package:uuid/uuid.dart';
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
 import '../../models/room_entity.dart';
+import '../../repositories/studios_repository.dart';
+import '../../services/studio_image_service.dart';
+import '../../../../core/locator/locator.dart';
 
 class EditRoomPage extends StatefulWidget {
   const EditRoomPage({
@@ -45,7 +48,10 @@ class _EditRoomPageState extends State<EditRoomPage> {
     return Scaffold(
       appBar: AppBar(title: Text(widget.room == null ? 'Add Room' : 'Edit Room')),
       body: BlocProvider(
-        create: (context) => StudiosCubit(), // We just need access to repo mainly, or we could pass the cubit
+        create: (context) => StudiosCubit(
+          repository: locate<StudiosRepository>(),
+          imageService: locate<StudioImageService>(),
+        ), // We just need access to repo mainly, or we could pass the cubit
         child: BlocConsumer<StudiosCubit, StudiosState>(
           listener: (context, state) {
             if (state.status == StudiosStatus.success) {

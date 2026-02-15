@@ -3,20 +3,21 @@ import 'package:flutter/services.dart';
 
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/dialog_header.dart';
-import '../../controllers/invite_musician_controller.dart';
-import '../../controllers/invite_musician_state.dart';
+import '../../cubits/invite_musician_state.dart';
 import '../../../musicians/models/musician_entity.dart';
 
 class InviteMusicianDialogView extends StatelessWidget {
   const InviteMusicianDialogView({
     super.key,
-    required this.controller,
+    required this.searchController,
     required this.state,
+    required this.onQueryChanged,
     required this.onInviteTap,
   });
 
-  final InviteMusicianDialogController controller;
-  final InviteMusicianDialogState state;
+  final TextEditingController searchController;
+  final InviteMusicianState state;
+  final ValueChanged<String> onQueryChanged;
   final ValueChanged<MusicianEntity> onInviteTap;
 
   @override
@@ -35,13 +36,13 @@ class InviteMusicianDialogView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: controller.searchController,
+              controller: searchController,
               decoration: const InputDecoration(
                 labelText: 'Buscar por nombre',
                 hintText: 'Ej. ana',
                 prefixIcon: Icon(Icons.search),
               ),
-              onChanged: controller.onQueryChanged,
+              onChanged: onQueryChanged,
             ),
             const SizedBox(height: 12),
             InviteSearchBody(
@@ -74,7 +75,7 @@ class InviteSearchBody extends StatelessWidget {
     required this.onInviteTap,
   });
 
-  final InviteMusicianDialogState state;
+  final InviteMusicianState state;
   final ThemeData theme;
   final ColorScheme scheme;
   final ValueChanged<MusicianEntity> onInviteTap;
@@ -187,7 +188,7 @@ class InviteResultTile extends StatelessWidget {
 class InviteCreatedDialog extends StatelessWidget {
   const InviteCreatedDialog({super.key, required this.link, required this.target});
 
-  final InviteLinkData link;
+  final String link;
   final MusicianEntity target;
 
   @override
@@ -208,7 +209,7 @@ class InviteCreatedDialog extends StatelessWidget {
         children: [
           Text('Para: ${target.name}'),
           const SizedBox(height: 12),
-          SelectableText(link.url),
+          SelectableText(link),
           const SizedBox(height: 12),
           FilledButton.icon(
             onPressed: () => _copyLink(context),
@@ -227,7 +228,7 @@ class InviteCreatedDialog extends StatelessWidget {
   }
 
   Future<void> _copyLink(BuildContext context) async {
-    await Clipboard.setData(ClipboardData(text: link.url));
+    await Clipboard.setData(ClipboardData(text: link));
     if (!context.mounted) return;
     DialogService.showSuccess(context, 'Link copiado.');
   }

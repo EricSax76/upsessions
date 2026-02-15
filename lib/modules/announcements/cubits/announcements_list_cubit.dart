@@ -4,17 +4,16 @@ import 'package:upsessions/modules/announcements/models/announcement_entity.dart
 import 'package:upsessions/modules/announcements/repositories/announcements_repository.dart';
 import 'package:upsessions/modules/announcements/ui/widgets/announcement_list/announcement_filter_panel.dart';
 
-import '../../../../core/locator/locator.dart';
+
 
 part 'announcements_list_state.dart';
 
 class AnnouncementsListCubit extends Cubit<AnnouncementsListState> {
   AnnouncementsListCubit({
-    AnnouncementsRepository? repository,
+    required AnnouncementsRepository repository,
     bool autoLoad = true,
-  })
-    : _repository = repository ?? locate<AnnouncementsRepository>(),
-      super(const AnnouncementsListState()) {
+  }) : _repository = repository,
+       super(const AnnouncementsListState()) {
     if (autoLoad) {
       load(refresh: true);
     }

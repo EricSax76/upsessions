@@ -5,7 +5,7 @@ import '../../../../core/widgets/empty_state_card.dart';
 import '../../../../core/widgets/section_card.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../models/rehearsal_entity.dart';
-import '../../controllers/rehearsal_filter.dart';
+import '../../models/rehearsal_filter.dart';
 import 'rehearsal_card.dart';
 import 'rehearsal_filter_chips.dart';
 import 'empty_rehearsals_card.dart';

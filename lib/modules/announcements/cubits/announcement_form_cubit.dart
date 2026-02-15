@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../core/locator/locator.dart';
+
 import '../models/announcement_entity.dart';
 import '../repositories/announcements_repository.dart';
 import '../services/announcement_image_service.dart';
@@ -11,11 +11,11 @@ part 'announcement_form_state.dart';
 
 class AnnouncementFormCubit extends Cubit<AnnouncementFormState> {
   AnnouncementFormCubit({
-    AnnouncementsRepository? repository,
-    AnnouncementImageService? imageService,
-  })  : _repository = repository ?? locate<AnnouncementsRepository>(),
-        _imageService = imageService ?? locate<AnnouncementImageService>(),
-        super(const AnnouncementFormState());
+    required AnnouncementsRepository repository,
+    required AnnouncementImageService imageService,
+  }) : _repository = repository,
+       _imageService = imageService,
+       super(const AnnouncementFormState());
 
   final AnnouncementsRepository _repository;
   final AnnouncementImageService _imageService;

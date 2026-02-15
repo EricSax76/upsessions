@@ -9,6 +9,7 @@ import 'package:upsessions/core/services/remote_config_service.dart';
 import 'package:upsessions/l10n/cubit/locale_cubit.dart';
 import 'package:upsessions/core/theme/theme_cubit.dart';
 import 'package:upsessions/modules/announcements/repositories/announcements_repository.dart';
+import 'package:upsessions/modules/announcements/services/announcement_image_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -70,6 +71,9 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<AnnouncementsRepository>(
       () => AnnouncementsRepository(firestore: getIt<FirebaseFirestore>()),
+    )
+    ..registerLazySingleton<AnnouncementImageService>(
+      () => AnnouncementImageService(storage: getIt<FirebaseStorage>()),
     )
     ..registerLazySingleton<UserHomeRepository>(
       () => UserHomeRepository(

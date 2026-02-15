@@ -47,7 +47,7 @@ class _MusicianSearchPageState extends State<MusicianSearchPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MusicianSearchCubit(
-        repository: context.read<MusiciansRepository>(),
+        repository: locate<MusiciansRepository>(),
         userHomeRepository: locate<UserHomeRepository>(),
       )
         ..loadFilters()

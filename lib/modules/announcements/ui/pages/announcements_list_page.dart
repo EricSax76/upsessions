@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/widgets/announcement_card.dart';
 import '../../../../core/widgets/layout/searchable_list_page.dart';
+import '../../../../core/locator/locator.dart';
 import '../../cubits/announcements_list_cubit.dart';
 import '../../models/announcement_entity.dart';
+import '../../repositories/announcements_repository.dart';
 import '../widgets/announcement_list/announcement_filter_panel.dart';
 import '../widgets/announcement_list/announcements_hero_section.dart';
 import '../widgets/announcement_list/announcements_list_footer.dart';
@@ -43,7 +45,9 @@ class AnnouncementsListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AnnouncementsListCubit(),
+      create: (context) => AnnouncementsListCubit(
+        repository: locate<AnnouncementsRepository>(),
+      ),
       child: Builder(
         builder: (context) {
           final listContent =
