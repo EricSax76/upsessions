@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AnnouncementImageService {
-  AnnouncementImageService({FirebaseStorage? storage})
-      : _storage = storage ?? FirebaseStorage.instance;
+  AnnouncementImageService({required FirebaseStorage storage})
+      : _storage = storage;
 
   final FirebaseStorage _storage;
 

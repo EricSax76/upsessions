@@ -6,11 +6,11 @@ import 'package:flutter/foundation.dart';
 
 class PushNotificationsService {
   PushNotificationsService({
-    FirebaseMessaging? messaging,
-    FirebaseFirestore? firestore,
+    required FirebaseMessaging messaging,
+    required FirebaseFirestore firestore,
     String webVapidKey = '',
-  })  : _messaging = messaging ?? FirebaseMessaging.instance,
-        _firestore = firestore ?? FirebaseFirestore.instance,
+  })  : _messaging = messaging,
+        _firestore = firestore,
         _webVapidKey = webVapidKey;
 
   final FirebaseMessaging _messaging;

@@ -4,8 +4,8 @@ import 'package:image_picker/image_picker.dart';
 
 /// Servicio para gestionar la subida de imágenes a Firebase Storage
 class ImageUploadService {
-  ImageUploadService({FirebaseStorage? storage})
-      : _storage = storage ?? FirebaseStorage.instance;
+  ImageUploadService({required FirebaseStorage storage})
+      : _storage = storage;
 
   final FirebaseStorage _storage;
   final ImagePicker _picker = ImagePicker();

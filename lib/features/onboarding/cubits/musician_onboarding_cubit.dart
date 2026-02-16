@@ -4,7 +4,11 @@ import 'package:upsessions/modules/musicians/repositories/musicians_repository.d
 import 'musician_onboarding_state.dart';
 
 class MusicianOnboardingCubit extends Cubit<MusicianOnboardingState> {
-  MusicianOnboardingCubit() : super(const MusicianOnboardingState());
+  MusicianOnboardingCubit({required MusiciansRepository repository})
+      : _repository = repository,
+        super(const MusicianOnboardingState());
+
+  final MusiciansRepository _repository;
 
   void previousStep() {
     if (state.currentStep <= 0) return;
@@ -39,7 +43,6 @@ class MusicianOnboardingCubit extends Cubit<MusicianOnboardingState> {
   }
 
   Future<void> submit({
-    required MusiciansRepository repository,
     required String musicianId,
     required String name,
     required String instrument,
@@ -51,7 +54,7 @@ class MusicianOnboardingCubit extends Cubit<MusicianOnboardingState> {
   }) async {
     emit(state.copyWith(status: MusicianOnboardingStatus.saving));
     try {
-      await repository.saveProfile(
+      await _repository.saveProfile(
         musicianId: musicianId,
         name: name,
         instrument: instrument,

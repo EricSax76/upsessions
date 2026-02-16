@@ -8,9 +8,15 @@ import 'package:upsessions/modules/musicians/repositories/musicians_repository.d
 class MockMusiciansRepository extends Mock implements MusiciansRepository {}
 
 void main() {
+  late MockMusiciansRepository repository;
+  
+  setUp(() {
+    repository = MockMusiciansRepository();
+  });
+
   group('MusicianOnboardingCubit', () {
     test('initial state is correct', () {
-      final cubit = MusicianOnboardingCubit();
+      final cubit = MusicianOnboardingCubit(repository: repository);
       expect(cubit.state.currentStep, 0);
       expect(cubit.state.status, MusicianOnboardingStatus.idle);
       expect(cubit.state.influences, isEmpty);
@@ -19,7 +25,7 @@ void main() {
 
     blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
       'nextStep increments currentStep',
-      build: MusicianOnboardingCubit.new,
+      build: () => MusicianOnboardingCubit(repository: repository),
       act: (cubit) {
         cubit.nextStep();
         cubit.nextStep();
@@ -34,7 +40,7 @@ void main() {
 
     blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
       'previousStep decrements currentStep but not below 0',
-      build: MusicianOnboardingCubit.new,
+      build: () => MusicianOnboardingCubit(repository: repository),
       act: (cubit) {
         cubit.nextStep(); // step 1
         cubit.previousStep(); // step 0
@@ -50,7 +56,7 @@ void main() {
 
     blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
       'addInfluence adds artist to style',
-      build: MusicianOnboardingCubit.new,
+      build: () => MusicianOnboardingCubit(repository: repository),
       act: (cubit) {
         cubit.addInfluence('Rock', 'Led Zeppelin');
         cubit.addInfluence('Rock', 'Pink Floyd');
@@ -84,7 +90,7 @@ void main() {
 
     blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
       'addInfluence ignores duplicates (case insensitive)',
-      build: MusicianOnboardingCubit.new,
+      build: () => MusicianOnboardingCubit(repository: repository),
       seed: () => const MusicianOnboardingState(influences: {
         'Rock': ['Led Zeppelin'],
       }),
@@ -94,7 +100,7 @@ void main() {
 
     blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
       'removeInfluence removes artist and cleans empty style',
-      build: MusicianOnboardingCubit.new,
+      build: () => MusicianOnboardingCubit(repository: repository),
       seed: () => const MusicianOnboardingState(influences: {
         'Rock': ['Led Zeppelin'],
         'Jazz': ['Miles Davis', 'Coltrane'],
@@ -142,10 +148,10 @@ void main() {
                 bio: any(named: 'bio'),
                 influences: any(named: 'influences'),
               )).thenAnswer((_) async {});
-          return MusicianOnboardingCubit();
+          return MusicianOnboardingCubit(repository: repository);
         },
         act: (cubit) => cubit.submit(
-          repository: repository,
+          // repository param removed
           musicianId: 'id-1',
           name: 'John',
           instrument: 'Guitar',
@@ -161,7 +167,7 @@ void main() {
         ],
       );
 
-      blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
+        blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
         'emits error on failure',
         build: () {
           when(() => repository.saveProfile(
@@ -175,10 +181,10 @@ void main() {
                 bio: any(named: 'bio'),
                 influences: any(named: 'influences'),
               )).thenThrow(Exception('Save failed'));
-          return MusicianOnboardingCubit();
+          return MusicianOnboardingCubit(repository: repository);
         },
         act: (cubit) => cubit.submit(
-          repository: repository,
+          // repository param removed
           musicianId: 'id-1',
           name: 'John',
           instrument: 'Guitar',

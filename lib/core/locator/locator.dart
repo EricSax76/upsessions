@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:upsessions/core/services/cloud_functions_service.dart';
+import 'package:upsessions/features/events/services/image_upload_service.dart';
 import 'package:upsessions/core/services/firebase_initializer.dart';
 import 'package:upsessions/core/services/push_notifications_service.dart';
 import 'package:upsessions/core/services/analytics_service.dart';
@@ -12,7 +13,9 @@ import 'package:upsessions/modules/announcements/repositories/announcements_repo
 import 'package:upsessions/modules/announcements/services/announcement_image_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 import 'package:upsessions/features/media/repositories/media_repository.dart';
@@ -48,14 +51,19 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
     ..registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance)
     ..registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance)
+    ..registerLazySingleton<FirebaseFunctions>(() => FirebaseFunctions.instance)
+    ..registerLazySingleton<FirebaseMessaging>(() => FirebaseMessaging.instance)
     ..registerLazySingleton<AuthRepository>(
       () => AuthRepository(firebaseAuth: getIt<FirebaseAuth>()),
     )
     ..registerLazySingleton<CloudFunctionsService>(
-      () => CloudFunctionsService(),
+      () => CloudFunctionsService(functions: getIt<FirebaseFunctions>()),
     )
     ..registerLazySingleton<PushNotificationsService>(
-      () => PushNotificationsService(),
+      () => PushNotificationsService(
+        messaging: getIt<FirebaseMessaging>(),
+        firestore: getIt<FirebaseFirestore>(),
+      ),
     )
     ..registerLazySingleton<AnalyticsService>(() => const AnalyticsService())
     ..registerLazySingleton<RemoteConfigService>(
@@ -139,6 +147,7 @@ Future<void> setupServiceLocator() async {
       () => SetlistRepository(
         authRepository: getIt<AuthRepository>(),
         firestore: getIt<FirebaseFirestore>(),
+        storage: getIt<FirebaseStorage>(),
       ),
     )
     ..registerLazySingleton<StudiosRepository>(
@@ -146,6 +155,9 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<StudioImageService>(
       () => StudioImageService(storage: getIt<FirebaseStorage>()),
+    )
+    ..registerLazySingleton<ImageUploadService>(
+      () => ImageUploadService(storage: getIt<FirebaseStorage>()),
     )
     ..registerLazySingleton<LikedMusiciansCubit>(
       () => LikedMusiciansCubit(

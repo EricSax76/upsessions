@@ -96,7 +96,9 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
     }
 
     return BlocProvider(
-      create: (_) => MusicianOnboardingCubit(),
+      create: (_) => MusicianOnboardingCubit(
+        repository: context.read<MusiciansRepository>(),
+      ),
       child: BlocListener<MusicianOnboardingCubit, MusicianOnboardingState>(
         listenWhen: (prev, curr) =>
             curr.status == MusicianOnboardingStatus.saved ||
@@ -227,9 +229,9 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
       return;
     }
 
-    final repository = context.read<MusiciansRepository>();
+    // final repository = context.read<MusiciansRepository>(); // No longer needed
     cubit.submit(
-      repository: repository,
+      // repository: repository, // Removed
       musicianId: musicianId,
       name: _nameController.text.trim(),
       instrument: _instrumentController.text.trim(),

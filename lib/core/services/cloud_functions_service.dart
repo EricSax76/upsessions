@@ -1,7 +1,7 @@
 import 'package:cloud_functions/cloud_functions.dart';
 
 class CloudFunctionsService {
-  CloudFunctionsService({FirebaseFunctions? functions}) : _functions = functions ?? FirebaseFunctions.instance;
+  CloudFunctionsService({required FirebaseFunctions functions}) : _functions = functions;
 
   final FirebaseFunctions _functions;
 

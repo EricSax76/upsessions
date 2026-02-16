@@ -5,6 +5,8 @@ import '../../cubits/event_detail_cubit.dart';
 import '../../cubits/event_detail_state.dart';
 import '../../models/event_entity.dart';
 import '../../repositories/events_repository.dart';
+import '../../../../core/locator/locator.dart';
+import '../../services/image_upload_service.dart';
 import '../widgets/event_text_template_card.dart';
 import '../widgets/event_detail/event_detail_body.dart';
 
@@ -23,7 +25,8 @@ class EventDetailPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => EventDetailCubit(
         event: event,
-        repository: eventsRepository,
+        repository: context.read<EventsRepository>(),
+        imageUploadService: getIt<ImageUploadService>(),
       ),
       child: BlocListener<EventDetailCubit, EventDetailState>(
         listenWhen: (previous, current) =>

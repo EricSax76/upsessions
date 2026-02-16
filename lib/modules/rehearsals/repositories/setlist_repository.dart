@@ -9,8 +9,8 @@ class SetlistRepository extends RehearsalsRepositoryBase {
   SetlistRepository({
     required super.firestore,
     required super.authRepository,
-    FirebaseStorage? storage,
-  }) : _storage = storage ?? FirebaseStorage.instance;
+    required FirebaseStorage storage,
+  }) : _storage = storage;
 
   final FirebaseStorage _storage;
 

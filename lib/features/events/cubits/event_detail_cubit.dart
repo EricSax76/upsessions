@@ -11,9 +11,9 @@ class EventDetailCubit extends Cubit<EventDetailState> {
   EventDetailCubit({
     required EventEntity event,
     required EventsRepository repository,
-    ImageUploadService? imageUploadService,
+    required ImageUploadService imageUploadService,
   })  : _repository = repository,
-        _imageUploadService = imageUploadService ?? ImageUploadService(),
+        _imageUploadService = imageUploadService,
         super(EventDetailState(event: event));
 
   final EventsRepository _repository;
