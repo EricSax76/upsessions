@@ -30,6 +30,7 @@ import '../modules/groups/repositories/groups_repository.dart';
 import '../features/messaging/repositories/chat_repository.dart';
 import '../features/notifications/repositories/invite_notifications_repository.dart';
 import '../features/contacts/cubits/liked_musicians_cubit.dart';
+import '../modules/studios/ui/widgets/studio_shell_page.dart';
 import 'app_router_loaders.dart';
 import 'app_router_parsers.dart';
 
@@ -242,7 +243,13 @@ Widget buildStudiosRoomCreateRoute(BuildContext context, GoRouterState state) {
     );
   }
 
-  return EditRoomPage(studioId: studioId);
+  return BlocProvider(
+    create: (context) => StudiosCubit(
+      repository: locate<StudiosRepository>(),
+      imageService: locate<StudioImageService>(),
+    ),
+    child: StudioShellPage(child: EditRoomPage(studioId: studioId)),
+  );
 }
 
 Widget buildStudiosRoomEditRoute(BuildContext context, GoRouterState state) {
@@ -258,24 +265,39 @@ Widget buildStudiosRoomEditRoute(BuildContext context, GoRouterState state) {
     );
   }
 
-  return StudioRoomEditorLoader(
-    studioId: studioId,
-    roomId: roomId,
-    location: state.uri.toString(),
+  return BlocProvider(
+    create: (context) => StudiosCubit(
+      repository: locate<StudiosRepository>(),
+      imageService: locate<StudioImageService>(),
+    ),
+    child: StudioShellPage(
+      child: StudioRoomEditorLoader(
+        studioId: studioId,
+        roomId: roomId,
+        location: state.uri.toString(),
+      ),
+    ),
   );
 }
 
 Widget buildMessagesRoute(BuildContext context, GoRouterState state) {
   final threadId = threadIdFromState(state);
-  return MessagesPage(
-    initialThreadId: threadId,
+  return UserShellPage(
     groupsRepository: context.read<GroupsRepository>(),
     chatRepository: context.read<ChatRepository>(),
-    inviteNotificationsRepository: context
-        .read<InviteNotificationsRepository>(),
+    inviteNotificationsRepository:
+        context.read<InviteNotificationsRepository>(),
     likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-    authRepository: context.read<AuthRepository>(),
-    profileRepository: context.read<ProfileRepository>(),
+    child: MessagesPage(
+      initialThreadId: threadId,
+      groupsRepository: context.read<GroupsRepository>(),
+      chatRepository: context.read<ChatRepository>(),
+      inviteNotificationsRepository:
+          context.read<InviteNotificationsRepository>(),
+      likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+      authRepository: context.read<AuthRepository>(),
+      profileRepository: context.read<ProfileRepository>(),
+    ),
   );
 }
 
@@ -290,31 +312,49 @@ Widget buildChatThreadDetailRoute(BuildContext context, GoRouterState state) {
 
   final extra = state.extra;
   final initialThread = extra is ChatThread ? extra : null;
-  return ChatThreadDetailLoader(
-    threadId: threadId,
-    initialThread: initialThread,
-    location: state.uri.toString(),
+  return UserShellPage(
+    groupsRepository: context.read<GroupsRepository>(),
     chatRepository: context.read<ChatRepository>(),
-    authRepository: context.read<AuthRepository>(),
+    inviteNotificationsRepository:
+        context.read<InviteNotificationsRepository>(),
+    likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+    child: ChatThreadDetailLoader(
+      threadId: threadId,
+      initialThread: initialThread,
+      location: state.uri.toString(),
+      chatRepository: context.read<ChatRepository>(),
+      authRepository: context.read<AuthRepository>(),
+    ),
   );
 }
 
 Widget buildInviteAcceptRoute(BuildContext context, GoRouterState state) {
   final groupId = inviteGroupIdFromState(state) ?? '';
   final inviteId = inviteIdFromState(state) ?? '';
-  return InviteAcceptPage(
-    groupId: groupId,
-    inviteId: inviteId,
+  return UserShellPage(
     groupsRepository: context.read<GroupsRepository>(),
-    inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
-    authRepository: context.read<AuthRepository>(),
+    chatRepository: context.read<ChatRepository>(),
+    inviteNotificationsRepository:
+        context.read<InviteNotificationsRepository>(),
+    likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+    child: InviteAcceptPage(
+      groupId: groupId,
+      inviteId: inviteId,
+      groupsRepository: context.read<GroupsRepository>(),
+      inviteNotificationsRepository:
+          context.read<InviteNotificationsRepository>(),
+      authRepository: context.read<AuthRepository>(),
+    ),
   );
 }
 
 Widget buildStudiosProfileRoute(BuildContext context, GoRouterState state) {
   final extra = state.extra;
   if (extra is StudiosCubit) {
-    return BlocProvider.value(value: extra, child: const StudioProfilePage());
+    return BlocProvider.value(
+      value: extra,
+      child: const StudioShellPage(child: StudioProfilePage()),
+    );
   }
 
   final authRepo = locate<AuthRepository>();
@@ -330,6 +370,6 @@ Widget buildStudiosProfileRoute(BuildContext context, GoRouterState state) {
       }
       return cubit;
     },
-    child: const StudioProfilePage(),
+    child: const StudioShellPage(child: StudioProfilePage()),
   );
 }

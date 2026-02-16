@@ -8,8 +8,8 @@ import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/gap.dart';
 import '../../../../core/widgets/loading_indicator.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/ui/shell/auth_shell.dart';
 import '../../../auth/cubits/auth_cubit.dart';
-import '../../../auth/ui/widgets/auth_layout.dart';
 import '../../../auth/ui/widgets/login_form.dart';
 import '../../../auth/ui/widgets/social_login_buttons.dart';
 
@@ -52,7 +52,7 @@ class StudioLoginPage extends StatelessWidget {
 
           return Stack(
             children: [
-              AuthLayout(
+              AuthShell(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisSize: MainAxisSize.min,

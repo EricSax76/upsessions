@@ -6,8 +6,7 @@ import '../../../auth/repositories/auth_repository.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import '../../cubits/studios_cubit.dart';
 import '../../cubits/studios_state.dart';
-import '../../repositories/studios_repository.dart';
-import '../../services/studio_image_service.dart';
+
 import '../../models/studio_entity.dart';
 
 class CreateStudioPage extends StatefulWidget {
@@ -30,43 +29,48 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Register Studio')),
-      body: BlocProvider(
-        create: (context) => StudiosCubit(
-          repository: locate<StudiosRepository>(),
-          imageService: locate<StudioImageService>(),
-        ),
-        child: BlocConsumer<StudiosCubit, StudiosState>(
-          listener: (context, state) {
-            if (state.status == StudiosStatus.success) {
-               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Studio created successfully!')),
-              );
-              // Navigate to dashboard or previous screen
-              context.pop(); 
-            }
-          },
-          builder: (context, state) {
-            if (state.status == StudiosStatus.loading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
+    return BlocConsumer<StudiosCubit, StudiosState>(
+      listener: (context, state) {
+        if (state.status == StudiosStatus.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Studio created successfully!')),
+          );
+          // Navigate to dashboard or previous screen
+          context.pop();
+        }
+      },
+      builder: (context, state) {
+        if (state.status == StudiosStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Register Studio',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 24),
+              Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(labelText: 'Studio Name'),
+                      decoration: const InputDecoration(
+                        labelText: 'Studio Name',
+                      ),
                       validator: (value) =>
                           value?.isEmpty ?? true ? 'Required' : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _businessNameController,
-                      decoration: const InputDecoration(labelText: 'Business Name (Razón Social)'),
+                      decoration: const InputDecoration(
+                        labelText: 'Business Name (Razón Social)',
+                      ),
                       validator: (value) =>
                           value?.isEmpty ?? true ? 'Required' : null,
                     ),
@@ -80,7 +84,9 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(labelText: 'Description'),
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                      ),
                       maxLines: 3,
                     ),
                     const SizedBox(height: 16),
@@ -93,7 +99,9 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _emailController,
-                      decoration: const InputDecoration(labelText: 'Contact Email'),
+                      decoration: const InputDecoration(
+                        labelText: 'Contact Email',
+                      ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) =>
                           value?.isEmpty ?? true ? 'Required' : null,
@@ -101,7 +109,9 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _phoneController,
-                      decoration: const InputDecoration(labelText: 'Contact Phone'),
+                      decoration: const InputDecoration(
+                        labelText: 'Contact Phone',
+                      ),
                       keyboardType: TextInputType.phone,
                       validator: (value) =>
                           value?.isEmpty ?? true ? 'Required' : null,
@@ -112,7 +122,7 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
                         if (_formKey.currentState?.validate() ?? false) {
                           final authRepo = locate<AuthRepository>();
                           final currentUser = authRepo.currentUser;
-                          
+
                           // Mocking user ID if not logged in for development
                           final ownerId = currentUser?.id ?? 'mock_user_id';
 
@@ -137,10 +147,10 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
                   ],
                 ),
               ),
-            );
-          },
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

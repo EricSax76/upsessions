@@ -34,46 +34,46 @@ class StudioProfilePage extends StatelessWidget {
       builder: (context, state) {
         final studio = state.myStudio;
         if (studio == null) {
-          return const Scaffold(body: Center(child: Text('No studio found')));
+        if (studio == null) {
+          return const Center(child: Text('No studio found'));
+        }
         }
 
-        return Scaffold(
-          body: CustomScrollView(
-            slivers: [
-              StudioProfileHeader(
-                studio: studio,
-                onExit: () => _handleExit(context),
-                onUploadBanner: () => context
-                    .read<StudiosCubit>()
-                    .uploadMyStudioBanner(studio.id),
-                onUploadLogo: () => context
-                    .read<StudiosCubit>()
-                    .uploadMyStudioLogo(studio.id),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      // Using the AvatarSection from header file (or extracted separately)
-                      // Ideally AvatarSection should be public in header file
-                      StudioAvatarSection(
-                        studio: studio,
-                        onUploadLogo: () => context
-                            .read<StudiosCubit>()
-                            .uploadMyStudioLogo(studio.id),
-                      ),
-                      const SizedBox(height: 24),
-                      StudioProfileForm(
-                        studio: studio,
-                        onSave: (updated) => _save(context, updated),
-                      ),
-                    ],
-                  ),
+        return CustomScrollView(
+          slivers: [
+            StudioProfileHeader(
+              studio: studio,
+              onExit: () => _handleExit(context),
+              onUploadBanner: () => context
+                  .read<StudiosCubit>()
+                  .uploadMyStudioBanner(studio.id),
+              onUploadLogo: () => context
+                  .read<StudiosCubit>()
+                  .uploadMyStudioLogo(studio.id),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    // Using the AvatarSection from header file (or extracted separately)
+                    // Ideally AvatarSection should be public in header file
+                    StudioAvatarSection(
+                      studio: studio,
+                      onUploadLogo: () => context
+                          .read<StudiosCubit>()
+                          .uploadMyStudioLogo(studio.id),
+                    ),
+                    const SizedBox(height: 24),
+                    StudioProfileForm(
+                      studio: studio,
+                      onSave: (updated) => _save(context, updated),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );

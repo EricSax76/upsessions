@@ -17,15 +17,29 @@ class MediaGalleryPage extends StatelessWidget {
       create: (_) => MediaGalleryCubit(
         repository: repository,
       )..load(),
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Galería')),
-        body: BlocBuilder<MediaGalleryCubit, MediaGalleryState>(
-          builder: (context, state) {
-            return MediaGrid(
-              items: state.items,
-              isLoading: state.isLoading,
-            );
-          },
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Galería',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: BlocBuilder<MediaGalleryCubit, MediaGalleryState>(
+                  builder: (context, state) {
+                    return MediaGrid(
+                      items: state.items,
+                      isLoading: state.isLoading,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

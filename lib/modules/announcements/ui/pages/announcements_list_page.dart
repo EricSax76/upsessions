@@ -14,9 +14,7 @@ import '../widgets/announcement_list/announcements_hero_section.dart';
 import '../widgets/announcement_list/announcements_list_footer.dart';
 
 class AnnouncementsListPage extends StatelessWidget {
-  const AnnouncementsListPage({super.key, this.showAppBar = true});
-
-  final bool showAppBar;
+  const AnnouncementsListPage({super.key});
 
   void _openForm(BuildContext context) async {
     await context.push(AppRoutes.announcementForm);
@@ -50,76 +48,56 @@ class AnnouncementsListPage extends StatelessWidget {
       ),
       child: Builder(
         builder: (context) {
-          final listContent =
-              BlocBuilder<AnnouncementsListCubit, AnnouncementsListState>(
-                builder: (context, state) {
-                  return SearchableListPage<AnnouncementEntity>(
-                    items: state.items,
-                    isLoading: state.status == AnnouncementsListStatus.loading,
-                    errorMessage:
-                        state.items.isEmpty ? state.errorMessage : null,
-                    onRetry:
-                        () => context.read<AnnouncementsListCubit>().load(
-                          refresh: true,
-                        ),
-                    onRefresh:
-                        () => context.read<AnnouncementsListCubit>().load(
-                          refresh: true,
-                        ),
-                    searchEnabled: false,
-                    gridLayout: true,
-                    gridSpacing: 24,
-                    emptyIcon: Icons.campaign_outlined,
-                    emptyTitle: 'No hay anuncios',
-                    emptySubtitle: 'Crea el primero o vuelve más tarde.',
-                    headerBuilder:
-                        !showAppBar
-                            ? (_, _, _) => AnnouncementsHeroSection(
-                              onNewAnnouncement: () => _openForm(context),
-                            )
-                            : null,
-                    filterBuilder:
-                        (_) => AnnouncementFilterPanel(
-                          onChanged:
-                              (filter) => context
-                                  .read<AnnouncementsListCubit>()
-                                  .setFilter(filter),
-                        ),
-                    footerBuilder: (_) => _buildFooter(context, state),
-                    itemBuilder:
-                        (announcement, index) => AnnouncementCard(
-                          title: announcement.title,
-                          subtitle:
-                              '${announcement.city} · ${announcement.author}',
-                          dateText:
-                              '${announcement.publishedAt.day}/${announcement.publishedAt.month}',
-                          onTap:
-                              () => context.push(
-                                AppRoutes.announcementDetailPath(
-                                  announcement.id,
-                                ),
-                                extra: announcement,
-                              ),
-                        ),
-                  );
-                },
+          return BlocBuilder<AnnouncementsListCubit, AnnouncementsListState>(
+            builder: (context, state) {
+              return SearchableListPage<AnnouncementEntity>(
+                items: state.items,
+                isLoading: state.status == AnnouncementsListStatus.loading,
+                errorMessage:
+                    state.items.isEmpty ? state.errorMessage : null,
+                onRetry:
+                    () => context.read<AnnouncementsListCubit>().load(
+                      refresh: true,
+                    ),
+                onRefresh:
+                    () => context.read<AnnouncementsListCubit>().load(
+                      refresh: true,
+                    ),
+                searchEnabled: false,
+                gridLayout: true,
+                gridSpacing: 24,
+                emptyIcon: Icons.campaign_outlined,
+                emptyTitle: 'No hay anuncios',
+                emptySubtitle: 'Crea el primero o vuelve más tarde.',
+                headerBuilder:
+                    (_, _, _) => AnnouncementsHeroSection(
+                      onNewAnnouncement: () => _openForm(context),
+                    ),
+                filterBuilder:
+                    (_) => AnnouncementFilterPanel(
+                      onChanged:
+                          (filter) => context
+                              .read<AnnouncementsListCubit>()
+                              .setFilter(filter),
+                    ),
+                footerBuilder: (_) => _buildFooter(context, state),
+                itemBuilder:
+                    (announcement, index) => AnnouncementCard(
+                      title: announcement.title,
+                      subtitle:
+                          '${announcement.city} · ${announcement.author}',
+                      dateText:
+                          '${announcement.publishedAt.day}/${announcement.publishedAt.month}',
+                      onTap:
+                          () => context.push(
+                            AppRoutes.announcementDetailPath(
+                              announcement.id,
+                            ),
+                            extra: announcement,
+                          ),
+                    ),
               );
-
-          if (!showAppBar) {
-            return SafeArea(child: listContent);
-          }
-
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Anuncios'),
-              actions: [
-                IconButton(
-                  onPressed: () => _openForm(context),
-                  icon: const Icon(Icons.add_circle_outline),
-                ),
-              ],
-            ),
-            body: listContent,
+            },
           );
         },
       ),

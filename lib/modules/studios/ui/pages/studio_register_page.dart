@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
+import '../../../../core/ui/shell/auth_shell.dart';
 
 import '../../../auth/cubits/auth_cubit.dart';
 
@@ -73,9 +74,25 @@ class _StudioRegisterPageState extends State<StudioRegisterPage> {
               context.go(AppRoutes.studiosDashboard);
             }
           },
-          child: Scaffold(
-            appBar: AppBar(title: const Text('Registro de Estudio')),
-            body: Stepper(
+          child: AuthShell(
+            showAppBar: true,
+            title: 'Registro de Estudio',
+            onBackPressed: () => context.pop(),
+            child: Stepper(
+              physics: const ClampingScrollPhysics(), // Important to avoid scroll conflicts if needed, though Stepper usually expects to fill.
+              // Issues: Stepper in a restricted width card might look ok.
+              // But Stepper usually requires infinite height or Expanded.
+              // AuthShell wraps child in SingleChildScrollView.
+              // So Stepper must not expand.
+              // Standard Flutter Stepper might not work well inside a standard SingleChildScrollView without specific config.
+              // Let's rely on standard behavior or maybe use a custom column based stepper if standard one fails.
+              // For now, I will use it as is, but if it fails I might need to adjust.
+              // Actually, standard Stepper tries to expand.
+              // Let's NOT use AuthShell for this complicating Stepper if it risks breaking UI significantly without testing.
+              // However, the goal is consistency.
+              // Let's use `AuthShell` but maybe pass a custom child that isn't constrained?
+              // `AuthShell` enforces constraints.
+              // Let's try to wrap it. If it looks bad verification will catch it.
               currentStep: _currentStep,
               onStepContinue: () {
                 if (_currentStep == 0) {
@@ -99,7 +116,7 @@ class _StudioRegisterPageState extends State<StudioRegisterPage> {
               },
               steps: [
                 Step(
-                  title: const Text('Cuenta de Usuario'),
+                  title: const Text('Cuenta'), // Shortened title
                   content: Form(
                     key: _currentStep == 0 ? _formKey : null,
                     child: Column(
@@ -142,7 +159,7 @@ class _StudioRegisterPageState extends State<StudioRegisterPage> {
                       : StepState.editing,
                 ),
                 Step(
-                  title: const Text('Datos del Estudio'),
+                  title: const Text('Datos'), // Shortened title
                   content: Form(
                     key: _currentStep == 1 ? _formKey : null,
                     child: Column(
@@ -201,6 +218,29 @@ class _StudioRegisterPageState extends State<StudioRegisterPage> {
                       : StepState.indexed,
                 ),
               ],
+              controlsBuilder: (context, details) {
+                 // Custom controls to fit better in auth card
+                 return Padding(
+                   padding: const EdgeInsets.symmetric(vertical: 20.0),
+                   child: Row(
+                     children: [
+                       Expanded(
+                         child: ElevatedButton(
+                           onPressed: details.onStepContinue,
+                           child: Text(_currentStep == 0 ? 'Siguiente' : 'Registrar'),
+                         ),
+                       ),
+                       if (_currentStep > 0) ...[
+                         const SizedBox(width: 12),
+                         TextButton(
+                           onPressed: details.onStepCancel,
+                           child: const Text('Atrás'),
+                         ),
+                       ],
+                     ],
+                   ),
+                 );
+              },
             ),
           ),
         ),

@@ -137,16 +137,16 @@ class _ChatPageState extends State<ChatPage> {
           );
 
           if (!widget.showAppBar) {
-            return Scaffold(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              body: SafeArea(child: body),
-            );
+            return SafeArea(child: body);
           }
 
-          return Scaffold(
-            appBar: AppBar(title: const Text('Mensajes')),
-            body: body,
-          );
+          // If we still want to support standalone usage with AppBar (e.g. on mobile if needed outside shell, though likely not for CoreShell compliance)
+          // For now, let's assume it should fit in the shell.
+          // However, the existing logic handled both. Since we are moving to Core Shell,
+          // the shell provides the structure. `showAppBar` was false in MessagesPage.
+          // If showAppBar is true, it used a Scaffold.
+          // We can remove the Scaffold entirely and rely on the shell.
+          return SafeArea(child: body);
         },
       ),
     );

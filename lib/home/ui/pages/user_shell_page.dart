@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_routes.dart';
+import '../../../core/ui/shell/core_shell.dart';
 
 import '../../../modules/auth/cubits/auth_cubit.dart';
 
@@ -38,6 +39,9 @@ class UserShellPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isWideLayout = kIsWeb ? width >= 700 : width >= 1200;
+    
+    // On web, we always showed top bar in the previous code.
+    // Logic: `showTopAppBar = kIsWeb || !isWideLayout`
     final showTopAppBar = kIsWeb || !isWideLayout;
 
     return MultiBlocProvider(
@@ -60,31 +64,17 @@ class UserShellPage extends StatelessWidget {
             context.go(AppRoutes.login);
           }
         },
-        child: Scaffold(
-          drawer: isWideLayout
-              ? null
-              : const Drawer(child: SafeArea(child: UserSidebar())),
-          appBar: showTopAppBar
-              ? SmAppBar(showMenuButton: !isWideLayout)
+        child: CoreShell(
+          sidebar: const UserSidebar(),
+          appBar: showTopAppBar 
+              ? SmAppBar(showMenuButton: !isWideLayout) 
               : null,
-          body: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (isWideLayout) ...[
-                const SizedBox(
-                  width: 300,
-                  child: Material(elevation: 0, child: UserSidebar()),
-                ),
-                const VerticalDivider(width: 1, thickness: 1),
-              ],
-              Expanded(key: const ValueKey('user-shell-content'), child: child),
-            ],
+          bottomNavigationBar: const UserBottomNavBar(),
+          floatingActionButton: isWideLayout ? null : const ProfileQuickActionsFab(),
+          child: KeyedSubtree(
+            key: const ValueKey('user-shell-content'),
+            child: child,
           ),
-          bottomNavigationBar: isWideLayout ? null : const UserBottomNavBar(),
-          floatingActionButton: isWideLayout
-              ? null
-              : const ProfileQuickActionsFab(),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         ),
       ),
     );

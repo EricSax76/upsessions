@@ -45,105 +45,112 @@ class _EditRoomPageState extends State<EditRoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.room == null ? 'Add Room' : 'Edit Room')),
-      body: BlocProvider(
-        create: (context) => StudiosCubit(
-          repository: locate<StudiosRepository>(),
-          imageService: locate<StudioImageService>(),
-        ), // We just need access to repo mainly, or we could pass the cubit
-        child: BlocConsumer<StudiosCubit, StudiosState>(
-          listener: (context, state) {
-            if (state.status == StudiosStatus.success) {
-              Navigator.of(context).pop();
-            } else if (state.status == StudiosStatus.failure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMessage ?? 'Error saving room')),
-              );
-            }
-          },
-          builder: (context, state) {
-             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(labelText: 'Room Name'),
-                      validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                         Expanded(
-                          child: TextFormField(
-                            controller: _capacityController,
-                            decoration: const InputDecoration(labelText: 'Capacity (ppl)'),
-                            keyboardType: TextInputType.number,
-                            validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _sizeController,
-                            decoration: const InputDecoration(labelText: 'Size (e.g. 4x5m)'),
-                            validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _priceController,
-                      decoration: const InputDecoration(labelText: 'Price per Hour (€)'),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-                    ),
-                     const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _equipmentController,
-                      decoration: const InputDecoration(labelText: 'Equipment (comma separated)'),
-                      maxLines: 2,
-                    ),
-                    const SizedBox(height: 24),
-                     ElevatedButton(
-                      onPressed: state.status == StudiosStatus.loading ? null : () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                           final equipment = _equipmentController.text
-                              .split(',')
-                              .map((e) => e.trim())
-                              .where((e) => e.isNotEmpty)
-                              .toList();
-
-                           final room = RoomEntity(
-                            id: widget.room?.id ?? const Uuid().v4(),
-                            studioId: widget.studioId,
-                            name: _nameController.text,
-                            capacity: int.tryParse(_capacityController.text) ?? 0,
-                            size: _sizeController.text,
-                            pricePerHour: double.tryParse(_priceController.text) ?? 0.0,
-                            equipment: equipment,
-                            amenities: [], // Not implemented for MVP
-                            photos: [], // Not implemented for MVP
-                           );
-                           
-                           // Using the cubit to create
-                           context.read<StudiosCubit>().createRoom(room);
-                        }
-                      },
-                      child: state.status == StudiosStatus.loading 
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : Text(widget.room == null ? 'Create Room' : 'Save Changes'),
-                    ),
-                  ],
-                ),
-              ),
+    return BlocProvider(
+      create: (context) => StudiosCubit(
+        repository: locate<StudiosRepository>(),
+        imageService: locate<StudioImageService>(),
+      ), // We just need access to repo mainly, or we could pass the cubit
+      child: BlocConsumer<StudiosCubit, StudiosState>(
+        listener: (context, state) {
+          if (state.status == StudiosStatus.success) {
+            Navigator.of(context).pop();
+          } else if (state.status == StudiosStatus.failure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.errorMessage ?? 'Error saving room')),
             );
-          },
-        ),
+          }
+        },
+        builder: (context, state) {
+           return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.room == null ? 'Add Room' : 'Edit Room',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 24),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(labelText: 'Room Name'),
+                        validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                           Expanded(
+                            child: TextFormField(
+                              controller: _capacityController,
+                              decoration: const InputDecoration(labelText: 'Capacity (ppl)'),
+                              keyboardType: TextInputType.number,
+                              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _sizeController,
+                              decoration: const InputDecoration(labelText: 'Size (e.g. 4x5m)'),
+                              validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _priceController,
+                        decoration: const InputDecoration(labelText: 'Price per Hour (€)'),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                      ),
+                       const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _equipmentController,
+                        decoration: const InputDecoration(labelText: 'Equipment (comma separated)'),
+                        maxLines: 2,
+                      ),
+                      const SizedBox(height: 24),
+                       ElevatedButton(
+                        onPressed: state.status == StudiosStatus.loading ? null : () {
+                          if (_formKey.currentState?.validate() ?? false) {
+                             final equipment = _equipmentController.text
+                                .split(',')
+                                .map((e) => e.trim())
+                                .where((e) => e.isNotEmpty)
+                                .toList();
+  
+                             final room = RoomEntity(
+                              id: widget.room?.id ?? const Uuid().v4(),
+                              studioId: widget.studioId,
+                              name: _nameController.text,
+                              capacity: int.tryParse(_capacityController.text) ?? 0,
+                              size: _sizeController.text,
+                              pricePerHour: double.tryParse(_priceController.text) ?? 0.0,
+                              equipment: equipment,
+                              amenities: [], // Not implemented for MVP
+                              photos: [], // Not implemented for MVP
+                             );
+                             
+                             // Using the cubit to create
+                             context.read<StudiosCubit>().createRoom(room);
+                          }
+                        },
+                        child: state.status == StudiosStatus.loading 
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : Text(widget.room == null ? 'Create Room' : 'Save Changes'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

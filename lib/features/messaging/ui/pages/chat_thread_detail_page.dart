@@ -45,9 +45,8 @@ class _ChatThreadDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(threadTitle)),
-      body: BlocConsumer<ChatThreadDetailCubit, ChatThreadDetailState>(
+    return SafeArea(
+      child: BlocConsumer<ChatThreadDetailCubit, ChatThreadDetailState>(
         listenWhen: (prev, curr) => prev.errorMessage != curr.errorMessage,
         listener: (context, state) {
           if (state.errorMessage != null) {
@@ -76,6 +75,14 @@ class _ChatThreadDetailView extends StatelessWidget {
 
           return Column(
             children: [
+              // valid to add a small header here if needed, or rely on UserShell
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  threadTitle,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
               Expanded(child: messageArea),
               ChatInputField(
                 onSend: (text) => cubit.sendMessage(threadId, text),

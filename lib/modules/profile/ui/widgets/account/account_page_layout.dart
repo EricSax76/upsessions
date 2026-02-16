@@ -38,56 +38,62 @@ class AccountPageLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mi cuenta'),
-        centerTitle: false,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final isDesktop = constraints.maxWidth > Breakpoints.desktop;
-          return Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1100),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 32,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+          child: Text(
+            'Mi cuenta',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+        ),
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth > Breakpoints.desktop;
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1100),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 32,
+                    ),
+                    child: isDesktop
+                        ? AccountDesktopLayout(
+                          profile: profile,
+                          user: user,
+                          avatarUrl: avatarUrl,
+                          uploadingPhoto: uploadingPhoto,
+                          onChangePhoto: onChangePhoto,
+                          onEditProfile: onEditProfile,
+                          onSignOut: onSignOut,
+                          twoFactor: twoFactor,
+                          newsletter: newsletter,
+                          onTwoFactorChanged: onTwoFactorChanged,
+                          onNewsletterChanged: onNewsletterChanged,
+                        )
+                        : AccountMobileLayout(
+                          profile: profile,
+                          user: user,
+                          avatarUrl: avatarUrl,
+                          uploadingPhoto: uploadingPhoto,
+                          onChangePhoto: onChangePhoto,
+                          onEditProfile: onEditProfile,
+                          onSignOut: onSignOut,
+                          twoFactor: twoFactor,
+                          newsletter: newsletter,
+                          onTwoFactorChanged: onTwoFactorChanged,
+                          onNewsletterChanged: onNewsletterChanged,
+                        ),
+                  ),
                 ),
-                child: isDesktop
-                    ? AccountDesktopLayout(
-                        profile: profile,
-                        user: user,
-                        avatarUrl: avatarUrl,
-                        uploadingPhoto: uploadingPhoto,
-                        onChangePhoto: onChangePhoto,
-                        onEditProfile: onEditProfile,
-                        onSignOut: onSignOut,
-                        twoFactor: twoFactor,
-                        newsletter: newsletter,
-                        onTwoFactorChanged: onTwoFactorChanged,
-                        onNewsletterChanged: onNewsletterChanged,
-                      )
-                    : AccountMobileLayout(
-                        profile: profile,
-                        user: user,
-                        avatarUrl: avatarUrl,
-                        uploadingPhoto: uploadingPhoto,
-                        onChangePhoto: onChangePhoto,
-                        onEditProfile: onEditProfile,
-                        onSignOut: onSignOut,
-                        twoFactor: twoFactor,
-                        newsletter: newsletter,
-                        onTwoFactorChanged: onTwoFactorChanged,
-                        onNewsletterChanged: onNewsletterChanged,
-                      ),
-              ),
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

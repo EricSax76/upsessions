@@ -28,7 +28,7 @@ class AnnouncementsHubPage extends StatelessWidget {
       chatRepository: chatRepository,
       inviteNotificationsRepository: inviteNotificationsRepository,
       likedMusiciansCubit: likedMusiciansCubit,
-      child: const AnnouncementsListPage(showAppBar: false),
+      child: const AnnouncementsListPage(),
     );
   }
 }

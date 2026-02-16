@@ -64,14 +64,29 @@ class AnnouncementFormPage extends StatelessWidget {
             );
           }
         },
+
         builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Nuevo anuncio')),
-            body: Padding(
-              padding: const EdgeInsets.all(16),
-              child: AnnouncementForm(
-                isLoading: state.status == AnnouncementFormStatus.submitting,
-                onSubmit: (entity, image) => _submit(context, entity, image),
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 860),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Nuevo anuncio',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 16),
+                    AnnouncementForm(
+                      isLoading:
+                          state.status == AnnouncementFormStatus.submitting,
+                      onSubmit:
+                          (entity, image) => _submit(context, entity, image),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

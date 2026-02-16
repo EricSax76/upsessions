@@ -12,39 +12,53 @@ class ProfileOverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Perfil'),
-        actions: [
-          IconButton(
-            onPressed: () => context.read<ProfileCubit>().refreshProfile(),
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Actualizar perfil',
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Perfil',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              IconButton(
+                onPressed: () => context.read<ProfileCubit>().refreshProfile(),
+                icon: const Icon(Icons.refresh),
+                tooltip: 'Actualizar perfil',
+              ),
+            ],
           ),
-        ],
-      ),
-      body: BlocBuilder<ProfileCubit, ProfileState>(
-        builder: (context, state) {
-          switch (state.status) {
-            case ProfileStatus.initial:
-            case ProfileStatus.loading:
-              return const Center(child: CircularProgressIndicator());
-            case ProfileStatus.failure:
-              return ProfileEmptyState(
-                error: state.errorMessage,
-                onRetry: () => context.read<ProfileCubit>().refreshProfile(),
-              );
-            case ProfileStatus.success:
-              final profile = state.profile;
-              if (profile == null) {
-                return ProfileEmptyState(
-                  onRetry: () => context.read<ProfileCubit>().refreshProfile(),
-                );
+        ),
+        Expanded(
+          child: BlocBuilder<ProfileCubit, ProfileState>(
+            builder: (context, state) {
+              switch (state.status) {
+                case ProfileStatus.initial:
+                case ProfileStatus.loading:
+                  return const Center(child: CircularProgressIndicator());
+                case ProfileStatus.failure:
+                  return ProfileEmptyState(
+                    error: state.errorMessage,
+                    onRetry: () =>
+                        context.read<ProfileCubit>().refreshProfile(),
+                  );
+                case ProfileStatus.success:
+                  final profile = state.profile;
+                  if (profile == null) {
+                    return ProfileEmptyState(
+                      onRetry: () =>
+                          context.read<ProfileCubit>().refreshProfile(),
+                    );
+                  }
+                  return _ProfileContentView(profile: profile);
               }
-              return _ProfileContentView(profile: profile);
-          }
-        },
-      ),
+            },
+          ),
+        ),
+      ],
     );
   }
 }

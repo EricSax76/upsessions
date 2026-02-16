@@ -122,62 +122,59 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
             final steps = _buildSteps(cubit);
             final progress = (state.currentStep + 1) / steps.length;
 
-            return Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                title: const Text(
-                  'Cuéntanos sobre ti y tu pasión por la música',
-                ),
-              ),
-              body: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      LinearProgressIndicator(value: progress),
-                      const SizedBox(height: 16),
-                      Expanded(
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 250),
-                          child: steps[state.currentStep],
-                        ),
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Cuéntanos sobre ti y tu pasión por la música',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 24),
+                    LinearProgressIndicator(value: progress),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        child: steps[state.currentStep],
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          if (state.currentStep > 0)
-                            OutlinedButton(
-                              onPressed: state.isSaving
-                                  ? null
-                                  : cubit.previousStep,
-                              child: const Text('Atrás'),
-                            ),
-                          if (state.currentStep > 0) const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: state.isSaving
-                                  ? null
-                                  : () => _handleContinue(
-                                      context,
-                                      steps.length,
-                                      user.id,
-                                    ),
-                              child: Text(
-                                state.currentStep == steps.length - 1
-                                    ? 'Finalizar'
-                                    : 'Continuar',
-                              ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        if (state.currentStep > 0)
+                          OutlinedButton(
+                            onPressed: state.isSaving
+                                ? null
+                                : cubit.previousStep,
+                            child: const Text('Atrás'),
+                          ),
+                        if (state.currentStep > 0) const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: state.isSaving
+                                ? null
+                                : () => _handleContinue(
+                                    context,
+                                    steps.length,
+                                    user.id,
+                                  ),
+                            child: Text(
+                              state.currentStep == steps.length - 1
+                                  ? 'Finalizar'
+                                  : 'Continuar',
                             ),
                           ),
-                        ],
-                      ),
-                      if (state.isSaving) ...[
-                        const SizedBox(height: 12),
-                        const Center(child: CircularProgressIndicator()),
+                        ),
                       ],
+                    ),
+                    if (state.isSaving) ...[
+                      const SizedBox(height: 12),
+                      const Center(child: CircularProgressIndicator()),
                     ],
-                  ),
+                  ],
                 ),
               ),
             );

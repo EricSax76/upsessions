@@ -84,14 +84,26 @@ class _AccountPageViewContentState extends State<_AccountPageViewContent> {
           final profile = profileState.profile;
 
           if (profile == null || user == null) {
-            return Scaffold(
-              appBar: AppBar(title: const Text('Mi cuenta')),
-              body: AccountMissingProfileView(
-                isLoading: profileState.status == ProfileStatus.loading,
-                error: profileState.errorMessage,
-                onRetry: () => context.read<ProfileCubit>().refreshProfile(),
-                onSignOut: () => context.read<AuthCubit>().signOut(),
-              ),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                  child: Text(
+                    'Mi cuenta',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ),
+                Expanded(
+                  child: AccountMissingProfileView(
+                    isLoading: profileState.status == ProfileStatus.loading,
+                    error: profileState.errorMessage,
+                    onRetry:
+                        () => context.read<ProfileCubit>().refreshProfile(),
+                    onSignOut: () => context.read<AuthCubit>().signOut(),
+                  ),
+                ),
+              ],
             );
           }
 

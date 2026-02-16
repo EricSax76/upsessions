@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_layout.dart';
+import '../../constants/app_layout.dart';
 
-class AuthLayout extends StatelessWidget {
+class AuthShell extends StatelessWidget {
   final Widget child;
   final bool showAppBar;
   final String? title;
   final VoidCallback? onBackPressed;
 
-  const AuthLayout({
+  const AuthShell({
     super.key,
     required this.child,
     this.showAppBar = false,
@@ -77,7 +77,7 @@ class AuthLayout extends StatelessWidget {
                       border: Border.all(
                          color: Colors.white.withValues(alpha: 0.2),
                          width: 1,
-                      ),
+                       ),
                     ),
                     // Ensure text color contrasts with dark background
                     child: Theme(

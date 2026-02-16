@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:upsessions/home/ui/pages/user_shell_page.dart';
 import 'package:upsessions/features/messaging/ui/pages/chat_page.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
@@ -37,18 +36,12 @@ class MessagesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UserShellPage(
-      groupsRepository: groupsRepository,
+    return ChatPage(
+      showAppBar: false,
+      initialThreadId: initialThreadId,
       chatRepository: chatRepository,
-      inviteNotificationsRepository: inviteNotificationsRepository,
-      likedMusiciansCubit: likedMusiciansCubit,
-      child: ChatPage(
-        showAppBar: false,
-        initialThreadId: initialThreadId,
-        chatRepository: chatRepository,
-        authRepository: authRepository,
-        profileRepository: profileRepository,
-      ),
+      authRepository: authRepository,
+      profileRepository: profileRepository,
     );
   }
 }

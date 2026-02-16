@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/ui/shell/auth_shell.dart';
 import '../../../../core/validators.dart';
 import '../../cubits/auth_cubit.dart';
 
@@ -15,7 +16,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
 
-  static const double _maxWidth = 420;
+
 
   @override
   void initState() {
@@ -48,65 +49,59 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text(pageTitle)),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: _maxWidth),
-            child: BlocBuilder<AuthCubit, AuthState>(
-              builder: (context, state) {
-                final isResetFlow =
-                    state.lastAction == AuthAction.resetPassword;
-                final isLoading = state.isLoading && isResetFlow;
-                final success = state.passwordResetEmailSent && isResetFlow;
-                final message = isResetFlow
-                    ? (success ? successMessage : state.errorMessage)
-                    : null;
+    return AuthShell(
+      showAppBar: true,
+      onBackPressed: () => Navigator.of(context).pop(),
+      title: pageTitle,
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          final isResetFlow =
+              state.lastAction == AuthAction.resetPassword;
+          final isLoading = state.isLoading && isResetFlow;
+          final success = state.passwordResetEmailSent && isResetFlow;
+          final message = isResetFlow
+              ? (success ? successMessage : state.errorMessage)
+              : null;
 
-                return Form(
-                  key: _formKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(instructionsText),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(labelText: emailLabel),
-                        validator: AppValidators.isValidEmail,
-                      ),
-                      const SizedBox(height: 16),
-                      if (message != null)
-                        Text(
-                          message,
-                          style: TextStyle(
-                            color: success
-                                ? colorScheme.primary
-                                : colorScheme.error,
-                          ),
-                        ),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: isLoading ? null : _reset,
-                        child: isLoading
-                            ? SizedBox.square(
-                                dimension: textTheme.bodyLarge?.fontSize,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text(sendButtonText),
-                      ),
-                    ],
+          return Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(instructionsText),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(labelText: emailLabel),
+                  validator: AppValidators.isValidEmail,
+                ),
+                const SizedBox(height: 16),
+                if (message != null)
+                  Text(
+                    message,
+                    style: TextStyle(
+                      color: success
+                          ? colorScheme.primary
+                          : colorScheme.error,
+                    ),
                   ),
-                );
-              },
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: isLoading ? null : _reset,
+                  child: isLoading
+                      ? SizedBox.square(
+                          dimension: textTheme.bodyLarge?.fontSize,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(sendButtonText),
+                ),
+              ],
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../cubits/auth_cubit.dart';
-import '../widgets/auth_layout.dart';
+import '../../../../core/ui/shell/auth_shell.dart';
 import '../widgets/register_form.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -40,7 +40,7 @@ class RegisterPage extends StatelessWidget {
         
         return Stack(
           children: [
-             AuthLayout(
+             AuthShell(
               showAppBar: true,
               title: l10n.createAccount,
               onBackPressed: () => context.pop(),

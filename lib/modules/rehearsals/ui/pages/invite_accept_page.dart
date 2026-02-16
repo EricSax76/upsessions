@@ -39,45 +39,47 @@ class _InviteAcceptPageState extends State<InviteAcceptPage> {
         authState.status == AuthStatus.authenticated &&
         widget.authRepository.currentUser != null;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Invitación')),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 520),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Invitación',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Has recibido una invitación a un grupo de ensayos.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              if (widget.groupId.isEmpty || widget.inviteId.isEmpty)
                 const Text(
-                  'Has recibido una invitación a un grupo de ensayos.',
+                  'Link inválido (faltan parámetros).',
                   textAlign: TextAlign.center,
+                )
+              else if (!isAuthenticated)
+                FilledButton(
+                  onPressed: () => context.go(AppRoutes.login),
+                  child: const Text('Iniciar sesión'),
+                )
+              else
+                FilledButton.icon(
+                  onPressed: _loading ? null : () => _accept(context),
+                  icon: _loading
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.check),
+                  label: const Text('Aceptar invitación'),
                 ),
-                const SizedBox(height: 12),
-                if (widget.groupId.isEmpty || widget.inviteId.isEmpty)
-                  const Text(
-                    'Link inválido (faltan parámetros).',
-                    textAlign: TextAlign.center,
-                  )
-                else if (!isAuthenticated)
-                  FilledButton(
-                    onPressed: () => context.go(AppRoutes.login),
-                    child: const Text('Iniciar sesión'),
-                  )
-                else
-                  FilledButton.icon(
-                    onPressed: _loading ? null : () => _accept(context),
-                    icon: _loading
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.check),
-                    label: const Text('Aceptar invitación'),
-                  ),
-              ],
-            ),
+            ],
           ),
         ),
       ),

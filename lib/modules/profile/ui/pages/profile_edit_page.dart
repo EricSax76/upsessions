@@ -73,18 +73,28 @@ class ProfileEditPage extends StatelessWidget {
           );
         }
 
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Editar perfil'),
-            actions: [
-              IconButton(
-                onPressed: () => context.read<ProfileCubit>().refreshProfile(),
-                icon: const Icon(Icons.refresh),
-                tooltip: 'Recargar perfil',
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Editar perfil',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  IconButton(
+                    onPressed:
+                        () => context.read<ProfileCubit>().refreshProfile(),
+                    icon: const Icon(Icons.refresh),
+                    tooltip: 'Recargar perfil',
+                  ),
+                ],
               ),
-            ],
-          ),
-          body: body,
+            ),
+            Expanded(child: body),
+          ],
         );
       },
     );
