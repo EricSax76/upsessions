@@ -297,5 +297,15 @@
   "searchProvincesLoadHint": "Load Spanish provinces from Firestore (metadata/geography.provinces).",
   "@searchProvincesLoadHint": {},
   "searchCitiesLoadHint": "Add cities per province in Firestore (metadata/geography.citiesByProvince).",
-  "@searchCitiesLoadHint": {}
+  "@searchCitiesLoadHint": {},
+  "studios": "Rehearsal rooms",
+  "@studios": {},
+  "studiosSubtitle": "Book the ideal space for your band",
+  "@studiosSubtitle": {},
+  "studiosDashboard": "Studio management",
+  "@studiosDashboard": {},
+  "studiosManage": "Manage studio",
+  "@studiosManage": {},
+  "studiosRegister": "Register studio",
+  "@studiosRegister": {}
 }

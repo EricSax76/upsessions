@@ -409,17 +409,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Add cities per province in Firestore (metadata/geography.citiesByProvince).';
 
   @override
-  String get studios => 'Salas de Ensayo';
+  String get studios => 'Rehearsal rooms';
 
   @override
-  String get studiosSubtitle => 'Reserva el espacio ideal para tu banda';
+  String get studiosSubtitle => 'Book the ideal space for your band';
 
   @override
-  String get studiosDashboard => 'Gestión de Sala';
+  String get studiosDashboard => 'Studio management';
 
   @override
-  String get studiosManage => 'Gestionar Sala';
+  String get studiosManage => 'Manage studio';
 
   @override
-  String get studiosRegister => 'Registrar Sala';
+  String get studiosRegister => 'Register studio';
 }
