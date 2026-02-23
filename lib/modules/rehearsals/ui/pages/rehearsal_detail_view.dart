@@ -114,6 +114,8 @@ class _RehearsalDetailViewBody extends StatelessWidget {
           return RehearsalDetailContent(
             rehearsal: state.rehearsal,
             setlist: state.setlist,
+            groupName: state.group.name,
+            groupPhotoUrl: state.group.photoUrl,
             bookingRoomName: state.booking?.roomName,
             bookingAddress: state.bookingStudio?.address,
             onEditRehearsal: () => rehearsalActions.editRehearsal(

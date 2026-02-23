@@ -97,14 +97,6 @@ class MusicianSearchView extends StatelessWidget {
         controller: searchController,
         onSubmitted: (_) => onSearch(),
         onPressed: onSearch,
-        state: state,
-        onClearFilters: onClearFilters,
-        onInstrumentChanged: cubit.setInstrument,
-        onStyleChanged: cubit.setStyle,
-        onProfileTypeChanged: cubit.setProfileType,
-        onGenderChanged: cubit.setGender,
-        onProvinceChanged: cubit.setProvince,
-        onCityChanged: cubit.setCity,
       ),
       filterPanelBuilder: (context, isWide) {
         return MusicianSearchFilterPanel(

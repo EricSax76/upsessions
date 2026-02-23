@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class MusicianOnboardingStepCard extends StatelessWidget {
   const MusicianOnboardingStepCard({
@@ -30,6 +31,15 @@ class MusicianOnboardingStepCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    )
+        .animate()
+        .fade(duration: 400.ms, curve: Curves.easeOut)
+        .slideY(
+          begin: 0.1,
+          end: 0,
+          duration: 400.ms,
+          curve: Curves.easeOutCubic,
+        )
+        .blurY(begin: 4, end: 0, duration: 300.ms);
   }
 }

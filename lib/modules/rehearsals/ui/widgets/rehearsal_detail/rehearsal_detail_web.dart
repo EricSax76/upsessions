@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../utils/rehearsal_date_utils.dart';
 import '../../../models/rehearsal_entity.dart';
 import '../../../models/setlist_item_entity.dart';
@@ -20,6 +21,8 @@ class RehearsalDetailWebLayout extends StatelessWidget {
     this.onBookRoom,
     this.bookingRoomName,
     this.bookingAddress,
+    this.groupName,
+    this.groupPhotoUrl,
   });
 
   final RehearsalEntity rehearsal;
@@ -34,6 +37,8 @@ class RehearsalDetailWebLayout extends StatelessWidget {
   final VoidCallback? onBookRoom;
   final String? bookingRoomName;
   final String? bookingAddress;
+  final String? groupName;
+  final String? groupPhotoUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -111,84 +116,102 @@ class RehearsalDetailWebLayout extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final useCompactActions = constraints.maxWidth < 640;
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    final hasPhoto = groupPhotoUrl != null && groupPhotoUrl!.isNotEmpty;
+    final initials = (groupName ?? 'E')
+        .trim()
+        .split(' ')
+        .take(2)
+        .map((w) => w.isNotEmpty ? w[0] : '')
+        .join()
+        .toUpperCase();
+
+    return Column(
+      children: [
+        // Top row: spacer + actions (top-right)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: scheme.primaryContainer.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.event_note, color: scheme.primary, size: 32),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Ensayo',
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: scheme.onSurface,
-                    ),
-                  ),
-                  Text(
-                    formatDateTime(rehearsal.startsAt),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                  if (useCompactActions) ...[
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        OutlinedButton.icon(
-                          onPressed: onEditRehearsal,
-                          icon: const Icon(Icons.edit_outlined, size: 18),
-                          label: const Text('Editar'),
-                        ),
-                        if (onDeleteRehearsal != null)
-                          IconButton(
-                            onPressed: onDeleteRehearsal,
-                            icon: Icon(
-                              Icons.delete_outline,
-                              color: scheme.error,
-                            ),
-                            tooltip: 'Eliminar ensayo',
-                          ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            if (!useCompactActions) ...[
-              const SizedBox(width: 16),
-              OutlinedButton.icon(
-                onPressed: onEditRehearsal,
-                icon: const Icon(Icons.edit_outlined, size: 18),
-                label: const Text('Editar'),
-              ),
-              if (onDeleteRehearsal != null) ...[
-                const SizedBox(width: 12),
-                IconButton(
-                  onPressed: onDeleteRehearsal,
-                  icon: Icon(Icons.delete_outline, color: scheme.error),
-                  tooltip: 'Eliminar ensayo',
+            OutlinedButton.icon(
+              onPressed: onEditRehearsal,
+              icon: const Icon(Icons.edit_outlined, size: 18),
+              label: const Text('Editar'),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: scheme.outlineVariant),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ],
+              ),
+            ),
+            if (onDeleteRehearsal != null) ...[
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: onDeleteRehearsal,
+                icon: Icon(Icons.delete_outline, color: scheme.error),
+                tooltip: 'Eliminar ensayo',
+                style: IconButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: scheme.error.withValues(alpha: 0.3),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ],
+        ),
+        const SizedBox(height: 16),
+        // Centered group photo
+        CircleAvatar(
+          radius: 44,
+          backgroundColor: scheme.primaryContainer.withValues(alpha: 0.3),
+          backgroundImage: hasPhoto ? NetworkImage(groupPhotoUrl!) : null,
+          child: hasPhoto
+              ? null
+              : Text(
+                  initials,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: scheme.onPrimaryContainer,
+                  ),
+                ),
+        ),
+        const SizedBox(height: 16),
+        // Title & date centered below the photo
+        Text(
+          'Ensayo',
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: scheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          formatDateTime(rehearsal.startsAt),
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: scheme.onSurfaceVariant,
+          ),
+        ),
+        if (groupName != null && groupName!.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            groupName!,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: scheme.primary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ],
+    )
+        .animate()
+        .fade(duration: 400.ms, curve: Curves.easeOut)
+        .slideY(
+          begin: 0.05,
+          end: 0,
+          duration: 400.ms,
+          curve: Curves.easeOutCubic,
         );
-      },
-    );
   }
 
   Widget _buildSetlistSection(BuildContext context, {bool expands = true}) {

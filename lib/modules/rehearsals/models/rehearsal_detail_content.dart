@@ -20,6 +20,8 @@ class RehearsalDetailContent extends StatelessWidget {
     this.onBookRoom,
     this.bookingRoomName,
     this.bookingAddress,
+    this.groupName,
+    this.groupPhotoUrl,
   });
 
   final RehearsalEntity rehearsal;
@@ -34,6 +36,8 @@ class RehearsalDetailContent extends StatelessWidget {
   final VoidCallback? onBookRoom;
   final String? bookingRoomName;
   final String? bookingAddress;
+  final String? groupName;
+  final String? groupPhotoUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +54,8 @@ class RehearsalDetailContent extends StatelessWidget {
       onBookRoom: onBookRoom,
       bookingRoomName: bookingRoomName,
       bookingAddress: bookingAddress,
+      groupName: groupName,
+      groupPhotoUrl: groupPhotoUrl,
     );
   }
 }

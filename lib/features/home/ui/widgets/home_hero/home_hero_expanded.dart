@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:upsessions/core/constants/app_spacing.dart';
-import 'package:upsessions/core/widgets/sm_avatar.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'home_hero_view_model.dart';
 import 'home_hero_widgets.dart';
@@ -42,47 +42,12 @@ class HomeHeroExpanded extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        loc.appName.toUpperCase(),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          letterSpacing: 2,
-                          fontWeight: FontWeight.w600,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        'Hola, $titleName 👋',
-                        style: theme.textTheme.displaySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs + AppSpacing.xxs),
-                      Text(
-                        '¿Listo para conectar con otros músicos hoy?',
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.lg),
-                SmAvatar(
-                  radius: AppSpacing.xl,
-                  imageUrl: viewModel.photoUrl,
-                  initials: viewModel.initials,
-                  backgroundColor: colorScheme.primaryContainer,
-                ),
-              ],
+            Text(
+              'Hola, $titleName 👋',
+              style: theme.textTheme.displaySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
             ),
             const SizedBox(height: AppSpacing.xl),
             if (isSplit)
@@ -90,6 +55,7 @@ class HomeHeroExpanded extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
+                    flex: 6,
                     child: viewModel.upcomingRehearsals.length > 1
                         ? RehearsalsQuickView(
                             rehearsals: viewModel.upcomingRehearsals,
@@ -98,8 +64,11 @@ class HomeHeroExpanded extends StatelessWidget {
                             rehearsal: viewModel.nextRehearsal,
                           ),
                   ),
-                  const SizedBox(width: AppSpacing.lg),
-                  Expanded(child: actionsBlock),
+                  const SizedBox(width: AppSpacing.xl),
+                  Expanded(
+                    flex: 5,
+                    child: actionsBlock,
+                  ),
                 ],
               )
             else ...[
@@ -112,7 +81,15 @@ class HomeHeroExpanded extends StatelessWidget {
               actionsBlock,
             ],
           ],
-        );
+        )
+            .animate()
+            .fade(duration: 500.ms, curve: Curves.easeOut)
+            .slideY(
+              begin: 0.05,
+              end: 0,
+              duration: 500.ms,
+              curve: Curves.easeOutCubic,
+            );
       },
     );
   }

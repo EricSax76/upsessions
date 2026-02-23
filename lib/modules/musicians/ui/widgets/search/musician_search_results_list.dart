@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../cubits/musician_search_cubit.dart';
@@ -67,7 +68,16 @@ class MusicianSearchResultsList extends StatelessWidget {
                 return MusicianCard(
                   musician: musician,
                   onTap: () => onTapMusician(musician),
-                );
+                )
+                    .animate()
+                    .fade(duration: 400.ms, delay: (index * 60).ms)
+                    .slideY(
+                      begin: 0.08,
+                      end: 0,
+                      duration: 400.ms,
+                      delay: (index * 60).ms,
+                      curve: Curves.easeOutQuad,
+                    );
               },
             );
           },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:upsessions/modules/musicians/models/musician_entity.dart';
 import 'package:upsessions/core/widgets/sm_avatar.dart';
@@ -32,7 +33,16 @@ class NewMusiciansSection extends StatelessWidget {
               return SizedBox(
                 width: cardWidth,
                 child: _NewMusicianCard(musician: musician),
-              );
+              )
+                  .animate()
+                  .fade(duration: 350.ms, delay: (index * 70).ms)
+                  .slideX(
+                    begin: 0.15,
+                    end: 0,
+                    duration: 350.ms,
+                    delay: (index * 70).ms,
+                    curve: Curves.easeOutQuad,
+                  );
             },
           ),
         );

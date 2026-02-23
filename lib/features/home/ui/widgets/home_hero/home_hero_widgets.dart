@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -170,7 +171,7 @@ class HomeHeroQuickActionsGrid extends StatelessWidget {
       crossAxisCount: 2,
       mainAxisSpacing: AppSpacing.md,
       crossAxisSpacing: AppSpacing.md,
-      childAspectRatio: 1.25,
+      childAspectRatio: 1.4,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
@@ -179,25 +180,37 @@ class HomeHeroQuickActionsGrid extends StatelessWidget {
           label: loc.navMusicians,
           imagePath: 'assets/images/home/quick_actions/quick_musicians.png',
           onTap: () => context.push(AppRoutes.musicians),
-        ),
+        )
+            .animate()
+            .fade(duration: 400.ms)
+            .slideY(begin: 0.1, end: 0, duration: 400.ms, curve: Curves.easeOutQuad),
         _HomeHeroQuickActionTile(
 
           label: loc.navAnnouncements,
           imagePath: 'assets/images/home/quick_actions/quick_announcements.png',
           onTap: () => context.push(AppRoutes.announcements),
-        ),
+        )
+            .animate()
+            .fade(duration: 400.ms, delay: 80.ms)
+            .slideY(begin: 0.1, end: 0, duration: 400.ms, delay: 80.ms, curve: Curves.easeOutQuad),
         _HomeHeroQuickActionTile(
 
           label: loc.navEvents,
           imagePath: 'assets/images/home/quick_actions/quick_events.png',
           onTap: () => context.push(AppRoutes.events),
-        ),
+        )
+            .animate()
+            .fade(duration: 400.ms, delay: 160.ms)
+            .slideY(begin: 0.1, end: 0, duration: 400.ms, delay: 160.ms, curve: Curves.easeOutQuad),
         _HomeHeroQuickActionTile(
 
           label: loc.navRehearsals,
           imagePath: 'assets/images/home/quick_actions/quick_rehearsals.png',
           onTap: () => context.push(AppRoutes.rehearsals),
-        ),
+        )
+            .animate()
+            .fade(duration: 400.ms, delay: 240.ms)
+            .slideY(begin: 0.1, end: 0, duration: 400.ms, delay: 240.ms, curve: Curves.easeOutQuad),
       ],
     );
   }
