@@ -1,14 +1,26 @@
 import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
 
+import { admin } from './firebase';
 import { region } from './region';
 export { seedChatThreads } from './chatSeeder';
-
-admin.initializeApp();
 
 function stringList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value.map((entry) => String(entry)).filter(Boolean);
+}
+
+function stringOrEmpty(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+function numberOrNull(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function nonNegativeInt(value: unknown): number {
+  const resolved = numberOrNull(value);
+  if (resolved == null) return 0;
+  return Math.max(0, Math.floor(resolved));
 }
 
 function record(value: unknown): Record<string, unknown> {
@@ -16,6 +28,31 @@ function record(value: unknown): Record<string, unknown> {
   if (typeof value !== 'object') return {};
   if (Array.isArray(value)) return {};
   return value as Record<string, unknown>;
+}
+
+function contactPayloadFromMusician(
+  contactId: string,
+  musicianData: Record<string, unknown>,
+): Record<string, unknown> {
+  const styles = stringList(musicianData.styles);
+  const highlightStyle = stringOrEmpty(musicianData.highlightStyle);
+  const resolvedHighlightStyle =
+    highlightStyle || (styles.length ? styles[0] : null);
+  const photoUrl = stringOrEmpty(musicianData.photoUrl);
+
+  return {
+    id: contactId,
+    ownerId: stringOrEmpty(musicianData.ownerId) || contactId,
+    name: stringOrEmpty(musicianData.name) || 'Musician',
+    instrument: stringOrEmpty(musicianData.instrument),
+    city: stringOrEmpty(musicianData.city),
+    styles,
+    highlightStyle: resolvedHighlightStyle,
+    photoUrl: photoUrl || null,
+    experienceYears: nonNegativeInt(musicianData.experienceYears),
+    rating: numberOrNull(musicianData.rating),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  };
 }
 
 export const ping = region.https.onRequest(
@@ -111,6 +148,60 @@ export const onGroupInviteCreated = region.firestore
           .delete(),
       ),
     );
+  });
+
+export const onGroupInviteUsedCreateContacts = region.firestore
+  .document('groups/{groupId}/invites/{inviteId}')
+  .onUpdate(async (change) => {
+    const before = change.before.data() ?? {};
+    const after = change.after.data() ?? {};
+
+    const beforeStatus = stringOrEmpty(before.status);
+    const afterStatus = stringOrEmpty(after.status);
+
+    if (beforeStatus === 'used' || afterStatus !== 'used') {
+      return;
+    }
+
+    const inviterUid = stringOrEmpty(after.createdBy);
+    const targetUid = stringOrEmpty(after.targetUid);
+    const usedByUid = stringOrEmpty(after.usedBy);
+    const acceptedUid = usedByUid || targetUid;
+
+    if (!inviterUid || !acceptedUid || inviterUid === acceptedUid) {
+      return;
+    }
+
+    const db = admin.firestore();
+
+    const [inviterMusicianSnap, acceptedMusicianSnap] = await Promise.all([
+      db.collection('musicians').doc(inviterUid).get(),
+      db.collection('musicians').doc(acceptedUid).get(),
+    ]);
+
+    const inviterPayload = contactPayloadFromMusician(
+      inviterUid,
+      record(inviterMusicianSnap.data()),
+    );
+    const acceptedPayload = contactPayloadFromMusician(
+      acceptedUid,
+      record(acceptedMusicianSnap.data()),
+    );
+
+    await Promise.all([
+      db
+        .collection('musicians')
+        .doc(inviterUid)
+        .collection('contacts')
+        .doc(acceptedUid)
+        .set(acceptedPayload, { merge: true }),
+      db
+        .collection('musicians')
+        .doc(acceptedUid)
+        .collection('contacts')
+        .doc(inviterUid)
+        .set(inviterPayload, { merge: true }),
+    ]);
   });
 
 export const onChatThreadWrite = region.firestore
