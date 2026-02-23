@@ -74,7 +74,7 @@ class _RegisterFormState extends State<RegisterForm> {
               ),
               const SizedBox(height: 16),
               if (error != null)
-                Text(error, style: const TextStyle(color: Colors.redAccent)),
+                Text(error, style: TextStyle(color: Theme.of(context).colorScheme.error)),
               const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,

@@ -13,7 +13,7 @@ class MusicianOnboardingMissingSessionView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
+            Icon(Icons.error_outline, size: 48, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 12),
             const Text('No pudimos encontrar tu sesión.'),
             const SizedBox(height: 12),

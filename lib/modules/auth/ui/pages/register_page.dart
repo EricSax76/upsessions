@@ -52,7 +52,7 @@ class RegisterPage extends StatelessWidget {
                   Text(
                     'Únete a la red de Solo Músicos',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                       color: Colors.white,
+                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -62,9 +62,9 @@ class RegisterPage extends StatelessWidget {
                   TextButton(
                     onPressed: () => context.pop(),
                     // TODO: Localize strings
-                    child: const Text(
+                    child: Text(
                       '¿Ya tienes cuenta? Inicia sesión',
-                      style: TextStyle(color: Colors.white70),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ),
                 ],
@@ -73,7 +73,7 @@ class RegisterPage extends StatelessWidget {
              if (isSubmitting)
                 Positioned.fill(
                   child: Container(
-                    color: Colors.black45,
+                    color: Theme.of(context).colorScheme.scrim,
                     child: const Center(child: CircularProgressIndicator()),
                   ),
                 ),

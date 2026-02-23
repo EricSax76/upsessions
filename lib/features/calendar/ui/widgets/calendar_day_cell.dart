@@ -31,7 +31,7 @@ class CalendarDayCell extends StatelessWidget {
           : null,
     );
     final textStyle = theme.textTheme.titleMedium?.copyWith(
-      color: isSelected ? Colors.white : null,
+      color: isSelected ? theme.colorScheme.onPrimary : null,
       fontWeight: FontWeight.w600,
     );
 
@@ -54,7 +54,7 @@ class CalendarDayCell extends StatelessWidget {
                   child: EventMarkers(
                     count: eventsCount,
                     activeColor: isSelected
-                        ? Colors.white
+                        ? theme.colorScheme.onPrimary
                         : theme.colorScheme.primary,
                   ),
                 ),

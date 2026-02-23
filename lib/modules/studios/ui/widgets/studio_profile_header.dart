@@ -38,17 +38,17 @@ class StudioProfileHeader extends StatelessWidget {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
                   color: Theme.of(context).colorScheme.primaryContainer,
-                  child: const Icon(
+                  child: Icon(
                     Icons.broken_image_outlined,
                     size: 64,
-                    color: Colors.black26,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               )
             else
               Container(
                 color: Theme.of(context).colorScheme.primaryContainer,
-                child: const Icon(Icons.image, size: 64, color: Colors.black26),
+                child: Icon(Icons.image, size: 64, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             Positioned(
               bottom: 8,
@@ -101,10 +101,10 @@ class StudioAvatarSection extends StatelessWidget {
               radius: 18,
               backgroundColor: Theme.of(context).colorScheme.primary,
               child: IconButton(
-                icon: const Icon(
+                icon: Icon(
                   Icons.camera_alt,
                   size: 18,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
                 onPressed: onUploadLogo,
               ),

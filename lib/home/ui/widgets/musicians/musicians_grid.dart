@@ -104,7 +104,7 @@ class _MusicianTileState extends State<_MusicianTile> {
                 ]
               : [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: colorScheme.scrim.withValues(alpha: 0.05),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),

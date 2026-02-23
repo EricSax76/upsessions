@@ -68,7 +68,7 @@ class RoomCard extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withValues(alpha: 0.8),
+                          scheme.scrim.withValues(alpha: 0.8),
                         ],
                         stops: const [0.5, 1.0],
                       ),
@@ -85,16 +85,16 @@ class RoomCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.6),
+                       color: scheme.scrim.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: scheme.onInverseSurface.withValues(alpha: 0.2),
                       ),
                     ),
                     child: Text(
                       studioName,
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: Colors.white,
+                        color: scheme.onInverseSurface,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.5,
                       ),
@@ -117,7 +117,7 @@ class RoomCard extends StatelessWidget {
                             Text(
                               room.name,
                               style: theme.textTheme.titleLarge?.copyWith(
-                                color: Colors.white,
+                                color: scheme.onInverseSurface,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: -0.5,
                                 fontSize: 22,
@@ -138,7 +138,7 @@ class RoomCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
+                              color: scheme.shadow,
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),

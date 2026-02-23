@@ -63,9 +63,9 @@ class ProfileEditPage extends StatelessWidget {
                 ),
               ),
               if (state.status == ProfileStatus.loading)
-                const Positioned.fill(
+                Positioned.fill(
                   child: ColoredBox(
-                    color: Colors.black26,
+                    color: Theme.of(context).colorScheme.scrim,
                     child: Center(child: CircularProgressIndicator()),
                   ),
                 ),

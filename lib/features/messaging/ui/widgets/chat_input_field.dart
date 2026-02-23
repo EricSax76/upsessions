@@ -83,11 +83,11 @@ class _ChatInputFieldState extends State<ChatInputField> {
           const SizedBox(width: 12),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF4F46E5), // Indigo Primary
+              color: colorScheme.primary,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF4F46E5).withValues(alpha: 0.3),
+                  color: colorScheme.primary.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -95,7 +95,7 @@ class _ChatInputFieldState extends State<ChatInputField> {
             ),
             child: IconButton(
               onPressed: _handleSend,
-              icon: const Icon(Icons.send_rounded, color: Colors.white, size: 22),
+              icon: Icon(Icons.send_rounded, color: colorScheme.onPrimary, size: 22),
               tooltip: 'Enviar',
               padding: const EdgeInsets.all(12),
             ),

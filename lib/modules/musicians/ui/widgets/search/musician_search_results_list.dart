@@ -23,7 +23,7 @@ class MusicianSearchResultsList extends StatelessWidget {
               state.errorMessage!,
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
+              ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error),
             ),
           );
         }

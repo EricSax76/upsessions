@@ -15,7 +15,7 @@ class AccountField extends StatelessWidget {
           label,
           style: Theme.of(
             context,
-          ).textTheme.labelMedium?.copyWith(color: Colors.grey[600]),
+          ).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 4),
         Text(value, style: Theme.of(context).textTheme.bodyLarge),

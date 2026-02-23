@@ -141,7 +141,7 @@ class _EditRoomPageState extends State<EditRoomPage> {
                           }
                         },
                         child: state.status == StudiosStatus.loading 
-                            ? const CircularProgressIndicator(color: Colors.white)
+                            ? CircularProgressIndicator(color: Theme.of(context).colorScheme.onPrimary)
                             : Text(widget.room == null ? 'Create Room' : 'Save Changes'),
                       ),
                     ],

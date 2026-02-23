@@ -245,8 +245,8 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withValues(alpha: 0.1),
-                Colors.black.withValues(alpha: 0.7),
+                colorScheme.scrim.withValues(alpha: 0.1),
+                colorScheme.scrim.withValues(alpha: 0.7),
               ],
             ),
           ),
@@ -258,10 +258,10 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
                 label,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: colorScheme.onInverseSurface,
                   shadows: [
                     Shadow(
-                      color: Colors.black.withValues(alpha: 0.5),
+                      color: colorScheme.scrim.withValues(alpha: 0.5),
                       offset: const Offset(0, 1),
                       blurRadius: 4,
                     ),

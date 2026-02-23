@@ -55,7 +55,7 @@ class AccountProfileHeaderCard extends StatelessWidget {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
+                            color: colorScheme.shadow,
                             blurRadius: 10,
                             spreadRadius: 2,
                           ),
@@ -73,12 +73,12 @@ class AccountProfileHeaderCard extends StatelessWidget {
                       Positioned.fill(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.black45,
+                            color: colorScheme.scrim,
                             shape: BoxShape.circle,
                           ),
-                          child: const Center(
+                          child: Center(
                             child: CircularProgressIndicator(
-                              color: Colors.white,
+                              color: colorScheme.onPrimary,
                             ),
                           ),
                         ),
@@ -92,10 +92,10 @@ class AccountProfileHeaderCard extends StatelessWidget {
                         elevation: 4,
                         child: IconButton(
                           onPressed: uploadingPhoto ? null : onChangePhoto,
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.camera_alt,
                             size: 20,
-                            color: Colors.white,
+                            color: colorScheme.onPrimary,
                           ),
                           constraints: const BoxConstraints.tightFor(
                             width: 40,

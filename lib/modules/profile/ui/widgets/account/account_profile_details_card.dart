@@ -96,7 +96,7 @@ class AccountProfileDetailsCard extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: Colors.grey),
+        Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
@@ -105,7 +105,7 @@ class AccountProfileDetailsCard extends StatelessWidget {
               Text(
                 label,
                 style: textTheme.labelLarge?.copyWith(
-                  color: Colors.grey,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.bold,
                 ),
               ),

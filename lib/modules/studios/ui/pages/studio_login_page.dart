@@ -66,7 +66,7 @@ class StudioLoginPage extends StatelessWidget {
                       'Acceso para Estudios',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
@@ -74,9 +74,9 @@ class StudioLoginPage extends StatelessWidget {
                     Text(
                       'Gestiona tus salas y reservas',
                       textAlign: TextAlign.center,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                          ),
                     ),
                     const VSpace(AppSpacing.lg),
                     const LoginForm(), // Reuse existing login form
@@ -94,8 +94,8 @@ class StudioLoginPage extends StatelessWidget {
                     const VSpace(AppSpacing.sm),
                     Row(
                       children: [
-                        const Expanded(
-                          child: Divider(thickness: 1, color: Colors.white24),
+                        Expanded(
+                          child: Divider(thickness: 1, color: Theme.of(context).colorScheme.outlineVariant),
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
@@ -107,12 +107,12 @@ class StudioLoginPage extends StatelessWidget {
                                 .textTheme
                                 .bodyMedium
                                 ?.copyWith(
-                                  color: Colors.white70,
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                 ),
                           ),
                         ),
-                        const Expanded(
-                          child: Divider(thickness: 1, color: Colors.white24),
+                        Expanded(
+                          child: Divider(thickness: 1, color: Theme.of(context).colorScheme.outlineVariant),
                         ),
                       ],
                     ),
@@ -126,7 +126,7 @@ class StudioLoginPage extends StatelessWidget {
               if (isSubmitting)
                 Positioned.fill(
                   child: Container(
-                    color: Colors.black45,
+                    color: Theme.of(context).colorScheme.scrim,
                     child: const Center(child: LoadingIndicator()),
                   ),
                 ),

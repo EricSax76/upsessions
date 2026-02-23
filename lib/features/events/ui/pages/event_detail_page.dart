@@ -32,12 +32,13 @@ class EventDetailPage extends StatelessWidget {
         listenWhen: (previous, current) =>
             current.effect != null || current.errorMessage != null,
         listener: (context, state) {
+          final colorScheme = Theme.of(context).colorScheme;
           final error = state.errorMessage;
           if (error != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('❌ Error al subir el banner: $error'),
-                backgroundColor: Colors.red,
+                backgroundColor: colorScheme.error,
                 duration: const Duration(seconds: 4),
               ),
             );
@@ -51,10 +52,10 @@ class EventDetailPage extends StatelessWidget {
           switch (effect) {
             case EventDetailEffect.bannerUpdated:
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('✅ Banner actualizado exitosamente'),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: const Text('✅ Banner actualizado exitosamente'),
+                  backgroundColor: colorScheme.tertiary,
+                  duration: const Duration(seconds: 2),
                 ),
               );
             case EventDetailEffect.templateCopied:

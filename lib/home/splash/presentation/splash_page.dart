@@ -57,10 +57,10 @@ class _SplashView extends StatelessWidget {
                 if (state.status == BootstrapStatus.loading)
                   const CircularProgressIndicator()
                 else if (showError)
-                  const Icon(
+                  Icon(
                     Icons.error_outline,
                     size: 32,
-                    color: Colors.redAccent,
+                    color: Theme.of(context).colorScheme.error,
                   )
                 else
                   const Icon(Icons.music_note, size: 32),
@@ -72,7 +72,7 @@ class _SplashView extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: Theme.of(
                         context,
-                      ).textTheme.bodyMedium?.copyWith(color: Colors.redAccent),
+                      ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.error),
                     ),
                   ),
               ],

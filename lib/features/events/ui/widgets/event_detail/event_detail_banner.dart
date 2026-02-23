@@ -84,8 +84,8 @@ class EventBanner extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.3),
-                    Colors.black.withValues(alpha: 0.6),
+                    scheme.scrim.withValues(alpha: 0.3),
+                    scheme.scrim.withValues(alpha: 0.6),
                   ],
                 ),
               ),
@@ -107,15 +107,15 @@ class EventBanner extends StatelessWidget {
                         vertical: 10,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: scheme.onInverseSurface.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.3),
+                          color: scheme.onInverseSurface.withValues(alpha: 0.3),
                           width: 1.5,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
+                            color: scheme.scrim.withValues(alpha: 0.1),
                             blurRadius: 10,
                             spreadRadius: 1,
                           ),
@@ -124,11 +124,11 @@ class EventBanner extends StatelessWidget {
                       child: Text(
                         eventTitle,
                         style: theme.textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
+                          color: scheme.onInverseSurface,
                           fontWeight: FontWeight.w900,
                           shadows: [
                             Shadow(
-                              color: Colors.black.withValues(alpha: 0.5),
+                              color: scheme.scrim.withValues(alpha: 0.5),
                               blurRadius: 8,
                             ),
                           ],
@@ -177,7 +177,7 @@ class EventBanner extends StatelessWidget {
             right: 12,
             child: Material(
               color: hasImage
-                  ? Colors.white.withValues(alpha: 0.25)
+                  ? scheme.onInverseSurface.withValues(alpha: 0.25)
                   : scheme.primaryContainer,
               borderRadius: BorderRadius.circular(12),
               elevation: hasImage ? 0 : 2,
@@ -193,7 +193,7 @@ class EventBanner extends StatelessWidget {
                       ? BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.4),
+                            color: scheme.onInverseSurface.withValues(alpha: 0.4),
                             width: 1.5,
                           ),
                         )
@@ -207,7 +207,7 @@ class EventBanner extends StatelessWidget {
                           height: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: hasImage ? Colors.white : scheme.primary,
+                            color: hasImage ? scheme.onInverseSurface : scheme.primary,
                           ),
                         )
                       else
@@ -217,7 +217,7 @@ class EventBanner extends StatelessWidget {
                               : Icons.add_photo_alternate_outlined,
                           size: 20,
                           color: hasImage
-                              ? Colors.white
+                              ? scheme.onInverseSurface
                               : scheme.onPrimaryContainer,
                         ),
                       const SizedBox(width: 8),
@@ -227,7 +227,7 @@ class EventBanner extends StatelessWidget {
                             : (hasImage ? 'Cambiar' : 'Subir banner'),
                         style: theme.textTheme.labelLarge?.copyWith(
                           color: hasImage
-                              ? Colors.white
+                              ? scheme.onInverseSurface
                               : scheme.onPrimaryContainer,
                           fontWeight: FontWeight.w700,
                         ),

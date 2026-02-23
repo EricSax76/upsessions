@@ -114,13 +114,13 @@ class _LoginFormState extends State<LoginForm> {
                 child: ElevatedButton(
                   onPressed: isLoading ? null : _login,
                   child: isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 18,
                           width: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
+                              Theme.of(context).colorScheme.onPrimary,
                             ),
                           ),
                         )

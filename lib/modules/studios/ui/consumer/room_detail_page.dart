@@ -38,20 +38,20 @@ class RoomDetailPage extends StatelessWidget {
               Container(
                 height: 200,
                 width: double.infinity,
-                color: Colors.grey.shade300,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 child: room.photos.isNotEmpty
                     ? Image.network(
                         room.photos.first,
                         fit: BoxFit.cover,
                         webHtmlElementStrategy: WebHtmlElementStrategy.prefer,
                         errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
+                            Icon(
                               Icons.broken_image_outlined,
                               size: 50,
-                              color: Colors.grey,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                       )
-                    : const Icon(Icons.image, size: 50, color: Colors.grey),
+                    : Icon(Icons.image, size: 50, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 16),
               Text(
@@ -65,8 +65,8 @@ class RoomDetailPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildInfoRow(Icons.people, 'Capacity: ${room.capacity} people'),
-              _buildInfoRow(Icons.square_foot, 'Size: ${room.size}'),
+              _buildInfoRow(context, Icons.people, 'Capacity: ${room.capacity} people'),
+              _buildInfoRow(context, Icons.square_foot, 'Size: ${room.size}'),
               const SizedBox(height: 24),
               Text('Equipment', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
@@ -118,12 +118,12 @@ class RoomDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String text) {
+  Widget _buildInfoRow(BuildContext context, IconData icon, String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.grey.shade700),
+          Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(width: 8),
           Text(text),
         ],

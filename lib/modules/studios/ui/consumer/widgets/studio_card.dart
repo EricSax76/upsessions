@@ -70,7 +70,7 @@ class StudioCard extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withValues(alpha: 0.6),
+                          scheme.scrim.withValues(alpha: 0.6),
                         ],
                         stops: const [0.6, 1.0],
                       ),
@@ -85,7 +85,7 @@ class StudioCard extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
+                        border: Border.all(color: scheme.onInverseSurface, width: 2),
                       ),
                       child: SmAvatar(
                         radius: 24,

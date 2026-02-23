@@ -56,9 +56,9 @@ class _ImageSectionState extends State<ImageSection> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: CircleAvatar(
-                  backgroundColor: Colors.black54,
+                  backgroundColor: Theme.of(context).colorScheme.scrim,
                   child: IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white),
+                    icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onPrimary),
                     onPressed: widget.onImageRemoved,
                   ),
                 ),

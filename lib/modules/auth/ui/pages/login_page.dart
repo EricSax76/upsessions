@@ -69,7 +69,7 @@ class LoginPage extends StatelessWidget {
                       localizations.login,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                     ),
                     const VSpace(AppSpacing.md),
@@ -82,7 +82,7 @@ class LoginPage extends StatelessWidget {
                           onPressed: () => context.push(AppRoutes.forgotPassword),
                           style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
-                              foregroundColor: Colors.white70),
+                              foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant),
                           child: Text(localizations.forgotPassword),
                         ),
                         TextButton(
@@ -108,8 +108,10 @@ class LoginPage extends StatelessWidget {
                     const VSpace(AppSpacing.sm),
                     Row(
                       children: [
-                        const Expanded(
-                            child: Divider(thickness: 1, color: Colors.white24)),
+                        Expanded(
+                            child: Divider(
+                                thickness: 1,
+                                color: Theme.of(context).colorScheme.outline)),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.sm,
@@ -120,12 +122,14 @@ class LoginPage extends StatelessWidget {
                                 .textTheme
                                 .bodyMedium
                                 ?.copyWith(
-                                  color: Colors.white70,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                           ),
                         ),
-                        const Expanded(
-                            child: Divider(thickness: 1, color: Colors.white24)),
+                        Expanded(
+                            child: Divider(
+                                thickness: 1,
+                                color: Theme.of(context).colorScheme.outline)),
                       ],
                     ),
                     const VSpace(AppSpacing.sm),
@@ -139,7 +143,7 @@ class LoginPage extends StatelessWidget {
                           context.push(AppRoutes.studiosLogin);
                         },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
+                          foregroundColor: Theme.of(context).colorScheme.onSurface,
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -150,7 +154,7 @@ class LoginPage extends StatelessWidget {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
-                                  ?.copyWith(color: Colors.white),
+                                  ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -177,7 +181,7 @@ class LoginPage extends StatelessWidget {
               if (isSubmitting)
                 Positioned.fill(
                   child: Container(
-                    color: Colors.black45,
+                    color: Theme.of(context).colorScheme.scrim,
                     child: const Center(child: LoadingIndicator()),
                   ),
                 ),

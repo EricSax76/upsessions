@@ -49,7 +49,7 @@ class AppWelcomePage extends StatelessWidget {
                         loc.appBrandName,
                         style:
                             Theme.of(context).textTheme.displaySmall?.copyWith(
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.onPrimary,
                                   letterSpacing: 4,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -60,14 +60,14 @@ class AppWelcomePage extends StatelessWidget {
                         loc.appWelcomeTagline,
                         style: Theme.of(
                           context,
-                        ).textTheme.titleMedium?.copyWith(color: Colors.white70),
+                        ).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.7)),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 40),
                       FilledButton(
                         onPressed: onContinue,
                         style: FilledButton.styleFrom(
-                          backgroundColor: Colors.white,
+                          backgroundColor: Theme.of(context).colorScheme.onPrimary,
                           foregroundColor: Theme.of(context).colorScheme.primary,
                         ),
                         child: Text(loc.startButton),
