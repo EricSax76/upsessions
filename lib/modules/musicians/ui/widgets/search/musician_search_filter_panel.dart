@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../cubits/musician_search_cubit.dart';
@@ -53,18 +54,24 @@ class MusicianSearchFilterPanel extends StatelessWidget {
       onClear: onClear,
     );
 
+    Widget panelWidget;
     if (isWide) {
-      return box;
+      panelWidget = box;
+    } else {
+      panelWidget = Card(
+        margin: EdgeInsets.zero,
+        child: ExpansionTile(
+          title: Text(loc.searchAdvancedFiltersTitle),
+          subtitle: Text(loc.searchAdvancedFiltersSubtitle),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          children: [box],
+        ),
+      );
     }
 
-    return Card(
-      margin: EdgeInsets.zero,
-      child: ExpansionTile(
-        title: Text(loc.searchAdvancedFiltersTitle),
-        subtitle: Text(loc.searchAdvancedFiltersSubtitle),
-        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        children: [box],
-      ),
-    );
+    return panelWidget
+        .animate()
+        .fade(duration: 400.ms, curve: Curves.easeOut)
+        .slideY(begin: 0.1, end: 0, duration: 400.ms, curve: Curves.easeOutQuad);
   }
 }
