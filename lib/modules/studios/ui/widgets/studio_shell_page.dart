@@ -7,7 +7,7 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/widgets/app_logo.dart';
 import '../../../../core/widgets/sm_avatar.dart';
 import '../../../auth/cubits/auth_cubit.dart';
-import '../../cubits/studios_cubit.dart';
+import '../../cubits/my_studio_cubit.dart';
 import '../../cubits/studios_state.dart';
 import 'studio_sidebar.dart';
 
@@ -55,7 +55,7 @@ class StudioShellPage extends StatelessWidget {
                 actions: [
                   Padding(
                     padding: const EdgeInsets.only(right: 16),
-                    child: BlocBuilder<StudiosCubit, StudiosState>(
+                    child: BlocBuilder<MyStudioCubit, StudiosState>(
                       builder: (context, state) {
                         final studio = state.myStudio;
                         final name = studio?.name ?? '';
@@ -66,7 +66,7 @@ class StudioShellPage extends StatelessWidget {
                           onTap: () {
                             context.push(
                               AppRoutes.studiosProfile,
-                              extra: context.read<StudiosCubit>(),
+                              extra: context.read<MyStudioCubit>(),
                             );
                           },
                           borderRadius: BorderRadius.circular(24),

@@ -22,7 +22,7 @@ class EventsHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Eventos',
+          loc.eventsShowcasesTitle,
           style: theme.textTheme.displaySmall?.copyWith(
             fontWeight: FontWeight.bold,
             letterSpacing: -0.5,
@@ -54,15 +54,12 @@ class EventsHeader extends StatelessWidget {
               value: thisWeekCount.toString(),
               icon: Icons.calendar_month,
             );
-            
+
             final createButton = Container(
               height: 80, // Match typical chip height approx
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    colorScheme.primary,
-                    colorScheme.tertiary,
-                  ],
+                  colors: [colorScheme.primary, colorScheme.tertiary],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -92,7 +89,7 @@ class EventsHeader extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          'Nuevo evento',
+                          loc.eventsNewEventButton,
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: colorScheme.onPrimary,
                             fontWeight: FontWeight.bold,
@@ -128,10 +125,7 @@ class EventsHeader extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: createButton,
-                ),
+                SizedBox(width: double.infinity, child: createButton),
               ],
             );
           },
@@ -189,11 +183,7 @@ class SummaryChip extends StatelessWidget {
                   color: colorScheme.primary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  icon,
-                  color: colorScheme.primary,
-                  size: 20,
-                ),
+                child: Icon(icon, color: colorScheme.primary, size: 20),
               ),
             ],
           ),

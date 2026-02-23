@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:upsessions/core/constants/app_routes.dart';
+import 'package:upsessions/core/widgets/event_banner_preview.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../models/home_event_model.dart';
 
@@ -15,9 +15,7 @@ class UpcomingEventsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
     if (events.isEmpty) {
-      return _EventsEmptyState(
-        message: loc.eventsEmptyMessage,
-      );
+      return _EventsEmptyState(message: loc.eventsEmptyMessage);
     }
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -61,9 +59,10 @@ class _EventCard extends StatelessWidget {
     final theme = Theme.of(context);
     final materialLoc = MaterialLocalizations.of(context);
     final dateLabel = materialLoc.formatMediumDate(event.start);
-    final timeLabel =
-        materialLoc.formatTimeOfDay(TimeOfDay.fromDateTime(event.start));
-    
+    final timeLabel = materialLoc.formatTimeOfDay(
+      TimeOfDay.fromDateTime(event.start),
+    );
+
     return Card(
       clipBehavior: Clip.hardEdge,
       shape: RoundedRectangleBorder(
@@ -79,9 +78,14 @@ class _EventCard extends StatelessWidget {
           children: [
             SizedBox(
               width: isCompact ? 100 : 120,
-              child: _EventBannerPreview(
+              child: EventBannerPreview(
                 imageUrl: event.bannerImageUrl,
                 height: double.infinity,
+                overlayAlpha: 0.24,
+                fallbackSecondaryAlpha: 0.18,
+                fallbackIcon: Icons.event_note_outlined,
+                fallbackIconAlpha: 0.8,
+                fallbackIconPadding: 8,
               ),
             ),
             Expanded(
@@ -138,67 +142,6 @@ class _EventCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _EventBannerPreview extends StatelessWidget {
-  const _EventBannerPreview({
-    required this.imageUrl,
-    required this.height,
-  });
-
-  final String? imageUrl;
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final hasImage = imageUrl != null && imageUrl!.trim().isNotEmpty;
-    return SizedBox(
-      height: height,
-      width: double.infinity,
-      child: hasImage
-          ? Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.network(imageUrl!, fit: BoxFit.cover),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        colorScheme.primary.withValues(alpha: 0.24),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    colorScheme.primary.withValues(alpha: 0.32),
-                    colorScheme.secondary.withValues(alpha: 0.18),
-                  ],
-                ),
-              ),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Icon(
-                    Icons.event_note_outlined,
-                    color: colorScheme.onPrimary.withValues(alpha: 0.8),
-                  ),
-                ),
-              ),
-            ),
     );
   }
 }

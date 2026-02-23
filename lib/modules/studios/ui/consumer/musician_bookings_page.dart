@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../cubits/studios_cubit.dart';
+import '../../cubits/bookings_cubit.dart';
 import '../../cubits/studios_state.dart';
 import 'widgets/booking_card.dart';
 import '../../repositories/studios_repository.dart';
-import '../../services/studio_image_service.dart';
 import '../../../auth/repositories/auth_repository.dart';
 import '../../../../core/locator/locator.dart';
 
@@ -18,7 +17,7 @@ class MusicianBookingsPage extends StatefulWidget {
 
 class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
   late final String? _userId;
-  StudiosCubit? _cubit;
+  BookingsCubit? _cubit;
 
   @override
   void initState() {
@@ -27,10 +26,8 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
     _userId = authRepo.currentUser?.id;
     final userId = _userId;
     if (userId != null) {
-      _cubit = StudiosCubit(
-        repository: locate<StudiosRepository>(),
-        imageService: locate<StudioImageService>(),
-      )..loadMyBookings(userId);
+      _cubit = BookingsCubit(repository: locate<StudiosRepository>())
+        ..loadMyBookings(userId);
     }
   }
 
@@ -49,7 +46,7 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
 
     return BlocProvider.value(
       value: _cubit!,
-      child: BlocBuilder<StudiosCubit, StudiosState>(
+      child: BlocBuilder<BookingsCubit, StudiosState>(
         builder: (context, state) {
           if (state.status == StudiosStatus.loading) {
             return const Center(child: CircularProgressIndicator());
@@ -63,7 +60,7 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: () =>
-                        context.read<StudiosCubit>().loadMyBookings(userId),
+                        context.read<BookingsCubit>().loadMyBookings(userId),
                     icon: const Icon(Icons.refresh),
                     label: const Text('Reintentar'),
                   ),

@@ -3,14 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
-import '../../cubits/studios_cubit.dart';
+import '../../cubits/studios_list_cubit.dart';
 import '../../cubits/studios_state.dart';
 import '../../models/room_entity.dart';
 import '../../models/studio_entity.dart';
 import 'widgets/room_card.dart';
 import 'widgets/studio_card.dart';
 import '../../repositories/studios_repository.dart';
-import '../../services/studio_image_service.dart';
 import '../../../../core/locator/locator.dart';
 
 /// Context for booking from a rehearsal
@@ -37,10 +36,9 @@ class StudiosListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => StudiosCubit(
-        repository: locate<StudiosRepository>(),
-        imageService: locate<StudioImageService>(),
-      )..loadAllStudios(refresh: true),
+      create: (context) =>
+          StudiosListCubit(repository: locate<StudiosRepository>())
+            ..loadAllStudios(refresh: true),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -54,7 +52,7 @@ class StudiosListPage extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: BlocBuilder<StudiosCubit, StudiosState>(
+            child: BlocBuilder<StudiosListCubit, StudiosState>(
               builder: (context, state) {
                 if (state.status == StudiosStatus.loading &&
                     state.studios.isEmpty) {
@@ -78,7 +76,7 @@ class StudiosListPage extends StatelessWidget {
                               Expanded(
                                 child: RefreshIndicator(
                                   onRefresh: () => context
-                                      .read<StudiosCubit>()
+                                      .read<StudiosListCubit>()
                                       .loadAllStudios(refresh: true),
                                   child: GridView.builder(
                                     padding: const EdgeInsets.all(24),
@@ -112,7 +110,7 @@ class StudiosListPage extends StatelessWidget {
                             Expanded(
                               child: RefreshIndicator(
                                 onRefresh: () => context
-                                    .read<StudiosCubit>()
+                                    .read<StudiosListCubit>()
                                     .loadAllStudios(refresh: true),
                                 child: ListView.builder(
                                   padding: const EdgeInsets.all(16),
@@ -161,7 +159,7 @@ class StudiosListPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: OutlinedButton.icon(
-        onPressed: () => context.read<StudiosCubit>().loadAllStudios(),
+        onPressed: () => context.read<StudiosListCubit>().loadAllStudios(),
         icon: const Icon(Icons.expand_more),
         label: const Text('Cargar más estudios'),
       ),
@@ -189,10 +187,9 @@ class StudioRoomsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => StudiosCubit(
-        repository: locate<StudiosRepository>(),
-        imageService: locate<StudioImageService>(),
-      )..selectStudio(studioId),
+      create: (context) =>
+          StudiosListCubit(repository: locate<StudiosRepository>())
+            ..selectStudio(studioId),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -204,7 +201,7 @@ class StudioRoomsPage extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: BlocBuilder<StudiosCubit, StudiosState>(
+            child: BlocBuilder<StudiosListCubit, StudiosState>(
               builder: (context, state) {
                 if (state.status == StudiosStatus.loading) {
                   return const Center(child: CircularProgressIndicator());

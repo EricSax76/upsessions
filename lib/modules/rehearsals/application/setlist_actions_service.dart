@@ -4,22 +4,15 @@ import 'package:upsessions/l10n/app_localizations.dart';
 import '../../../core/services/dialog_service.dart';
 import '../models/rehearsal_entity.dart';
 import '../models/setlist_item_entity.dart';
-import '../repositories/rehearsals_repository.dart';
-import '../repositories/setlist_repository.dart';
 import '../utils/rehearsal_date_utils.dart';
 import '../ui/pages/setlist_item_dialog.dart';
-
-enum CopySetlistMode { replace, append }
+import 'setlist_domain_service.dart';
 
 class SetlistActionsService {
-  SetlistActionsService({
-    required RehearsalsRepository rehearsalsRepository,
-    required SetlistRepository setlistRepository,
-  })  : _rehearsalsRepository = rehearsalsRepository,
-        _setlistRepository = setlistRepository;
+  SetlistActionsService({required SetlistDomainService domainService})
+    : _domainService = domainService;
 
-  final RehearsalsRepository _rehearsalsRepository;
-  final SetlistRepository _setlistRepository;
+  final SetlistDomainService _domainService;
 
   Future<void> addSetlistItem({
     required BuildContext context,
@@ -27,33 +20,18 @@ class SetlistActionsService {
     required String rehearsalId,
     required List<SetlistItemEntity> current,
   }) async {
-    final nextOrder = (current.isEmpty ? 0 : current.last.order) + 1;
+    final nextOrder = _domainService.nextOrder(current);
     final draft = await showDialog<SetlistDraft>(
       context: context,
       builder: (context) => SetlistItemDialog(initialOrder: nextOrder),
     );
     if (draft == null) return;
     try {
-      final itemId = await _setlistRepository.addSetlistItem(
+      await _domainService.addSetlistItem(
         groupId: groupId,
         rehearsalId: rehearsalId,
-        order: draft.order,
-        songTitle: draft.songTitle,
-        keySignature: draft.keySignature,
-        tempoBpm: draft.tempoBpm,
-        notes: draft.notes,
-        linkUrl: draft.linkUrl,
+        input: _toInput(draft),
       );
-      final sheetBytes = draft.sheetBytes;
-      if (sheetBytes != null && sheetBytes.isNotEmpty) {
-        await _setlistRepository.uploadSetlistSheet(
-          groupId: groupId,
-          rehearsalId: rehearsalId,
-          itemId: itemId,
-          bytes: sheetBytes,
-          fileExtension: draft.sheetFileExtension,
-        );
-      }
     } catch (error) {
       if (!context.mounted) return;
       DialogService.showError(context, 'No se pudo agregar: $error');
@@ -82,37 +60,12 @@ class SetlistActionsService {
     );
     if (draft == null) return;
     try {
-      await _setlistRepository.updateSetlistItem(
+      await _domainService.editSetlistItem(
         groupId: groupId,
         rehearsalId: rehearsalId,
-        itemId: item.id,
-        order: draft.order,
-        songTitle: draft.songTitle,
-        keySignature: draft.keySignature,
-        tempoBpm: draft.tempoBpm,
-        notes: draft.notes,
-        linkUrl: draft.linkUrl,
+        item: item,
+        input: _toInput(draft),
       );
-
-      if (draft.removeSheet) {
-        await _setlistRepository.clearSetlistSheet(
-          groupId: groupId,
-          rehearsalId: rehearsalId,
-          itemId: item.id,
-          sheetPath: item.sheetPath,
-        );
-      }
-
-      final sheetBytes = draft.sheetBytes;
-      if (sheetBytes != null && sheetBytes.isNotEmpty) {
-        await _setlistRepository.uploadSetlistSheet(
-          groupId: groupId,
-          rehearsalId: rehearsalId,
-          itemId: item.id,
-          bytes: sheetBytes,
-          fileExtension: draft.sheetFileExtension,
-        );
-      }
     } catch (error) {
       if (!context.mounted) return;
       DialogService.showError(context, 'No se pudo actualizar: $error');
@@ -136,7 +89,7 @@ class SetlistActionsService {
     );
     if (!ok) return;
     try {
-      await _setlistRepository.deleteSetlistItem(
+      await _domainService.deleteSetlistItem(
         groupId: groupId,
         rehearsalId: rehearsalId,
         itemId: item.id,
@@ -155,30 +108,19 @@ class SetlistActionsService {
   }) async {
     final loc = AppLocalizations.of(context);
     try {
-      final rehearsals = await _rehearsalsRepository.getRehearsals(groupId);
+      final source = await _domainService.resolveCopySource(
+        groupId: groupId,
+        currentRehearsal: currentRehearsal,
+      );
       if (!context.mounted) return;
-      final candidates =
-          rehearsals.where((r) => r.id != currentRehearsal.id).toList()
-            ..sort((a, b) => a.startsAt.compareTo(b.startsAt));
-
-      if (candidates.isEmpty) {
-        DialogService.showError(
-          context,
-          'No hay ensayos previos para copiar.',
-        );
+      if (source == null) {
+        DialogService.showError(context, 'No hay ensayos previos para copiar.');
         return;
       }
 
-      final prior =
-          candidates
-              .where((r) => r.startsAt.isBefore(currentRehearsal.startsAt))
-              .toList()
-            ..sort((a, b) => b.startsAt.compareTo(a.startsAt));
-      final source = prior.isNotEmpty ? prior.first : candidates.last;
-
-      var mode = CopySetlistMode.replace;
+      var mode = SetlistCopyMode.replace;
       if (currentSetlist.isNotEmpty) {
-        final selected = await showDialog<CopySetlistMode>(
+        final selected = await showDialog<SetlistCopyMode>(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Copiar setlist'),
@@ -192,12 +134,12 @@ class SetlistActionsService {
               ),
               TextButton(
                 onPressed: () =>
-                    Navigator.of(context).pop(CopySetlistMode.append),
+                    Navigator.of(context).pop(SetlistCopyMode.append),
                 child: const Text('Agregar al final'),
               ),
               FilledButton(
                 onPressed: () =>
-                    Navigator.of(context).pop(CopySetlistMode.replace),
+                    Navigator.of(context).pop(SetlistCopyMode.replace),
                 child: const Text('Reemplazar'),
               ),
             ],
@@ -207,21 +149,32 @@ class SetlistActionsService {
         mode = selected;
       }
 
-      await _setlistRepository.copySetlist(
+      await _domainService.copySetlist(
         groupId: groupId,
-        fromRehearsalId: source.id,
-        toRehearsalId: currentRehearsal.id,
-        replaceExisting: mode == CopySetlistMode.replace,
+        sourceRehearsalId: source.id,
+        targetRehearsalId: currentRehearsal.id,
+        mode: mode,
       );
 
       if (!context.mounted) return;
       DialogService.showSuccess(context, 'Setlist copiado.');
     } catch (error) {
       if (!context.mounted) return;
-      DialogService.showError(
-        context,
-        'No se pudo copiar el setlist: $error',
-      );
+      DialogService.showError(context, 'No se pudo copiar el setlist: $error');
     }
+  }
+
+  SetlistItemInput _toInput(SetlistDraft draft) {
+    return SetlistItemInput(
+      order: draft.order,
+      songTitle: draft.songTitle,
+      keySignature: draft.keySignature,
+      tempoBpm: draft.tempoBpm,
+      notes: draft.notes,
+      linkUrl: draft.linkUrl,
+      sheetBytes: draft.sheetBytes,
+      sheetFileExtension: draft.sheetFileExtension,
+      removeSheet: draft.removeSheet,
+    );
   }
 }

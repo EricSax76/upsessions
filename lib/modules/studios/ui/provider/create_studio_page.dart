@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../../../auth/repositories/auth_repository.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import '../../cubits/studios_cubit.dart';
+import '../../cubits/my_studio_cubit.dart';
 import '../../cubits/studios_state.dart';
 
 import '../../models/studio_entity.dart';
@@ -29,7 +29,7 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<StudiosCubit, StudiosState>(
+    return BlocConsumer<MyStudioCubit, StudiosState>(
       listener: (context, state) {
         if (state.status == StudiosStatus.success) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -138,7 +138,7 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
                             contactPhone: _phoneController.text,
                           );
 
-                          context.read<StudiosCubit>().createStudio(studio);
+                          context.read<MyStudioCubit>().createStudio(studio);
                           // In a real app, this would also update the UserEntity to have a 'provider' role or link
                         }
                       },

@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import '../../../auth/repositories/auth_repository.dart';
-import '../../cubits/studios_cubit.dart';
+import '../../cubits/my_studio_cubit.dart';
 import '../../cubits/studios_state.dart';
 
 import '../widgets/empty_states/no_bookings_empty_state.dart';
@@ -17,9 +17,12 @@ class StudioDashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authRepo = locate<AuthRepository>();
-    final userId = authRepo.currentUser?.id ?? 'mock_user_id';
+    final userId = authRepo.currentUser?.id;
+    if (userId == null || userId.trim().isEmpty) {
+      return const _StudioDashboardAuthRedirect();
+    }
 
-    return BlocBuilder<StudiosCubit, StudiosState>(
+    return BlocBuilder<MyStudioCubit, StudiosState>(
       builder: (context, state) {
         if (state.status == StudiosStatus.loading) {
           return const Center(child: CircularProgressIndicator());
@@ -30,7 +33,7 @@ class StudioDashboardPage extends StatelessWidget {
             onRegister: () async {
               await context.push(AppRoutes.studiosCreate);
               if (!context.mounted) return;
-              context.read<StudiosCubit>().loadMyStudio(userId);
+              context.read<MyStudioCubit>().loadMyStudio(userId);
             },
           );
         }
@@ -97,7 +100,7 @@ class StudioDashboardPage extends StatelessWidget {
                   AppRoutes.studiosRoomCreatePath(state.myStudio!.id),
                 );
                 if (!context.mounted) return;
-                context.read<StudiosCubit>().loadMyStudio(userId);
+                context.read<MyStudioCubit>().loadMyStudio(userId);
               },
               icon: const Icon(Icons.add),
               label: const Text('Añadir Sala'),
@@ -142,7 +145,7 @@ class StudioDashboardPage extends StatelessWidget {
                       ),
                     );
                     if (!context.mounted) return;
-                    context.read<StudiosCubit>().loadMyStudio(userId);
+                    context.read<MyStudioCubit>().loadMyStudio(userId);
                   },
                 ),
               ),
@@ -208,5 +211,30 @@ class StudioDashboardPage extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _StudioDashboardAuthRedirect extends StatefulWidget {
+  const _StudioDashboardAuthRedirect();
+
+  @override
+  State<_StudioDashboardAuthRedirect> createState() =>
+      _StudioDashboardAuthRedirectState();
+}
+
+class _StudioDashboardAuthRedirectState
+    extends State<_StudioDashboardAuthRedirect> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.go(AppRoutes.studiosLogin);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: CircularProgressIndicator());
   }
 }

@@ -3,19 +3,43 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:upsessions/features/home/cubits/user_home_cubit.dart';
 import 'package:upsessions/features/home/cubits/user_home_state.dart';
-import 'package:upsessions/features/home/repositories/user_home_repository.dart';
-import 'package:upsessions/modules/musicians/models/musician_entity.dart';
-import 'package:upsessions/modules/announcements/models/announcement_entity.dart';
 import 'package:upsessions/features/home/models/instrument_category_model.dart';
+import 'package:upsessions/features/home/repositories/home_announcements_repository.dart';
+import 'package:upsessions/features/home/repositories/home_events_repository.dart';
+import 'package:upsessions/features/home/repositories/home_metadata_repository.dart';
+import 'package:upsessions/features/home/repositories/home_musicians_repository.dart';
+import 'package:upsessions/features/home/repositories/home_rehearsals_repository.dart';
+import 'package:upsessions/modules/announcements/models/announcement_entity.dart';
+import 'package:upsessions/modules/musicians/models/musician_entity.dart';
 
-class MockUserHomeRepository extends Mock implements UserHomeRepository {}
+class MockHomeMusiciansRepository extends Mock
+    implements HomeMusiciansRepository {}
+
+class MockHomeAnnouncementsRepository extends Mock
+    implements HomeAnnouncementsRepository {}
+
+class MockHomeMetadataRepository extends Mock
+    implements HomeMetadataRepository {}
+
+class MockHomeEventsRepository extends Mock implements HomeEventsRepository {}
+
+class MockHomeRehearsalsRepository extends Mock
+    implements HomeRehearsalsRepository {}
 
 void main() {
   group('UserHomeCubit', () {
-    late MockUserHomeRepository repository;
+    late MockHomeMusiciansRepository musiciansRepository;
+    late MockHomeAnnouncementsRepository announcementsRepository;
+    late MockHomeMetadataRepository metadataRepository;
+    late MockHomeEventsRepository eventsRepository;
+    late MockHomeRehearsalsRepository rehearsalsRepository;
 
     setUp(() {
-      repository = MockUserHomeRepository();
+      musiciansRepository = MockHomeMusiciansRepository();
+      announcementsRepository = MockHomeAnnouncementsRepository();
+      metadataRepository = MockHomeMetadataRepository();
+      eventsRepository = MockHomeEventsRepository();
+      rehearsalsRepository = MockHomeRehearsalsRepository();
     });
 
     final mockMusician = MusicianEntity(
@@ -46,42 +70,46 @@ void main() {
       instruments: ['Guitar', 'Violin'],
     );
 
-    test('initial state is correct', () {
-      expect(
-        UserHomeCubit(repository: repository).state,
-        const UserHomeState(),
+    UserHomeCubit buildCubit() {
+      return UserHomeCubit(
+        musiciansRepository: musiciansRepository,
+        announcementsRepository: announcementsRepository,
+        metadataRepository: metadataRepository,
+        eventsRepository: eventsRepository,
+        rehearsalsRepository: rehearsalsRepository,
       );
+    }
+
+    test('initial state is correct', () {
+      expect(buildCubit().state, const UserHomeState());
     });
 
     blocTest<UserHomeCubit, UserHomeState>(
       'loadHome emits loading and ready with data on success',
       setUp: () {
         when(
-          () => repository.fetchRecommendedMusicians(),
+          () => musiciansRepository.fetchRecommendedMusicians(),
         ).thenAnswer((_) async => [mockMusician]);
         when(
-          () => repository.fetchNewMusicians(),
+          () => musiciansRepository.fetchNewMusicians(),
         ).thenAnswer((_) async => [mockMusician]);
         when(
-          () => repository.fetchRecentAnnouncements(),
+          () => announcementsRepository.fetchRecentAnnouncements(),
         ).thenAnswer((_) async => [mockAnnouncement]);
         when(
-          () => repository.fetchInstrumentCategories(),
+          () => metadataRepository.fetchInstrumentCategories(),
         ).thenAnswer((_) async => [mockCategory]);
         when(
-          () => repository.fetchUpcomingEvents(),
+          () => eventsRepository.fetchUpcomingEvents(),
         ).thenAnswer((_) async => []);
         when(
-          () => repository.fetchUpcomingRehearsals(),
+          () => rehearsalsRepository.fetchUpcomingRehearsals(),
         ).thenAnswer((_) async => []);
         when(
-          () => repository.fetchProvinces(),
+          () => metadataRepository.fetchProvinces(),
         ).thenAnswer((_) async => ['Valencia']);
-        when(
-          () => repository.fetchCitiesForProvince(any()),
-        ).thenAnswer((_) async => []);
       },
-      build: () => UserHomeCubit(repository: repository),
+      build: buildCubit,
       act: (cubit) => cubit.loadHome(),
       expect: () => [
         isA<UserHomeState>().having(
@@ -99,7 +127,7 @@ void main() {
 
     blocTest<UserHomeCubit, UserHomeState>(
       'selectInstrument updates instrument state',
-      build: () => UserHomeCubit(repository: repository),
+      build: buildCubit,
       act: (cubit) => cubit.selectInstrument('Guitar'),
       expect: () => [
         isA<UserHomeState>().having(
@@ -114,10 +142,10 @@ void main() {
       'selectProvince updates province and loads cities',
       setUp: () {
         when(
-          () => repository.fetchCitiesForProvince('Valencia'),
+          () => metadataRepository.fetchCitiesForProvince('Valencia'),
         ).thenAnswer((_) async => ['Valencia', 'Alicante']);
       },
-      build: () => UserHomeCubit(repository: repository),
+      build: buildCubit,
       act: (cubit) => cubit.selectProvince('Valencia'),
       expect: () => [
         isA<UserHomeState>().having((s) => s.province, 'province', 'Valencia'),

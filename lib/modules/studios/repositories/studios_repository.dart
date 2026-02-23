@@ -24,7 +24,10 @@ abstract class StudiosRepository {
 
   Future<void> createRoom(RoomEntity room);
   Future<void> updateRoom(RoomEntity room);
-  Future<void> deleteRoom(String roomId);
+  Future<void> deleteRoom({
+    required String studioId,
+    required String roomId,
+  });
   Future<List<RoomEntity>> getRoomsByStudio(String studioId);
 
   Future<void> createBooking(BookingEntity booking);
@@ -124,9 +127,12 @@ class MockStudiosRepository implements StudiosRepository {
   }
 
   @override
-  Future<void> deleteRoom(String roomId) async {
+  Future<void> deleteRoom({
+    required String studioId,
+    required String roomId,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    _rooms.removeWhere((r) => r.id == roomId);
+    _rooms.removeWhere((r) => r.id == roomId && r.studioId == studioId);
   }
 
   @override

@@ -20,7 +20,11 @@ import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
-import 'package:upsessions/features/home/repositories/user_home_repository.dart';
+import 'package:upsessions/features/home/repositories/home_announcements_repository.dart';
+import 'package:upsessions/features/home/repositories/home_events_repository.dart';
+import 'package:upsessions/features/home/repositories/home_metadata_repository.dart';
+import 'package:upsessions/features/home/repositories/home_musicians_repository.dart';
+import 'package:upsessions/features/home/repositories/home_rehearsals_repository.dart';
 import 'package:upsessions/features/home/ui/widgets/musicians/recommended_users_section.dart';
 import 'package:upsessions/features/home/ui/widgets/musicians/new_musicians_section.dart';
 
@@ -42,7 +46,11 @@ class UserHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => UserHomeCubit(
-        repository: context.read<UserHomeRepository>(),
+        musiciansRepository: context.read<HomeMusiciansRepository>(),
+        announcementsRepository: context.read<HomeAnnouncementsRepository>(),
+        metadataRepository: context.read<HomeMetadataRepository>(),
+        eventsRepository: context.read<HomeEventsRepository>(),
+        rehearsalsRepository: context.read<HomeRehearsalsRepository>(),
       )..loadHome(),
       child: UserShellPage(
         groupsRepository: groupsRepository,
@@ -68,7 +76,7 @@ class UserHomePage extends StatelessWidget {
         final isWide = width >= 1200;
         final isMedium = width >= 800;
         final isCompact = width < 700;
-        
+
         final colorScheme = Theme.of(context).colorScheme;
         final cubit = context.read<UserHomeCubit>();
         final loc = AppLocalizations.of(context);
@@ -91,8 +99,8 @@ class UserHomePage extends StatelessWidget {
                       upcomingRehearsals: state.upcomingRehearsals,
                     ),
                     const SizedBox(height: 48),
-                    
-                    if (isMedium) 
+
+                    if (isMedium)
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -134,7 +142,7 @@ class UserHomePage extends StatelessWidget {
 
                     const SizedBox(height: 48),
                     SectionCard(
-                      title: loc.studios, 
+                      title: loc.studios,
                       subtitle: loc.studiosSubtitle,
                       action: TextButton.icon(
                         onPressed: () => context.push(AppRoutes.studios),
@@ -179,9 +187,7 @@ class UserHomePage extends StatelessWidget {
           icon: const Icon(Icons.arrow_outward),
           label: Text(loc.viewAll),
         ),
-        child: UpcomingEventsSection(
-          events: state.events,
-        ),
+        child: UpcomingEventsSection(events: state.events),
       ),
     );
   }
@@ -194,7 +200,8 @@ class UserHomePage extends StatelessWidget {
         builder: (announcement) => AnnouncementCard(
           title: announcement.title,
           subtitle: '${announcement.city} · ${announcement.body}',
-          dateText: '${announcement.publishedAt.day}/${announcement.publishedAt.month}',
+          dateText:
+              '${announcement.publishedAt.day}/${announcement.publishedAt.month}',
           dense: true,
         ),
       ),
@@ -205,9 +212,7 @@ class UserHomePage extends StatelessWidget {
     return SectionCard(
       title: loc.homeRecommendedTitle,
       subtitle: loc.homeRecommendedSubtitle,
-      child: RecommendedUsersSection(
-        musicians: state.recommended,
-      ),
+      child: RecommendedUsersSection(musicians: state.recommended),
     );
   }
 
@@ -221,9 +226,7 @@ class UserHomePage extends StatelessWidget {
           icon: const Icon(Icons.arrow_outward),
           label: Text(loc.viewAll),
         ),
-        child: NewMusiciansSection(
-          musicians: state.newMusicians,
-        ),
+        child: NewMusiciansSection(musicians: state.newMusicians),
       ),
     );
   }

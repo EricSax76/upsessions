@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../core/locator/locator.dart';
 import '../features/events/models/event_entity.dart';
 import '../features/events/repositories/events_repository.dart';
 import '../features/events/ui/pages/event_detail_page.dart';
 import '../modules/messaging/models/chat_thread.dart';
 import '../modules/messaging/repositories/chat_repository.dart';
 import '../modules/messaging/ui/pages/chat_thread_detail_page.dart';
-
-import '../features/home/ui/pages/user_shell_page.dart';
 import '../modules/announcements/models/announcement_entity.dart';
 import '../modules/announcements/repositories/announcements_repository.dart';
 import '../modules/announcements/ui/pages/announcement_detail_page.dart';
@@ -21,10 +18,7 @@ import '../modules/studios/repositories/studios_repository.dart';
 import '../modules/studios/ui/consumer/room_detail_page.dart';
 import '../modules/studios/ui/consumer/studios_list_page.dart';
 import '../modules/studios/ui/provider/edit_room_page.dart';
-import '../modules/groups/repositories/groups_repository.dart';
-import '../modules/notifications/repositories/invite_notifications_repository.dart';
-import '../modules/contacts/cubits/liked_musicians_cubit.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'app_router_shell.dart';
 
 class UnknownRouteScreen extends StatelessWidget {
   const UnknownRouteScreen({super.key, required this.name, this.message});
@@ -63,23 +57,22 @@ class MusicianDetailLoader extends StatelessWidget {
     super.key,
     required this.musicianId,
     required this.location,
+    required this.musiciansRepository,
   });
 
   final String musicianId;
   final String location;
+  final MusiciansRepository musiciansRepository;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<MusicianEntity?>(
-      future: locate<MusiciansRepository>().findById(musicianId),
+      future: musiciansRepository.findById(musicianId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return UserShellPage(
-            groupsRepository: context.read<GroupsRepository>(),
-            chatRepository: context.read<ChatRepository>(),
-            inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
-            likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-            child: const Center(child: CircularProgressIndicator()),
+          return buildUserShell(
+            context,
+            const Center(child: CircularProgressIndicator()),
           );
         }
 
@@ -93,13 +86,7 @@ class MusicianDetailLoader extends StatelessWidget {
           );
         }
 
-        return UserShellPage(
-          groupsRepository: context.read<GroupsRepository>(),
-          chatRepository: context.read<ChatRepository>(),
-          inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
-          likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-          child: MusicianDetailPage(musician: musician),
-        );
+        return buildUserShell(context, MusicianDetailPage(musician: musician));
       },
     );
   }
@@ -110,23 +97,22 @@ class AnnouncementDetailLoader extends StatelessWidget {
     super.key,
     required this.announcementId,
     required this.location,
+    required this.announcementsRepository,
   });
 
   final String announcementId;
   final String location;
+  final AnnouncementsRepository announcementsRepository;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<AnnouncementEntity>(
-      future: locate<AnnouncementsRepository>().findById(announcementId),
+      future: announcementsRepository.findById(announcementId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return UserShellPage(
-            groupsRepository: context.read<GroupsRepository>(),
-            chatRepository: context.read<ChatRepository>(),
-            inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
-            likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-            child: const Center(child: CircularProgressIndicator()),
+          return buildUserShell(
+            context,
+            const Center(child: CircularProgressIndicator()),
           );
         }
 
@@ -139,12 +125,9 @@ class AnnouncementDetailLoader extends StatelessWidget {
           );
         }
 
-        return UserShellPage(
-          groupsRepository: context.read<GroupsRepository>(),
-          chatRepository: context.read<ChatRepository>(),
-          inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
-          likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-          child: AnnouncementDetailPage(announcement: snapshot.data!),
+        return buildUserShell(
+          context,
+          AnnouncementDetailPage(announcement: snapshot.data!),
         );
       },
     );
@@ -156,20 +139,17 @@ class EventDetailLoader extends StatelessWidget {
     super.key,
     required this.eventId,
     required this.location,
+    required this.eventsRepository,
   });
 
   final String eventId;
   final String location;
+  final EventsRepository eventsRepository;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<EventEntity?>(
-      // TODO: This should ideally come from a repository passed in constructor
-      // but since this is a static method we can't easily injection it without
-      // refactoring the whole loader pattern.
-      // However, we can use context.read if we wrap this in a builder or similar.
-      // Wait, EventDetailLoader is a Widget. We can access context.
-      future: context.read<EventsRepository>().findById(eventId),
+      future: eventsRepository.findById(eventId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
@@ -187,7 +167,7 @@ class EventDetailLoader extends StatelessWidget {
 
         return EventDetailPage(
           event: event,
-          eventsRepository: context.read<EventsRepository>(),
+          eventsRepository: eventsRepository,
         );
       },
     );
@@ -257,18 +237,19 @@ class StudioRoomDetailLoader extends StatelessWidget {
     required this.studioId,
     required this.roomId,
     required this.location,
+    required this.studiosRepository,
     this.rehearsalContext,
   });
 
   final String studioId;
   final String roomId;
   final String location;
+  final StudiosRepository studiosRepository;
   final RehearsalBookingContext? rehearsalContext;
 
   Future<_StudioRoomDetailData?> _loadRoomDetail() async {
-    final repository = locate<StudiosRepository>();
-    final studio = await repository.getStudioById(studioId);
-    final rooms = await repository.getRoomsByStudio(studioId);
+    final studio = await studiosRepository.getStudioById(studioId);
+    final rooms = await studiosRepository.getRoomsByStudio(studioId);
 
     RoomEntity? room;
     for (final candidate in rooms) {
@@ -324,15 +305,16 @@ class StudioRoomEditorLoader extends StatelessWidget {
     required this.studioId,
     required this.roomId,
     required this.location,
+    required this.studiosRepository,
   });
 
   final String studioId;
   final String roomId;
   final String location;
+  final StudiosRepository studiosRepository;
 
   Future<RoomEntity?> _loadRoom() async {
-    final repository = locate<StudiosRepository>();
-    final rooms = await repository.getRoomsByStudio(studioId);
+    final rooms = await studiosRepository.getRoomsByStudio(studioId);
     for (final candidate in rooms) {
       if (candidate.id == roomId) {
         return candidate;

@@ -16,6 +16,11 @@ import 'package:upsessions/modules/musicians/repositories/musicians_repository.d
 import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
+import 'package:upsessions/features/home/repositories/home_announcements_repository.dart';
+import 'package:upsessions/features/home/repositories/home_events_repository.dart';
+import 'package:upsessions/features/home/repositories/home_metadata_repository.dart';
+import 'package:upsessions/features/home/repositories/home_musicians_repository.dart';
+import 'package:upsessions/features/home/repositories/home_rehearsals_repository.dart';
 import 'package:upsessions/features/home/repositories/user_home_repository.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
@@ -42,11 +47,20 @@ class UpsessionsApp extends StatelessWidget {
         RepositoryProvider(create: (_) => locate<ProfileRepository>()),
         RepositoryProvider(create: (_) => locate<MusiciansRepository>()),
         RepositoryProvider(create: (_) => locate<StudiosRepository>()),
+        RepositoryProvider(create: (_) => locate<HomeMusiciansRepository>()),
+        RepositoryProvider(
+          create: (_) => locate<HomeAnnouncementsRepository>(),
+        ),
+        RepositoryProvider(create: (_) => locate<HomeMetadataRepository>()),
+        RepositoryProvider(create: (_) => locate<HomeEventsRepository>()),
+        RepositoryProvider(create: (_) => locate<HomeRehearsalsRepository>()),
         RepositoryProvider(create: (_) => locate<UserHomeRepository>()),
         RepositoryProvider(create: (_) => locate<PushNotificationsService>()),
         RepositoryProvider(create: (_) => locate<GroupsRepository>()),
         RepositoryProvider(create: (_) => locate<ChatRepository>()),
-        RepositoryProvider(create: (_) => locate<InviteNotificationsRepository>()),
+        RepositoryProvider(
+          create: (_) => locate<InviteNotificationsRepository>(),
+        ),
         RepositoryProvider(create: (_) => locate<EventsRepository>()),
         RepositoryProvider(create: (_) => locate<RehearsalsRepository>()),
         RepositoryProvider(

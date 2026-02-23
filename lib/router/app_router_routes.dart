@@ -44,9 +44,8 @@ import '../modules/studios/ui/consumer/musician_bookings_page.dart';
 import '../modules/studios/ui/provider/create_studio_page.dart';
 import '../modules/studios/ui/provider/studio_dashboard_page.dart';
 import '../modules/studios/ui/widgets/studio_shell_page.dart';
-import '../modules/studios/cubits/studios_cubit.dart';
+import '../modules/studios/cubits/my_studio_cubit.dart';
 import '../modules/studios/repositories/studios_repository.dart';
-import '../modules/studios/services/studio_image_service.dart';
 import 'app_router_builders.dart';
 
 List<GoRoute> buildAppRoutes() {
@@ -99,8 +98,8 @@ List<GoRoute> buildAppRoutes() {
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository:
-            context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: MusicianOnboardingPage(
           affinityOptionsRepository: context.read<AffinityOptionsRepository>(),
@@ -109,23 +108,23 @@ List<GoRoute> buildAppRoutes() {
     ),
     GoRoute(
       path: AppRoutes.userHome,
-      builder:
-          (context, state) => UserHomePage(
-            groupsRepository: context.read<GroupsRepository>(),
-            chatRepository: context.read<ChatRepository>(),
-            inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
-            likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-          ),
+      builder: (context, state) => UserHomePage(
+        groupsRepository: context.read<GroupsRepository>(),
+        chatRepository: context.read<ChatRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
+        likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+      ),
     ),
     GoRoute(
       path: AppRoutes.musicians,
-      builder:
-          (context, state) => MusiciansHubPage(
-            groupsRepository: context.read<GroupsRepository>(),
-            chatRepository: context.read<ChatRepository>(),
-            inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
-            likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-          ),
+      builder: (context, state) => MusiciansHubPage(
+        groupsRepository: context.read<GroupsRepository>(),
+        chatRepository: context.read<ChatRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
+        likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+      ),
     ),
     GoRoute(
       path: '/musicians/detail',
@@ -150,13 +149,13 @@ List<GoRoute> buildAppRoutes() {
     ),
     GoRoute(
       path: AppRoutes.announcements,
-      builder:
-          (context, state) => AnnouncementsHubPage(
-            groupsRepository: context.read<GroupsRepository>(),
-            chatRepository: context.read<ChatRepository>(),
-            inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
-            likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-          ),
+      builder: (context, state) => AnnouncementsHubPage(
+        groupsRepository: context.read<GroupsRepository>(),
+        chatRepository: context.read<ChatRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
+        likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+      ),
     ),
     GoRoute(
       path: '/announcements/detail',
@@ -171,18 +170,17 @@ List<GoRoute> buildAppRoutes() {
     ),
     GoRoute(
       path: AppRoutes.announcementForm,
-      builder:
-          (context, state) => UserShellPage(
-            groupsRepository: context.read<GroupsRepository>(),
-            chatRepository: context.read<ChatRepository>(),
-            inviteNotificationsRepository: context
-                .read<InviteNotificationsRepository>(),
-            likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-            child: AnnouncementFormPage(
-              repository: locate(),
-              imageService: locate(),
-            ),
-          ),
+      builder: (context, state) => UserShellPage(
+        groupsRepository: context.read<GroupsRepository>(),
+        chatRepository: context.read<ChatRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
+        likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+        child: AnnouncementFormPage(
+          repository: locate(),
+          imageService: locate(),
+        ),
+      ),
     ),
     GoRoute(
       path: AppRoutes.announcementDetailRoute,
@@ -193,12 +191,10 @@ List<GoRoute> buildAppRoutes() {
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository:
-            context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-        child: MediaGalleryPage(
-          repository: context.read<MediaRepository>(),
-        ),
+        child: MediaGalleryPage(repository: context.read<MediaRepository>()),
       ),
     ),
     GoRoute(path: AppRoutes.messages, builder: buildMessagesRoute),
@@ -212,8 +208,8 @@ List<GoRoute> buildAppRoutes() {
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository:
-            context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: ContactsPage(chatRepository: context.read<ChatRepository>()),
       ),
@@ -223,8 +219,8 @@ List<GoRoute> buildAppRoutes() {
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository:
-            context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: const CalendarPage(),
       ),
@@ -234,8 +230,8 @@ List<GoRoute> buildAppRoutes() {
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository:
-            context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: const EventsPage(),
       ),
@@ -252,42 +248,42 @@ List<GoRoute> buildAppRoutes() {
     ),
     GoRoute(
       path: AppRoutes.createEvent,
-      builder: (context, state) =>
-          UserShellPage(
-            groupsRepository: context.read<GroupsRepository>(),
-            chatRepository: context.read<ChatRepository>(),
-            inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
-            likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-            child: CreateEventPage(
-              eventsRepository: context.read<EventsRepository>(),
-              authRepository: context.read<AuthRepository>(),
-            ),
-          ),
+      builder: (context, state) => UserShellPage(
+        groupsRepository: context.read<GroupsRepository>(),
+        chatRepository: context.read<ChatRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
+        likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+        child: CreateEventPage(
+          eventsRepository: context.read<EventsRepository>(),
+          authRepository: context.read<AuthRepository>(),
+        ),
+      ),
     ),
     GoRoute(
       path: AppRoutes.notifications,
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository:
-            context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: NotificationsPage(
           chatRepository: context.read<ChatRepository>(),
-          inviteNotificationsRepository:
-              context.read<InviteNotificationsRepository>(),
+          inviteNotificationsRepository: context
+              .read<InviteNotificationsRepository>(),
         ),
       ),
     ),
     GoRoute(
       path: AppRoutes.rehearsals,
-      builder:
-          (context, state) => GroupsPage(
-            groupsRepository: context.read<GroupsRepository>(),
-            chatRepository: context.read<ChatRepository>(),
-            inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
-            likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-          ),
+      builder: (context, state) => GroupsPage(
+        groupsRepository: context.read<GroupsRepository>(),
+        chatRepository: context.read<ChatRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
+        likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+      ),
     ),
     GoRoute(path: AppRoutes.groupRoute, builder: buildGroupRoute),
     GoRoute(
@@ -306,7 +302,8 @@ List<GoRoute> buildAppRoutes() {
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: const ProfileOverviewPage(),
       ),
@@ -316,7 +313,8 @@ List<GoRoute> buildAppRoutes() {
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: ProfileEditPage(
           affinityOptionsRepository: context.read<AffinityOptionsRepository>(),
@@ -328,7 +326,8 @@ List<GoRoute> buildAppRoutes() {
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: const AccountPage(),
       ),
@@ -338,8 +337,8 @@ List<GoRoute> buildAppRoutes() {
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository:
-            context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: const SettingsPage(),
       ),
@@ -349,8 +348,8 @@ List<GoRoute> buildAppRoutes() {
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository:
-            context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: const HelpPage(),
       ),
@@ -381,10 +380,8 @@ List<GoRoute> buildAppRoutes() {
       path: AppRoutes.studiosCreate,
       builder: (context, state) {
         return BlocProvider(
-          create: (context) => StudiosCubit(
-            repository: locate<StudiosRepository>(),
-            imageService: locate<StudioImageService>(),
-          ),
+          create: (context) =>
+              MyStudioCubit(repository: locate<StudiosRepository>()),
           child: const StudioShellPage(child: CreateStudioPage()),
         );
       },
@@ -396,9 +393,8 @@ List<GoRoute> buildAppRoutes() {
         final userId = authRepo.currentUser?.id;
         return BlocProvider(
           create: (context) {
-             final cubit = StudiosCubit(
+            final cubit = MyStudioCubit(
               repository: locate<StudiosRepository>(),
-              imageService: locate<StudioImageService>(),
             );
             if (userId != null) {
               cubit.loadMyStudio(userId);
@@ -412,21 +408,22 @@ List<GoRoute> buildAppRoutes() {
     GoRoute(path: AppRoutes.studiosProfile, builder: buildStudiosProfileRoute),
     GoRoute(
       path: AppRoutes.myBookings,
-      builder: (context, state) =>
-          UserShellPage(
-            groupsRepository: context.read<GroupsRepository>(),
-            chatRepository: context.read<ChatRepository>(),
-            inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
-            likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-            child: const MusicianBookingsPage(),
-          ),
+      builder: (context, state) => UserShellPage(
+        groupsRepository: context.read<GroupsRepository>(),
+        chatRepository: context.read<ChatRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
+        likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
+        child: const MusicianBookingsPage(),
+      ),
     ),
     GoRoute(
       path: AppRoutes.matching,
       builder: (context, state) => UserShellPage(
         groupsRepository: context.read<GroupsRepository>(),
         chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository: context.read<InviteNotificationsRepository>(),
+        inviteNotificationsRepository: context
+            .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: const MatchingPage(),
       ),

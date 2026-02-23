@@ -422,4 +422,136 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get studiosRegister => 'Register studio';
+
+  @override
+  String get eventsNewEventButton => 'New event';
+
+  @override
+  String get eventsViewDetails => 'View details';
+
+  @override
+  String get eventsViewTextSheet => 'View text sheet';
+
+  @override
+  String get eventsCopyFormat => 'Copy format';
+
+  @override
+  String get eventsCopySheetTooltip => 'Copy sheet';
+
+  @override
+  String get onboardingInfluencesTitle => 'Your influences';
+
+  @override
+  String get onboardingInfluencesDescription =>
+      'Add the bands or artists that influenced you the most, organized by style.';
+
+  @override
+  String get onboardingInfluencesEmpty => 'You have not added influences yet.';
+
+  @override
+  String get affinityStyleLabel => 'Style';
+
+  @override
+  String get affinityArtistBandLabel => 'Artist / Band';
+
+  @override
+  String get affinitySuggestedOptionsLabel => 'Suggested options';
+
+  @override
+  String get affinityNoMatchesForStyle => 'No matches for this style.';
+
+  @override
+  String get affinityAddButton => 'Add';
+
+  @override
+  String get affinityAddTooltip => 'Add affinity';
+
+  @override
+  String get profileAffinityTitle => 'Music affinities';
+
+  @override
+  String get profileAffinityDescription =>
+      'Add or remove artists that represent your influences by style.';
+
+  @override
+  String get profileAffinityEmpty => 'No affinities registered.';
+
+  @override
+  String roomDetailPricePerHour(String price) {
+    return '$price€ / hour';
+  }
+
+  @override
+  String roomDetailCapacity(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Capacity: # people',
+      one: 'Capacity: # person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String roomDetailSize(String size) {
+    return 'Size: $size';
+  }
+
+  @override
+  String get roomDetailEquipmentTitle => 'Equipment';
+
+  @override
+  String get roomDetailBookForRehearsal => 'Book for rehearsal';
+
+  @override
+  String get roomDetailBookRoom => 'Book room';
+
+  @override
+  String roomDetailBookingSuccessForRehearsal(String total) {
+    return 'Room booked for rehearsal for $total€.';
+  }
+
+  @override
+  String roomDetailBookingSuccess(String total) {
+    return 'Booking confirmed for $total€.';
+  }
+
+  @override
+  String get roomDetailBookingError => 'Could not complete booking.';
+
+  @override
+  String get roomDetailPrefilledFromRehearsal =>
+      'Date and time pre-filled from rehearsal';
+
+  @override
+  String get roomDetailDateLabel => 'Date';
+
+  @override
+  String get roomDetailSelectDate => 'Select date';
+
+  @override
+  String get roomDetailStartTimeLabel => 'Start time';
+
+  @override
+  String get roomDetailSelectTime => 'Select time';
+
+  @override
+  String roomDetailDurationHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: 'Duration: # hours',
+      one: 'Duration: # hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomDetailTotalPriceLabel => 'Total price:';
+
+  @override
+  String get roomDetailConfirmBookingForRehearsal => 'Confirm booking';
+
+  @override
+  String get roomDetailConfirmBooking => 'Confirm booking';
 }

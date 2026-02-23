@@ -226,9 +226,7 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
       return;
     }
 
-    // final repository = context.read<MusiciansRepository>(); // No longer needed
     cubit.submit(
-      // repository: repository, // Removed
       musicianId: musicianId,
       name: _nameController.text.trim(),
       instrument: _instrumentController.text.trim(),

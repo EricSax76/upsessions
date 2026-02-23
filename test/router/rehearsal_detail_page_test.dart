@@ -199,15 +199,25 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MultiBlocProvider(
+      MultiRepositoryProvider(
         providers: [
-          BlocProvider<AuthCubit>.value(value: authCubit),
-          BlocProvider<ProfileCubit>.value(value: profileCubit),
+          RepositoryProvider<GroupsRepository>.value(value: groupsRepository),
+          RepositoryProvider<RehearsalsRepository>.value(
+            value: rehearsalsRepository,
+          ),
+          RepositoryProvider<SetlistRepository>.value(value: setlistRepository),
+          RepositoryProvider<StudiosRepository>.value(value: studiosRepository),
         ],
-        child: MaterialApp.router(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          routerConfig: router,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<AuthCubit>.value(value: authCubit),
+            BlocProvider<ProfileCubit>.value(value: profileCubit),
+          ],
+          child: MaterialApp.router(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
+          ),
         ),
       ),
     );

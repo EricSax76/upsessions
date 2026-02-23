@@ -191,16 +191,16 @@ class FirestoreStudiosRepository implements StudiosRepository {
   }
 
   @override
-  Future<void> deleteRoom(String roomId) async {
-
-
-    final query = await _firestore
-        .collectionGroup('rooms')
-        .where('id', isEqualTo: roomId)
-        .get();
-    for (var doc in query.docs) {
-      await doc.reference.delete();
-    }
+  Future<void> deleteRoom({
+    required String studioId,
+    required String roomId,
+  }) async {
+    await _firestore
+        .collection('studios')
+        .doc(studioId)
+        .collection('rooms')
+        .doc(roomId)
+        .delete();
   }
 
   @override

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upsessions/core/constants/music_styles.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
+import 'package:upsessions/modules/musicians/application/affinity_flow.dart';
 import 'package:upsessions/modules/profile/cubit/profile_form_cubit.dart';
 
 class ProfileAffinityInput extends StatefulWidget {
@@ -25,12 +27,18 @@ class _ProfileAffinityInputState extends State<ProfileAffinityInput> {
     super.dispose();
   }
 
+  void _submitArtist(ProfileFormCubit cubit) {
+    cubit.addInfluence(_artistController.text);
+    _artistController.clear();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return BlocConsumer<ProfileFormCubit, ProfileFormState>(
-      listenWhen:
-          (previous, current) =>
-              previous.selectedStyle != current.selectedStyle,
+      listenWhen: (previous, current) =>
+          previous.selectedStyle != current.selectedStyle,
       listener: (context, state) {
         _artistController.clear();
       },
@@ -46,39 +54,35 @@ class _ProfileAffinityInputState extends State<ProfileAffinityInput> {
                 children: [
                   DropdownButtonFormField<String>(
                     initialValue: state.selectedStyle,
-                    decoration: const InputDecoration(labelText: 'Estilo'),
-                    items:
-                        musicStyles
-                            .map(
-                              (style) => DropdownMenuItem(
-                                value: style,
-                                child: Text(style),
-                              ),
-                            )
-                            .toList(),
+                    decoration: InputDecoration(
+                      labelText: loc.affinityStyleLabel,
+                    ),
+                    items: musicStyles
+                        .map(
+                          (style) => DropdownMenuItem(
+                            value: style,
+                            child: Text(style),
+                          ),
+                        )
+                        .toList(),
                     onChanged: cubit.styleChanged,
                   ),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _artistController,
-                    decoration: const InputDecoration(
-                      labelText: 'Artista / Banda',
+                    decoration: InputDecoration(
+                      labelText: loc.affinityArtistBandLabel,
                     ),
-                    onSubmitted: (_) {
-                      cubit.addInfluence(_artistController.text);
-                      _artistController.clear();
-                    },
+                    onChanged: (_) => setState(() {}),
+                    onSubmitted: (_) => _submitArtist(cubit),
                   ),
                   const SizedBox(height: 12),
                   Align(
                     alignment: Alignment.centerRight,
                     child: FilledButton.icon(
-                      onPressed: () {
-                        cubit.addInfluence(_artistController.text);
-                        _artistController.clear();
-                      },
+                      onPressed: () => _submitArtist(cubit),
                       icon: const Icon(Icons.add),
-                      label: const Text('Agregar'),
+                      label: Text(loc.affinityAddButton),
                     ),
                   ),
                   _SuggestedOptions(controller: _artistController),
@@ -95,19 +99,20 @@ class _ProfileAffinityInputState extends State<ProfileAffinityInput> {
                       flex: 2,
                       child: DropdownButtonFormField<String>(
                         initialValue: state.selectedStyle,
-                        decoration: const InputDecoration(labelText: 'Estilo'),
-                        items:
-                            musicStyles
-                                .map(
-                                  (style) => DropdownMenuItem(
-                                    value: style,
-                                    child: Text(
-                                      style,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                )
-                                .toList(),
+                        decoration: InputDecoration(
+                          labelText: loc.affinityStyleLabel,
+                        ),
+                        items: musicStyles
+                            .map(
+                              (style) => DropdownMenuItem(
+                                value: style,
+                                child: Text(
+                                  style,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            )
+                            .toList(),
                         onChanged: cubit.styleChanged,
                       ),
                     ),
@@ -116,23 +121,18 @@ class _ProfileAffinityInputState extends State<ProfileAffinityInput> {
                       flex: 3,
                       child: TextField(
                         controller: _artistController,
-                        decoration: const InputDecoration(
-                          labelText: 'Artista / Banda',
+                        decoration: InputDecoration(
+                          labelText: loc.affinityArtistBandLabel,
                         ),
-                        onSubmitted: (_) {
-                          cubit.addInfluence(_artistController.text);
-                          _artistController.clear();
-                        },
+                        onChanged: (_) => setState(() {}),
+                        onSubmitted: (_) => _submitArtist(cubit),
                       ),
                     ),
                     const SizedBox(width: 8),
                     IconButton.filled(
-                      onPressed: () {
-                        cubit.addInfluence(_artistController.text);
-                        _artistController.clear();
-                      },
+                      onPressed: () => _submitArtist(cubit),
                       icon: const Icon(Icons.add),
-                      tooltip: 'Agregar afinidad',
+                      tooltip: loc.affinityAddTooltip,
                     ),
                   ],
                 ),
@@ -158,76 +158,70 @@ class _SuggestedOptions extends StatelessWidget {
         if (state.selectedStyle == null) return const SizedBox.shrink();
 
         final cubit = context.read<ProfileFormCubit>();
+        final loc = AppLocalizations.of(context);
 
-        // Filter suggestions based on input if needed, or show all
-        // Here we show all and let the user pick
-        final suggestions = state.suggestedArtists; // Simplified for now
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 12),
-            Text(
-              'Opciones sugeridas',
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-            const SizedBox(height: 8),
-            if (state.isLoadingSuggestions)
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: SizedBox(
-                   width: 18,
-                   height: 18,
-                   child: CircularProgressIndicator(strokeWidth: 2),
+        return ValueListenableBuilder<TextEditingValue>(
+          valueListenable: controller,
+          builder: (context, value, _) {
+            final suggestions = AffinityFlow.filterSuggestions(
+              suggestions: state.suggestedArtists,
+              query: value.text,
+            );
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 12),
+                Text(
+                  loc.affinitySuggestedOptionsLabel,
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
-              )
-            else if (suggestions.isEmpty)
-              Text(
-                'Sin coincidencias para este estilo.',
-                style: Theme.of(context).textTheme.bodySmall,
-              )
-            else
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children:
-                    suggestions
+                const SizedBox(height: 8),
+                if (state.isLoadingSuggestions)
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
+                else if (suggestions.isEmpty)
+                  Text(
+                    loc.affinityNoMatchesForStyle,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  )
+                else
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: suggestions
                         .map(
                           (artist) => FilterChip(
                             label: Text(artist),
-                            selected: _isArtistSelected(
-                              state.influences,
-                              state.selectedStyle!,
-                              artist,
+                            selected: AffinityFlow.isArtistSelected(
+                              influences: state.influences,
+                              style: state.selectedStyle!,
+                              artist: artist,
                             ),
                             onSelected: (selected) {
                               if (selected) {
                                 cubit.addInfluence(artist);
-                              } else {
-                                cubit.removeInfluence(
-                                  state.selectedStyle!,
-                                  artist,
-                                );
+                                return;
                               }
+                              cubit.removeInfluence(
+                                state.selectedStyle!,
+                                artist,
+                              );
                             },
                           ),
                         )
                         .toList(),
-              ),
-          ],
+                  ),
+              ],
+            );
+          },
         );
       },
-    );
-  }
-
-  bool _isArtistSelected(
-    Map<String, List<String>> influences,
-    String style,
-    String artist,
-  ) {
-    final artists = influences[style] ?? const <String>[];
-    return artists.any(
-      (current) => current.toLowerCase() == artist.toLowerCase(),
     );
   }
 }

@@ -6,7 +6,7 @@ import 'package:upsessions/core/widgets/settings_tile.dart';
 import 'package:upsessions/core/widgets/sm_avatar.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import '../../../../modules/auth/cubits/auth_cubit.dart';
-import '../../../../modules/studios/cubits/studios_cubit.dart';
+import '../../../../modules/studios/cubits/my_studio_cubit.dart';
 import '../../../../modules/studios/cubits/studios_state.dart';
 
 class StudioSidebar extends StatelessWidget {
@@ -59,7 +59,7 @@ class _StudioSidebarHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return BlocBuilder<StudiosCubit, StudiosState>(
+    return BlocBuilder<MyStudioCubit, StudiosState>(
       builder: (context, state) {
         final studio = state.myStudio;
 

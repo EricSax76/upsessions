@@ -847,6 +847,216 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Registrar Sala'**
   String get studiosRegister;
+
+  /// No description provided for @eventsNewEventButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo evento'**
+  String get eventsNewEventButton;
+
+  /// No description provided for @eventsViewDetails.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver detalles'**
+  String get eventsViewDetails;
+
+  /// No description provided for @eventsViewTextSheet.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver ficha en texto'**
+  String get eventsViewTextSheet;
+
+  /// No description provided for @eventsCopyFormat.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiar formato'**
+  String get eventsCopyFormat;
+
+  /// No description provided for @eventsCopySheetTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiar ficha'**
+  String get eventsCopySheetTooltip;
+
+  /// No description provided for @onboardingInfluencesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tus influencias'**
+  String get onboardingInfluencesTitle;
+
+  /// No description provided for @onboardingInfluencesDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Agrega las bandas o artistas que más te han influenciado, organizados por estilo.'**
+  String get onboardingInfluencesDescription;
+
+  /// No description provided for @onboardingInfluencesEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no has agregado influencias.'**
+  String get onboardingInfluencesEmpty;
+
+  /// No description provided for @affinityStyleLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Estilo'**
+  String get affinityStyleLabel;
+
+  /// No description provided for @affinityArtistBandLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Artista / Banda'**
+  String get affinityArtistBandLabel;
+
+  /// No description provided for @affinitySuggestedOptionsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Opciones sugeridas'**
+  String get affinitySuggestedOptionsLabel;
+
+  /// No description provided for @affinityNoMatchesForStyle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin coincidencias para este estilo.'**
+  String get affinityNoMatchesForStyle;
+
+  /// No description provided for @affinityAddButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar'**
+  String get affinityAddButton;
+
+  /// No description provided for @affinityAddTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar afinidad'**
+  String get affinityAddTooltip;
+
+  /// No description provided for @profileAffinityTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Afinidades musicales'**
+  String get profileAffinityTitle;
+
+  /// No description provided for @profileAffinityDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Agrega o quita artistas que representen tus influencias por estilo.'**
+  String get profileAffinityDescription;
+
+  /// No description provided for @profileAffinityEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin afinidades registradas.'**
+  String get profileAffinityEmpty;
+
+  /// No description provided for @roomDetailPricePerHour.
+  ///
+  /// In es, this message translates to:
+  /// **'{price}€ / hora'**
+  String roomDetailPricePerHour(String price);
+
+  /// No description provided for @roomDetailCapacity.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{Capacidad: # persona} other{Capacidad: # personas}}'**
+  String roomDetailCapacity(int count);
+
+  /// No description provided for @roomDetailSize.
+  ///
+  /// In es, this message translates to:
+  /// **'Tamaño: {size}'**
+  String roomDetailSize(String size);
+
+  /// No description provided for @roomDetailEquipmentTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipamiento'**
+  String get roomDetailEquipmentTitle;
+
+  /// No description provided for @roomDetailBookForRehearsal.
+  ///
+  /// In es, this message translates to:
+  /// **'Reservar para ensayo'**
+  String get roomDetailBookForRehearsal;
+
+  /// No description provided for @roomDetailBookRoom.
+  ///
+  /// In es, this message translates to:
+  /// **'Reservar sala'**
+  String get roomDetailBookRoom;
+
+  /// No description provided for @roomDetailBookingSuccessForRehearsal.
+  ///
+  /// In es, this message translates to:
+  /// **'Sala reservada para el ensayo por {total}€.'**
+  String roomDetailBookingSuccessForRehearsal(String total);
+
+  /// No description provided for @roomDetailBookingSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Reserva confirmada por {total}€.'**
+  String roomDetailBookingSuccess(String total);
+
+  /// No description provided for @roomDetailBookingError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo completar la reserva.'**
+  String get roomDetailBookingError;
+
+  /// No description provided for @roomDetailPrefilledFromRehearsal.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha y hora pre-rellenadas desde el ensayo'**
+  String get roomDetailPrefilledFromRehearsal;
+
+  /// No description provided for @roomDetailDateLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha'**
+  String get roomDetailDateLabel;
+
+  /// No description provided for @roomDetailSelectDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar fecha'**
+  String get roomDetailSelectDate;
+
+  /// No description provided for @roomDetailStartTimeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora de inicio'**
+  String get roomDetailStartTimeLabel;
+
+  /// No description provided for @roomDetailSelectTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar hora'**
+  String get roomDetailSelectTime;
+
+  /// No description provided for @roomDetailDurationHours.
+  ///
+  /// In es, this message translates to:
+  /// **'{hours, plural, one{Duración: # hora} other{Duración: # horas}}'**
+  String roomDetailDurationHours(int hours);
+
+  /// No description provided for @roomDetailTotalPriceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio total:'**
+  String get roomDetailTotalPriceLabel;
+
+  /// No description provided for @roomDetailConfirmBookingForRehearsal.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar reserva'**
+  String get roomDetailConfirmBookingForRehearsal;
+
+  /// No description provided for @roomDetailConfirmBooking.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar reserva'**
+  String get roomDetailConfirmBooking;
 }
 
 class _AppLocalizationsDelegate

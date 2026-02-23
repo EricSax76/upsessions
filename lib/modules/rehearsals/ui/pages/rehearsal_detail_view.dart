@@ -14,6 +14,7 @@ import '../../cubits/rehearsal_detail_cubit.dart';
 import '../../cubits/rehearsal_detail_state.dart';
 import '../../application/rehearsal_actions_service.dart';
 import '../widgets/rehearsal_detail/rehearsal_detail_widgets.dart';
+import '../../application/setlist_domain_service.dart';
 import '../../application/setlist_actions_service.dart';
 import '../../../../core/services/dialog_service.dart';
 
@@ -103,9 +104,12 @@ class _RehearsalDetailViewBody extends StatelessWidget {
           final rehearsalActions = RehearsalActionsService(
             repository: cubit.rehearsalsRepository,
           );
-          final setlistActions = SetlistActionsService(
+          final setlistDomain = SetlistDomainService(
             rehearsalsRepository: cubit.rehearsalsRepository,
             setlistRepository: cubit.setlistRepository,
+          );
+          final setlistActions = SetlistActionsService(
+            domainService: setlistDomain,
           );
           return RehearsalDetailContent(
             rehearsal: state.rehearsal,

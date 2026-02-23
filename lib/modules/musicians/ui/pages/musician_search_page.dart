@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/features/home/repositories/user_home_repository.dart';
+import 'package:upsessions/features/home/repositories/home_metadata_repository.dart';
 
 import '../../cubits/musician_search_cubit.dart';
 import '../../repositories/musicians_repository.dart';
@@ -34,8 +34,8 @@ class _MusicianSearchPageState extends State<MusicianSearchPage> {
   void _search(BuildContext context) {
     FocusScope.of(context).unfocus();
     context.read<MusicianSearchCubit>().search(
-          query: _searchController.text.trim(),
-        );
+      query: _searchController.text.trim(),
+    );
   }
 
   void _clearFilters(BuildContext context) {
@@ -46,25 +46,28 @@ class _MusicianSearchPageState extends State<MusicianSearchPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MusicianSearchCubit(
-        repository: locate<MusiciansRepository>(),
-        userHomeRepository: locate<UserHomeRepository>(),
-      )
-        ..loadFilters()
-        ..search(),
-      child: Builder(builder: (context) {
-        return BlocBuilder<MusicianSearchCubit, MusicianSearchState>(
-          builder: (context, state) {
-            return MusicianSearchView(
-              showAppBar: widget.showAppBar,
-              searchController: _searchController,
-              state: state,
-              onSearch: () => _search(context),
-              onClearFilters: () => _clearFilters(context),
-            );
-          },
-        );
-      }),
+      create: (context) =>
+          MusicianSearchCubit(
+              repository: locate<MusiciansRepository>(),
+              metadataRepository: locate<HomeMetadataRepository>(),
+            )
+            ..loadFilters()
+            ..search(),
+      child: Builder(
+        builder: (context) {
+          return BlocBuilder<MusicianSearchCubit, MusicianSearchState>(
+            builder: (context, state) {
+              return MusicianSearchView(
+                showAppBar: widget.showAppBar,
+                searchController: _searchController,
+                state: state,
+                onSearch: () => _search(context),
+                onClearFilters: () => _clearFilters(context),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

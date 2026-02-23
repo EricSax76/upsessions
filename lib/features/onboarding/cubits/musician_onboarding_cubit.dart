@@ -1,12 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/modules/musicians/application/affinity_flow.dart';
 
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'musician_onboarding_state.dart';
 
 class MusicianOnboardingCubit extends Cubit<MusicianOnboardingState> {
   MusicianOnboardingCubit({required MusiciansRepository repository})
-      : _repository = repository,
-        super(const MusicianOnboardingState());
+    : _repository = repository,
+      super(const MusicianOnboardingState());
 
   final MusiciansRepository _repository;
 
@@ -20,25 +21,22 @@ class MusicianOnboardingCubit extends Cubit<MusicianOnboardingState> {
   }
 
   void addInfluence(String style, String artist) {
-    if (style.trim().isEmpty || artist.trim().isEmpty) return;
-    final updated = Map<String, List<String>>.of(state.influences);
-    final artists = List<String>.of(updated[style] ?? []);
-    if (artists.any((a) => a.toLowerCase() == artist.toLowerCase())) return;
-    artists.add(artist.trim());
-    updated[style] = artists;
+    final updated = AffinityFlow.addInfluence(
+      influences: state.influences,
+      style: style,
+      artist: artist,
+    );
+    if (identical(updated, state.influences)) return;
     emit(state.copyWith(influences: updated));
   }
 
   void removeInfluence(String style, String artist) {
-    final updated = Map<String, List<String>>.of(state.influences);
-    if (!updated.containsKey(style)) return;
-    final artists = List<String>.of(updated[style]!);
-    artists.remove(artist);
-    if (artists.isEmpty) {
-      updated.remove(style);
-    } else {
-      updated[style] = artists;
-    }
+    final updated = AffinityFlow.removeInfluence(
+      influences: state.influences,
+      style: style,
+      artist: artist,
+    );
+    if (identical(updated, state.influences)) return;
     emit(state.copyWith(influences: updated));
   }
 
@@ -69,10 +67,12 @@ class MusicianOnboardingCubit extends Cubit<MusicianOnboardingState> {
       emit(state.copyWith(status: MusicianOnboardingStatus.saved));
     } catch (e) {
       if (isClosed) return;
-      emit(state.copyWith(
-        status: MusicianOnboardingStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: MusicianOnboardingStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 }

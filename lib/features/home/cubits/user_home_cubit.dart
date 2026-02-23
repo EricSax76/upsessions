@@ -2,17 +2,32 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 
-
-
-import '../repositories/user_home_repository.dart';
+import '../repositories/home_announcements_repository.dart';
+import '../repositories/home_events_repository.dart';
+import '../repositories/home_metadata_repository.dart';
+import '../repositories/home_musicians_repository.dart';
+import '../repositories/home_rehearsals_repository.dart';
 import 'user_home_state.dart';
 
 class UserHomeCubit extends Cubit<UserHomeState> {
-  UserHomeCubit({required UserHomeRepository repository})
-    : _repository = repository,
-      super(const UserHomeState());
+  UserHomeCubit({
+    required HomeMusiciansRepository musiciansRepository,
+    required HomeAnnouncementsRepository announcementsRepository,
+    required HomeMetadataRepository metadataRepository,
+    required HomeEventsRepository eventsRepository,
+    required HomeRehearsalsRepository rehearsalsRepository,
+  }) : _musiciansRepository = musiciansRepository,
+       _announcementsRepository = announcementsRepository,
+       _metadataRepository = metadataRepository,
+       _eventsRepository = eventsRepository,
+       _rehearsalsRepository = rehearsalsRepository,
+       super(const UserHomeState());
 
-  final UserHomeRepository _repository;
+  final HomeMusiciansRepository _musiciansRepository;
+  final HomeAnnouncementsRepository _announcementsRepository;
+  final HomeMetadataRepository _metadataRepository;
+  final HomeEventsRepository _eventsRepository;
+  final HomeRehearsalsRepository _rehearsalsRepository;
 
   Future<void> loadHome() async {
     if (isClosed) {
@@ -20,13 +35,16 @@ class UserHomeCubit extends Cubit<UserHomeState> {
     }
     emit(state.copyWith(status: UserHomeStatus.loading, errorMessage: null));
     try {
-      final recommendedFuture = _repository.fetchRecommendedMusicians();
-      final newMusiciansFuture = _repository.fetchNewMusicians();
-      final announcementsFuture = _repository.fetchRecentAnnouncements();
-      final categoriesFuture = _repository.fetchInstrumentCategories();
-      final eventsFuture = _repository.fetchUpcomingEvents();
-      final upcomingRehearsalsFuture = _repository.fetchUpcomingRehearsals();
-      final provincesFuture = _repository.fetchProvinces();
+      final recommendedFuture = _musiciansRepository
+          .fetchRecommendedMusicians();
+      final newMusiciansFuture = _musiciansRepository.fetchNewMusicians();
+      final announcementsFuture = _announcementsRepository
+          .fetchRecentAnnouncements();
+      final categoriesFuture = _metadataRepository.fetchInstrumentCategories();
+      final eventsFuture = _eventsRepository.fetchUpcomingEvents();
+      final upcomingRehearsalsFuture = _rehearsalsRepository
+          .fetchUpcomingRehearsals();
+      final provincesFuture = _metadataRepository.fetchProvinces();
 
       final recommended = await recommendedFuture;
       final newMusicians = await newMusiciansFuture;
@@ -111,7 +129,7 @@ class UserHomeCubit extends Cubit<UserHomeState> {
       emit(state.copyWith(cities: const [], city: ''));
       return;
     }
-    final cities = await _repository.fetchCitiesForProvince(value);
+    final cities = await _metadataRepository.fetchCitiesForProvince(value);
     if (isClosed) {
       return;
     }

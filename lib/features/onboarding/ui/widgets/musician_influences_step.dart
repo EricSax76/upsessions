@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
+import 'package:upsessions/modules/musicians/application/affinity_flow.dart';
 
-import '../../../../core/constants/music_styles.dart';
 import '../../../../modules/musicians/repositories/affinity_options_repository.dart';
 import '../../cubits/musician_onboarding_cubit.dart';
 import '../../cubits/musician_onboarding_state.dart';
+import 'musician_influences_input_row.dart';
+import 'musician_influences_selected_list.dart';
+import 'musician_influences_suggestions.dart';
 import 'musician_onboarding_step_card.dart';
 
 class MusicianInfluencesStep extends StatefulWidget {
@@ -41,14 +45,6 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
     super.dispose();
   }
 
-  bool _isArtistSelected(String style, String artist) {
-    final artists =
-        widget.cubit.state.influences[style] ?? const <String>[];
-    return artists.any(
-      (current) => current.toLowerCase() == artist.toLowerCase(),
-    );
-  }
-
   void _addInfluence({String? artistName}) {
     final style = _selectedStyle;
     final artist = (artistName ?? _artistController.text).trim();
@@ -68,12 +64,10 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
     final options = _styleArtistOptions;
     if (options.isEmpty) return const [];
 
-    final query = _artistController.text.trim().toLowerCase();
-    if (query.isEmpty) return options;
-
-    return options
-        .where((artist) => artist.toLowerCase().contains(query))
-        .toList();
+    return AffinityFlow.filterSuggestions(
+      suggestions: options,
+      query: _artistController.text,
+    );
   }
 
   Future<void> _onStyleChanged(String? style) async {
@@ -111,187 +105,46 @@ class _MusicianInfluencesStepState extends State<MusicianInfluencesStep> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final suggestedArtists = _suggestedArtists();
+    final influences = widget.cubit.state.influences;
 
     return Form(
       key: widget.formKey,
       child: MusicianOnboardingStepCard(
-        title: 'Tus influencias',
-        description:
-            'Agrega las bandas o artistas que más te han influenciado, organizados por estilo.',
+        title: loc.onboardingInfluencesTitle,
+        description: loc.onboardingInfluencesDescription,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _selectedStyle,
-                    decoration: const InputDecoration(
-                      labelText: 'Estilo',
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
-                    items: musicStyles
-                        .map(
-                          (style) => DropdownMenuItem(
-                            value: style,
-                            child: Text(style,
-                                overflow: TextOverflow.ellipsis),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: _onStyleChanged,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    controller: _artistController,
-                    decoration: const InputDecoration(
-                      labelText: 'Artista / Banda',
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
-                    onChanged: (_) => setState(() {}),
-                    onFieldSubmitted: (_) => _addInfluence(),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton.filled(
-                  onPressed: _addInfluence,
-                  icon: const Icon(Icons.add),
-                ),
-              ],
+            MusicianInfluencesInputRow(
+              selectedStyle: _selectedStyle,
+              artistController: _artistController,
+              onStyleChanged: _onStyleChanged,
+              onArtistChanged: (_) => setState(() {}),
+              onAddInfluence: _addInfluence,
             ),
-            if (_selectedStyle != null) ...[
-              const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Opciones sugeridas',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-              ),
-              const SizedBox(height: 8),
-              if (_loadingStyleOptions)
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                )
-              else if (suggestedArtists.isEmpty)
-                Text(
-                  'Sin coincidencias para este estilo.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                )
-              else
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: suggestedArtists
-                      .map(
-                        (artist) => FilterChip(
-                          label: Text(artist),
-                          selected:
-                              _isArtistSelected(_selectedStyle!, artist),
-                          onSelected: (selected) {
-                            if (_selectedStyle == null) return;
-                            if (selected) {
-                              _addInfluence(artistName: artist);
-                              return;
-                            }
-                            widget.cubit
-                                .removeInfluence(_selectedStyle!, artist);
-                            setState(() {
-                              _artistController.clear();
-                            });
-                          },
-                        ),
-                      )
-                      .toList(),
-                ),
-            ],
+            MusicianInfluencesSuggestions(
+              selectedStyle: _selectedStyle,
+              loadingStyleOptions: _loadingStyleOptions,
+              suggestedArtists: suggestedArtists,
+              influences: influences,
+              onAddInfluence: (artist) => _addInfluence(artistName: artist),
+              onRemoveInfluence: (artist) {
+                final selectedStyle = _selectedStyle;
+                if (selectedStyle == null) return;
+                widget.cubit.removeInfluence(selectedStyle, artist);
+                setState(_artistController.clear);
+              },
+            ),
             const SizedBox(height: 24),
             BlocBuilder<MusicianOnboardingCubit, MusicianOnboardingState>(
               bloc: widget.cubit,
-              buildWhen: (prev, curr) =>
-                  prev.influences != curr.influences,
-              builder: (context, state) {
-                final influences = state.influences;
-                if (influences.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        'Aún no has agregado influencias.',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
-                            ),
-                      ),
-                    ),
-                  );
-                }
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: influences.entries.map((entry) {
-                    final style = entry.key;
-                    final artists = entry.value;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            style,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      Theme.of(context).colorScheme.primary,
-                                ),
-                          ),
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: artists
-                                .map(
-                                  (artist) => Chip(
-                                    label: Text(artist),
-                                    onDeleted: () {
-                                      widget.cubit.removeInfluence(
-                                        style,
-                                        artist,
-                                      );
-                                    },
-                                  ),
-                                )
-                                .toList(),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
+              buildWhen: (prev, curr) => prev.influences != curr.influences,
+              builder: (context, state) => MusicianInfluencesSelectedList(
+                influences: state.influences,
+                onRemoveInfluence: widget.cubit.removeInfluence,
+              ),
             ),
           ],
         ),

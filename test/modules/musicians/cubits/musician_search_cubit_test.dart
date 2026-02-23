@@ -5,15 +5,17 @@ import 'package:mocktail/mocktail.dart';
 import 'package:upsessions/modules/musicians/cubits/musician_search_cubit.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/modules/musicians/models/musician_entity.dart';
-import 'package:upsessions/features/home/repositories/user_home_repository.dart';
+import 'package:upsessions/features/home/repositories/home_metadata_repository.dart';
 
 class _MockMusiciansRepository extends Mock implements MusiciansRepository {}
-class _MockUserHomeRepository extends Mock implements UserHomeRepository {}
+
+class _MockHomeMetadataRepository extends Mock
+    implements HomeMetadataRepository {}
 
 void main() {
   late _MockMusiciansRepository repository;
-  late _MockUserHomeRepository userHomeRepository;
-  
+  late _MockHomeMetadataRepository metadataRepository;
+
   const mockResults = [
     MusicianEntity(
       id: '1',
@@ -37,7 +39,7 @@ void main() {
 
   setUp(() {
     repository = _MockMusiciansRepository();
-    userHomeRepository = _MockUserHomeRepository();
+    metadataRepository = _MockHomeMetadataRepository();
   });
 
   group('MusicianSearchCubit', () {
@@ -57,16 +59,12 @@ void main() {
         ).thenAnswer((_) async => mockResults);
         return MusicianSearchCubit(
           repository: repository,
-          userHomeRepository: userHomeRepository,
+          metadataRepository: metadataRepository,
         );
       },
       act: (cubit) => cubit.search(query: 'rock'),
       expect: () => [
-        const MusicianSearchState(
-          isLoading: true,
-          query: 'rock',
-          results: [],
-        ),
+        const MusicianSearchState(isLoading: true, query: 'rock', results: []),
         const MusicianSearchState(
           isLoading: false,
           query: 'rock',
@@ -74,15 +72,17 @@ void main() {
         ),
       ],
       verify: (cubit) {
-        verify(() => repository.search(
-          query: 'rock',
-          instrument: '',
-          style: '',
-          province: '',
-          city: '',
-          profileType: '',
-          gender: '',
-        )).called(1);
+        verify(
+          () => repository.search(
+            query: 'rock',
+            instrument: '',
+            style: '',
+            province: '',
+            city: '',
+            profileType: '',
+            gender: '',
+          ),
+        ).called(1);
       },
     );
 
@@ -102,16 +102,12 @@ void main() {
         ).thenThrow(Exception('firestore-offline'));
         return MusicianSearchCubit(
           repository: repository,
-          userHomeRepository: userHomeRepository,
+          metadataRepository: metadataRepository,
         );
       },
       act: (cubit) => cubit.search(query: 'jazz'),
       expect: () => const [
-        MusicianSearchState(
-          isLoading: true,
-          query: 'jazz',
-          results: [],
-        ),
+        MusicianSearchState(isLoading: true, query: 'jazz', results: []),
         MusicianSearchState(
           isLoading: false,
           query: 'jazz',
@@ -137,7 +133,7 @@ void main() {
         ).thenAnswer((_) async => []); // Retorna vacio para simplificar
         return MusicianSearchCubit(
           repository: repository,
-          userHomeRepository: userHomeRepository,
+          metadataRepository: metadataRepository,
         );
       },
       act: (cubit) async {
@@ -158,15 +154,17 @@ void main() {
         ),
       ],
       verify: (cubit) {
-        verify(() => repository.search(
-          query: '',
-          instrument: 'Guitarra',
-          style: '',
-          province: '',
-          city: '',
-          profileType: '',
-          gender: '',
-        )).called(1);
+        verify(
+          () => repository.search(
+            query: '',
+            instrument: 'Guitarra',
+            style: '',
+            province: '',
+            city: '',
+            profileType: '',
+            gender: '',
+          ),
+        ).called(1);
       },
     );
   });

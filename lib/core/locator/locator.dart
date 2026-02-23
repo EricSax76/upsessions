@@ -23,6 +23,11 @@ import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/features/events/repositories/events_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';
+import 'package:upsessions/features/home/repositories/home_announcements_repository.dart';
+import 'package:upsessions/features/home/repositories/home_events_repository.dart';
+import 'package:upsessions/features/home/repositories/home_metadata_repository.dart';
+import 'package:upsessions/features/home/repositories/home_musicians_repository.dart';
+import 'package:upsessions/features/home/repositories/home_rehearsals_repository.dart';
 import 'package:upsessions/features/home/repositories/user_home_repository.dart';
 import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
 import 'package:upsessions/modules/contacts/repositories/contacts_repository.dart';
@@ -83,10 +88,31 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<AnnouncementImageService>(
       () => AnnouncementImageService(storage: getIt<FirebaseStorage>()),
     )
-    ..registerLazySingleton<UserHomeRepository>(
-      () => UserHomeRepository(
+    ..registerLazySingleton<HomeMusiciansRepository>(
+      () => HomeMusiciansRepository(firestore: getIt<FirebaseFirestore>()),
+    )
+    ..registerLazySingleton<HomeAnnouncementsRepository>(
+      () => HomeAnnouncementsRepository(firestore: getIt<FirebaseFirestore>()),
+    )
+    ..registerLazySingleton<HomeMetadataRepository>(
+      () => HomeMetadataRepository(firestore: getIt<FirebaseFirestore>()),
+    )
+    ..registerLazySingleton<HomeEventsRepository>(
+      () => HomeEventsRepository(firestore: getIt<FirebaseFirestore>()),
+    )
+    ..registerLazySingleton<HomeRehearsalsRepository>(
+      () => HomeRehearsalsRepository(
         firestore: getIt<FirebaseFirestore>(),
         authRepository: getIt<AuthRepository>(),
+      ),
+    )
+    ..registerLazySingleton<UserHomeRepository>(
+      () => UserHomeRepository(
+        musiciansRepository: getIt<HomeMusiciansRepository>(),
+        announcementsRepository: getIt<HomeAnnouncementsRepository>(),
+        metadataRepository: getIt<HomeMetadataRepository>(),
+        eventsRepository: getIt<HomeEventsRepository>(),
+        rehearsalsRepository: getIt<HomeRehearsalsRepository>(),
       ),
     )
     ..registerLazySingleton<ProfileRepository>(

@@ -307,5 +307,111 @@
   "studiosManage": "Manage studio",
   "@studiosManage": {},
   "studiosRegister": "Register studio",
-  "@studiosRegister": {}
+  "@studiosRegister": {},
+  "eventsNewEventButton": "New event",
+  "@eventsNewEventButton": {},
+  "eventsViewDetails": "View details",
+  "@eventsViewDetails": {},
+  "eventsViewTextSheet": "View text sheet",
+  "@eventsViewTextSheet": {},
+  "eventsCopyFormat": "Copy format",
+  "@eventsCopyFormat": {},
+  "eventsCopySheetTooltip": "Copy sheet",
+  "@eventsCopySheetTooltip": {},
+  "onboardingInfluencesTitle": "Your influences",
+  "@onboardingInfluencesTitle": {},
+  "onboardingInfluencesDescription": "Add the bands or artists that influenced you the most, organized by style.",
+  "@onboardingInfluencesDescription": {},
+  "onboardingInfluencesEmpty": "You have not added influences yet.",
+  "@onboardingInfluencesEmpty": {},
+  "affinityStyleLabel": "Style",
+  "@affinityStyleLabel": {},
+  "affinityArtistBandLabel": "Artist / Band",
+  "@affinityArtistBandLabel": {},
+  "affinitySuggestedOptionsLabel": "Suggested options",
+  "@affinitySuggestedOptionsLabel": {},
+  "affinityNoMatchesForStyle": "No matches for this style.",
+  "@affinityNoMatchesForStyle": {},
+  "affinityAddButton": "Add",
+  "@affinityAddButton": {},
+  "affinityAddTooltip": "Add affinity",
+  "@affinityAddTooltip": {},
+  "profileAffinityTitle": "Music affinities",
+  "@profileAffinityTitle": {},
+  "profileAffinityDescription": "Add or remove artists that represent your influences by style.",
+  "@profileAffinityDescription": {},
+  "profileAffinityEmpty": "No affinities registered.",
+  "@profileAffinityEmpty": {},
+  "roomDetailPricePerHour": "{price}€ / hour",
+  "@roomDetailPricePerHour": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "roomDetailCapacity": "{count, plural, one{Capacity: # person} other{Capacity: # people}}",
+  "@roomDetailCapacity": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomDetailSize": "Size: {size}",
+  "@roomDetailSize": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "roomDetailEquipmentTitle": "Equipment",
+  "@roomDetailEquipmentTitle": {},
+  "roomDetailBookForRehearsal": "Book for rehearsal",
+  "@roomDetailBookForRehearsal": {},
+  "roomDetailBookRoom": "Book room",
+  "@roomDetailBookRoom": {},
+  "roomDetailBookingSuccessForRehearsal": "Room booked for rehearsal for {total}€.",
+  "@roomDetailBookingSuccessForRehearsal": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "roomDetailBookingSuccess": "Booking confirmed for {total}€.",
+  "@roomDetailBookingSuccess": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "roomDetailBookingError": "Could not complete booking.",
+  "@roomDetailBookingError": {},
+  "roomDetailPrefilledFromRehearsal": "Date and time pre-filled from rehearsal",
+  "@roomDetailPrefilledFromRehearsal": {},
+  "roomDetailDateLabel": "Date",
+  "@roomDetailDateLabel": {},
+  "roomDetailSelectDate": "Select date",
+  "@roomDetailSelectDate": {},
+  "roomDetailStartTimeLabel": "Start time",
+  "@roomDetailStartTimeLabel": {},
+  "roomDetailSelectTime": "Select time",
+  "@roomDetailSelectTime": {},
+  "roomDetailDurationHours": "{hours, plural, one{Duration: # hour} other{Duration: # hours}}",
+  "@roomDetailDurationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "roomDetailTotalPriceLabel": "Total price:",
+  "@roomDetailTotalPriceLabel": {},
+  "roomDetailConfirmBookingForRehearsal": "Confirm booking",
+  "@roomDetailConfirmBookingForRehearsal": {},
+  "roomDetailConfirmBooking": "Confirm booking",
+  "@roomDetailConfirmBooking": {}
 }

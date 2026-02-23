@@ -1,5 +1,3 @@
-// import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,9 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 
 import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
-
-// import '../../../../modules/messaging/repositories/chat_repository.dart'; // Removed
-// import '../../../../modules/notifications/repositories/invite_notifications_repository.dart'; // Removed
 import 'package:upsessions/modules/notifications/cubits/notifications_status_cubit.dart';
 
 class UserMenuList extends StatefulWidget {
