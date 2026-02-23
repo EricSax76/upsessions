@@ -4,11 +4,11 @@ import '../core/locator/locator.dart';
 import '../features/events/models/event_entity.dart';
 import '../features/events/repositories/events_repository.dart';
 import '../features/events/ui/pages/event_detail_page.dart';
-import '../features/messaging/models/chat_thread.dart';
-import '../features/messaging/repositories/chat_repository.dart';
-import '../features/messaging/ui/pages/chat_thread_detail_page.dart';
+import '../modules/messaging/models/chat_thread.dart';
+import '../modules/messaging/repositories/chat_repository.dart';
+import '../modules/messaging/ui/pages/chat_thread_detail_page.dart';
 
-import '../home/ui/pages/user_shell_page.dart';
+import '../features/home/ui/pages/user_shell_page.dart';
 import '../modules/announcements/models/announcement_entity.dart';
 import '../modules/announcements/repositories/announcements_repository.dart';
 import '../modules/announcements/ui/pages/announcement_detail_page.dart';
@@ -22,8 +22,8 @@ import '../modules/studios/ui/consumer/room_detail_page.dart';
 import '../modules/studios/ui/consumer/studios_list_page.dart';
 import '../modules/studios/ui/provider/edit_room_page.dart';
 import '../modules/groups/repositories/groups_repository.dart';
-import '../features/notifications/repositories/invite_notifications_repository.dart';
-import '../features/contacts/cubits/liked_musicians_cubit.dart';
+import '../modules/notifications/repositories/invite_notifications_repository.dart';
+import '../modules/contacts/cubits/liked_musicians_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UnknownRouteScreen extends StatelessWidget {

@@ -1,9 +1,9 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:upsessions/features/messaging/models/chat_message.dart';
-import 'package:upsessions/features/messaging/models/chat_thread.dart';
-import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/modules/messaging/models/chat_message.dart';
+import 'package:upsessions/modules/messaging/models/chat_thread.dart';
+import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/announcements/cubits/announcement_detail_cubit.dart';
 
 class MockChatRepository extends Mock implements ChatRepository {}

@@ -4,7 +4,7 @@ import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../../core/widgets/forms/search_field.dart';
 import '../../../cubits/musician_search_cubit.dart';
-import '../../../../../home/ui/widgets/search/advanced_search_box.dart';
+import '../../../../../features/home/ui/widgets/search/advanced_search_box.dart';
 
 class MusicianSearchTopBar extends StatelessWidget {
   const MusicianSearchTopBar({

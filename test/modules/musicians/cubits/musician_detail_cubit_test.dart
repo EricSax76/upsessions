@@ -3,11 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:upsessions/modules/musicians/cubits/musician_detail_cubit.dart';
-import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/modules/musicians/models/musician_entity.dart';
-import 'package:upsessions/features/messaging/models/chat_thread.dart';
-import 'package:upsessions/features/messaging/models/chat_message.dart';
+import 'package:upsessions/modules/messaging/models/chat_thread.dart';
+import 'package:upsessions/modules/messaging/models/chat_message.dart';
 
 class _MockChatRepository extends Mock implements ChatRepository {}
 class _MockGroupsRepository extends Mock implements GroupsRepository {}

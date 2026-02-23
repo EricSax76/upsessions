@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../../../home/ui/pages/user_shell_page.dart';
+import '../../../../features/home/ui/pages/user_shell_page.dart';
 import 'announcements_list_page.dart';
 import '../../../../modules/groups/repositories/groups_repository.dart';
-import '../../../../features/messaging/repositories/chat_repository.dart';
-import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
-import '../../../../features/contacts/cubits/liked_musicians_cubit.dart';
+import '../../../../modules/messaging/repositories/chat_repository.dart';
+import '../../../../modules/notifications/repositories/invite_notifications_repository.dart';
+import '../../../../modules/contacts/cubits/liked_musicians_cubit.dart';
 
 class AnnouncementsHubPage extends StatelessWidget {
   const AnnouncementsHubPage({

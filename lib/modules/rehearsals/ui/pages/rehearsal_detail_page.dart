@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../../../../home/ui/pages/user_shell_page.dart';
+import '../../../../features/home/ui/pages/user_shell_page.dart';
 
 import '../../../groups/repositories/groups_repository.dart';
 import '../../../studios/repositories/studios_repository.dart';
 import '../../repositories/rehearsals_repository.dart';
 import '../../repositories/setlist_repository.dart';
 import 'rehearsal_detail_view.dart';
-import '../../../../features/messaging/repositories/chat_repository.dart';
-import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
-import '../../../../features/contacts/cubits/liked_musicians_cubit.dart';
+import '../../../../modules/messaging/repositories/chat_repository.dart';
+import '../../../../modules/notifications/repositories/invite_notifications_repository.dart';
+import '../../../../modules/contacts/cubits/liked_musicians_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RehearsalDetailPage extends StatelessWidget {

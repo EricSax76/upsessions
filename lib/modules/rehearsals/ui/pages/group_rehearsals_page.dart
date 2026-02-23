@@ -5,15 +5,15 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/loading_indicator.dart';
-import '../../../../home/ui/pages/user_shell_page.dart';
+import '../../../../features/home/ui/pages/user_shell_page.dart';
 
 import '../../../auth/repositories/auth_repository.dart';
 import '../../models/rehearsal_filter.dart';
 import '../../../groups/models/group_dtos.dart';
 import '../../../groups/repositories/groups_repository.dart';
-import '../../../../features/messaging/repositories/chat_repository.dart';
-import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
-import '../../../../features/contacts/cubits/liked_musicians_cubit.dart';
+import '../../../../modules/messaging/repositories/chat_repository.dart';
+import '../../../../modules/notifications/repositories/invite_notifications_repository.dart';
+import '../../../../modules/contacts/cubits/liked_musicians_cubit.dart';
 import '../../../musicians/repositories/musicians_repository.dart';
 
 import '../dialogs/invite_musician_dialog.dart';

@@ -9,13 +9,13 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/empty_state_card.dart';
 import '../../../../core/widgets/layout/searchable_list_page.dart';
-import '../../../../home/ui/pages/user_shell_page.dart';
+import '../../../../features/home/ui/pages/user_shell_page.dart';
 
 import '../../models/group_membership_entity.dart';
 import '../../../../modules/groups/repositories/groups_repository.dart';
-import '../../../../features/messaging/repositories/chat_repository.dart';
-import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
-import '../../../../features/contacts/cubits/liked_musicians_cubit.dart';
+import '../../../../modules/messaging/repositories/chat_repository.dart';
+import '../../../../modules/notifications/repositories/invite_notifications_repository.dart';
+import '../../../../modules/contacts/cubits/liked_musicians_cubit.dart';
 import '../widgets/groups_widgets.dart';
 import '../widgets/groups_list/groups_hero_section.dart';
 

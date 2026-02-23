@@ -8,7 +8,7 @@ import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/modules/studios/models/studio_entity.dart';
 import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
-import 'package:upsessions/home/cubits/bootstrap_cubit.dart';
+import 'package:upsessions/features/home/cubits/bootstrap_cubit.dart';
 
 class _MockFirebaseInitializer extends Mock implements FirebaseInitializer {}
 

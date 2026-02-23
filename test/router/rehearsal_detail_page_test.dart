@@ -7,11 +7,11 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/features/contacts/cubits/liked_musicians_cubit.dart';
-import 'package:upsessions/features/contacts/cubits/liked_musicians_state.dart';
-import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
-import 'package:upsessions/features/notifications/models/invite_notification_entity.dart';
-import 'package:upsessions/features/notifications/repositories/invite_notifications_repository.dart';
+import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
+import 'package:upsessions/modules/contacts/cubits/liked_musicians_state.dart';
+import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/modules/notifications/models/invite_notification_entity.dart';
+import 'package:upsessions/modules/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';

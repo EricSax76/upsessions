@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../home/ui/pages/user_shell_page.dart';
+import '../../../../features/home/ui/pages/user_shell_page.dart';
 import '../../cubits/group_cubit.dart';
 import '../../repositories/groups_repository.dart';
 import '../widgets/group_detail/group_page_view.dart';
-import '../../../../features/messaging/repositories/chat_repository.dart';
-import '../../../../features/notifications/repositories/invite_notifications_repository.dart';
-import '../../../../features/contacts/cubits/liked_musicians_cubit.dart';
+import '../../../../modules/messaging/repositories/chat_repository.dart';
+import '../../../../modules/notifications/repositories/invite_notifications_repository.dart';
+import '../../../../modules/contacts/cubits/liked_musicians_cubit.dart';
 
 class GroupPage extends StatelessWidget {
   const GroupPage({

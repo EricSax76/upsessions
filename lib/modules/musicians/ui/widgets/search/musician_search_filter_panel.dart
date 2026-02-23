@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../cubits/musician_search_cubit.dart';
-import '../../../../../home/ui/widgets/search/advanced_search_box.dart';
+import '../../../../../features/home/ui/widgets/search/advanced_search_box.dart';
 
 class MusicianSearchFilterPanel extends StatelessWidget {
   const MusicianSearchFilterPanel({

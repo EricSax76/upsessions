@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/features/contacts/ui/widgets/musician_like_button.dart';
-import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/modules/contacts/ui/widgets/musician_like_button.dart';
+import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 
 import '../../models/musician_entity.dart';

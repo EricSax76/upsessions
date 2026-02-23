@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 
-import '../../../../features/messaging/repositories/chat_repository.dart';
+import '../../../../modules/messaging/repositories/chat_repository.dart';
 
 part 'announcement_detail_state.dart';
 

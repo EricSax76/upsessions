@@ -1,4 +1,4 @@
-import 'package:upsessions/features/contacts/models/liked_musician.dart';
+import 'package:upsessions/modules/contacts/models/liked_musician.dart';
 
 import 'musician_entity.dart';
 

@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/constants/app_spacing.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/announcements/cubits/announcement_detail_cubit.dart';
 
 import '../../models/announcement_entity.dart';

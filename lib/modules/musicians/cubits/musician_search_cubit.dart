@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../home/repositories/user_home_repository.dart';
+import '../../../features/home/repositories/user_home_repository.dart';
 
 import '../repositories/musicians_repository.dart';
 import '../models/musician_entity.dart';

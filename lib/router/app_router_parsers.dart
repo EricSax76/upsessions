@@ -1,8 +1,8 @@
 import 'package:go_router/go_router.dart';
 
 import '../features/events/models/event_entity.dart';
-import '../features/messaging/models/chat_thread.dart';
-import '../features/messaging/ui/pages/messages_page.dart';
+import '../modules/messaging/models/chat_thread.dart';
+import '../modules/messaging/ui/pages/messages_page.dart';
 import '../modules/announcements/models/announcement_entity.dart';
 import '../modules/musicians/models/musician_entity.dart';
 import '../modules/studios/ui/consumer/studios_list_page.dart';

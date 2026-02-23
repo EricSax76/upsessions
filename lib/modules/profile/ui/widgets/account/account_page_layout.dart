@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/widgets/constants/breakpoints.dart';
-import '../../../../../home/ui/widgets/profile/profile_link_box.dart';
+import '../../../../../features/home/ui/widgets/profile/profile_link_box.dart';
 import '../../../../auth/models/profile_entity.dart';
 import '../../../../auth/models/user_entity.dart';
 import 'account_preferences_section.dart';

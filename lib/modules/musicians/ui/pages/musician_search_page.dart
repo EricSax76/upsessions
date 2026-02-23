@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/locator/locator.dart';
-import 'package:upsessions/home/repositories/user_home_repository.dart';
+import 'package:upsessions/features/home/repositories/user_home_repository.dart';
 
 import '../../cubits/musician_search_cubit.dart';
 import '../../repositories/musicians_repository.dart';
