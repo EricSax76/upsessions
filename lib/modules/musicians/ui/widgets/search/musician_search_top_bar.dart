@@ -1,10 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../../core/widgets/forms/search_field.dart';
 import '../../../cubits/musician_search_cubit.dart';
-import '../../../../../features/home/ui/widgets/search/advanced_search_box.dart';
 
 class MusicianSearchTopBar extends StatelessWidget {
   const MusicianSearchTopBar({
@@ -34,92 +32,6 @@ class MusicianSearchTopBar extends StatelessWidget {
   final ValueChanged<String>? onProvinceChanged;
   final ValueChanged<String>? onCityChanged;
 
-  @override
-  Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context);
-    final showWebFilters = kIsWeb && state != null && onClearFilters != null;
-    return Material(
-      color: Theme.of(context).colorScheme.surface,
-      elevation: 1,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Row(
-          children: [
-            Expanded(
-              child: SearchField(
-                controller: controller,
-                hintText: loc.searchTopBarHint,
-                onSubmitted: onSubmitted,
-                decoration: const InputDecoration(border: InputBorder.none),
-              ),
-            ),
-            const SizedBox(width: 8),
-            if (showWebFilters) ...[
-              _WebFiltersMenu(
-                state: state!,
-                onSearch: onPressed,
-                onClear: onClearFilters!,
-                onInstrumentChanged: onInstrumentChanged!,
-                onStyleChanged: onStyleChanged!,
-                onProfileTypeChanged: onProfileTypeChanged!,
-                onGenderChanged: onGenderChanged!,
-                onProvinceChanged: onProvinceChanged!,
-                onCityChanged: onCityChanged!,
-              ),
-              const SizedBox(width: 8),
-            ],
-            FilledButton(
-              onPressed: onPressed,
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
-              child: Text(loc.searchAction),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _WebFiltersMenu extends StatefulWidget {
-  const _WebFiltersMenu({
-    required this.state,
-    required this.onSearch,
-    required this.onClear,
-    required this.onInstrumentChanged,
-    required this.onStyleChanged,
-    required this.onProfileTypeChanged,
-    required this.onGenderChanged,
-    required this.onProvinceChanged,
-    required this.onCityChanged,
-  });
-
-  final MusicianSearchState state;
-  final VoidCallback onSearch;
-  final VoidCallback onClear;
-  final ValueChanged<String> onInstrumentChanged;
-  final ValueChanged<String> onStyleChanged;
-  final ValueChanged<String> onProfileTypeChanged;
-  final ValueChanged<String> onGenderChanged;
-  final ValueChanged<String> onProvinceChanged;
-  final ValueChanged<String> onCityChanged;
-
-  @override
-  State<_WebFiltersMenu> createState() => _WebFiltersMenuState();
-}
-
-class _WebFiltersMenuState extends State<_WebFiltersMenu> {
-  final MenuController _menuController = MenuController();
-
-  void _defer(VoidCallback action) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => action());
-  }
-
   int _activeFilterCount(MusicianSearchState state) {
     var count = 0;
     if (state.instrument.isNotEmpty) count++;
@@ -134,64 +46,77 @@ class _WebFiltersMenuState extends State<_WebFiltersMenu> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-    final filtersReady = !widget.state.areFiltersLoading;
-    final activeCount = _activeFilterCount(widget.state);
-    final label = activeCount == 0
-        ? loc.searchFiltersTitle
-        : loc.searchFiltersWithCount(activeCount);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-    return MenuAnchor(
-      controller: _menuController,
-      menuChildren: [
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 320),
-          child: Material(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
-            child: AdvancedSearchBox(
-              variant: AdvancedSearchBoxVariant.popover,
-              selectedInstrument: widget.state.instrument,
-              selectedStyle: widget.state.style,
-              selectedProfileType: widget.state.profileType,
-              selectedGender: widget.state.gender,
-              selectedProvince: widget.state.province,
-              selectedCity: widget.state.city,
-              provinces: widget.state.provinces,
-              cities: widget.state.cities,
-              onInstrumentChanged: widget.onInstrumentChanged,
-              onStyleChanged: widget.onStyleChanged,
-              onProfileTypeChanged: widget.onProfileTypeChanged,
-              onGenderChanged: widget.onGenderChanged,
-              onProvinceChanged: widget.onProvinceChanged,
-              onCityChanged: widget.onCityChanged,
-              onSearch: filtersReady
-                  ? () {
-                      widget.onSearch();
-                      _defer(_menuController.close);
-                    }
-                  : null,
-              onClear: filtersReady
-                  ? () {
-                      widget.onClear();
-                      _defer(_menuController.close);
-                    }
-                  : null,
+    final activeFilters = state != null ? _activeFilterCount(state!) : 0;
+    final hasFilters = activeFilters > 0;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: SearchField(
+                controller: controller,
+                hintText: loc.searchTopBarHint,
+                onSubmitted: onSubmitted,
+                onChanged:
+                    (
+                      _,
+                    ) {}, // The live search will be handled in the controller listener
+                decoration: const InputDecoration(border: InputBorder.none),
+              ),
             ),
           ),
-        ),
-      ],
-      builder: (context, controller, child) {
-        return OutlinedButton.icon(
-          onPressed: () => _defer(
-            () => controller.isOpen ? controller.close() : controller.open(),
-          ),
-          icon: const Icon(Icons.tune),
-          label: Text(label),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          ),
-        );
-      },
+          if (state != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.tune_rounded),
+                    color: hasFilters
+                        ? colorScheme.primary
+                        : colorScheme.onSurfaceVariant,
+                    onPressed:
+                        onPressed, // In mobile, this will open the bottom sheet
+                    tooltip: 'Filtros avanzados',
+                  ),
+                  if (hasFilters)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: colorScheme.error,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 8,
+                          minHeight: 8,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

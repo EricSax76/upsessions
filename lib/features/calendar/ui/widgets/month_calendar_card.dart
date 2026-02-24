@@ -5,7 +5,7 @@ import '../../../../core/widgets/section_card.dart';
 import 'calendar_day_cell.dart';
 import 'month_calendar_navigation.dart';
 
-class MonthCalendarCard extends StatelessWidget {
+class MonthCalendarCard extends StatefulWidget {
   const MonthCalendarCard({
     super.key,
     required this.visibleMonth,
@@ -26,28 +26,94 @@ class MonthCalendarCard extends StatelessWidget {
   final VoidCallback onGoToToday;
 
   @override
+  State<MonthCalendarCard> createState() => _MonthCalendarCardState();
+}
+
+class _MonthCalendarCardState extends State<MonthCalendarCard> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     return SectionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MonthNavigationBar(
-            visibleMonth: visibleMonth,
-            onPreviousMonth: onPreviousMonth,
-            onNextMonth: onNextMonth,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: MonthNavigationBar(
+                  visibleMonth: widget.visibleMonth,
+                  onPreviousMonth: widget.onPreviousMonth,
+                  onNextMonth: widget.onNextMonth,
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  _isExpanded ? Icons.expand_less : Icons.expand_more,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isExpanded = !_isExpanded;
+                  });
+                },
+              ),
+            ],
           ),
-          MonthActionRow(onGoToToday: onGoToToday),
+          MonthActionRow(onGoToToday: widget.onGoToToday),
           const SizedBox(height: 8),
           const WeekdayHeader(),
           const SizedBox(height: 12),
-          CalendarGrid(
-            month: visibleMonth,
-            selectedDay: selectedDay,
-            eventsByDay: eventsByDay,
-            onSelectDay: onSelectDay,
+          AnimatedCrossFade(
+            duration: const Duration(milliseconds: 300),
+            crossFadeState: _isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            firstChild: _buildCollapsedWeekRow(context),
+            secondChild: CalendarGrid(
+              month: widget.visibleMonth,
+              selectedDay: widget.selectedDay,
+              eventsByDay: widget.eventsByDay,
+              onSelectDay: widget.onSelectDay,
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCollapsedWeekRow(BuildContext context) {
+    // Show only the 7 days surrounding the selected day
+    final startOfWeek = widget.selectedDay
+        .subtract(Duration(days: widget.selectedDay.weekday - 1));
+    final days = List.generate(7, (i) => startOfWeek.add(Duration(days: i)));
+
+    return Row(
+      children: days.map((date) {
+        final key = DateUtils.dateOnly(date);
+        final hasEvents = widget.eventsByDay.containsKey(key);
+        final eventsCount = widget.eventsByDay[key]?.length ?? 0;
+        final isSelected = DateUtils.isSameDay(key, widget.selectedDay);
+        final isToday = DateUtils.isSameDay(
+          key,
+          DateUtils.dateOnly(DateTime.now()),
+        );
+
+        return Expanded(
+          child: AspectRatio(
+            aspectRatio: 1, // keeping it square
+            child: CalendarDayCell(
+              date: date,
+              isSelected: isSelected,
+              isToday: isToday,
+              hasEvents: hasEvents,
+              eventsCount: eventsCount,
+              onTap: () => widget.onSelectDay(key),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

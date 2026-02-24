@@ -27,46 +27,73 @@ class RehearsalResponsiveLayout extends StatelessWidget {
         final width = constraints.maxWidth;
         final isWide = width >= 1200;
         final showSidebar = isWide && sidebar != null;
+        
+        final horizontalPadding = isWide ? 48.0 : 16.0;
+        final verticalPadding = isWide ? 48.0 : 24.0;
 
         return Container(
           color: colorScheme.surfaceContainerLow,
-          child: SingleChildScrollView(
-            padding: padding ??
-                EdgeInsets.symmetric(
-                  vertical: isWide ? 48 : 24,
-                  horizontal: isWide ? 48 : 16,
-                ),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1400),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (header != null) ...[
-                      header!,
-                      const Gap(48),
-                    ],
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: mainContent,
-                        ),
-                        if (showSidebar) ...[
-                          const Gap(32),
-                          Expanded(
-                            flex: 2,
-                            child: sidebar!,
-                          ),
-                        ],
-                      ],
+          child: CustomScrollView(
+            slivers: [
+              if (header != null)
+                SliverPadding(
+                  padding: EdgeInsets.only(
+                    top: verticalPadding,
+                    left: horizontalPadding,
+                    right: horizontalPadding,
+                    bottom: 32.0,
+                  ),
+                  sliver: SliverAppBar(
+                    floating: true,
+                    snap: true,
+                    automaticallyImplyLeading: false,
+                    backgroundColor: Colors.transparent,
+                    surfaceTintColor: Colors.transparent,
+                    elevation: 0,
+                    toolbarHeight: 220, // Approximate height to fit the hero section
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: header!,
                     ),
-                    const Gap(48),
-                  ],
+                  ),
+                ),
+              SliverPadding(
+                padding: padding ??
+                    EdgeInsets.only(
+                      left: horizontalPadding,
+                      right: horizontalPadding,
+                      bottom: verticalPadding,
+                    ),
+                sliver: SliverToBoxAdapter(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 1400),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: mainContent,
+                              ),
+                              if (showSidebar) ...[
+                                const Gap(32),
+                                Expanded(
+                                  flex: 2,
+                                  child: sidebar!,
+                                ),
+                              ],
+                            ],
+                          ),
+                          const Gap(48),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         );
       },

@@ -65,6 +65,7 @@ class _SearchFieldState extends State<SearchField> {
                 InputDecoration(
                   hintText: widget.hintText,
                   labelText: widget.labelText,
+                  border: InputBorder.none,
                 ))
             .copyWith(
           hintText: widget.decoration?.hintText ?? widget.hintText,

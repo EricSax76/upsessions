@@ -31,48 +31,100 @@ class GroupPageView extends StatelessWidget {
 
         if (state is GroupLoaded) {
           final group = state.group;
-          return Column(
-            children: [
-              GroupHeader(group: group),
-              Material(
-                color: colorScheme.surface,
-                child: TabBar(
-                  labelColor: colorScheme.primary,
-                  unselectedLabelColor: colorScheme.onSurfaceVariant,
-                  indicatorColor: colorScheme.primary,
-                  indicatorWeight: 3,
-                  tabs: [
-                    Tab(
-                      text: loc.navRehearsals,
-                      icon: const Icon(Icons.event_available),
-                    ),
-                    const Tab(
-                      text: 'Información',
-                      icon: Icon(Icons.info_outline),
-                    ),
-                  ],
+          return NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                  floating: true,
+                  snap: true,
+                  automaticallyImplyLeading: false,
+                  backgroundColor: Colors.transparent,
+                  surfaceTintColor: Colors.transparent,
+                  elevation: 0,
+                  toolbarHeight: 140, // Approximate height to fit the reduced group header
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: GroupHeader(group: group),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    GroupRehearsalsView(
-                      groupId: groupId,
-                      showHeader: false,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 20,
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _SliverAppBarDelegate(
+                    minHeight: 72.0,
+                    maxHeight: 72.0,
+                    child: Material(
+                      color: colorScheme.surface,
+                      child: TabBar(
+                        labelColor: colorScheme.primary,
+                        unselectedLabelColor: colorScheme.onSurfaceVariant,
+                        indicatorColor: colorScheme.primary,
+                        indicatorWeight: 3,
+                        tabs: [
+                          Tab(
+                            text: loc.navRehearsals,
+                            icon: const Icon(Icons.event_available),
+                          ),
+                          const Tab(
+                            text: 'Información',
+                            icon: Icon(Icons.info_outline),
+                          ),
+                        ],
                       ),
                     ),
-                    GroupInfoTab(group: group),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ];
+            },
+            body: TabBarView(
+              children: [
+                GroupRehearsalsView(
+                  groupId: groupId,
+                  showHeader: false,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 20,
+                  ),
+                ),
+                GroupInfoTab(group: group),
+              ],
+            ),
           );
         }
         return const SizedBox.shrink();
       },
     );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxExtent ||
+        minHeight != oldDelegate.minExtent ||
+        child != oldDelegate.child;
   }
 }

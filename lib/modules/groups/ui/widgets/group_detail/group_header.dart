@@ -68,7 +68,7 @@ class GroupHeader extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [colorScheme.primary, colorScheme.primaryContainer],
@@ -81,7 +81,7 @@ class GroupHeader extends StatelessWidget {
           Stack(
             children: [
               SmAvatar(
-                radius: 45,
+                radius: 28,
                 imageUrl: group.photoUrl,
                 fallbackIcon: Icons.group,
                 backgroundColor: colorScheme.onPrimary.withValues(alpha: 0.2),
@@ -93,7 +93,7 @@ class GroupHeader extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () => _handlePhotoTap(context),
                   child: Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: colorScheme.primary,
                       shape: BoxShape.circle,
@@ -108,7 +108,7 @@ class GroupHeader extends StatelessWidget {
                     ),
                     child: Icon(
                       Icons.camera_alt,
-                      size: 16,
+                      size: 14,
                       color: colorScheme.onPrimary,
                     ),
                   ),
@@ -116,20 +116,20 @@ class GroupHeader extends StatelessWidget {
               ),
             ],
           ),
-          const VSpace(16),
+          const VSpace(8),
           Text(
             group.name,
-            style: theme.textTheme.headlineSmall?.copyWith(
+            style: theme.textTheme.titleLarge?.copyWith(
               color: colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
           ),
           if (group.genre.isNotEmpty) ...[
-            const VSpace(4),
+            const VSpace(2),
             Text(
               group.genre,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: colorScheme.onPrimary.withValues(alpha: 0.8),
               ),
             ),
