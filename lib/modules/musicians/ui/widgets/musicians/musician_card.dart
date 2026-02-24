@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../../core/widgets/sm_avatar.dart';
 import '../../../models/musician_entity.dart';
 
-class MusicianCard extends StatelessWidget {
+class MusicianCard extends StatefulWidget {
   const MusicianCard({super.key, required this.musician, this.onTap});
 
   final MusicianEntity musician;
   final VoidCallback? onTap;
 
   @override
+  State<MusicianCard> createState() => _MusicianCardState();
+}
+
+class _MusicianCardState extends State<MusicianCard> {
+  bool _isHovered = false;
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final styles = musician.styles.take(3).toList();
-    final initials = musician.name.isNotEmpty
-        ? musician.name.trim().split(' ').take(2).map((w) => w[0]).join()
+    final styles = widget.musician.styles.take(3).toList();
+    final initials = widget.musician.name.isNotEmpty
+        ? widget.musician.name.trim().split(' ').take(2).map((w) => w[0]).join()
         : '';
 
     return Card(
@@ -24,7 +33,9 @@ class MusicianCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
+        onTap: widget.onTap,
+        onHover: (hovered) => setState(() => _isHovered = hovered),
+        onHighlightChanged: (highlighted) => setState(() => _isPressed = highlighted),
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -33,14 +44,14 @@ class MusicianCard extends StatelessWidget {
             children: [
               SmAvatar(
                 radius: 40,
-                imageUrl: musician.photoUrl,
+                imageUrl: widget.musician.photoUrl,
                 initials: initials,
                 backgroundColor: colors.primaryContainer,
                 foregroundColor: colors.onPrimaryContainer,
               ),
               const SizedBox(height: 16),
               Text(
-                musician.name,
+                widget.musician.name,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -50,7 +61,7 @@ class MusicianCard extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                musician.instrument,
+                widget.musician.instrument,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
@@ -61,7 +72,7 @@ class MusicianCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                musician.city,
+                widget.musician.city,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
@@ -101,6 +112,9 @@ class MusicianCard extends StatelessWidget {
           ),
         ),
       ),
-    );
+    )
+        .animate(target: _isPressed ? 1 : (_isHovered ? 0.5 : 0))
+        .scaleXY(end: 0.97, duration: 150.ms, curve: Curves.easeOut)
+        .scaleXY(begin: 1.0, end: 1.02, duration: 200.ms, curve: Curves.easeOut);
   }
 }

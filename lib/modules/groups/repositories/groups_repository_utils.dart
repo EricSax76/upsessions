@@ -13,7 +13,7 @@ Map<String, dynamic> _memberData({
     'status': 'active',
     'createdAt': FieldValue.serverTimestamp(),
     'addedBy': addedBy,
-    if (inviteId != null) 'inviteId': inviteId,
+    'inviteId': ?inviteId,
   };
 }
 

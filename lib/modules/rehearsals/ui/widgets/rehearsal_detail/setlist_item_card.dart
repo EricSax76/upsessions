@@ -169,7 +169,7 @@ class SetlistItemCard extends StatelessWidget {
                     constraints: const BoxConstraints(),
                   ),
                   const SizedBox(width: 16),
-                  if (trailing != null) trailing,
+                  ?trailing,
                   if (trailing == null && onTap != null)
                     Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
                 ],
