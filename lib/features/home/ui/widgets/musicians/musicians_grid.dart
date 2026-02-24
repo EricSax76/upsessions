@@ -6,9 +6,14 @@ import 'package:upsessions/modules/musicians/models/musician_liked_musician_mapp
 import 'package:upsessions/core/widgets/sm_avatar.dart';
 
 class MusiciansGrid extends StatelessWidget {
-  const MusiciansGrid({super.key, required this.musicians});
+  const MusiciansGrid({
+    super.key,
+    required this.musicians,
+    this.onMusicianTap,
+  });
 
   final List<MusicianEntity> musicians;
+  final ValueChanged<MusicianEntity>? onMusicianTap;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +40,12 @@ class MusiciansGrid extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 12),
                 child: SizedBox(
                   width: cardWidth,
-                  child: _MusicianTile(musician: musician),
+                  child: _MusicianTile(
+                    musician: musician,
+                    onTap: onMusicianTap == null
+                        ? null
+                        : () => onMusicianTap!(musician),
+                  ),
                 ),
               );
             },
@@ -47,9 +57,10 @@ class MusiciansGrid extends StatelessWidget {
 }
 
 class _MusicianTile extends StatefulWidget {
-  const _MusicianTile({required this.musician});
+  const _MusicianTile({required this.musician, this.onTap});
 
   final MusicianEntity musician;
+  final VoidCallback? onTap;
 
   @override
   State<_MusicianTile> createState() => _MusicianTileState();
@@ -73,93 +84,96 @@ class _MusicianTileState extends State<_MusicianTile> {
         if (!mounted || !_isHovered) return;
         setState(() => _isHovered = false);
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        transform: Matrix4.identity()
-          ..translateByDouble(0.0, _isHovered ? -4.0 : 0.0, 0.0, 1.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              colorScheme.surfaceContainerHighest,
-              colorScheme.surfaceContainer,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          transform: Matrix4.identity()
+            ..translateByDouble(0.0, _isHovered ? -4.0 : 0.0, 0.0, 1.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                colorScheme.surfaceContainerHighest,
+                colorScheme.surfaceContainer,
+              ],
+            ),
+            border: Border.all(
+              color: _isHovered
+                  ? colorScheme.primary.withValues(alpha: 0.3)
+                  : colorScheme.outline.withValues(alpha: 0.2),
+              width: _isHovered ? 2 : 1,
+            ),
+            boxShadow: _isHovered
+                ? [
+                    BoxShadow(
+                      color: colorScheme.primary.withValues(alpha: 0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ]
+                : [
+                    BoxShadow(
+                      color: colorScheme.scrim.withValues(alpha: 0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+          ),
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              SmAvatar(
+                radius: 28,
+                imageUrl: widget.musician.photoUrl,
+                initials: widget.musician.name.isNotEmpty
+                    ? widget.musician.name[0]
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.musician.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      widget.musician.instrument,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colorScheme.onSurfaceVariant,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      widget.musician.city,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colorScheme.onSurfaceVariant,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              MusicianLikeButton(musician: likedMusician, iconSize: 20),
             ],
           ),
-          border: Border.all(
-            color: _isHovered
-                ? colorScheme.primary.withValues(alpha: 0.3)
-                : colorScheme.outline.withValues(alpha: 0.2),
-            width: _isHovered ? 2 : 1,
-          ),
-          boxShadow: _isHovered
-              ? [
-                  BoxShadow(
-                    color: colorScheme.primary.withValues(alpha: 0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: colorScheme.scrim.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-        ),
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            SmAvatar(
-              radius: 28,
-              imageUrl: widget.musician.photoUrl,
-              initials: widget.musician.name.isNotEmpty
-                  ? widget.musician.name[0]
-                  : null,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    widget.musician.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    widget.musician.instrument,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    widget.musician.city,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: colorScheme.onSurfaceVariant,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            MusicianLikeButton(musician: likedMusician, iconSize: 20),
-          ],
         ),
       ),
     );

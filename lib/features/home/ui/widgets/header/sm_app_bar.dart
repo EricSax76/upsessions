@@ -10,6 +10,8 @@ import 'package:upsessions/core/widgets/sm_avatar.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 
+enum _AvatarMenuAction { profile, accountSettings, signOut }
+
 class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SmAppBar({super.key, this.bottom, this.showMenuButton = false});
 
@@ -100,9 +102,59 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
                         width: 2,
                       ),
                     ),
-                    child: InkWell(
-                      onTap: () => context.push(AppRoutes.account),
-                      borderRadius: BorderRadius.circular(24),
+                    child: PopupMenuButton<_AvatarMenuAction>(
+                      tooltip: 'Menú de perfil',
+                      onSelected: (action) {
+                        switch (action) {
+                          case _AvatarMenuAction.profile:
+                            context.push(AppRoutes.profile);
+                            break;
+                          case _AvatarMenuAction.accountSettings:
+                            context.push(AppRoutes.settings);
+                            break;
+                          case _AvatarMenuAction.signOut:
+                            context.read<AuthCubit>().signOut();
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) {
+                        final colorScheme = Theme.of(context).colorScheme;
+                        return [
+                          const PopupMenuItem<_AvatarMenuAction>(
+                            value: _AvatarMenuAction.profile,
+                            child: Row(
+                              children: [
+                                Icon(Icons.person_outline),
+                                SizedBox(width: 10),
+                                Text('Perfil'),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem<_AvatarMenuAction>(
+                            value: _AvatarMenuAction.accountSettings,
+                            child: Row(
+                              children: [
+                                Icon(Icons.settings_outlined),
+                                SizedBox(width: 10),
+                                Text('Ajustes de la cuenta'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<_AvatarMenuAction>(
+                            value: _AvatarMenuAction.signOut,
+                            child: Row(
+                              children: [
+                                Icon(Icons.logout, color: colorScheme.error),
+                                const SizedBox(width: 10),
+                                Text(
+                                  'Cerrar sesión',
+                                  style: TextStyle(color: colorScheme.error),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ];
+                      },
                       child: SmAvatar(
                         radius: 17, // Slightly larger visual with border
                         imageUrl: avatarUrl,

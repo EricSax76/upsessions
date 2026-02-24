@@ -39,10 +39,13 @@ class UserShellPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isWideLayout = kIsWeb ? width >= 700 : width >= 1200;
-    
+    final location = GoRouterState.of(context).uri.path;
+
     // On web, we always showed top bar in the previous code.
     // Logic: `showTopAppBar = kIsWeb || !isWideLayout`
     final showTopAppBar = kIsWeb || !isWideLayout;
+    final showQuickActionsFab =
+        !isWideLayout && !location.startsWith(AppRoutes.messages);
 
     return MultiBlocProvider(
       providers: [
@@ -66,11 +69,13 @@ class UserShellPage extends StatelessWidget {
         },
         child: CoreShell(
           sidebar: const UserSidebar(),
-          appBar: showTopAppBar 
-              ? SmAppBar(showMenuButton: !isWideLayout) 
+          appBar: showTopAppBar
+              ? SmAppBar(showMenuButton: !isWideLayout)
               : null,
           bottomNavigationBar: const UserBottomNavBar(),
-          floatingActionButton: isWideLayout ? null : const ProfileQuickActionsFab(),
+          floatingActionButton: showQuickActionsFab
+              ? const ProfileQuickActionsFab()
+              : null,
           child: KeyedSubtree(
             key: const ValueKey('user-shell-content'),
             child: child,

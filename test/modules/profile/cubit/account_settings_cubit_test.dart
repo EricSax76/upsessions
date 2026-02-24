@@ -1,28 +1,40 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:upsessions/modules/profile/cubit/account_settings_cubit.dart';
+import 'package:upsessions/features/settings/cubits/account_preferences_cubit.dart';
 
 void main() {
-  group('AccountSettingsCubit', () {
+  group('AccountPreferencesCubit', () {
     test('initial state is correct', () {
-       expect(AccountSettingsCubit().state, const AccountSettingsState(twoFactorEnabled: false, newsletterEnabled: true));
+      expect(
+        AccountPreferencesCubit().state,
+        const AccountPreferencesState(
+          twoFactorEnabled: false,
+          newsletterEnabled: true,
+        ),
+      );
     });
 
-    blocTest<AccountSettingsCubit, AccountSettingsState>(
+    blocTest<AccountPreferencesCubit, AccountPreferencesState>(
       'toggleTwoFactor updates state',
-      build: () => AccountSettingsCubit(),
+      build: () => AccountPreferencesCubit(),
       act: (cubit) => cubit.toggleTwoFactor(true),
       expect: () => [
-        const AccountSettingsState(twoFactorEnabled: true, newsletterEnabled: true),
+        const AccountPreferencesState(
+          twoFactorEnabled: true,
+          newsletterEnabled: true,
+        ),
       ],
     );
 
-    blocTest<AccountSettingsCubit, AccountSettingsState>(
+    blocTest<AccountPreferencesCubit, AccountPreferencesState>(
       'toggleNewsletter updates state',
-      build: () => AccountSettingsCubit(),
+      build: () => AccountPreferencesCubit(),
       act: (cubit) => cubit.toggleNewsletter(false),
       expect: () => [
-        const AccountSettingsState(twoFactorEnabled: false, newsletterEnabled: false),
+        const AccountPreferencesState(
+          twoFactorEnabled: false,
+          newsletterEnabled: false,
+        ),
       ],
     );
   });

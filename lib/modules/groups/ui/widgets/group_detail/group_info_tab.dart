@@ -9,7 +9,6 @@ import '../../../../../core/widgets/sm_avatar.dart';
 import '../../../../../core/widgets/loading_indicator.dart';
 import '../../../../../core/constants/app_routes.dart';
 import '../../../../../core/locator/locator.dart';
-import '../../../../auth/cubits/auth_cubit.dart';
 import '../../../cubits/group_members_cubit.dart';
 import '../../../cubits/group_members_state.dart';
 import '../../../models/group_dtos.dart';
@@ -41,9 +40,6 @@ class _GroupInfoContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userId = context.select((AuthCubit cubit) => cubit.state.user?.id);
-    final isOwner = userId != null && userId == group.ownerId;
-
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
@@ -56,80 +52,28 @@ class _GroupInfoContent extends StatelessWidget {
             InfoTile(icon: Icons.link, label: group.link2),
           const VSpace(24),
         ],
-        const SectionTitle(text: 'Miembros'),
+        const _CenteredSectionTitle(text: 'Miembros'),
         const VSpace(12),
         const _MembersList(),
-        const VSpace(24),
-        const SectionTitle(text: 'Configuración'),
-        const VSpace(12),
-        InfoTile(
-          icon: Icons.admin_panel_settings_outlined,
-          label: 'ID del grupo: ${group.id}',
-        ),
-        if (isOwner) ...[
-          const VSpace(24),
-          const SectionTitle(text: 'Acciones'),
-          const VSpace(12),
-          AppCard(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(0),
-            child: ListTile(
-              leading: Icon(
-                Icons.delete_outline,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              title: Text(
-                'Eliminar grupo',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-              ),
-              subtitle: const Text('Esta acci\u00f3n no se puede deshacer.'),
-              onTap: () => _confirmDeleteGroup(context, group.id),
-            ),
-          ),
-        ],
       ],
     );
   }
+}
 
-  Future<void> _confirmDeleteGroup(BuildContext context, String groupId) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Eliminar grupo'),
-        content: const Text(
-          'Se eliminar\u00e1 el grupo y su informaci\u00f3n asociada. \u00bfContinuar?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Eliminar'),
-          ),
-        ],
+class _CenteredSectionTitle extends StatelessWidget {
+  const _CenteredSectionTitle({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.headlineSmall,
+        textAlign: TextAlign.center,
       ),
     );
-
-    if (confirmed != true) return;
-
-    final repository = locate<GroupsRepository>();
-    try {
-      await repository.deleteGroup(groupId: groupId);
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Grupo eliminado.')),
-      );
-      context.go(AppRoutes.rehearsals);
-    } catch (error) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No se pudo eliminar el grupo: $error')),
-      );
-    }
   }
 }
 
@@ -153,8 +97,29 @@ class _MembersList extends StatelessWidget {
           if (state.members.isEmpty) {
             return const Center(child: Text('No hay miembros en este grupo.'));
           }
-          return Column(
-            children: state.members.map((member) => _MemberTile(member: member)).toList(),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final width = constraints.maxWidth;
+              final crossAxisCount = width < 440 ? 3 : width < 760 ? 4 : 6;
+              const horizontalSpacing = 12.0;
+              final tileWidth =
+                  (width - (horizontalSpacing * (crossAxisCount - 1))) /
+                  crossAxisCount;
+
+              return Wrap(
+                alignment: WrapAlignment.center,
+                spacing: horizontalSpacing,
+                runSpacing: 18,
+                children: state.members
+                    .map(
+                      (member) => SizedBox(
+                        width: tileWidth,
+                        child: _MemberAvatarTile(member: member),
+                      ),
+                    )
+                    .toList(),
+              );
+            },
           );
         }
         return const SizedBox.shrink();
@@ -163,59 +128,109 @@ class _MembersList extends StatelessWidget {
   }
 }
 
-class _MemberTile extends StatelessWidget {
-  const _MemberTile({required this.member});
+class _MemberAvatarTile extends StatelessWidget {
+  const _MemberAvatarTile({required this.member});
 
   final GroupMember member;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return AppCard(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      child: ListTile(
-        leading: SmAvatar(
-          radius: 20,
-          imageUrl: member.photoUrl,
-          initials: member.name.isNotEmpty ? member.name.substring(0, 1) : '?',
-        ),
-        title: Text(member.name, style: theme.textTheme.bodyMedium),
-        subtitle: Text(
-          _formatSubtitle(member),
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+    final colorScheme = theme.colorScheme;
+    final initials = _initials(member.name);
+    final isOwner = member.role == 'owner';
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: () => _openMusicianDetail(context),
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.7),
+                  ),
+                ),
+                child: SmAvatar(
+                  radius: 34,
+                  imageUrl: member.photoUrl,
+                  initials: initials,
+                  backgroundColor: colorScheme.primaryContainer,
+                  foregroundColor: colorScheme.onPrimaryContainer,
+                ),
+              ),
+              if (isOwner)
+                Positioned(
+                  right: -1,
+                  bottom: -1,
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: colorScheme.primary,
+                      border: Border.all(color: colorScheme.surface, width: 1.5),
+                    ),
+                    child: Icon(
+                      Icons.admin_panel_settings,
+                      size: 12,
+                      color: colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
-        trailing: _buildRoleBadge(context, member.role),
-      ),
+        const SizedBox(height: 8),
+        Text(
+          member.name,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 
-  String _formatSubtitle(GroupMember member) {
-    if (member.instrument != null && member.instrument!.isNotEmpty) {
-      return member.instrument!;
+  String _initials(String fullName) {
+    final parts = fullName
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) {
+      return '?';
     }
-    return 'Músico';
+    if (parts.length == 1) {
+      return parts.first.substring(0, 1).toUpperCase();
+    }
+    return (parts[0][0] + parts[1][0]).toUpperCase();
   }
 
-  Widget? _buildRoleBadge(BuildContext context, String role) {
-    if (role == 'owner') {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          'Admin',
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
-        ),
+  void _openMusicianDetail(BuildContext context) {
+    final musicianId = member.id.trim();
+    if (musicianId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo abrir el perfil del músico.')),
       );
+      return;
     }
-    return null;
+
+    context.push(
+      AppRoutes.musicianDetailPath(
+        musicianId: musicianId,
+        musicianName: member.name,
+      ),
+    );
   }
 }
 

@@ -23,9 +23,10 @@ class MusicianInfluencesSelectedList extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Text(
             loc.onboardingInfluencesEmpty,
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: theme.textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
+            textAlign: TextAlign.center,
           ),
         ),
       );
@@ -42,20 +43,44 @@ class MusicianInfluencesSelectedList extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                style,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                style.toUpperCase(),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
                   color: colorScheme.primary,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: artists
                     .map(
-                      (artist) => Chip(
-                        label: Text(artist),
+                      (artist) => RawChip(
+                        label: Text(
+                          artist,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                        backgroundColor: colorScheme.surfaceContainerHighest,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.7,
+                            ),
+                          ),
+                        ),
+                        deleteIcon: Icon(
+                          Icons.close,
+                          size: 16,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                         onDeleted: () => onRemoveInfluence(style, artist),
                       ),
                     )

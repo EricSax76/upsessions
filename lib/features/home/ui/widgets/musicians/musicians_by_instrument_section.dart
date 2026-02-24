@@ -13,11 +13,15 @@ class MusiciansByInstrumentSection extends StatelessWidget {
     required this.categories,
     required this.musicians,
     required this.onInstrumentSelected,
+    this.onMusicianTap,
+    this.onInstrumentTap,
   });
 
   final List<InstrumentCategoryModel> categories;
   final List<MusicianEntity> musicians;
   final ValueChanged<String> onInstrumentSelected;
+  final ValueChanged<MusicianEntity>? onMusicianTap;
+  final ValueChanged<String>? onInstrumentTap;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +45,11 @@ class MusiciansByInstrumentSection extends StatelessWidget {
                   label: Text(instrument),
                   selected: selectedInstrument == instrument,
                   onSelected: (selected) {
+                    final tapHandler = onInstrumentTap;
+                    if (tapHandler != null) {
+                      tapHandler(instrument);
+                      return;
+                    }
                     onInstrumentSelected(selected ? instrument : '');
                   },
                 ),
@@ -60,7 +69,10 @@ class MusiciansByInstrumentSection extends StatelessWidget {
           children: [
             Wrap(children: chips),
             const SizedBox(height: 12),
-            MusiciansGrid(musicians: filtered),
+            MusiciansGrid(
+              musicians: filtered,
+              onMusicianTap: onMusicianTap,
+            ),
           ],
         );
       },

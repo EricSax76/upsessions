@@ -7,9 +7,14 @@ import 'package:upsessions/core/widgets/sm_avatar.dart';
 import 'package:upsessions/core/widgets/continuous_carousel.dart';
 
 class NewMusiciansSection extends StatelessWidget {
-  const NewMusiciansSection({super.key, required this.musicians});
+  const NewMusiciansSection({
+    super.key,
+    required this.musicians,
+    this.onMusicianTap,
+  });
 
   final List<MusicianEntity> musicians;
+  final ValueChanged<MusicianEntity>? onMusicianTap;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +38,12 @@ class NewMusiciansSection extends StatelessWidget {
 
           return SizedBox(
             width: cardWidth,
-            child: _NewMusicianCard(musician: musician),
+            child: _NewMusicianCard(
+              musician: musician,
+              onTap: onMusicianTap == null
+                  ? null
+                  : () => onMusicianTap!(musician),
+            ),
           )
               .animate()
               .fade(duration: 350.ms, delay: (index * 70).ms)
@@ -60,9 +70,10 @@ class NewMusiciansSection extends StatelessWidget {
 }
 
 class _NewMusicianCard extends StatefulWidget {
-  const _NewMusicianCard({required this.musician});
+  const _NewMusicianCard({required this.musician, this.onTap});
 
   final MusicianEntity musician;
+  final VoidCallback? onTap;
 
   @override
   State<_NewMusicianCard> createState() => _NewMusicianCardState();
@@ -78,10 +89,8 @@ class _NewMusicianCardState extends State<_NewMusicianCard> {
 
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) {
-        setState(() => _isPressed = false);
-        // Navigate or action if needed
-      },
+      onTap: widget.onTap,
+      onTapUp: (_) => setState(() => _isPressed = false),
       onTapCancel: () => setState(() => _isPressed = false),
       child: MouseRegion(
         onEnter: (_) => setState(() => _isHovered = true),

@@ -108,9 +108,9 @@ class UserHomePage extends StatelessWidget {
                             flex: 3,
                             child: Column(
                               children: [
-                                _buildEventsSection(loc, state),
+                                _buildEventsSection(context, loc, state),
                                 const SizedBox(height: 32),
-                                _buildRecommendedSection(loc, state),
+                                _buildRecommendedSection(context, loc, state),
                               ],
                             ),
                           ),
@@ -119,9 +119,13 @@ class UserHomePage extends StatelessWidget {
                             flex: 2,
                             child: Column(
                               children: [
-                                _buildAnnouncementsSection(loc, state),
+                                _buildAnnouncementsSection(
+                                  context,
+                                  loc,
+                                  state,
+                                ),
                                 const SizedBox(height: 32),
-                                _buildNewTalentSection(loc, state),
+                                _buildNewTalentSection(context, loc, state),
                               ],
                             ),
                           ),
@@ -130,13 +134,13 @@ class UserHomePage extends StatelessWidget {
                     else
                       Column(
                         children: [
-                          _buildEventsSection(loc, state),
+                          _buildEventsSection(context, loc, state),
                           const SizedBox(height: 32),
-                          _buildAnnouncementsSection(loc, state),
+                          _buildAnnouncementsSection(context, loc, state),
                           const SizedBox(height: 32),
-                          _buildRecommendedSection(loc, state),
+                          _buildRecommendedSection(context, loc, state),
                           const SizedBox(height: 32),
-                          _buildNewTalentSection(loc, state),
+                          _buildNewTalentSection(context, loc, state),
                         ],
                       ),
 
@@ -149,6 +153,7 @@ class UserHomePage extends StatelessWidget {
                         icon: const Icon(Icons.arrow_outward),
                         label: Text(loc.viewAll),
                       ),
+                      onTap: () => context.push(AppRoutes.studios),
                       child: StudiosPromoCard(isCompact: isCompact),
                     ),
                     const SizedBox(height: 48),
@@ -160,10 +165,14 @@ class UserHomePage extends StatelessWidget {
                         icon: const Icon(Icons.arrow_outward),
                         label: Text(loc.viewAll),
                       ),
+                      onTap: () => context.push(AppRoutes.musicians),
                       child: MusiciansByInstrumentSection(
                         categories: state.categories,
                         musicians: state.recommended,
                         onInstrumentSelected: cubit.selectInstrument,
+                        onInstrumentTap: (_) =>
+                            context.push(AppRoutes.musicians),
+                        onMusicianTap: (_) => context.push(AppRoutes.musicians),
                       ),
                     ),
                     const SizedBox(height: 48),
@@ -178,23 +187,39 @@ class UserHomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildEventsSection(AppLocalizations loc, UserHomeState state) {
-    return Builder(
-      builder: (context) => SectionCard(
-        title: loc.homeUpcomingEventsTitle,
-        action: TextButton.icon(
-          onPressed: () => context.push(AppRoutes.events),
-          icon: const Icon(Icons.arrow_outward),
-          label: Text(loc.viewAll),
-        ),
-        child: UpcomingEventsSection(events: state.events),
+  Widget _buildEventsSection(
+    BuildContext context,
+    AppLocalizations loc,
+    UserHomeState state,
+  ) {
+    return SectionCard(
+      title: loc.homeUpcomingEventsTitle,
+      action: TextButton.icon(
+        onPressed: () => context.push(AppRoutes.events),
+        icon: const Icon(Icons.arrow_outward),
+        label: Text(loc.viewAll),
+      ),
+      onTap: () => context.push(AppRoutes.events),
+      child: UpcomingEventsSection(
+        events: state.events,
+        onEventTap: (_) => context.push(AppRoutes.events),
       ),
     );
   }
 
-  Widget _buildAnnouncementsSection(AppLocalizations loc, UserHomeState state) {
+  Widget _buildAnnouncementsSection(
+    BuildContext context,
+    AppLocalizations loc,
+    UserHomeState state,
+  ) {
     return SectionCard(
       title: loc.announcements,
+      action: TextButton.icon(
+        onPressed: () => context.push(AppRoutes.announcements),
+        icon: const Icon(Icons.arrow_outward),
+        label: Text(loc.viewAll),
+      ),
+      onTap: () => context.push(AppRoutes.announcements),
       child: NewAnnouncementsSection(
         announcements: state.announcements,
         builder: (announcement) => AnnouncementCard(
@@ -203,30 +228,50 @@ class UserHomePage extends StatelessWidget {
           dateText:
               '${announcement.publishedAt.day}/${announcement.publishedAt.month}',
           dense: true,
+          onTap: () => context.push(AppRoutes.announcements),
         ),
       ),
     );
   }
 
-  Widget _buildRecommendedSection(AppLocalizations loc, UserHomeState state) {
+  Widget _buildRecommendedSection(
+    BuildContext context,
+    AppLocalizations loc,
+    UserHomeState state,
+  ) {
     return SectionCard(
       title: loc.homeRecommendedTitle,
       subtitle: loc.homeRecommendedSubtitle,
-      child: RecommendedUsersSection(musicians: state.recommended),
+      action: TextButton.icon(
+        onPressed: () => context.push(AppRoutes.musicians),
+        icon: const Icon(Icons.arrow_outward),
+        label: Text(loc.viewAll),
+      ),
+      onTap: () => context.push(AppRoutes.musicians),
+      child: RecommendedUsersSection(
+        musicians: state.recommended,
+        onMusicianTap: (_) => context.push(AppRoutes.musicians),
+      ),
     );
   }
 
-  Widget _buildNewTalentSection(AppLocalizations loc, UserHomeState state) {
-    return Builder(
-      builder: (context) => SectionCard(
-        title: loc.homeNewTalentTitle,
-        subtitle: loc.homeNewTalentSubtitle,
-        action: TextButton.icon(
-          onPressed: () => context.push(AppRoutes.musicians),
-          icon: const Icon(Icons.arrow_outward),
-          label: Text(loc.viewAll),
-        ),
-        child: NewMusiciansSection(musicians: state.newMusicians),
+  Widget _buildNewTalentSection(
+    BuildContext context,
+    AppLocalizations loc,
+    UserHomeState state,
+  ) {
+    return SectionCard(
+      title: loc.homeNewTalentTitle,
+      subtitle: loc.homeNewTalentSubtitle,
+      action: TextButton.icon(
+        onPressed: () => context.push(AppRoutes.musicians),
+        icon: const Icon(Icons.arrow_outward),
+        label: Text(loc.viewAll),
+      ),
+      onTap: () => context.push(AppRoutes.musicians),
+      child: NewMusiciansSection(
+        musicians: state.newMusicians,
+        onMusicianTap: (_) => context.push(AppRoutes.musicians),
       ),
     );
   }

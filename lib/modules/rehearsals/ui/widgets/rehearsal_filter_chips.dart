@@ -18,26 +18,29 @@ class RehearsalFilterChips extends StatelessWidget {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        ChoiceChip(
+    return SegmentedButton<RehearsalFilter>(
+      segments: [
+        ButtonSegment<RehearsalFilter>(
+          value: RehearsalFilter.upcoming,
           label: Text(loc.rehearsalsFilterUpcoming),
-          selected: currentFilter == RehearsalFilter.upcoming,
-          onSelected: (_) => onChanged(RehearsalFilter.upcoming),
         ),
-        ChoiceChip(
+        ButtonSegment<RehearsalFilter>(
+          value: RehearsalFilter.past,
           label: Text(loc.rehearsalsFilterPast),
-          selected: currentFilter == RehearsalFilter.past,
-          onSelected: (_) => onChanged(RehearsalFilter.past),
         ),
-        ChoiceChip(
+        ButtonSegment<RehearsalFilter>(
+          value: RehearsalFilter.all,
           label: Text(loc.rehearsalsFilterAll),
-          selected: currentFilter == RehearsalFilter.all,
-          onSelected: (_) => onChanged(RehearsalFilter.all),
         ),
       ],
+      selected: {currentFilter},
+      showSelectedIcon: false,
+      onSelectionChanged: (Set<RehearsalFilter> newSelection) {
+        onChanged(newSelection.first);
+      },
+      style: SegmentedButton.styleFrom(
+        visualDensity: VisualDensity.compact,
+      ),
     );
   }
 }

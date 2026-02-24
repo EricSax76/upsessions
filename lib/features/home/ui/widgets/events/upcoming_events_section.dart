@@ -7,9 +7,14 @@ import 'package:upsessions/l10n/app_localizations.dart';
 import '../../../models/home_event_model.dart';
 
 class UpcomingEventsSection extends StatelessWidget {
-  const UpcomingEventsSection({super.key, required this.events});
+  const UpcomingEventsSection({
+    super.key,
+    required this.events,
+    this.onEventTap,
+  });
 
   final List<HomeEventModel> events;
+  final ValueChanged<HomeEventModel>? onEventTap;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +43,13 @@ class UpcomingEventsSection extends StatelessWidget {
               final event = events[index];
               return SizedBox(
                 width: cardWidth,
-                child: _EventCard(event: event, isCompact: isCompact),
+                child: _EventCard(
+                  event: event,
+                  isCompact: isCompact,
+                  onTap: onEventTap == null
+                      ? null
+                      : () => onEventTap!(event),
+                ),
               );
             },
           ),
@@ -49,10 +60,15 @@ class UpcomingEventsSection extends StatelessWidget {
 }
 
 class _EventCard extends StatelessWidget {
-  const _EventCard({required this.event, required this.isCompact});
+  const _EventCard({
+    required this.event,
+    required this.isCompact,
+    this.onTap,
+  });
 
   final HomeEventModel event;
   final bool isCompact;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +88,7 @@ class _EventCard extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        onTap: () => context.push(AppRoutes.eventDetailPath(event.id)),
+        onTap: onTap ?? () => context.push(AppRoutes.eventDetailPath(event.id)),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

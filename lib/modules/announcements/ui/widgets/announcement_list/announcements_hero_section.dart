@@ -15,7 +15,7 @@ class AnnouncementsHeroSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [colorScheme.secondaryContainer, colorScheme.surface],
@@ -30,20 +30,20 @@ class AnnouncementsHeroSection extends StatelessWidget {
           Text(
             'Anuncios',
             textAlign: TextAlign.center,
-            style: theme.textTheme.headlineMedium?.copyWith(
+            style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.onSecondaryContainer,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             'Explora oportunidades y comparte las tuyas.',
             textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
+            style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSecondaryContainer.withValues(alpha: 0.8),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           _QuickActionButton(
             icon: Icons.add_circle_outline,
             label: 'Nuevo',
@@ -81,7 +81,7 @@ class _QuickActionButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 0,
       ),

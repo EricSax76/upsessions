@@ -4,15 +4,20 @@ import 'package:upsessions/modules/musicians/models/musician_entity.dart';
 import 'musicians_grid.dart';
 
 class RecommendedUsersSection extends StatelessWidget {
-  const RecommendedUsersSection({super.key, required this.musicians});
+  const RecommendedUsersSection({
+    super.key,
+    required this.musicians,
+    this.onMusicianTap,
+  });
 
   final List<MusicianEntity> musicians;
+  final ValueChanged<MusicianEntity>? onMusicianTap;
 
   @override
   Widget build(BuildContext context) {
     if (musicians.isEmpty) {
       return const Text('No hay recomendaciones por ahora.');
     }
-    return MusiciansGrid(musicians: musicians);
+    return MusiciansGrid(musicians: musicians, onMusicianTap: onMusicianTap);
   }
 }

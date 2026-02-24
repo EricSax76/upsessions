@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -15,7 +16,7 @@ import '../features/onboarding/ui/pages/book_onboarding_page.dart';
 import '../features/onboarding/ui/pages/collaborate_onboarding_page.dart';
 import '../features/onboarding/ui/pages/showcase_onboarding_page.dart';
 import '../features/settings/ui/pages/help_page.dart';
-import '../features/settings/ui/pages/settings_page.dart';
+import '../features/settings/ui/pages/account_settings_page.dart';
 import '../features/home/splash/presentation/splash_page.dart';
 import '../features/home/ui/pages/user_home_page.dart';
 import '../features/home/ui/pages/user_shell_page.dart';
@@ -95,13 +96,8 @@ List<GoRoute> buildAppRoutes() {
     ),
     GoRoute(
       path: AppRoutes.musicianOnboarding,
-      builder: (context, state) => UserShellPage(
-        groupsRepository: context.read<GroupsRepository>(),
-        chatRepository: context.read<ChatRepository>(),
-        inviteNotificationsRepository: context
-            .read<InviteNotificationsRepository>(),
-        likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-        child: MusicianOnboardingPage(
+      builder: (context, state) => Scaffold(
+        body: MusicianOnboardingPage(
           affinityOptionsRepository: context.read<AffinityOptionsRepository>(),
         ),
       ),
@@ -340,7 +336,7 @@ List<GoRoute> buildAppRoutes() {
         inviteNotificationsRepository: context
             .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-        child: const SettingsPage(),
+        child: const AccountSettingsPage(),
       ),
     ),
     GoRoute(

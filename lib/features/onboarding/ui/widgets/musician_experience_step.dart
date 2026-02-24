@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'musician_onboarding_step_card.dart';
+import 'premium_onboarding_textfield.dart';
 
 class MusicianExperienceStep extends StatelessWidget {
   const MusicianExperienceStep({
@@ -27,31 +28,28 @@ class MusicianExperienceStep extends StatelessWidget {
         child: Column(
           children: [
             if (cityController != null)
-              TextFormField(
-                controller: cityController,
-                decoration: const InputDecoration(labelText: 'Ciudad'),
+              PremiumOnboardingTextField(
+                controller: cityController!,
+                hintText: 'Ciudad',
+                textCapitalization: TextCapitalization.words,
                 validator: (value) => (value == null || value.trim().isEmpty)
                     ? 'Ingresa tu ciudad'
                     : null,
               ),
             if (cityController != null) const SizedBox(height: 16),
             if (stylesController != null)
-              TextFormField(
-                controller: stylesController,
-                decoration: const InputDecoration(
-                  labelText: 'Estilos (ej: Rock, Blues)',
-                ),
+              PremiumOnboardingTextField(
+                controller: stylesController!,
+                hintText: 'Estilos (ej: Rock, Blues)',
+                textCapitalization: TextCapitalization.sentences,
                 validator: (value) => (value == null || value.trim().isEmpty)
                     ? 'Al menos un estilo'
                     : null,
               ),
             if (stylesController != null) const SizedBox(height: 16),
-            TextFormField(
+            PremiumOnboardingTextField(
               controller: yearsController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Años de experiencia',
-              ),
+              hintText: 'Años de experiencia',
               validator: (value) {
                 final parsed = int.tryParse(value ?? '');
                 if (parsed == null || parsed < 0) {

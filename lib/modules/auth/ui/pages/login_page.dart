@@ -40,11 +40,7 @@ class LoginPage extends StatelessWidget {
         }
 
         if (state.status == AuthStatus.authenticated) {
-          if (state.studioId != null) {
-            context.go(AppRoutes.studiosDashboard);
-          } else {
-             context.go(AppRoutes.userHome);
-          }
+          context.go(AppRoutes.splash);
         }
       },
       child: BlocBuilder<AuthCubit, AuthState>(
@@ -69,8 +65,8 @@ class LoginPage extends StatelessWidget {
                       localizations.login,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                     const VSpace(AppSpacing.md),
                     const LoginForm(),
@@ -79,24 +75,27 @@ class LoginPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextButton(
-                          onPressed: () => context.push(AppRoutes.forgotPassword),
+                          onPressed: () =>
+                              context.push(AppRoutes.forgotPassword),
                           style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant),
+                            padding: EdgeInsets.zero,
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
                           child: Text(localizations.forgotPassword),
                         ),
                         TextButton(
                           onPressed: () => context.push(AppRoutes.register),
                           style: TextButton.styleFrom(
-                            foregroundColor:
-                                Theme.of(context).colorScheme.primary,
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.primary,
                             padding: EdgeInsets.zero,
                           ),
                           child: Text(
                             localizations.createAccount,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge
+                            style: Theme.of(context).textTheme.labelLarge
                                 ?.copyWith(
                                   fontWeight: FontWeight.w600,
                                   color: Theme.of(context).colorScheme.primary,
@@ -109,32 +108,37 @@ class LoginPage extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                            child: Divider(
-                                thickness: 1,
-                                color: Theme.of(context).colorScheme.outline)),
+                          child: Divider(
+                            thickness: 1,
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.sm,
                           ),
                           child: Text(
                             localizations.loginContinueWith,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
+                            style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                           ),
                         ),
                         Expanded(
-                            child: Divider(
-                                thickness: 1,
-                                color: Theme.of(context).colorScheme.outline)),
+                          child: Divider(
+                            thickness: 1,
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                        ),
                       ],
                     ),
                     const VSpace(AppSpacing.sm),
                     SocialLoginButtons(
-                      onSelected: (provider) => _onSocialLogin(context, provider),
+                      onSelected: (provider) =>
+                          _onSocialLogin(context, provider),
                     ),
                     const VSpace(AppSpacing.md),
                     Center(
@@ -143,7 +147,9 @@ class LoginPage extends StatelessWidget {
                           context.push(AppRoutes.studiosLogin);
                         },
                         style: TextButton.styleFrom(
-                          foregroundColor: Theme.of(context).colorScheme.onSurface,
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.onSurface,
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -151,23 +157,23 @@ class LoginPage extends StatelessWidget {
                             Text(
                               '¿Tienes una Sala de Ensayo?',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                  ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Ingresa aquí',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
+                              style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primaryContainer,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primaryContainer,
                                     decoration: TextDecoration.underline,
                                   ),
                             ),

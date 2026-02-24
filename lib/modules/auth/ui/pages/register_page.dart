@@ -21,26 +21,22 @@ class RegisterPage extends StatelessWidget {
           previous.errorMessage != current.errorMessage,
       listener: (context, state) {
         if (state.status == AuthStatus.authenticated) {
-          context.go(AppRoutes.userHome);
+          context.go(AppRoutes.splash);
         }
         if (state.errorMessage != null &&
             state.lastAction == AuthAction.register) {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage!),
-              ),
-            );
+            ..showSnackBar(SnackBar(content: Text(state.errorMessage!)));
         }
       },
       builder: (context, state) {
         final isSubmitting =
             state.isLoading && state.lastAction == AuthAction.register;
-        
+
         return Stack(
           children: [
-             AuthShell(
+            AuthShell(
               showAppBar: true,
               title: l10n.createAccount,
               onBackPressed: () => context.pop(),
@@ -48,11 +44,11 @@ class RegisterPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                   // TODO: Localize strings
+                  // TODO: Localize strings
                   Text(
                     'Únete a la red de Solo Músicos',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                       color: Theme.of(context).colorScheme.onSurface,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -64,19 +60,21 @@ class RegisterPage extends StatelessWidget {
                     // TODO: Localize strings
                     child: Text(
                       '¿Ya tienes cuenta? Inicia sesión',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-             if (isSubmitting)
-                Positioned.fill(
-                  child: Container(
-                    color: Theme.of(context).colorScheme.scrim,
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
+            if (isSubmitting)
+              Positioned.fill(
+                child: Container(
+                  color: Theme.of(context).colorScheme.scrim,
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
+              ),
           ],
         );
       },

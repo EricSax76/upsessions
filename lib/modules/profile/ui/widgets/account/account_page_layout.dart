@@ -4,7 +4,6 @@ import '../../../../../core/widgets/constants/breakpoints.dart';
 import '../../../../../features/home/ui/widgets/profile/profile_link_box.dart';
 import '../../../../auth/models/profile_entity.dart';
 import '../../../../auth/models/user_entity.dart';
-import 'account_preferences_section.dart';
 import 'account_profile_details_card.dart';
 import 'account_profile_header_card.dart';
 
@@ -17,11 +16,8 @@ class AccountPageLayout extends StatelessWidget {
     required this.uploadingPhoto,
     required this.onChangePhoto,
     required this.onEditProfile,
-    required this.onSignOut,
-    required this.twoFactor,
-    required this.newsletter,
-    required this.onTwoFactorChanged,
-    required this.onNewsletterChanged,
+    required this.onAddLink,
+    required this.onRemoveLink,
   });
 
   final ProfileEntity profile;
@@ -30,11 +26,8 @@ class AccountPageLayout extends StatelessWidget {
   final bool uploadingPhoto;
   final VoidCallback onChangePhoto;
   final VoidCallback onEditProfile;
-  final VoidCallback onSignOut;
-  final bool twoFactor;
-  final bool newsletter;
-  final ValueChanged<bool> onTwoFactorChanged;
-  final ValueChanged<bool> onNewsletterChanged;
+  final void Function(String title, String url) onAddLink;
+  final void Function(String key) onRemoveLink;
 
   @override
   Widget build(BuildContext context) {
@@ -62,31 +55,25 @@ class AccountPageLayout extends StatelessWidget {
                     ),
                     child: isDesktop
                         ? AccountDesktopLayout(
-                          profile: profile,
-                          user: user,
-                          avatarUrl: avatarUrl,
-                          uploadingPhoto: uploadingPhoto,
-                          onChangePhoto: onChangePhoto,
-                          onEditProfile: onEditProfile,
-                          onSignOut: onSignOut,
-                          twoFactor: twoFactor,
-                          newsletter: newsletter,
-                          onTwoFactorChanged: onTwoFactorChanged,
-                          onNewsletterChanged: onNewsletterChanged,
-                        )
+                            profile: profile,
+                            user: user,
+                            avatarUrl: avatarUrl,
+                            uploadingPhoto: uploadingPhoto,
+                            onChangePhoto: onChangePhoto,
+                            onEditProfile: onEditProfile,
+                            onAddLink: onAddLink,
+                            onRemoveLink: onRemoveLink,
+                          )
                         : AccountMobileLayout(
-                          profile: profile,
-                          user: user,
-                          avatarUrl: avatarUrl,
-                          uploadingPhoto: uploadingPhoto,
-                          onChangePhoto: onChangePhoto,
-                          onEditProfile: onEditProfile,
-                          onSignOut: onSignOut,
-                          twoFactor: twoFactor,
-                          newsletter: newsletter,
-                          onTwoFactorChanged: onTwoFactorChanged,
-                          onNewsletterChanged: onNewsletterChanged,
-                        ),
+                            profile: profile,
+                            user: user,
+                            avatarUrl: avatarUrl,
+                            uploadingPhoto: uploadingPhoto,
+                            onChangePhoto: onChangePhoto,
+                            onEditProfile: onEditProfile,
+                            onAddLink: onAddLink,
+                            onRemoveLink: onRemoveLink,
+                          ),
                   ),
                 ),
               );
@@ -107,11 +94,8 @@ class AccountDesktopLayout extends StatelessWidget {
     required this.uploadingPhoto,
     required this.onChangePhoto,
     required this.onEditProfile,
-    required this.onSignOut,
-    required this.twoFactor,
-    required this.newsletter,
-    required this.onTwoFactorChanged,
-    required this.onNewsletterChanged,
+    required this.onAddLink,
+    required this.onRemoveLink,
   });
 
   final ProfileEntity profile;
@@ -120,11 +104,8 @@ class AccountDesktopLayout extends StatelessWidget {
   final bool uploadingPhoto;
   final VoidCallback onChangePhoto;
   final VoidCallback onEditProfile;
-  final VoidCallback onSignOut;
-  final bool twoFactor;
-  final bool newsletter;
-  final ValueChanged<bool> onTwoFactorChanged;
-  final ValueChanged<bool> onNewsletterChanged;
+  final void Function(String title, String url) onAddLink;
+  final void Function(String key) onRemoveLink;
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +136,11 @@ class AccountDesktopLayout extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              const ProfileLinkBox(),
+              ProfileLinkBox(
+                links: profile.links,
+                onAddLink: onAddLink,
+                onRemoveLink: onRemoveLink,
+              ),
             ],
           ),
         ),
@@ -169,16 +154,6 @@ class AccountDesktopLayout extends StatelessWidget {
                 location: profile.location,
                 skills: profile.skills,
                 influences: profile.influences,
-                links: profile.links,
-              ),
-              const SizedBox(height: 24),
-              AccountPreferencesSection(
-                showTitle: true,
-                twoFactor: twoFactor,
-                newsletter: newsletter,
-                onTwoFactorChanged: onTwoFactorChanged,
-                onNewsletterChanged: onNewsletterChanged,
-                onSignOut: onSignOut,
               ),
             ],
           ),
@@ -197,11 +172,8 @@ class AccountMobileLayout extends StatelessWidget {
     required this.uploadingPhoto,
     required this.onChangePhoto,
     required this.onEditProfile,
-    required this.onSignOut,
-    required this.twoFactor,
-    required this.newsletter,
-    required this.onTwoFactorChanged,
-    required this.onNewsletterChanged,
+    required this.onAddLink,
+    required this.onRemoveLink,
   });
 
   final ProfileEntity profile;
@@ -210,11 +182,8 @@ class AccountMobileLayout extends StatelessWidget {
   final bool uploadingPhoto;
   final VoidCallback onChangePhoto;
   final VoidCallback onEditProfile;
-  final VoidCallback onSignOut;
-  final bool twoFactor;
-  final bool newsletter;
-  final ValueChanged<bool> onTwoFactorChanged;
-  final ValueChanged<bool> onNewsletterChanged;
+  final void Function(String title, String url) onAddLink;
+  final void Function(String key) onRemoveLink;
 
   @override
   Widget build(BuildContext context) {
@@ -238,22 +207,17 @@ class AccountMobileLayout extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const ProfileLinkBox(),
+        ProfileLinkBox(
+          links: profile.links,
+          onAddLink: onAddLink,
+          onRemoveLink: onRemoveLink,
+        ),
         const SizedBox(height: 24),
         AccountProfileDetailsCard(
           bio: profile.bio,
           location: profile.location,
           skills: profile.skills,
           influences: profile.influences,
-          links: profile.links,
-        ),
-        const SizedBox(height: 24),
-        AccountPreferencesSection(
-          twoFactor: twoFactor,
-          newsletter: newsletter,
-          onTwoFactorChanged: onTwoFactorChanged,
-          onNewsletterChanged: onNewsletterChanged,
-          onSignOut: onSignOut,
         ),
       ],
     );

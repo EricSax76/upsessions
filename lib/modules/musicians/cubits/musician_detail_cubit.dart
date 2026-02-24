@@ -10,8 +10,8 @@ class MusicianDetailCubit extends Cubit<MusicianDetailState> {
   MusicianDetailCubit({
     required ChatRepository chatRepository,
     required this.groupsRepository,
-  })  : _chatRepository = chatRepository,
-        super(const MusicianDetailInitial());
+  }) : _chatRepository = chatRepository,
+       super(const MusicianDetailInitial());
 
   final ChatRepository _chatRepository;
   final GroupsRepository groupsRepository;
@@ -21,10 +21,21 @@ class MusicianDetailCubit extends Cubit<MusicianDetailState> {
     return ownerId.isNotEmpty ? ownerId : musician.id.trim();
   }
 
-  Future<void> contactMusician(MusicianEntity musician) async {
+  Future<void> contactMusician(
+    MusicianEntity musician, {
+    String? currentUserId,
+  }) async {
+    final participantId = getParticipantId(musician);
+    final currentId = currentUserId?.trim() ?? '';
+    if (currentId.isNotEmpty && participantId == currentId) {
+      emit(
+        const MusicianDetailError('No puedes iniciar un chat contigo mismo.'),
+      );
+      return;
+    }
+
     emit(const MusicianDetailContacting());
     try {
-      final participantId = getParticipantId(musician);
       final thread = await _chatRepository.ensureThreadWithParticipant(
         participantId: participantId,
         participantName: musician.name,

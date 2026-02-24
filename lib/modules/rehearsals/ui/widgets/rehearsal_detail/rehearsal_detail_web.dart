@@ -127,18 +127,20 @@ class RehearsalDetailWebLayout extends StatelessWidget {
 
     return Column(
       children: [
-        // Top row: spacer + actions (top-right)
+        // Top row: actions (top-right)
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             OutlinedButton.icon(
               onPressed: onEditRehearsal,
-              icon: const Icon(Icons.edit_outlined, size: 18),
+              icon: const Icon(Icons.edit_outlined, size: 16),
               label: const Text('Editar'),
               style: OutlinedButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
                 side: BorderSide(color: scheme.outlineVariant),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
@@ -146,11 +148,13 @@ class RehearsalDetailWebLayout extends StatelessWidget {
               const SizedBox(width: 8),
               IconButton(
                 onPressed: onDeleteRehearsal,
-                icon: Icon(Icons.delete_outline, color: scheme.error),
+                icon: Icon(Icons.delete_outline, size: 20, color: scheme.error),
                 tooltip: 'Eliminar ensayo',
+                visualDensity: VisualDensity.compact,
                 style: IconButton.styleFrom(
+                  padding: const EdgeInsets.all(8),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                     side: BorderSide(
                       color: scheme.error.withValues(alpha: 0.3),
                     ),
@@ -160,43 +164,43 @@ class RehearsalDetailWebLayout extends StatelessWidget {
             ],
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         // Centered group photo
         CircleAvatar(
-          radius: 44,
+          radius: 28,
           backgroundColor: scheme.primaryContainer.withValues(alpha: 0.3),
           backgroundImage: hasPhoto ? NetworkImage(groupPhotoUrl!) : null,
           child: hasPhoto
               ? null
               : Text(
                   initials,
-                  style: theme.textTheme.headlineMedium?.copyWith(
+                  style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: scheme.onPrimaryContainer,
                   ),
                 ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         // Title & date centered below the photo
         Text(
           'Ensayo',
-          style: theme.textTheme.headlineMedium?.copyWith(
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: scheme.onSurface,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Text(
           formatDateTime(rehearsal.startsAt),
-          style: theme.textTheme.titleMedium?.copyWith(
+          style: theme.textTheme.bodyMedium?.copyWith(
             color: scheme.onSurfaceVariant,
           ),
         ),
         if (groupName != null && groupName!.isNotEmpty) ...[
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             groupName!,
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: theme.textTheme.bodySmall?.copyWith(
               color: scheme.primary,
               fontWeight: FontWeight.w600,
             ),

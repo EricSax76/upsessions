@@ -10,6 +10,7 @@ import 'package:upsessions/modules/messaging/models/chat_thread.dart';
 import 'package:upsessions/modules/messaging/models/chat_message.dart';
 
 class _MockChatRepository extends Mock implements ChatRepository {}
+
 class _MockGroupsRepository extends Mock implements GroupsRepository {}
 
 void main() {
@@ -33,23 +34,48 @@ void main() {
 
   group('MusicianDetailCubit', () {
     blocTest<MusicianDetailCubit, MusicianDetailState>(
+      'emit error and skip repository when trying to contact yourself',
+      build: () => MusicianDetailCubit(
+        chatRepository: chatRepository,
+        groupsRepository: groupsRepository,
+      ),
+      act: (cubit) =>
+          cubit.contactMusician(mockMusician, currentUserId: 'owner-1'),
+      expect: () => [
+        const MusicianDetailError('No puedes iniciar un chat contigo mismo.'),
+      ],
+      verify: (_) {
+        verifyNever(
+          () => chatRepository.ensureThreadWithParticipant(
+            participantId: any(named: 'participantId'),
+            participantName: any(named: 'participantName'),
+          ),
+        );
+      },
+    );
+
+    blocTest<MusicianDetailCubit, MusicianDetailState>(
       'emit contact success with threadId on successful contact',
       build: () {
-        when(() => chatRepository.ensureThreadWithParticipant(
-          participantId: 'owner-1',
-          participantName: 'Test Musician',
-        )).thenAnswer((_) async => ChatThread(
-          id: 'thread-123',
-          participants: const [],
-          participantLabels: const {},
-          lastMessage: ChatMessage(
-            id: 'msg-1',
-            sender: 'sender',
-            body: 'body',
-            sentAt: DateTime.now(),
+        when(
+          () => chatRepository.ensureThreadWithParticipant(
+            participantId: 'owner-1',
+            participantName: 'Test Musician',
           ),
-          unreadCount: 0,
-        ));
+        ).thenAnswer(
+          (_) async => ChatThread(
+            id: 'thread-123',
+            participants: const [],
+            participantLabels: const {},
+            lastMessage: ChatMessage(
+              id: 'msg-1',
+              sender: 'sender',
+              body: 'body',
+              sentAt: DateTime.now(),
+            ),
+            unreadCount: 0,
+          ),
+        );
         return MusicianDetailCubit(
           chatRepository: chatRepository,
           groupsRepository: groupsRepository,
@@ -61,20 +87,24 @@ void main() {
         const MusicianDetailContactSuccess('thread-123'),
       ],
       verify: (cubit) {
-        verify(() => chatRepository.ensureThreadWithParticipant(
-          participantId: 'owner-1',
-          participantName: 'Test Musician',
-        )).called(1);
+        verify(
+          () => chatRepository.ensureThreadWithParticipant(
+            participantId: 'owner-1',
+            participantName: 'Test Musician',
+          ),
+        ).called(1);
       },
     );
 
     blocTest<MusicianDetailCubit, MusicianDetailState>(
       'emit contact error on failure',
       build: () {
-        when(() => chatRepository.ensureThreadWithParticipant(
-          participantId: any(named: 'participantId'),
-          participantName: any(named: 'participantName'),
-        )).thenThrow(Exception('Network error'));
+        when(
+          () => chatRepository.ensureThreadWithParticipant(
+            participantId: any(named: 'participantId'),
+            participantName: any(named: 'participantName'),
+          ),
+        ).thenThrow(Exception('Network error'));
         return MusicianDetailCubit(
           chatRepository: chatRepository,
           groupsRepository: groupsRepository,

@@ -1,7 +1,7 @@
-part of 'account_settings_cubit.dart';
+part of 'account_preferences_cubit.dart';
 
-class AccountSettingsState extends Equatable {
-  const AccountSettingsState({
+class AccountPreferencesState extends Equatable {
+  const AccountPreferencesState({
     this.twoFactorEnabled = false,
     this.newsletterEnabled = true,
   });
@@ -9,16 +9,16 @@ class AccountSettingsState extends Equatable {
   final bool twoFactorEnabled;
   final bool newsletterEnabled;
 
-  AccountSettingsState copyWith({
+  AccountPreferencesState copyWith({
     bool? twoFactorEnabled,
     bool? newsletterEnabled,
   }) {
-    return AccountSettingsState(
+    return AccountPreferencesState(
       twoFactorEnabled: twoFactorEnabled ?? this.twoFactorEnabled,
       newsletterEnabled: newsletterEnabled ?? this.newsletterEnabled,
     );
   }
 
   @override
-  List<Object> get props => [twoFactorEnabled, newsletterEnabled];
+  List<Object?> get props => [twoFactorEnabled, newsletterEnabled];
 }

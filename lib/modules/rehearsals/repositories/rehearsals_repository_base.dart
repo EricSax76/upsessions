@@ -3,8 +3,6 @@ import 'package:flutter/foundation.dart';
 
 import '../../auth/repositories/auth_repository.dart';
 
-
-
 class RehearsalsRepositoryBase {
   RehearsalsRepositoryBase({
     required FirebaseFirestore firestore,
@@ -56,12 +54,14 @@ class RehearsalsRepositoryBase {
     final uid = requireUid();
     final ref = _firestore.collection('musicians').doc(uid);
     final snap = await ref.get();
-    if (!snap.exists) {
-      await ref.set({
-        'ownerId': uid,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+    final data = snap.data() ?? <String, dynamic>{};
+    final hasName = (data['name'] as String?)?.trim().isNotEmpty == true;
+    final hasInstrument =
+        (data['instrument'] as String?)?.trim().isNotEmpty == true;
+    if (!snap.exists || !hasName || !hasInstrument) {
+      throw Exception(
+        'Debes completar tu perfil de músico antes de continuar.',
+      );
     }
     return uid;
   }

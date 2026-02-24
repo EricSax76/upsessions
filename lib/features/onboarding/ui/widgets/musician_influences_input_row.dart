@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
+import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/music_styles.dart';
 
 class MusicianInfluencesInputRow extends StatelessWidget {
@@ -22,19 +23,16 @@ class MusicianInfluencesInputRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
+
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           flex: 2,
           child: DropdownButtonFormField<String>(
             initialValue: selectedStyle,
-            decoration: InputDecoration(
-              labelText: loc.affinityStyleLabel,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
-            ),
+            isExpanded: true,
+            decoration: InputDecoration(labelText: loc.affinityStyleLabel),
             items: musicStyles
                 .map(
                   (style) => DropdownMenuItem(
@@ -46,26 +44,27 @@ class MusicianInfluencesInputRow extends StatelessWidget {
             onChanged: onStyleChanged,
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.xs),
         Expanded(
           flex: 3,
           child: TextFormField(
             controller: artistController,
-            decoration: InputDecoration(
-              labelText: loc.affinityArtistBandLabel,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
-            ),
+            decoration: InputDecoration(labelText: loc.affinityArtistBandLabel),
             onChanged: onArtistChanged,
             onFieldSubmitted: (_) => onAddInfluence(),
           ),
         ),
-        const SizedBox(width: 8),
-        IconButton.filled(
-          onPressed: onAddInfluence,
-          icon: const Icon(Icons.add),
+        const SizedBox(width: AppSpacing.xs),
+        Tooltip(
+          message: loc.affinityAddTooltip,
+          child: FilledButton.tonal(
+            onPressed: onAddInfluence,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(52, 54),
+              padding: EdgeInsets.zero,
+            ),
+            child: const Icon(Icons.add),
+          ),
         ),
       ],
     );

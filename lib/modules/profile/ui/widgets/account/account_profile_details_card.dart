@@ -7,14 +7,12 @@ class AccountProfileDetailsCard extends StatelessWidget {
     required this.location,
     required this.skills,
     required this.influences,
-    required this.links,
   });
 
   final String bio;
   final String location;
   final List<String> skills;
   final Map<String, List<String>> influences;
-  final Map<String, String> links;
 
   @override
   Widget build(BuildContext context) {
@@ -59,10 +57,10 @@ class AccountProfileDetailsCard extends StatelessWidget {
             _buildDetailSection(
               context,
               icon: Icons.psychology_outlined,
-              label: 'Habilidades',
+              label: 'Estilos',
               value: skills.isNotEmpty
                   ? skills.join(', ')
-                  : 'Sin habilidades registradas',
+                  : 'Sin estilos registrados',
             ),
             const Divider(height: 32),
             _buildDetailSection(
@@ -70,15 +68,6 @@ class AccountProfileDetailsCard extends StatelessWidget {
               icon: Icons.hub_outlined,
               label: 'Afinidades',
               value: _formatInfluences(influences),
-            ),
-            const Divider(height: 32),
-            _buildDetailSection(
-              context,
-              icon: Icons.link,
-              label: 'Enlaces',
-              value: links.isNotEmpty
-                  ? links.entries.map((e) => '${e.key}: ${e.value}').join('\n')
-                  : 'Sin enlaces',
             ),
           ],
         ),

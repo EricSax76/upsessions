@@ -8,12 +8,14 @@ class SectionCard extends StatelessWidget {
     this.title,
     this.subtitle,
     this.action,
+    this.onTap,
     required this.child,
   });
 
   final String? title;
   final String? subtitle;
   final Widget? action;
+  final VoidCallback? onTap;
   final Widget child;
 
   @override
@@ -25,6 +27,7 @@ class SectionCard extends StatelessWidget {
       margin: EdgeInsets.zero,
       padding: const EdgeInsets.all(24),
       elevation: 0,
+      onTap: onTap,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
         side: BorderSide(

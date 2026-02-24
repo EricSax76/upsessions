@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:upsessions/modules/profile/cubit/account_settings_cubit.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../auth/cubits/auth_cubit.dart';
@@ -17,10 +16,7 @@ class AccountPageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => AccountSettingsCubit(),
-      child: const _AccountPageViewContent(),
-    );
+    return const _AccountPageViewContent();
   }
 }
 
@@ -28,7 +24,8 @@ class _AccountPageViewContent extends StatefulWidget {
   const _AccountPageViewContent();
 
   @override
-  State<_AccountPageViewContent> createState() => _AccountPageViewContentState();
+  State<_AccountPageViewContent> createState() =>
+      _AccountPageViewContentState();
 }
 
 class _AccountPageViewContentState extends State<_AccountPageViewContent> {
@@ -98,8 +95,8 @@ class _AccountPageViewContentState extends State<_AccountPageViewContent> {
                   child: AccountMissingProfileView(
                     isLoading: profileState.status == ProfileStatus.loading,
                     error: profileState.errorMessage,
-                    onRetry:
-                        () => context.read<ProfileCubit>().refreshProfile(),
+                    onRetry: () =>
+                        context.read<ProfileCubit>().refreshProfile(),
                     onSignOut: () => context.read<AuthCubit>().signOut(),
                   ),
                 ),
@@ -110,24 +107,27 @@ class _AccountPageViewContentState extends State<_AccountPageViewContent> {
           final uploadingPhoto = profileState.status == ProfileStatus.loading;
           final avatarUrl = profile.photoUrl ?? user.photoUrl;
 
-          return BlocBuilder<AccountSettingsCubit, AccountSettingsState>(
-             builder: (context, settingsState) {
-                return AccountPageLayout(
-                  profile: profile,
-                  user: user,
-                  avatarUrl: avatarUrl,
-                  uploadingPhoto: uploadingPhoto,
-                  onChangePhoto: _openPhotoOptions,
-                  onEditProfile: () => context.push(AppRoutes.profileEdit),
-                  onSignOut: () => context.read<AuthCubit>().signOut(),
-                  twoFactor: settingsState.twoFactorEnabled,
-                  newsletter: settingsState.newsletterEnabled,
-                  onTwoFactorChanged: (value) =>
-                      context.read<AccountSettingsCubit>().toggleTwoFactor(value),
-                  onNewsletterChanged: (value) =>
-                      context.read<AccountSettingsCubit>().toggleNewsletter(value),
-                );
-             },
+          return AccountPageLayout(
+            profile: profile,
+            user: user,
+            avatarUrl: avatarUrl,
+            uploadingPhoto: uploadingPhoto,
+            onChangePhoto: _openPhotoOptions,
+            onEditProfile: () => context.push(AppRoutes.profileEdit),
+            onAddLink: (title, url) {
+              final newLinks = Map<String, String>.from(profile.links);
+              newLinks[title] = url;
+              context.read<ProfileCubit>().updateProfile(
+                profile.copyWith(links: newLinks),
+              );
+            },
+            onRemoveLink: (key) {
+              final newLinks = Map<String, String>.from(profile.links);
+              newLinks.remove(key);
+              context.read<ProfileCubit>().updateProfile(
+                profile.copyWith(links: newLinks),
+              );
+            },
           );
         },
       ),

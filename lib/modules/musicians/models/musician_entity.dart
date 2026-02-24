@@ -15,6 +15,8 @@ class MusicianEntity {
     this.profileType,
     this.gender,
     this.rating,
+    this.bio = '',
+    this.links = const {},
     this.influences = const {},
   });
 
@@ -30,5 +32,7 @@ class MusicianEntity {
   final String? profileType;
   final String? gender;
   final double? rating;
+  final String bio;
+  final Map<String, String> links;
   final Map<String, List<String>> influences;
 }

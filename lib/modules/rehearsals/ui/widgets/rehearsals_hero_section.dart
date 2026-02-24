@@ -28,7 +28,7 @@ class RehearsalsHeroSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [colorScheme.secondaryContainer, colorScheme.surface],
@@ -45,7 +45,7 @@ class RehearsalsHeroSection extends StatelessWidget {
             children: [
               if (groupPhotoUrl != null || groupName.isNotEmpty)
                 SmAvatar(
-                  radius: 20,
+                  radius: 16,
                   imageUrl: groupPhotoUrl,
                   initials:
                       groupName.isNotEmpty ? groupName[0].toUpperCase() : null,
@@ -53,12 +53,12 @@ class RehearsalsHeroSection extends StatelessWidget {
                   foregroundColor: colorScheme.onSecondary,
                 ),
               if (groupPhotoUrl != null || groupName.isNotEmpty)
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
               Flexible(
                 child: Text(
                   groupName,
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.headlineMedium?.copyWith(
+                  style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSecondaryContainer,
                   ),
@@ -66,18 +66,18 @@ class RehearsalsHeroSection extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             loc.rehearsalsTotalCount(totalRehearsals),
             textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
+            style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSecondaryContainer.withValues(alpha: 0.8),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           Wrap(
-            spacing: 12,
-            runSpacing: 12,
+            spacing: 8,
+            runSpacing: 8,
             alignment: WrapAlignment.center,
             children: [
               _QuickActionButton(
@@ -129,7 +129,7 @@ class _QuickActionButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 0,
       ),

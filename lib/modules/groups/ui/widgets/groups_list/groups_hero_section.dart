@@ -20,7 +20,7 @@ class GroupsHeroSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [colorScheme.secondaryContainer, colorScheme.surface],
@@ -35,23 +35,23 @@ class GroupsHeroSection extends StatelessWidget {
           Text(
             loc.navRehearsals, // "Grupos"
             textAlign: TextAlign.center,
-            style: theme.textTheme.headlineMedium?.copyWith(
+            style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.onSecondaryContainer,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             'Tus grupos activos para organizar ensayos.',
             textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
+            style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSecondaryContainer.withValues(alpha: 0.8),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           Wrap(
-            spacing: 24,
-            runSpacing: 16,
+            spacing: 16,
+            runSpacing: 8,
             alignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
@@ -96,14 +96,14 @@ class _StatItem extends StatelessWidget {
       children: [
         Icon(
           icon,
-          size: 20,
+          size: 16,
           color: colorScheme.primary,
         ),
         const SizedBox(width: 8),
         Text(
           value,
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
             color: colorScheme.onSecondaryContainer,
           ),
@@ -112,7 +112,7 @@ class _StatItem extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 12,
             color: colorScheme.onSecondaryContainer.withValues(alpha: 0.7),
           ),
         ),
@@ -145,7 +145,7 @@ class _QuickActionButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 0,
       ),

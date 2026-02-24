@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
 
 import 'musician_onboarding_step_card.dart';
+import 'premium_onboarding_textfield.dart';
 
 class MusicianExtrasStep extends StatelessWidget {
   const MusicianExtrasStep({
     super.key,
     required this.formKey,
-    required this.photoUrlController,
     required this.bioController,
+    required this.onPickPhoto,
+    this.selectedPhotoName,
+    this.onClearPhoto,
   });
 
   final GlobalKey<FormState> formKey;
-  final TextEditingController photoUrlController;
   final TextEditingController bioController;
+  final VoidCallback onPickPhoto;
+  final String? selectedPhotoName;
+  final VoidCallback? onClearPhoto;
 
   @override
   Widget build(BuildContext context) {
+    final hasPhoto =
+        selectedPhotoName != null && selectedPhotoName!.trim().isNotEmpty;
+
     return Form(
       key: formKey,
       child: MusicianOnboardingStepCard(
@@ -23,21 +31,41 @@ class MusicianExtrasStep extends StatelessWidget {
         description:
             'Añade una foto o breve descripción para destacar en la comunidad.',
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextFormField(
-              controller: photoUrlController,
-              decoration: const InputDecoration(
-                labelText: 'URL de tu foto (opcional)',
-              ),
+            OutlinedButton.icon(
+              onPressed: onPickPhoto,
+              icon: const Icon(Icons.add_a_photo_outlined),
+              label: const Text('Sube tu foto (galería y cámara)'),
             ),
+            if (hasPhoto) ...[
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      selectedPhotoName!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                  if (onClearPhoto != null)
+                    IconButton(
+                      onPressed: onClearPhoto,
+                      icon: const Icon(Icons.close),
+                      tooltip: 'Quitar foto',
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: 16),
-            TextFormField(
+            PremiumOnboardingTextField(
               controller: bioController,
+              hintText: 'Breve bio',
+              textCapitalization: TextCapitalization.sentences,
               minLines: 3,
               maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: 'Breve bio (opcional)',
-              ),
             ),
           ],
         ),

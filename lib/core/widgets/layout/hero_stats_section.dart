@@ -26,7 +26,7 @@ class HeroStatsSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: gradientColors,
@@ -41,27 +41,27 @@ class HeroStatsSection extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: theme.textTheme.headlineMedium?.copyWith(
+            style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: onSurface,
             ),
           ),
           if (description != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Text(
               description!,
               textAlign: TextAlign.center,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.bodyMedium?.copyWith(
                 color: onSurface.withValues(alpha: 0.8),
               ),
             ),
           ],
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           Wrap(
             alignment: WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 24,
-            runSpacing: 16,
+            spacing: 16,
+            runSpacing: 8,
             children: [
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -69,9 +69,9 @@ class HeroStatsSection extends StatelessWidget {
                   for (var i = 0; i < stats.length; i++) ...[
                     if (i > 0)
                       Container(
-                        height: 20,
+                        height: 16,
                         width: 1,
-                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        margin: const EdgeInsets.symmetric(horizontal: 12),
                         color: onSurface.withValues(alpha: 0.2),
                       ),
                     _StatItemWidget(
@@ -121,27 +121,23 @@ class _StatItemWidget extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              item.icon,
-              size: 20,
-              color: colorScheme.primary,
-            ),
-            const SizedBox(width: 8),
+            Icon(item.icon, size: 16, color: colorScheme.primary),
+            const SizedBox(width: 6),
             Text(
               item.value,
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: textColor,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Text(
           item.label,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 12,
             color: textColor.withValues(alpha: 0.7),
           ),
         ),

@@ -16,6 +16,8 @@ class MusicianDto {
     this.profileType,
     this.gender,
     this.rating,
+    this.bio = '',
+    this.links = const {},
     this.influences = const {},
   });
 
@@ -37,7 +39,14 @@ class MusicianDto {
       profileType: data['profileType'] as String?,
       gender: data['gender'] as String?,
       rating: (data['rating'] as num?)?.toDouble(),
-      influences: (data['influences'] as Map<String, dynamic>?)?.map(
+      bio: (data['bio'] ?? '') as String,
+      links:
+          (data['links'] as Map<String, dynamic>?)?.map(
+            (key, value) => MapEntry(key, value.toString()),
+          ) ??
+          const {},
+      influences:
+          (data['influences'] as Map<String, dynamic>?)?.map(
             (key, value) => MapEntry(
               key,
               (value as List<dynamic>).map((e) => e.toString()).toList(),
@@ -59,6 +68,8 @@ class MusicianDto {
   final String? profileType;
   final String? gender;
   final double? rating;
+  final String bio;
+  final Map<String, String> links;
   final Map<String, List<String>> influences;
 
   MusicianEntity toEntity() {
@@ -75,6 +86,8 @@ class MusicianDto {
       profileType: profileType,
       gender: gender,
       rating: rating,
+      bio: bio,
+      links: links,
       influences: influences,
     );
   }

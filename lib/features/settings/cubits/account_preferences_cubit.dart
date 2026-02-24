@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-part 'account_settings_state.dart';
+part 'account_preferences_state.dart';
 
-class AccountSettingsCubit extends Cubit<AccountSettingsState> {
-  AccountSettingsCubit() : super(const AccountSettingsState());
+class AccountPreferencesCubit extends Cubit<AccountPreferencesState> {
+  AccountPreferencesCubit() : super(const AccountPreferencesState());
 
   void toggleTwoFactor(bool value) {
     emit(state.copyWith(twoFactorEnabled: value));
