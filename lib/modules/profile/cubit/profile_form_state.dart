@@ -12,6 +12,7 @@ class ProfileFormState extends Equatable {
     this.influences = const {},
     this.selectedStyle,
     this.suggestedArtists = const [],
+    this.artistImagesByName = const {},
     this.isLoadingSuggestions = false,
     this.errorMessage,
   });
@@ -22,6 +23,7 @@ class ProfileFormState extends Equatable {
   final Map<String, List<String>> influences;
   final String? selectedStyle;
   final List<String> suggestedArtists;
+  final Map<String, ArtistImageInfo> artistImagesByName;
   final bool isLoadingSuggestions;
   final String? errorMessage;
 
@@ -32,6 +34,7 @@ class ProfileFormState extends Equatable {
     Map<String, List<String>>? influences,
     Object? selectedStyle = _unset,
     List<String>? suggestedArtists,
+    Map<String, ArtistImageInfo>? artistImagesByName,
     bool? isLoadingSuggestions,
     String? errorMessage,
   }) {
@@ -44,22 +47,22 @@ class ProfileFormState extends Equatable {
           ? this.selectedStyle
           : selectedStyle as String?,
       suggestedArtists: suggestedArtists ?? this.suggestedArtists,
+      artistImagesByName: artistImagesByName ?? this.artistImagesByName,
       isLoadingSuggestions: isLoadingSuggestions ?? this.isLoadingSuggestions,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
   // Helper for nullable selectedStyle update
-  ProfileFormState copyWithStyle({
-    required String? selectedStyle,
-  }) {
-     return ProfileFormState(
+  ProfileFormState copyWithStyle({required String? selectedStyle}) {
+    return ProfileFormState(
       status: status,
       bio: bio,
       location: location,
       influences: influences,
       selectedStyle: selectedStyle,
       suggestedArtists: suggestedArtists,
+      artistImagesByName: artistImagesByName,
       isLoadingSuggestions: isLoadingSuggestions,
       errorMessage: errorMessage,
     );
@@ -73,6 +76,7 @@ class ProfileFormState extends Equatable {
     influences,
     selectedStyle,
     suggestedArtists,
+    artistImagesByName,
     isLoadingSuggestions,
     errorMessage,
   ];

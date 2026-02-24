@@ -30,6 +30,7 @@ import '../features/media/repositories/media_repository.dart';
 import '../modules/announcements/ui/pages/announcement_form_page.dart';
 import '../modules/announcements/ui/pages/announcements_hub_page.dart';
 import '../modules/musicians/repositories/affinity_options_repository.dart';
+import '../modules/musicians/repositories/artist_image_repository.dart';
 import '../modules/auth/ui/pages/forgot_password_page.dart';
 import '../modules/auth/ui/pages/login_page.dart';
 import '../modules/auth/ui/pages/register_page.dart';
@@ -38,7 +39,6 @@ import '../modules/matching/ui/pages/matching_page.dart';
 import '../modules/musicians/ui/pages/musicians_hub_page.dart';
 import '../modules/profile/ui/pages/account_page.dart';
 import '../modules/profile/ui/pages/profile_edit_page.dart';
-import '../modules/profile/ui/pages/profile_overview_page.dart';
 import '../modules/studios/ui/pages/studio_login_page.dart';
 import '../modules/studios/ui/pages/studio_register_page.dart';
 import '../modules/studios/ui/consumer/musician_bookings_page.dart';
@@ -99,6 +99,7 @@ List<GoRoute> buildAppRoutes() {
       builder: (context, state) => Scaffold(
         body: MusicianOnboardingPage(
           affinityOptionsRepository: context.read<AffinityOptionsRepository>(),
+          artistImageRepository: context.read<ArtistImageRepository>(),
         ),
       ),
     ),
@@ -301,7 +302,7 @@ List<GoRoute> buildAppRoutes() {
         inviteNotificationsRepository: context
             .read<InviteNotificationsRepository>(),
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
-        child: const ProfileOverviewPage(),
+        child: const AccountPage(),
       ),
     ),
     GoRoute(
@@ -314,6 +315,7 @@ List<GoRoute> buildAppRoutes() {
         likedMusiciansCubit: context.read<LikedMusiciansCubit>(),
         child: ProfileEditPage(
           affinityOptionsRepository: context.read<AffinityOptionsRepository>(),
+          artistImageRepository: context.read<ArtistImageRepository>(),
         ),
       ),
     ),

@@ -9,6 +9,7 @@ import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 
 import '../../../../modules/musicians/repositories/affinity_options_repository.dart';
+import '../../../../modules/musicians/repositories/artist_image_repository.dart';
 import '../../cubits/musician_onboarding_cubit.dart';
 import '../../cubits/musician_onboarding_state.dart';
 import '../widgets/musician_onboarding_missing_session_view.dart';
@@ -22,9 +23,11 @@ class MusicianOnboardingPage extends StatefulWidget {
   const MusicianOnboardingPage({
     super.key,
     required this.affinityOptionsRepository,
+    required this.artistImageRepository,
   });
 
   final AffinityOptionsRepository affinityOptionsRepository;
+  final ArtistImageRepository artistImageRepository;
 
   @override
   State<MusicianOnboardingPage> createState() => _MusicianOnboardingPageState();
@@ -175,6 +178,7 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
         formKey: _influencesKey,
         cubit: cubit,
         affinityOptionsRepository: widget.affinityOptionsRepository,
+        artistImageRepository: widget.artistImageRepository,
       ),
       MusicianExtrasStep(
         formKey: _extrasKey,

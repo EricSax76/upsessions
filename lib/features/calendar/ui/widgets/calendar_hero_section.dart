@@ -4,12 +4,12 @@ import '../../../../core/widgets/layout/hero_stats_section.dart';
 class CalendarHeroSection extends StatelessWidget {
   const CalendarHeroSection({
     super.key,
-    required this.totalEvents,
-    required this.monthEvents,
+    required this.totalRehearsals,
+    required this.monthRehearsals,
   });
 
-  final int totalEvents;
-  final int monthEvents;
+  final int totalRehearsals;
+  final int monthRehearsals;
 
   @override
   Widget build(BuildContext context) {
@@ -18,18 +18,18 @@ class CalendarHeroSection extends StatelessWidget {
 
     return HeroStatsSection(
       title: 'Calendario',
-      description: 'Consulta las fechas y mantén a tu equipo sincronizado.',
+      description: 'Consulta tus ensayos y mantén a tu equipo sincronizado.',
       gradientColors: [colorScheme.secondaryContainer, colorScheme.surface],
       textColor: colorScheme.onSecondaryContainer,
       stats: [
         HeroStatItem(
-          icon: Icons.event_available,
-          value: totalEvents.toString(),
-          label: 'Próximos',
+          icon: Icons.music_note_outlined,
+          value: totalRehearsals.toString(),
+          label: 'Ensayos próximos',
         ),
         HeroStatItem(
           icon: Icons.calendar_month,
-          value: monthEvents.toString(),
+          value: monthRehearsals.toString(),
           label: 'Este mes',
         ),
       ],

@@ -6,8 +6,8 @@ class AppColorsLight {
   static const Color secondary = Color(0xFF5E6A6F); // Soft slate
   static const Color tertiary = Color(0xFF7C8A7A); // Muted sage
 
-  static const Color background = Color(0xFFF6F4F1);
-  static const Color surface = Color(0xFFFBFAF8);
+  static const Color background = Color(0xFFF2EEE8);
+  static const Color surface = Color(0xFFF7F4EF);
   static const Color surfaceVariant = Color(0xFFF0ECE7);
 
   static const Color primaryContainer = Color(0xFFE9DDCF); // Light copper

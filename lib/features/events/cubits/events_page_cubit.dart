@@ -17,11 +17,13 @@ class EventsPageCubit extends Cubit<EventsPageState> {
     emit(state.copyWith(loading: true));
     try {
       final events = await _repository.fetchUpcoming();
+      final eventsRecentFirst = [...events]
+        ..sort((a, b) => b.start.compareTo(a.start));
       if (isClosed) return;
-      final summary = _summarize(events);
+      final summary = _summarize(eventsRecentFirst);
       emit(
         state.copyWith(
-          events: events,
+          events: eventsRecentFirst,
           loading: false,
           totalCapacity: summary.totalCapacity,
           thisWeekCount: summary.thisWeekCount,

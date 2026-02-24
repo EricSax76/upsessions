@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../events/models/event_entity.dart';
+import '../../../../modules/rehearsals/models/rehearsal_entity.dart';
 import '../../../../core/widgets/section_card.dart';
 import 'calendar_day_cell.dart';
 import 'month_calendar_navigation.dart';
@@ -10,7 +10,7 @@ class MonthCalendarCard extends StatefulWidget {
     super.key,
     required this.visibleMonth,
     required this.selectedDay,
-    required this.eventsByDay,
+    required this.rehearsalsByDay,
     required this.onPreviousMonth,
     required this.onNextMonth,
     required this.onSelectDay,
@@ -19,7 +19,7 @@ class MonthCalendarCard extends StatefulWidget {
 
   final DateTime visibleMonth;
   final DateTime selectedDay;
-  final Map<DateTime, List<EventEntity>> eventsByDay;
+  final Map<DateTime, List<RehearsalEntity>> rehearsalsByDay;
   final VoidCallback onPreviousMonth;
   final VoidCallback onNextMonth;
   final ValueChanged<DateTime> onSelectDay;
@@ -74,7 +74,7 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
             secondChild: CalendarGrid(
               month: widget.visibleMonth,
               selectedDay: widget.selectedDay,
-              eventsByDay: widget.eventsByDay,
+              rehearsalsByDay: widget.rehearsalsByDay,
               onSelectDay: widget.onSelectDay,
             ),
           ),
@@ -85,15 +85,16 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
 
   Widget _buildCollapsedWeekRow(BuildContext context) {
     // Show only the 7 days surrounding the selected day
-    final startOfWeek = widget.selectedDay
-        .subtract(Duration(days: widget.selectedDay.weekday - 1));
+    final startOfWeek = widget.selectedDay.subtract(
+      Duration(days: widget.selectedDay.weekday - 1),
+    );
     final days = List.generate(7, (i) => startOfWeek.add(Duration(days: i)));
 
     return Row(
       children: days.map((date) {
         final key = DateUtils.dateOnly(date);
-        final hasEvents = widget.eventsByDay.containsKey(key);
-        final eventsCount = widget.eventsByDay[key]?.length ?? 0;
+        final hasEvents = widget.rehearsalsByDay.containsKey(key);
+        final eventsCount = widget.rehearsalsByDay[key]?.length ?? 0;
         final isSelected = DateUtils.isSameDay(key, widget.selectedDay);
         final isToday = DateUtils.isSameDay(
           key,
@@ -148,13 +149,13 @@ class CalendarGrid extends StatelessWidget {
     super.key,
     required this.month,
     required this.selectedDay,
-    required this.eventsByDay,
+    required this.rehearsalsByDay,
     required this.onSelectDay,
   });
 
   final DateTime month;
   final DateTime selectedDay;
-  final Map<DateTime, List<EventEntity>> eventsByDay;
+  final Map<DateTime, List<RehearsalEntity>> rehearsalsByDay;
   final ValueChanged<DateTime> onSelectDay;
 
   @override
@@ -186,8 +187,8 @@ class CalendarGrid extends StatelessWidget {
           return const SizedBox.shrink();
         }
         final key = DateUtils.dateOnly(date);
-        final hasEvents = eventsByDay.containsKey(key);
-        final eventsCount = eventsByDay[key]?.length ?? 0;
+        final hasEvents = rehearsalsByDay.containsKey(key);
+        final eventsCount = rehearsalsByDay[key]?.length ?? 0;
         final isSelected = DateUtils.isSameDay(key, selectedDay);
         final isToday = DateUtils.isSameDay(
           key,

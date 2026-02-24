@@ -44,8 +44,8 @@ class UserShellPage extends StatelessWidget {
     // On web, we always showed top bar in the previous code.
     // Logic: `showTopAppBar = kIsWeb || !isWideLayout`
     final showTopAppBar = kIsWeb || !isWideLayout;
-    final showQuickActionsFab =
-        !isWideLayout && !location.startsWith(AppRoutes.messages);
+    final isHomeRoute = location == AppRoutes.userHome;
+    final showQuickActionsFab = !isWideLayout && isHomeRoute;
 
     return MultiBlocProvider(
       providers: [

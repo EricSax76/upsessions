@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
+import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
+import 'package:upsessions/modules/musicians/ui/widgets/artist_image_label.dart';
 import 'package:upsessions/modules/profile/cubit/profile_form_cubit.dart';
 import 'profile_affinity_input.dart';
 
@@ -48,6 +50,7 @@ class ProfileAffinitySection extends StatelessWidget {
     ProfileFormState state,
   ) {
     final cubit = context.read<ProfileFormCubit>();
+    final isMobile = MediaQuery.sizeOf(context).width < 640;
     final entries = state.influences.entries.toList()
       ..sort((a, b) => a.key.toLowerCase().compareTo(b.key.toLowerCase()));
 
@@ -66,18 +69,52 @@ class ProfileAffinitySection extends StatelessWidget {
               ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: artists
-                  .map(
-                    (artist) => Chip(
-                      label: Text(artist),
+            if (isMobile)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: artists.map((artist) {
+                  final info =
+                      state.artistImagesByName[normalizeArtistName(artist)];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: ArtistChipWithAttribution(
+                      spotifyUrl: info?.spotifyUrl,
+                      expand: true,
+                      alignStart: true,
+                      chip: Chip(
+                        label: ArtistImageLabel(
+                          artist: artist,
+                          imageUrl: info?.imageUrl,
+                          thumbnailSize: 34,
+                          labelMaxWidth: 240,
+                        ),
+                        onDeleted: () => cubit.removeInfluence(style, artist),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              )
+            else
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: artists.map((artist) {
+                  final info =
+                      state.artistImagesByName[normalizeArtistName(artist)];
+                  return ArtistChipWithAttribution(
+                    spotifyUrl: info?.spotifyUrl,
+                    chip: Chip(
+                      label: ArtistImageLabel(
+                        artist: artist,
+                        imageUrl: info?.imageUrl,
+                        thumbnailSize: 34,
+                        labelMaxWidth: 240,
+                      ),
                       onDeleted: () => cubit.removeInfluence(style, artist),
                     ),
-                  )
-                  .toList(),
-            ),
+                  );
+                }).toList(),
+              ),
           ],
         ),
       );

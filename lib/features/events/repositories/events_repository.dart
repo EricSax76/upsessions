@@ -4,8 +4,6 @@ import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import '../models/event_entity.dart';
 import '../models/event_dto.dart';
 
-
-
 class EventsRepository {
   EventsRepository({
     required FirebaseFirestore firestore,
@@ -32,6 +30,34 @@ class EventsRepository {
         .limit(limit)
         .get();
     return _toEntities(fallbackSnapshot.docs);
+  }
+
+  /// Fetches a balanced feed for calendar views:
+  /// recent past events plus upcoming events around "now".
+  Future<List<EventEntity>> fetchCalendarFeed({
+    int upcomingLimit = 60,
+    int pastLimit = 60,
+  }) async {
+    final now = Timestamp.fromDate(DateTime.now());
+
+    final upcomingFuture = _collection
+        .where('start', isGreaterThanOrEqualTo: now)
+        .orderBy('start')
+        .limit(upcomingLimit)
+        .get();
+
+    final pastFuture = _collection
+        .where('start', isLessThan: now)
+        .orderBy('start', descending: true)
+        .limit(pastLimit)
+        .get();
+
+    final snapshots = await Future.wait([upcomingFuture, pastFuture]);
+    final upcoming = _toEntities(snapshots[0].docs);
+    final pastDescending = _toEntities(snapshots[1].docs);
+    final pastAscending = pastDescending.reversed.toList(growable: false);
+
+    return [...pastAscending, ...upcoming];
   }
 
   Future<EventEntity?> findById(String id) async {

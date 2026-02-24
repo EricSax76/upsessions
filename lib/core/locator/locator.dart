@@ -23,6 +23,7 @@ import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/features/events/repositories/events_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/artist_image_repository.dart';
 import 'package:upsessions/features/home/repositories/home_announcements_repository.dart';
 import 'package:upsessions/features/home/repositories/home_events_repository.dart';
 import 'package:upsessions/features/home/repositories/home_metadata_repository.dart';
@@ -56,7 +57,9 @@ Future<void> setupServiceLocator() async {
     ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
     ..registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance)
     ..registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance)
-    ..registerLazySingleton<FirebaseFunctions>(() => FirebaseFunctions.instance)
+    ..registerLazySingleton<FirebaseFunctions>(
+      () => FirebaseFunctions.instanceFor(region: 'europe-west3'),
+    )
     ..registerLazySingleton<FirebaseMessaging>(() => FirebaseMessaging.instance)
     ..registerLazySingleton<AuthRepository>(
       () => AuthRepository(firebaseAuth: getIt<FirebaseAuth>()),
@@ -81,6 +84,9 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<AffinityOptionsRepository>(
       () => AffinityOptionsRepository(firestore: getIt<FirebaseFirestore>()),
+    )
+    ..registerLazySingleton<ArtistImageRepository>(
+      () => ArtistImageRepository(functions: getIt<FirebaseFunctions>()),
     )
     ..registerLazySingleton<AnnouncementsRepository>(
       () => AnnouncementsRepository(firestore: getIt<FirebaseFirestore>()),

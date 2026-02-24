@@ -3,6 +3,7 @@ import * as functions from 'firebase-functions';
 import { admin } from './firebase';
 import { region } from './region';
 export { seedChatThreads } from './chatSeeder';
+export { resolveSpotifyArtistImages } from './spotify_artist_images';
 
 function stringList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];

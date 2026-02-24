@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upsessions/core/constants/music_styles.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/musicians/application/affinity_flow.dart';
+import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
+import 'package:upsessions/modules/musicians/ui/widgets/artist_image_label.dart';
 import 'package:upsessions/modules/profile/cubit/profile_form_cubit.dart';
 
 class ProfileAffinityInput extends StatefulWidget {
@@ -163,6 +165,7 @@ class _SuggestedOptions extends StatelessWidget {
         return ValueListenableBuilder<TextEditingValue>(
           valueListenable: controller,
           builder: (context, value, _) {
+            final isMobile = MediaQuery.sizeOf(context).width < 640;
             final suggestions = AffinityFlow.filterSuggestions(
               suggestions: state.suggestedArtists,
               query: value.text,
@@ -191,32 +194,83 @@ class _SuggestedOptions extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodySmall,
                   )
                 else
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: suggestions
-                        .map(
-                          (artist) => FilterChip(
-                            label: Text(artist),
-                            selected: AffinityFlow.isArtistSelected(
-                              influences: state.influences,
-                              style: state.selectedStyle!,
-                              artist: artist,
-                            ),
-                            onSelected: (selected) {
-                              if (selected) {
-                                cubit.addInfluence(artist);
-                                return;
-                              }
-                              cubit.removeInfluence(
-                                state.selectedStyle!,
-                                artist,
-                              );
-                            },
-                          ),
+                  isMobile
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: suggestions.map((artist) {
+                            final info =
+                                state.artistImagesByName[normalizeArtistName(
+                                  artist,
+                                )];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: ArtistChipWithAttribution(
+                                spotifyUrl: info?.spotifyUrl,
+                                expand: true,
+                                alignStart: true,
+                                chip: FilterChip(
+                                  label: ArtistImageLabel(
+                                    artist: artist,
+                                    imageUrl: info?.imageUrl,
+                                    thumbnailSize: 34,
+                                    labelMaxWidth: 240,
+                                  ),
+                                  selected: AffinityFlow.isArtistSelected(
+                                    influences: state.influences,
+                                    style: state.selectedStyle!,
+                                    artist: artist,
+                                  ),
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      cubit.addInfluence(artist);
+                                      return;
+                                    }
+                                    cubit.removeInfluence(
+                                      state.selectedStyle!,
+                                      artist,
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         )
-                        .toList(),
-                  ),
+                      : Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: suggestions.map((artist) {
+                            final info =
+                                state.artistImagesByName[normalizeArtistName(
+                                  artist,
+                                )];
+                            return ArtistChipWithAttribution(
+                              spotifyUrl: info?.spotifyUrl,
+                              chip: FilterChip(
+                                label: ArtistImageLabel(
+                                  artist: artist,
+                                  imageUrl: info?.imageUrl,
+                                  thumbnailSize: 34,
+                                  labelMaxWidth: 240,
+                                ),
+                                selected: AffinityFlow.isArtistSelected(
+                                  influences: state.influences,
+                                  style: state.selectedStyle!,
+                                  artist: artist,
+                                ),
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    cubit.addInfluence(artist);
+                                    return;
+                                  }
+                                  cubit.removeInfluence(
+                                    state.selectedStyle!,
+                                    artist,
+                                  );
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
               ],
             );
           },

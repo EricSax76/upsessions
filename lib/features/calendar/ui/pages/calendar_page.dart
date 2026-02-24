@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
-
-import '../../../events/repositories/events_repository.dart';
+import '../../../../modules/rehearsals/repositories/rehearsals_repository.dart';
 import '../../cubits/calendar_cubit.dart';
 import '../../cubits/calendar_state.dart';
 import 'calendar_dashboard.dart';
@@ -16,7 +15,7 @@ class CalendarPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          CalendarCubit(repository: context.read<EventsRepository>()),
+          CalendarCubit(repository: context.read<RehearsalsRepository>()),
       child: BlocBuilder<CalendarCubit, CalendarState>(
         builder: (context, state) {
           final cubit = context.read<CalendarCubit>();
@@ -27,8 +26,13 @@ class CalendarPage extends StatelessWidget {
             onNextMonth: cubit.nextMonth,
             onSelectDay: cubit.selectDay,
             onGoToToday: cubit.goToToday,
-            onViewEvent: (event) {
-              context.push(AppRoutes.eventDetailPath(event.id), extra: event);
+            onViewRehearsal: (rehearsal) {
+              context.push(
+                AppRoutes.rehearsalDetail(
+                  groupId: rehearsal.groupId,
+                  rehearsalId: rehearsal.id,
+                ),
+              );
             },
           );
         },

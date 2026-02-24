@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/musicians/application/affinity_flow.dart';
+import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
+import 'package:upsessions/modules/musicians/ui/widgets/artist_image_label.dart';
 
 class MusicianInfluencesSuggestions extends StatelessWidget {
   const MusicianInfluencesSuggestions({
@@ -8,6 +10,7 @@ class MusicianInfluencesSuggestions extends StatelessWidget {
     required this.selectedStyle,
     required this.loadingStyleOptions,
     required this.suggestedArtists,
+    required this.artistImagesByName,
     required this.influences,
     required this.onAddInfluence,
     required this.onRemoveInfluence,
@@ -16,6 +19,7 @@ class MusicianInfluencesSuggestions extends StatelessWidget {
   final String? selectedStyle;
   final bool loadingStyleOptions;
   final List<String> suggestedArtists;
+  final Map<String, ArtistImageInfo> artistImagesByName;
   final Map<String, List<String>> influences;
   final ValueChanged<String> onAddInfluence;
   final ValueChanged<String> onRemoveInfluence;
@@ -27,6 +31,7 @@ class MusicianInfluencesSuggestions extends StatelessWidget {
 
     final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final isMobile = MediaQuery.sizeOf(context).width < 640;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,29 +57,68 @@ class MusicianInfluencesSuggestions extends StatelessWidget {
         else if (suggestedArtists.isEmpty)
           Text(loc.affinityNoMatchesForStyle, style: theme.textTheme.bodySmall)
         else
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: suggestedArtists
-                .map(
-                  (artist) => FilterChip(
-                    label: Text(artist),
-                    selected: AffinityFlow.isArtistSelected(
-                      influences: influences,
-                      style: style,
-                      artist: artist,
-                    ),
-                    onSelected: (selected) {
-                      if (selected) {
-                        onAddInfluence(artist);
-                        return;
-                      }
-                      onRemoveInfluence(artist);
-                    },
-                  ),
+          isMobile
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: suggestedArtists.map((artist) {
+                    final info =
+                        artistImagesByName[normalizeArtistName(artist)];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: ArtistChipWithAttribution(
+                        spotifyUrl: info?.spotifyUrl,
+                        expand: true,
+                        chip: FilterChip(
+                          label: ArtistImageLabel(
+                            artist: artist,
+                            imageUrl: info?.imageUrl,
+                          ),
+                          selected: AffinityFlow.isArtistSelected(
+                            influences: influences,
+                            style: style,
+                            artist: artist,
+                          ),
+                          onSelected: (selected) {
+                            if (selected) {
+                              onAddInfluence(artist);
+                              return;
+                            }
+                            onRemoveInfluence(artist);
+                          },
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 )
-                .toList(),
-          ),
+              : Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: suggestedArtists.map((artist) {
+                    final info =
+                        artistImagesByName[normalizeArtistName(artist)];
+                    return ArtistChipWithAttribution(
+                      spotifyUrl: info?.spotifyUrl,
+                      chip: FilterChip(
+                        label: ArtistImageLabel(
+                          artist: artist,
+                          imageUrl: info?.imageUrl,
+                        ),
+                        selected: AffinityFlow.isArtistSelected(
+                          influences: influences,
+                          style: style,
+                          artist: artist,
+                        ),
+                        onSelected: (selected) {
+                          if (selected) {
+                            onAddInfluence(artist);
+                            return;
+                          }
+                          onRemoveInfluence(artist);
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ),
       ],
     );
   }

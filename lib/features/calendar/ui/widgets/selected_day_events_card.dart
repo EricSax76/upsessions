@@ -1,40 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:upsessions/l10n/app_localizations.dart';
 
-import '../../../events/models/event_entity.dart';
+import '../../../../modules/rehearsals/models/rehearsal_entity.dart';
 import '../../../../core/widgets/section_card.dart';
 import 'event_tile.dart';
 
-class SelectedDayEventsCard extends StatelessWidget {
-  const SelectedDayEventsCard({
+class SelectedDayRehearsalsCard extends StatelessWidget {
+  const SelectedDayRehearsalsCard({
     super.key,
     required this.selectedDay,
-    required this.events,
-    required this.onViewEvent,
+    required this.rehearsals,
+    required this.onViewRehearsal,
   });
 
   final DateTime selectedDay;
-  final List<EventEntity> events;
-  final ValueChanged<EventEntity> onViewEvent;
+  final List<RehearsalEntity> rehearsals;
+  final ValueChanged<RehearsalEntity> onViewRehearsal;
 
   @override
   Widget build(BuildContext context) {
     final loc = MaterialLocalizations.of(context);
     final label = loc.formatFullDate(selectedDay);
-    final appLoc = AppLocalizations.of(context);
     return SectionCard(
-      title: appLoc.eventsForDate(label),
-      child: events.isEmpty
+      title: 'Ensayos para $label',
+      child: rehearsals.isEmpty
           ? Text(
-              appLoc.noEventsOnDate,
+              'No hay ensayos en esta fecha.',
               style: Theme.of(context).textTheme.bodyMedium,
             )
           : Column(
               children: [
-                for (final event in events)
+                for (final rehearsal in rehearsals)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: EventTile(event: event, onViewEvent: onViewEvent),
+                    child: RehearsalTile(
+                      rehearsal: rehearsal,
+                      onViewRehearsal: onViewRehearsal,
+                    ),
                   ),
               ],
             ),

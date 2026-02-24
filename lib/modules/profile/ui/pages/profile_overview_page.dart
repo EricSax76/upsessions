@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:upsessions/modules/auth/models/profile_entity.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
+import '../widgets/profile/profile_empty_state.dart';
 import '../widgets/profile/profile_header.dart';
 import '../widgets/profile/profile_stats_row.dart';
-import '../widgets/profile/profile_empty_state.dart';
 
 class ProfileOverviewPage extends StatelessWidget {
   const ProfileOverviewPage({super.key});
@@ -20,10 +20,7 @@ class ProfileOverviewPage extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Perfil',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+              Text('Perfil', style: Theme.of(context).textTheme.headlineSmall),
               IconButton(
                 onPressed: () => context.read<ProfileCubit>().refreshProfile(),
                 icon: const Icon(Icons.refresh),
@@ -85,5 +82,3 @@ class _ProfileContentView extends StatelessWidget {
     );
   }
 }
-
-

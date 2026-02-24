@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../events/models/event_entity.dart';
+import '../../../../modules/rehearsals/models/rehearsal_entity.dart';
 import '../../cubits/calendar_state.dart';
 import '../widgets/calendar_hero_section.dart';
 import '../widgets/month_calendar_card.dart';
@@ -16,7 +16,7 @@ class CalendarDashboard extends StatelessWidget {
     required this.onNextMonth,
     required this.onSelectDay,
     required this.onGoToToday,
-    required this.onViewEvent,
+    required this.onViewRehearsal,
   });
 
   final CalendarState state;
@@ -25,7 +25,7 @@ class CalendarDashboard extends StatelessWidget {
   final VoidCallback onNextMonth;
   final ValueChanged<DateTime> onSelectDay;
   final VoidCallback onGoToToday;
-  final ValueChanged<EventEntity> onViewEvent;
+  final ValueChanged<RehearsalEntity> onViewRehearsal;
 
   @override
   Widget build(BuildContext context) {
@@ -36,30 +36,30 @@ class CalendarDashboard extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
           CalendarHeroSection(
-            totalEvents: state.totalEvents,
-            monthEvents: state.monthEvents.length,
+            totalRehearsals: state.totalUpcomingRehearsals,
+            monthRehearsals: state.monthRehearsals.length,
           ),
           const SizedBox(height: 24),
           MonthCalendarCard(
             visibleMonth: state.visibleMonth,
             selectedDay: state.selectedDay,
-            eventsByDay: state.eventsByDay,
+            rehearsalsByDay: state.rehearsalsByDay,
             onPreviousMonth: onPreviousMonth,
             onNextMonth: onNextMonth,
             onSelectDay: onSelectDay,
             onGoToToday: onGoToToday,
           ),
           const SizedBox(height: 24),
-          SelectedDayEventsCard(
+          SelectedDayRehearsalsCard(
             selectedDay: state.selectedDay,
-            events: state.selectedDayEvents,
-            onViewEvent: onViewEvent,
+            rehearsals: state.selectedDayRehearsals,
+            onViewRehearsal: onViewRehearsal,
           ),
           const SizedBox(height: 24),
-          MonthEventList(
+          MonthRehearsalList(
             month: state.visibleMonth,
-            events: state.monthEvents,
-            onViewEvent: onViewEvent,
+            rehearsals: state.monthRehearsals,
+            onViewRehearsal: onViewRehearsal,
           ),
         ],
       ),

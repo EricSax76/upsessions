@@ -14,6 +14,7 @@ import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/artist_image_repository.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
 import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
 import 'package:upsessions/features/home/repositories/home_announcements_repository.dart';
@@ -73,6 +74,7 @@ class UpsessionsApp extends StatelessWidget {
         RepositoryProvider(create: (_) => locate<SetlistRepository>()),
         RepositoryProvider(create: (_) => locate<MediaRepository>()),
         RepositoryProvider(create: (_) => locate<AffinityOptionsRepository>()),
+        RepositoryProvider(create: (_) => locate<ArtistImageRepository>()),
       ],
       child: MultiBlocProvider(
         providers: [

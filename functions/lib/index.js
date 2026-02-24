@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onChatThreadWrite = exports.onGroupInviteUsedCreateContacts = exports.onGroupInviteCreated = exports.ping = exports.seedChatThreads = void 0;
+exports.onChatThreadWrite = exports.onGroupInviteUsedCreateContacts = exports.onGroupInviteCreated = exports.ping = exports.resolveSpotifyArtistImages = exports.seedChatThreads = void 0;
 const firebase_1 = require("./firebase");
 const region_1 = require("./region");
 var chatSeeder_1 = require("./chatSeeder");
 Object.defineProperty(exports, "seedChatThreads", { enumerable: true, get: function () { return chatSeeder_1.seedChatThreads; } });
+var spotify_artist_images_1 = require("./spotify_artist_images");
+Object.defineProperty(exports, "resolveSpotifyArtistImages", { enumerable: true, get: function () { return spotify_artist_images_1.resolveSpotifyArtistImages; } });
 function stringList(value) {
     if (!Array.isArray(value))
         return [];

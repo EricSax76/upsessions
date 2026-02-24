@@ -1,47 +1,51 @@
 import 'package:equatable/equatable.dart';
 
-import '../../events/models/event_entity.dart';
+import '../../../modules/rehearsals/models/rehearsal_entity.dart';
 
 class CalendarState extends Equatable {
   const CalendarState({
     this.loading = true,
-    this.events = const [],
-    this.eventsByDay = const {},
+    this.rehearsals = const [],
+    this.rehearsalsByDay = const {},
     required this.visibleMonth,
     required this.selectedDay,
   });
 
   final bool loading;
-  final List<EventEntity> events;
-  final Map<DateTime, List<EventEntity>> eventsByDay;
+  final List<RehearsalEntity> rehearsals;
+  final Map<DateTime, List<RehearsalEntity>> rehearsalsByDay;
   final DateTime visibleMonth;
   final DateTime selectedDay;
 
-  List<EventEntity> get selectedDayEvents =>
-      eventsByDay[selectedDay] ?? const <EventEntity>[];
+  List<RehearsalEntity> get selectedDayRehearsals =>
+      rehearsalsByDay[selectedDay] ?? const <RehearsalEntity>[];
 
-  List<EventEntity> get monthEvents => events
+  List<RehearsalEntity> get monthRehearsals => rehearsals
       .where(
-        (event) =>
-            event.start.year == visibleMonth.year &&
-            event.start.month == visibleMonth.month,
+        (rehearsal) =>
+            rehearsal.startsAt.year == visibleMonth.year &&
+            rehearsal.startsAt.month == visibleMonth.month,
       )
       .toList(growable: false);
 
-  int get totalEvents =>
-      eventsByDay.values.fold<int>(0, (sum, items) => sum + items.length);
+  int get totalUpcomingRehearsals {
+    final now = DateTime.now();
+    return rehearsals
+        .where((rehearsal) => !rehearsal.startsAt.isBefore(now))
+        .length;
+  }
 
   CalendarState copyWith({
     bool? loading,
-    List<EventEntity>? events,
-    Map<DateTime, List<EventEntity>>? eventsByDay,
+    List<RehearsalEntity>? rehearsals,
+    Map<DateTime, List<RehearsalEntity>>? rehearsalsByDay,
     DateTime? visibleMonth,
     DateTime? selectedDay,
   }) {
     return CalendarState(
       loading: loading ?? this.loading,
-      events: events ?? this.events,
-      eventsByDay: eventsByDay ?? this.eventsByDay,
+      rehearsals: rehearsals ?? this.rehearsals,
+      rehearsalsByDay: rehearsalsByDay ?? this.rehearsalsByDay,
       visibleMonth: visibleMonth ?? this.visibleMonth,
       selectedDay: selectedDay ?? this.selectedDay,
     );
@@ -50,8 +54,8 @@ class CalendarState extends Equatable {
   @override
   List<Object?> get props => [
     loading,
-    events,
-    eventsByDay,
+    rehearsals,
+    rehearsalsByDay,
     visibleMonth,
     selectedDay,
   ];
