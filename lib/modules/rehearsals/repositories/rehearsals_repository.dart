@@ -10,20 +10,27 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
   });
 
   Future<List<RehearsalEntity>> getMyRehearsals() async {
-    await requireMusicianUid();
-    logFirestore('getMyRehearsals');
-    final snapshot = await logFuture(
-      'getMyRehearsals get',
-      firestore.collectionGroup('rehearsals').orderBy('startsAt').get(),
-    );
-    return snapshot.docs
-        .map((doc) {
-          final groupId = doc.reference.parent.parent?.id ?? '';
-          if (groupId.isEmpty) return null;
-          return _mapRehearsalFromMap(doc.id, doc.data(), groupId);
-        })
-        .whereType<RehearsalEntity>()
-        .toList();
+    final uid = await requireMusicianUid();
+    logFirestore('getMyRehearsals uid=$uid');
+    try {
+      final snapshot = await logFuture(
+        'getMyRehearsals get',
+        firestore.collectionGroup('rehearsals').orderBy('startsAt').get(),
+      );
+      return snapshot.docs
+          .map((doc) {
+            final groupId = doc.reference.parent.parent?.id ?? '';
+            if (groupId.isEmpty) return null;
+            return _mapRehearsalFromMap(doc.id, doc.data(), groupId);
+          })
+          .whereType<RehearsalEntity>()
+          .toList();
+    } on FirebaseException catch (error) {
+      logFirestore(
+        'getMyRehearsals fallback by membership due to ${error.code}',
+      );
+      return _getMyRehearsalsByMembership(uid);
+    }
   }
 
   Future<List<RehearsalEntity>> getRehearsals(String groupId) async {
@@ -156,6 +163,51 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     String groupId,
   ) {
     return _mapRehearsalFromMap(doc.id, doc.data(), groupId);
+  }
+
+  Future<List<RehearsalEntity>> _getMyRehearsalsByMembership(
+    String ownerId,
+  ) async {
+    final memberships = await logFuture(
+      'getMyRehearsals fallback memberships',
+      firestore
+          .collectionGroup('members')
+          .where('ownerId', isEqualTo: ownerId)
+          .where('status', isEqualTo: 'active')
+          .get(),
+    );
+
+    final groupIds = memberships.docs
+        .map((doc) => doc.reference.parent.parent?.id ?? '')
+        .where((groupId) => groupId.isNotEmpty)
+        .toSet()
+        .toList();
+    if (groupIds.isEmpty) {
+      return [];
+    }
+
+    final byGroup = await Future.wait(
+      groupIds.map((groupId) async {
+        try {
+          final snapshot = await logFuture(
+            'getMyRehearsals fallback group=$groupId',
+            rehearsals(groupId).orderBy('startsAt', descending: false).get(),
+          );
+          return snapshot.docs
+              .map((doc) => _mapRehearsal(doc, groupId))
+              .toList();
+        } catch (error) {
+          logFirestore(
+            'getMyRehearsals fallback skip group=$groupId error=$error',
+          );
+          return const <RehearsalEntity>[];
+        }
+      }),
+    );
+
+    final rehearsalsList = byGroup.expand((items) => items).toList()
+      ..sort((a, b) => a.startsAt.compareTo(b.startsAt));
+    return rehearsalsList;
   }
 
   RehearsalEntity _mapRehearsalFromMap(
