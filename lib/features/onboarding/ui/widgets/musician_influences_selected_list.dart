@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
-import 'package:upsessions/modules/musicians/ui/widgets/artist_image_label.dart';
+
+import 'package:upsessions/modules/musicians/ui/widgets/artist_influence_tile.dart';
 
 class MusicianInfluencesSelectedList extends StatelessWidget {
   const MusicianInfluencesSelectedList({
@@ -64,77 +65,31 @@ class MusicianInfluencesSelectedList extends StatelessWidget {
                         artistImagesByName[normalizeArtistName(artist)];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8),
-                      child: ArtistChipWithAttribution(
+                      child: ArtistInfluenceTile(
+                        artist: artist,
+                        imageUrl: info?.imageUrl,
                         spotifyUrl: info?.spotifyUrl,
-                        expand: true,
-                        chip: RawChip(
-                          label: ArtistImageLabel(
-                            artist: artist,
-                            imageUrl: info?.imageUrl,
-                            textStyle: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
-                          backgroundColor: colorScheme.surfaceContainerHighest,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(
-                              color: colorScheme.outlineVariant.withValues(
-                                alpha: 0.7,
-                              ),
-                            ),
-                          ),
-                          deleteIcon: Icon(
-                            Icons.close,
-                            size: 16,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                          onDeleted: () => onRemoveInfluence(style, artist),
-                        ),
+                        onDelete: () => onRemoveInfluence(style, artist),
                       ),
                     );
                   }).toList(),
                 )
               else
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: artists.map((artist) {
                     final info =
                         artistImagesByName[normalizeArtistName(artist)];
-                    return ArtistChipWithAttribution(
-                      spotifyUrl: info?.spotifyUrl,
-                      chip: RawChip(
-                        label: ArtistImageLabel(
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 400),
+                        child: ArtistInfluenceTile(
                           artist: artist,
                           imageUrl: info?.imageUrl,
-                          textStyle: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
+                          spotifyUrl: info?.spotifyUrl,
+                          onDelete: () => onRemoveInfluence(style, artist),
                         ),
-                        backgroundColor: colorScheme.surfaceContainerHighest,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(
-                            color: colorScheme.outlineVariant.withValues(
-                              alpha: 0.7,
-                            ),
-                          ),
-                        ),
-                        deleteIcon: Icon(
-                          Icons.close,
-                          size: 16,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        onDeleted: () => onRemoveInfluence(style, artist),
                       ),
                     );
                   }).toList(),

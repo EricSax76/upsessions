@@ -12,6 +12,8 @@ import 'package:upsessions/modules/musicians/repositories/artist_image_repositor
 part 'profile_form_state.dart';
 
 class ProfileFormCubit extends Cubit<ProfileFormState> {
+  static const int _initialSuggestionImageBatchSize = 24;
+
   ProfileFormCubit({
     required ProfileEntity profile,
     required AffinityOptionsRepository affinityRepository,
@@ -30,6 +32,7 @@ class ProfileFormCubit extends Cubit<ProfileFormState> {
 
   final AffinityOptionsRepository _affinityRepository;
   final ArtistImageRepository _artistImageRepository;
+  int _styleRequestId = 0;
 
   void bioChanged(String value) {
     emit(state.copyWith(bio: value));
@@ -41,16 +44,11 @@ class ProfileFormCubit extends Cubit<ProfileFormState> {
 
   Future<void> styleChanged(String? style) async {
     final normalized = style?.trim();
+    final requestId = ++_styleRequestId;
 
     if (normalized == null || normalized.isEmpty) {
       emit(state.copyWithStyle(selectedStyle: null));
-      emit(
-        state.copyWith(
-          suggestedArtists: [],
-          artistImagesByName: const {},
-          isLoadingSuggestions: false,
-        ),
-      );
+      emit(state.copyWith(suggestedArtists: [], isLoadingSuggestions: false));
       return;
     }
 
@@ -61,28 +59,25 @@ class ProfileFormCubit extends Cubit<ProfileFormState> {
       final options = await _affinityRepository.fetchArtistOptionsForStyle(
         normalized,
       );
-      final artistImagesByName = await _artistImageRepository.resolveArtists(
-        options,
+      if (!_isStyleRequestActive(requestId, normalized)) {
+        return;
+      }
+
+      emit(
+        state.copyWith(suggestedArtists: options, isLoadingSuggestions: false),
       );
-      // Check if style is still selected to avoid race condition overwrite
-      if (state.selectedStyle == normalized) {
-        emit(
-          state.copyWith(
-            suggestedArtists: options,
-            artistImagesByName: artistImagesByName,
-            isLoadingSuggestions: false,
-          ),
-        );
+      unawaited(
+        _resolveSuggestionImagesInBackground(
+          options: options,
+          style: normalized,
+          requestId: requestId,
+        ),
+      );
+    } catch (_) {
+      if (!_isStyleRequestActive(requestId, normalized)) {
+        return;
       }
-    } catch (e) {
-      if (state.selectedStyle == normalized) {
-        emit(
-          state.copyWith(
-            isLoadingSuggestions: false,
-            artistImagesByName: const {},
-          ),
-        );
-      }
+      emit(state.copyWith(isLoadingSuggestions: false));
     }
   }
 
@@ -137,9 +132,7 @@ class ProfileFormCubit extends Cubit<ProfileFormState> {
       return;
     }
 
-    final updated = Map<String, ArtistImageInfo>.from(state.artistImagesByName)
-      ..[key] = info;
-    emit(state.copyWith(artistImagesByName: updated));
+    _mergeArtistImages(<String, ArtistImageInfo>{key: info});
   }
 
   Future<void> _primeExistingInfluencesImages(
@@ -155,6 +148,53 @@ class ProfileFormCubit extends Cubit<ProfileFormState> {
 
     final resolved = await _artistImageRepository.resolveArtists(artistNames);
     if (isClosed || resolved.isEmpty) {
+      return;
+    }
+
+    _mergeArtistImages(resolved);
+  }
+
+  Future<void> _resolveSuggestionImagesInBackground({
+    required List<String> options,
+    required String style,
+    required int requestId,
+  }) async {
+    if (options.isEmpty) {
+      return;
+    }
+
+    final prioritized = options.take(_initialSuggestionImageBatchSize).toList();
+    final remaining = options.skip(_initialSuggestionImageBatchSize).toList();
+
+    final initialResolved = await _artistImageRepository.resolveArtists(
+      prioritized,
+    );
+    if (!_isStyleRequestActive(requestId, style)) {
+      return;
+    }
+    _mergeArtistImages(initialResolved);
+
+    if (remaining.isEmpty) {
+      return;
+    }
+
+    final remainingResolved = await _artistImageRepository.resolveArtists(
+      remaining,
+    );
+    if (!_isStyleRequestActive(requestId, style)) {
+      return;
+    }
+    _mergeArtistImages(remainingResolved);
+  }
+
+  bool _isStyleRequestActive(int requestId, String style) {
+    return !isClosed &&
+        requestId == _styleRequestId &&
+        state.selectedStyle == style;
+  }
+
+  void _mergeArtistImages(Map<String, ArtistImageInfo> resolved) {
+    if (resolved.isEmpty) {
       return;
     }
 

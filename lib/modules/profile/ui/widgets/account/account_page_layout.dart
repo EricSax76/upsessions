@@ -4,6 +4,7 @@ import '../../../../../core/widgets/constants/breakpoints.dart';
 import '../../../../../features/home/ui/widgets/profile/profile_link_box.dart';
 import '../../../../auth/models/profile_entity.dart';
 import '../../../../auth/models/user_entity.dart';
+import '../../../../musicians/models/artist_image_info.dart';
 import 'account_profile_details_card.dart';
 import 'account_profile_header_card.dart';
 
@@ -14,6 +15,7 @@ class AccountPageLayout extends StatelessWidget {
     required this.user,
     required this.avatarUrl,
     required this.uploadingPhoto,
+    this.spotifyArtistImagesFuture,
     required this.onChangePhoto,
     required this.onEditProfile,
     required this.onAddLink,
@@ -24,6 +26,7 @@ class AccountPageLayout extends StatelessWidget {
   final UserEntity user;
   final String? avatarUrl;
   final bool uploadingPhoto;
+  final Future<Map<String, ArtistImageInfo>>? spotifyArtistImagesFuture;
   final VoidCallback onChangePhoto;
   final VoidCallback onEditProfile;
   final void Function(String title, String url) onAddLink;
@@ -45,37 +48,34 @@ class AccountPageLayout extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, constraints) {
               final isDesktop = constraints.maxWidth > Breakpoints.desktop;
-              return Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 1100),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 32,
-                    ),
-                    child: isDesktop
-                        ? AccountDesktopLayout(
-                            profile: profile,
-                            user: user,
-                            avatarUrl: avatarUrl,
-                            uploadingPhoto: uploadingPhoto,
-                            onChangePhoto: onChangePhoto,
-                            onEditProfile: onEditProfile,
-                            onAddLink: onAddLink,
-                            onRemoveLink: onRemoveLink,
-                          )
-                        : AccountMobileLayout(
-                            profile: profile,
-                            user: user,
-                            avatarUrl: avatarUrl,
-                            uploadingPhoto: uploadingPhoto,
-                            onChangePhoto: onChangePhoto,
-                            onEditProfile: onEditProfile,
-                            onAddLink: onAddLink,
-                            onRemoveLink: onRemoveLink,
-                          ),
-                  ),
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
                 ),
+                child: isDesktop
+                    ? AccountDesktopLayout(
+                        profile: profile,
+                        user: user,
+                        avatarUrl: avatarUrl,
+                        uploadingPhoto: uploadingPhoto,
+                        spotifyArtistImagesFuture: spotifyArtistImagesFuture,
+                        onChangePhoto: onChangePhoto,
+                        onEditProfile: onEditProfile,
+                        onAddLink: onAddLink,
+                        onRemoveLink: onRemoveLink,
+                      )
+                    : AccountMobileLayout(
+                        profile: profile,
+                        user: user,
+                        avatarUrl: avatarUrl,
+                        uploadingPhoto: uploadingPhoto,
+                        spotifyArtistImagesFuture: spotifyArtistImagesFuture,
+                        onChangePhoto: onChangePhoto,
+                        onEditProfile: onEditProfile,
+                        onAddLink: onAddLink,
+                        onRemoveLink: onRemoveLink,
+                      ),
               );
             },
           ),
@@ -92,6 +92,7 @@ class AccountDesktopLayout extends StatelessWidget {
     required this.user,
     required this.avatarUrl,
     required this.uploadingPhoto,
+    this.spotifyArtistImagesFuture,
     required this.onChangePhoto,
     required this.onEditProfile,
     required this.onAddLink,
@@ -102,6 +103,7 @@ class AccountDesktopLayout extends StatelessWidget {
   final UserEntity user;
   final String? avatarUrl;
   final bool uploadingPhoto;
+  final Future<Map<String, ArtistImageInfo>>? spotifyArtistImagesFuture;
   final VoidCallback onChangePhoto;
   final VoidCallback onEditProfile;
   final void Function(String title, String url) onAddLink;
@@ -154,6 +156,7 @@ class AccountDesktopLayout extends StatelessWidget {
                 location: profile.location,
                 skills: profile.skills,
                 influences: profile.influences,
+                spotifyArtistImagesFuture: spotifyArtistImagesFuture,
               ),
             ],
           ),
@@ -170,6 +173,7 @@ class AccountMobileLayout extends StatelessWidget {
     required this.user,
     required this.avatarUrl,
     required this.uploadingPhoto,
+    this.spotifyArtistImagesFuture,
     required this.onChangePhoto,
     required this.onEditProfile,
     required this.onAddLink,
@@ -180,6 +184,7 @@ class AccountMobileLayout extends StatelessWidget {
   final UserEntity user;
   final String? avatarUrl;
   final bool uploadingPhoto;
+  final Future<Map<String, ArtistImageInfo>>? spotifyArtistImagesFuture;
   final VoidCallback onChangePhoto;
   final VoidCallback onEditProfile;
   final void Function(String title, String url) onAddLink;
@@ -218,6 +223,7 @@ class AccountMobileLayout extends StatelessWidget {
           location: profile.location,
           skills: profile.skills,
           influences: profile.influences,
+          spotifyArtistImagesFuture: spotifyArtistImagesFuture,
         ),
       ],
     );

@@ -129,11 +129,12 @@ class ArtistChipWithAttribution extends StatelessWidget {
       );
     }
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         chip,
-        const SizedBox(width: 6),
         _SpotifyLinkButton(uri: uri),
       ],
     );
@@ -153,7 +154,38 @@ class _SpotifyLinkButton extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
         onTap: () async {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          try {
+            final openedExternally = await launchUrl(
+              uri,
+              mode: LaunchMode.externalApplication,
+            );
+            if (openedExternally) {
+              return;
+            }
+
+            final openedWithDefault = await launchUrl(
+              uri,
+              mode: LaunchMode.platformDefault,
+            );
+            if (openedWithDefault || !context.mounted) {
+              return;
+            }
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('No se pudo abrir el enlace de Spotify.'),
+              ),
+            );
+          } catch (_) {
+            if (!context.mounted) {
+              return;
+            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('No se pudo abrir el enlace de Spotify.'),
+              ),
+            );
+          }
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),

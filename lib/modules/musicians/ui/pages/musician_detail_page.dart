@@ -8,6 +8,8 @@ import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import 'package:upsessions/modules/contacts/ui/widgets/musician_like_button.dart';
 import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
+import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
+import 'package:upsessions/modules/musicians/repositories/artist_image_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/modules/profile/ui/widgets/account/account_profile_details_card.dart';
 
@@ -29,6 +31,9 @@ class MusicianDetailPage extends StatefulWidget {
 
 class _MusicianDetailPageState extends State<MusicianDetailPage> {
   late final Future<MusicianEntity?> _musicianFuture;
+  late final ArtistImageRepository _artistImageRepository;
+  String _spotifyAffinityCacheKey = '';
+  Future<Map<String, ArtistImageInfo>>? _spotifyAffinityFuture;
 
   @override
   void initState() {
@@ -36,6 +41,7 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
     _musicianFuture = locate<MusiciansRepository>().findById(
       widget.musician.id,
     );
+    _artistImageRepository = locate<ArtistImageRepository>();
   }
 
   Future<void> _inviteMusician(
@@ -82,6 +88,57 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
     return ownerId == currentId || musicianId == currentId;
   }
 
+  List<String> _flattenUniqueAffinityArtists(
+    Map<String, List<String>> influences,
+  ) {
+    final uniqueByKey = <String, String>{};
+    final sortedStyles = influences.keys.toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+
+    for (final style in sortedStyles) {
+      final artists = influences[style] ?? const <String>[];
+      for (final rawArtist in artists) {
+        final artist = rawArtist.trim();
+        if (artist.isEmpty) {
+          continue;
+        }
+        final key = normalizeArtistName(artist);
+        if (key.isEmpty) {
+          continue;
+        }
+        uniqueByKey.putIfAbsent(key, () => artist);
+      }
+    }
+
+    return uniqueByKey.values.toList(growable: false);
+  }
+
+  Future<Map<String, ArtistImageInfo>> _spotifyAffinityFutureFor(
+    Map<String, List<String>> influences,
+  ) {
+    final artists = _flattenUniqueAffinityArtists(influences);
+    if (artists.isEmpty) {
+      return Future.value(const <String, ArtistImageInfo>{});
+    }
+
+    final cacheKey =
+        artists
+            .map(normalizeArtistName)
+            .where((key) => key.isNotEmpty)
+            .toList(growable: false)
+          ..sort();
+    final joinedKey = cacheKey.join('|');
+
+    if (_spotifyAffinityFuture != null &&
+        joinedKey == _spotifyAffinityCacheKey) {
+      return _spotifyAffinityFuture!;
+    }
+
+    _spotifyAffinityCacheKey = joinedKey;
+    _spotifyAffinityFuture = _artistImageRepository.resolveArtists(artists);
+    return _spotifyAffinityFuture!;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -124,69 +181,65 @@ class _MusicianDetailPageState extends State<MusicianDetailPage> {
                       : 40;
 
                   return SingleChildScrollView(
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 860),
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(
-                            horizontalPadding,
-                            topPadding,
-                            horizontalPadding,
-                            80,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        horizontalPadding,
+                        topPadding,
+                        horizontalPadding,
+                        80,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Breadcrumb or Back button could go here
-                                  const SizedBox.shrink(), // Placeholder if needed
-                                  MusicianLikeButton(
-                                    musician: musician.toLikedMusician(),
-                                    iconSize: 28,
-                                    padding: const EdgeInsets.all(4),
-                                  ),
-                                ],
+                              // Breadcrumb or Back button could go here
+                              const SizedBox.shrink(), // Placeholder if needed
+                              MusicianLikeButton(
+                                musician: musician.toLikedMusician(),
+                                iconSize: 28,
+                                padding: const EdgeInsets.all(4),
                               ),
-                              const SizedBox(height: 16),
-                              MusicianProfileHeader(musician: musician),
-                              const SizedBox(height: 32),
-                              AccountProfileDetailsCard(
-                                bio: musician.bio,
-                                location: musician.city,
-                                skills: musician.styles,
-                                influences: musician.influences,
-                              ),
-                              const SizedBox(height: 24),
-                              ProfileLinkBox(
-                                links: musician.links,
-                                readOnly: true,
-                              ),
-                              if (!isOwnProfile) ...[
-                                const SizedBox(height: 32),
-                                MusicianContactCard(
-                                  isLoading: isContacting,
-                                  onPressed: isContacting
-                                      ? null
-                                      : () => context
-                                            .read<MusicianDetailCubit>()
-                                            .contactMusician(
-                                              musician,
-                                              currentUserId: currentUserId,
-                                            ),
-                                  onInvite: () => _inviteMusician(
-                                    context,
-                                    musician,
-                                    currentUserId,
-                                  ),
-                                ),
-                              ],
                             ],
                           ),
-                        ),
+                          const SizedBox(height: 16),
+                          MusicianProfileHeader(musician: musician),
+                          const SizedBox(height: 32),
+                          AccountProfileDetailsCard(
+                            bio: musician.bio,
+                            location: musician.city,
+                            skills: musician.styles,
+                            influences: musician.influences,
+                            spotifyArtistImagesFuture:
+                                musician.influences.isEmpty
+                                ? null
+                                : _spotifyAffinityFutureFor(
+                                    musician.influences,
+                                  ),
+                          ),
+                          const SizedBox(height: 24),
+                          ProfileLinkBox(links: musician.links, readOnly: true),
+                          if (!isOwnProfile) ...[
+                            const SizedBox(height: 32),
+                            MusicianContactCard(
+                              isLoading: isContacting,
+                              onPressed: isContacting
+                                  ? null
+                                  : () => context
+                                        .read<MusicianDetailCubit>()
+                                        .contactMusician(
+                                          musician,
+                                          currentUserId: currentUserId,
+                                        ),
+                              onInvite: () => _inviteMusician(
+                                context,
+                                musician,
+                                currentUserId,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                   );

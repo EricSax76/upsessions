@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:upsessions/core/locator/locator.dart';
+import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
+import 'package:upsessions/modules/musicians/repositories/artist_image_repository.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../auth/cubits/auth_cubit.dart';
@@ -30,6 +33,15 @@ class _AccountPageViewContent extends StatefulWidget {
 
 class _AccountPageViewContentState extends State<_AccountPageViewContent> {
   final AccountPhotoFlow _photoFlow = AccountPhotoFlow();
+  late final ArtistImageRepository _artistImageRepository;
+  String _spotifyAffinityCacheKey = '';
+  Future<Map<String, ArtistImageInfo>>? _spotifyAffinityFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _artistImageRepository = locate<ArtistImageRepository>();
+  }
 
   Future<void> _pickAndUploadPhoto(ImageSource source) async {
     try {
@@ -64,6 +76,61 @@ class _AccountPageViewContentState extends State<_AccountPageViewContent> {
     );
     if (!mounted || source == null) return;
     await _pickAndUploadPhoto(source);
+  }
+
+  List<String> _flattenUniqueAffinityArtists(
+    Map<String, List<String>> influences,
+  ) {
+    final uniqueByKey = <String, String>{};
+    final sortedStyles = influences.keys.toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+
+    for (final style in sortedStyles) {
+      final artists = influences[style] ?? const <String>[];
+      for (final rawArtist in artists) {
+        final artist = rawArtist.trim();
+        if (artist.isEmpty) {
+          continue;
+        }
+        final key = normalizeArtistName(artist);
+        if (key.isEmpty) {
+          continue;
+        }
+        uniqueByKey.putIfAbsent(key, () => artist);
+      }
+    }
+
+    return uniqueByKey.values.toList(growable: false);
+  }
+
+  Future<Map<String, ArtistImageInfo>>? _spotifyAffinityFutureFor(
+    Map<String, List<String>> influences,
+  ) {
+    if (influences.isEmpty) {
+      return null;
+    }
+
+    final artists = _flattenUniqueAffinityArtists(influences);
+    if (artists.isEmpty) {
+      return null;
+    }
+
+    final cacheKey =
+        artists
+            .map(normalizeArtistName)
+            .where((key) => key.isNotEmpty)
+            .toList(growable: false)
+          ..sort();
+    final joinedKey = cacheKey.join('|');
+
+    if (_spotifyAffinityFuture != null &&
+        joinedKey == _spotifyAffinityCacheKey) {
+      return _spotifyAffinityFuture;
+    }
+
+    _spotifyAffinityCacheKey = joinedKey;
+    _spotifyAffinityFuture = _artistImageRepository.resolveArtists(artists);
+    return _spotifyAffinityFuture;
   }
 
   @override
@@ -106,12 +173,16 @@ class _AccountPageViewContentState extends State<_AccountPageViewContent> {
 
           final uploadingPhoto = profileState.status == ProfileStatus.loading;
           final avatarUrl = profile.photoUrl ?? user.photoUrl;
+          final spotifyAffinityFuture = _spotifyAffinityFutureFor(
+            profile.influences,
+          );
 
           return AccountPageLayout(
             profile: profile,
             user: user,
             avatarUrl: avatarUrl,
             uploadingPhoto: uploadingPhoto,
+            spotifyArtistImagesFuture: spotifyAffinityFuture,
             onChangePhoto: _openPhotoOptions,
             onEditProfile: () => context.push(AppRoutes.profileEdit),
             onAddLink: (title, url) {
