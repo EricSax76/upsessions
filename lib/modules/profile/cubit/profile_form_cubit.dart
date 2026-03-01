@@ -25,6 +25,7 @@ class ProfileFormCubit extends Cubit<ProfileFormState> {
            bio: profile.bio,
            location: profile.location,
            influences: Map.from(profile.influences),
+           availableForHire: profile.availableForHire,
          ),
        ) {
     unawaited(_primeExistingInfluencesImages(profile.influences));
@@ -36,6 +37,10 @@ class ProfileFormCubit extends Cubit<ProfileFormState> {
 
   void bioChanged(String value) {
     emit(state.copyWith(bio: value));
+  }
+
+  void availableForHireChanged(bool value) {
+    emit(state.copyWith(availableForHire: value));
   }
 
   void locationChanged(String value) {
@@ -113,6 +118,7 @@ class ProfileFormCubit extends Cubit<ProfileFormState> {
       bio: state.bio.trim(),
       location: state.location.trim(),
       influences: state.influences,
+      availableForHire: state.availableForHire,
     );
   }
 

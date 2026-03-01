@@ -15,6 +15,7 @@ class ProfileFormState extends Equatable {
     this.artistImagesByName = const {},
     this.isLoadingSuggestions = false,
     this.errorMessage,
+    this.availableForHire = false,
   });
 
   final ProfileFormStatus status;
@@ -26,6 +27,7 @@ class ProfileFormState extends Equatable {
   final Map<String, ArtistImageInfo> artistImagesByName;
   final bool isLoadingSuggestions;
   final String? errorMessage;
+  final bool availableForHire;
 
   ProfileFormState copyWith({
     ProfileFormStatus? status,
@@ -37,6 +39,7 @@ class ProfileFormState extends Equatable {
     Map<String, ArtistImageInfo>? artistImagesByName,
     bool? isLoadingSuggestions,
     String? errorMessage,
+    bool? availableForHire,
   }) {
     return ProfileFormState(
       status: status ?? this.status,
@@ -50,6 +53,7 @@ class ProfileFormState extends Equatable {
       artistImagesByName: artistImagesByName ?? this.artistImagesByName,
       isLoadingSuggestions: isLoadingSuggestions ?? this.isLoadingSuggestions,
       errorMessage: errorMessage ?? this.errorMessage,
+      availableForHire: availableForHire ?? this.availableForHire,
     );
   }
 
@@ -65,6 +69,7 @@ class ProfileFormState extends Equatable {
       artistImagesByName: artistImagesByName,
       isLoadingSuggestions: isLoadingSuggestions,
       errorMessage: errorMessage,
+      availableForHire: availableForHire,
     );
   }
 
@@ -79,5 +84,6 @@ class ProfileFormState extends Equatable {
     artistImagesByName,
     isLoadingSuggestions,
     errorMessage,
+    availableForHire,
   ];
 }

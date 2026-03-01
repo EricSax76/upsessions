@@ -55,6 +55,7 @@ class ProfileRepository {
       links: _stringMap(data['links']),
       photoUrl: data['photoUrl'] as String?,
       influences: _influencesMap(data['influences']),
+      availableForHire: (data['availableForHire'] as bool?) ?? false,
     );
   }
 
@@ -67,6 +68,7 @@ class ProfileRepository {
       'links': profile.links,
       'photoUrl': profile.photoUrl,
       'influences': profile.influences,
+      'availableForHire': profile.availableForHire,
     };
     await _firestore
         .collection('musicians')
@@ -81,6 +83,7 @@ class ProfileRepository {
       links: profile.links,
       photoUrl: profile.photoUrl,
       influences: profile.influences,
+      availableForHire: profile.availableForHire,
     );
   }
 

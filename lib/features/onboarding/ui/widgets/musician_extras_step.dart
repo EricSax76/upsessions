@@ -11,6 +11,8 @@ class MusicianExtrasStep extends StatelessWidget {
     required this.onPickPhoto,
     this.selectedPhotoName,
     this.onClearPhoto,
+    required this.availableForHire,
+    required this.onAvailableForHireChanged,
   });
 
   final GlobalKey<FormState> formKey;
@@ -18,6 +20,8 @@ class MusicianExtrasStep extends StatelessWidget {
   final VoidCallback onPickPhoto;
   final String? selectedPhotoName;
   final VoidCallback? onClearPhoto;
+  final bool availableForHire;
+  final ValueChanged<bool> onAvailableForHireChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +70,14 @@ class MusicianExtrasStep extends StatelessWidget {
               textCapitalization: TextCapitalization.sentences,
               minLines: 3,
               maxLines: 5,
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              title: const Text('Disponible para contratación'),
+              subtitle: const Text('Márcalo si quieres que los organizadores puedan buscar tu perfil y contactarte para eventos.'),
+              value: availableForHire,
+              onChanged: onAvailableForHireChanged,
+              contentPadding: EdgeInsets.zero,
             ),
           ],
         ),

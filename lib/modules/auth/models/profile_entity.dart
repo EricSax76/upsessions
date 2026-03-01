@@ -14,6 +14,7 @@ class ProfileEntity extends Equatable {
     required this.links,
     this.photoUrl,
     this.influences = const {},
+    this.availableForHire = false,
   });
 
   final String id;
@@ -24,6 +25,7 @@ class ProfileEntity extends Equatable {
   final Map<String, String> links;
   final String? photoUrl;
   final Map<String, List<String>> influences;
+  final bool availableForHire;
 
   ProfileEntity copyWith({
     String? id,
@@ -34,6 +36,7 @@ class ProfileEntity extends Equatable {
     Map<String, String>? links,
     Object? photoUrl = _unset,
     Map<String, List<String>>? influences,
+    bool? availableForHire,
   }) {
     return ProfileEntity(
       id: id ?? this.id,
@@ -46,6 +49,7 @@ class ProfileEntity extends Equatable {
           ? this.photoUrl
           : photoUrl as String?,
       influences: influences ?? this.influences,
+      availableForHire: availableForHire ?? this.availableForHire,
     );
   }
 
@@ -59,5 +63,6 @@ class ProfileEntity extends Equatable {
     links,
     photoUrl,
     influences,
+    availableForHire,
   ];
 }

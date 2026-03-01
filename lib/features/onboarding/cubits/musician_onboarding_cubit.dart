@@ -11,6 +11,10 @@ class MusicianOnboardingCubit extends Cubit<MusicianOnboardingState> {
 
   final MusiciansRepository _repository;
 
+  void toggleAvailableForHire(bool value) {
+    emit(state.copyWith(availableForHire: value));
+  }
+
   void previousStep() {
     if (state.currentStep <= 0) return;
     emit(state.copyWith(currentStep: state.currentStep - 1));
@@ -62,6 +66,7 @@ class MusicianOnboardingCubit extends Cubit<MusicianOnboardingState> {
         photoUrl: photoUrl,
         bio: bio,
         influences: state.influences,
+        availableForHire: state.availableForHire,
       );
       if (isClosed) return;
       emit(state.copyWith(status: MusicianOnboardingStatus.saved));

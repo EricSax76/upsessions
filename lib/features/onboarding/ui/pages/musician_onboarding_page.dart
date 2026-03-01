@@ -186,6 +186,8 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
         selectedPhotoName: _selectedPhotoName,
         onPickPhoto: _pickPhoto,
         onClearPhoto: () => setState(() => _selectedPhoto = null),
+        availableForHire: cubit.state.availableForHire,
+        onAvailableForHireChanged: cubit.toggleAvailableForHire,
       ),
     ];
   }

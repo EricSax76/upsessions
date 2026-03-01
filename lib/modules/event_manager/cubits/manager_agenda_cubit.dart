@@ -39,7 +39,7 @@ class ManagerAgendaCubit extends Cubit<ManagerAgendaState> {
             date: e.start as DateTime,
             type: 'Evento',
             city: e.city as String,
-            location: e.location as String,
+            location: e.venue as String,
           ));
 
       final sessions = (futures[1] as List<dynamic>).map((dynamic s) {

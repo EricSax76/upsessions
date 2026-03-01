@@ -2,20 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/hiring/musician_request_dialog.dart';
 import '../../cubits/musician_requests_cubit.dart';
+import '../../cubits/hire_musicians_cubit.dart';
+import '../../cubits/hire_musicians_state.dart';
 
-class HireMusiciansPage extends StatelessWidget {
+class HireMusiciansPage extends StatefulWidget {
   const HireMusiciansPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Placeholder list of musicians for the demo.
-    // In a real scenario, we would use a MusicianSearchCubit or MusiciansRepository.
-    final mockMusicians = [
-      {'id': 'm1', 'name': 'Carlos Rivera', 'instrument': 'Guitarra Eléctrica', 'city': 'Madrid'},
-      {'id': 'm2', 'name': 'Laura Torres', 'instrument': 'Batería', 'city': 'Barcelona'},
-      {'id': 'm3', 'name': 'Juan Pérez', 'instrument': 'Bajo', 'city': 'Sevilla'},
-    ];
+  State<HireMusiciansPage> createState() => _HireMusiciansPageState();
+}
 
+class _HireMusiciansPageState extends State<HireMusiciansPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<HireMusiciansCubit>().loadMusicians();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Buscar Músicos'),
@@ -24,6 +29,7 @@ class HireMusiciansPage extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
+              onChanged: (value) => context.read<HireMusiciansCubit>().search(value),
               decoration: InputDecoration(
                 hintText: 'Buscar por instrumento, ciudad...',
                 prefixIcon: const Icon(Icons.search),
@@ -35,35 +41,57 @@ class HireMusiciansPage extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(24),
-        itemCount: mockMusicians.length,
-        itemBuilder: (context, index) {
-          final mus = mockMusicians[index];
-          return Card(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: ListTile(
-              leading: CircleAvatar(
-                child: Text(mus['name']![0]),
-              ),
-              title: Text(mus['name']!, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text('${mus['instrument']} • ${mus['city']}'),
-              trailing: FilledButton.tonal(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (ctx) => BlocProvider.value(
-                      value: context.read<MusicianRequestsCubit>(),
-                      child: MusicianRequestDialog(
-                        musicianId: mus['id']!,
-                        musicianName: mus['name']!,
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('Invitar'),
-              ),
-            ),
+      body: BlocBuilder<HireMusiciansCubit, HireMusiciansState>(
+        builder: (context, state) {
+          if (state.isLoading && state.musicians.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.error != null && state.musicians.isEmpty) {
+            return Center(child: Text('Error: ${state.error}'));
+          }
+          if (state.musicians.isEmpty) {
+            return const Center(child: Text('No se encontraron músicos disponibles.'));
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(24),
+            itemCount: state.musicians.length,
+            itemBuilder: (context, index) {
+              final mus = state.musicians[index];
+              return Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: ListTile(
+                  isThreeLine: true,
+                  leading: CircleAvatar(
+                    backgroundImage: mus.photoUrl != null && mus.photoUrl!.isNotEmpty
+                        ? NetworkImage(mus.photoUrl!)
+                        : null,
+                    child: mus.photoUrl == null || mus.photoUrl!.isEmpty
+                        ? Text(mus.name.isNotEmpty ? mus.name[0].toUpperCase() : '?')
+                        : null,
+                  ),
+                  title: Text(mus.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                    '${mus.instrument} • ${mus.city}\nEstilos: ${mus.styles.join(", ")}'
+                  ),
+                  trailing: FilledButton.tonal(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => BlocProvider.value(
+                          value: context.read<MusicianRequestsCubit>(),
+                          child: MusicianRequestDialog(
+                            musicianId: mus.id,
+                            musicianName: mus.name,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text('Invitar'),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),

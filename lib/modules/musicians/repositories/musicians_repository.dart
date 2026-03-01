@@ -12,6 +12,21 @@ class MusiciansRepository {
 
   static const _collectionName = 'musicians';
 
+  Future<List<MusicianEntity>> searchAvailableForHire({
+    String query = '',
+    int limit = 50,
+    String instrument = '',
+    String city = '',
+  }) {
+    return search(
+      query: query,
+      limit: limit,
+      instrument: instrument,
+      city: city,
+      onlyAvailableForHire: true,
+    );
+  }
+
   Future<List<MusicianEntity>> search({
     String query = '',
     int limit = 50,
@@ -21,6 +36,7 @@ class MusiciansRepository {
     String city = '',
     String profileType = '',
     String gender = '',
+    bool onlyAvailableForHire = false,
   }) async {
     final normalizedQuery = _normalize(query);
     final normalizedInstrument = _normalize(instrument);
@@ -36,7 +52,8 @@ class MusiciansRepository {
         normalizedProvince.isEmpty &&
         normalizedCity.isEmpty &&
         normalizedProfileType.isEmpty &&
-        normalizedGender.isEmpty) {
+        normalizedGender.isEmpty &&
+        !onlyAvailableForHire) {
       final snapshot = await _firestore
           .collection(_collectionName)
           .orderBy('name')
@@ -88,6 +105,7 @@ class MusiciansRepository {
           normalizedProfileType: normalizedProfileType,
           normalizedGender: normalizedGender,
           provinceCities: provinceCities,
+          onlyAvailableForHire: onlyAvailableForHire,
         )) {
           matched.add(musician);
           if (matched.length >= limit) {
@@ -145,7 +163,11 @@ class MusiciansRepository {
     required String normalizedProfileType,
     required String normalizedGender,
     required List<String> provinceCities,
+    required bool onlyAvailableForHire,
   }) {
+    if (onlyAvailableForHire && !musician.availableForHire) {
+      return false;
+    }
     if (normalizedQuery.isNotEmpty &&
         !_matchesQuery(musician, normalizedQuery)) {
       return false;
@@ -237,6 +259,7 @@ class MusiciansRepository {
     String? profileType,
     String? gender,
     Map<String, List<String>> influences = const {},
+    bool availableForHire = false,
   }) async {
     final now = FieldValue.serverTimestamp();
     await _firestore.collection(_collectionName).doc(musicianId).set({
@@ -252,6 +275,7 @@ class MusiciansRepository {
       'profileType': ?profileType,
       'gender': ?gender,
       'influences': influences,
+      'availableForHire': availableForHire,
       'ownerId': musicianId,
       'createdAt': now,
       'updatedAt': now,

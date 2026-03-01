@@ -19,6 +19,7 @@ class MusicianDto {
     this.bio = '',
     this.links = const {},
     this.influences = const {},
+    this.availableForHire = false,
   });
 
   factory MusicianDto.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -53,6 +54,7 @@ class MusicianDto {
             ),
           ) ??
           const {},
+      availableForHire: (data['availableForHire'] as bool?) ?? false,
     );
   }
 
@@ -71,6 +73,7 @@ class MusicianDto {
   final String bio;
   final Map<String, String> links;
   final Map<String, List<String>> influences;
+  final bool availableForHire;
 
   MusicianEntity toEntity() {
     return MusicianEntity(
@@ -89,6 +92,7 @@ class MusicianDto {
       bio: bio,
       links: links,
       influences: influences,
+      availableForHire: availableForHire,
     );
   }
 }

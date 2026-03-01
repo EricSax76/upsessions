@@ -18,6 +18,7 @@ class MusicianEntity {
     this.bio = '',
     this.links = const {},
     this.influences = const {},
+    this.availableForHire = false,
   });
 
   final String id;
@@ -35,4 +36,5 @@ class MusicianEntity {
   final String bio;
   final Map<String, String> links;
   final Map<String, List<String>> influences;
+  final bool availableForHire;
 }

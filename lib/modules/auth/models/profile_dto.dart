@@ -10,6 +10,7 @@ class ProfileDto {
     required this.links,
     this.photoUrl,
     this.influences = const {},
+    this.availableForHire = false,
   });
 
   final String id;
@@ -20,6 +21,7 @@ class ProfileDto {
   final Map<String, String> links;
   final String? photoUrl;
   final Map<String, List<String>> influences;
+  final bool availableForHire;
 
   ProfileEntity toEntity() {
     return ProfileEntity(
@@ -31,6 +33,7 @@ class ProfileDto {
       links: links,
       photoUrl: photoUrl,
       influences: influences,
+      availableForHire: availableForHire,
     );
   }
 }

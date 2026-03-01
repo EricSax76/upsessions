@@ -78,6 +78,8 @@ import '../modules/event_manager/cubits/gig_offers_cubit.dart';
 import '../modules/event_manager/cubits/gig_offer_form_cubit.dart';
 import '../modules/event_manager/repositories/musician_requests_repository.dart';
 import '../modules/event_manager/repositories/gig_offers_repository.dart';
+import '../modules/event_manager/cubits/hire_musicians_cubit.dart';
+import '../modules/musicians/repositories/musicians_repository.dart';
 import 'app_router_builders.dart';
 
 List<GoRoute> buildAppRoutes() {
@@ -621,6 +623,11 @@ List<GoRoute> buildAppRoutes() {
           BlocProvider(
             create: (context) => MusicianRequestsCubit(
               repository: locate<MusicianRequestsRepository>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => HireMusiciansCubit(
+              repository: locate<MusiciansRepository>(),
             ),
           ),
         ],
