@@ -43,7 +43,7 @@ import 'package:upsessions/modules/studios/services/studio_image_service.dart';
 import 'package:upsessions/modules/matching/repositories/matching_repository.dart';
 import 'package:upsessions/modules/event_manager/repositories/event_manager_repository.dart';
 import 'package:upsessions/modules/event_manager/repositories/manager_events_repository.dart';
-import 'package:upsessions/modules/event_manager/repositories/jam_sessions_repository.dart';
+import 'package:upsessions/modules/jam_sessions/repositories/jam_sessions_repository.dart';
 import 'package:upsessions/modules/event_manager/repositories/musician_requests_repository.dart';
 import 'package:upsessions/modules/event_manager/repositories/gig_offers_repository.dart';
 

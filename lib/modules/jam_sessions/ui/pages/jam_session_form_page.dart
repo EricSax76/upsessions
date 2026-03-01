@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_card.dart';
-import '../../cubits/event_manager_auth_cubit.dart';
+import '../../../event_manager/cubits/event_manager_auth_cubit.dart';
 import '../../cubits/jam_session_form_cubit.dart';
 import '../../cubits/jam_session_form_state.dart';
 import '../../models/jam_session_entity.dart';

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/constants/app_routes.dart';
 import '../../../../../core/ui/shell/core_shell.dart';
+import '../../../../../core/ui/shell/sidebar_cubit.dart';
 import '../../../../../core/widgets/app_logo.dart';
 import '../../../../../core/widgets/sm_avatar.dart';
 import '../../../cubits/event_manager_auth_cubit.dart';
@@ -36,8 +37,10 @@ class ManagerShellPage extends StatelessWidget {
           final name = manager?.name ?? '';
           final initials = name.trim().isEmpty ? '' : name.trim()[0];
 
-          return CoreShell(
-            sidebar: const ManagerSidebar(),
+          return BlocProvider<SidebarCubit>(
+            create: (_) => SidebarCubit(),
+            child: CoreShell(
+              sidebar: const ManagerSidebar(),
             bottomNavigationBar: const ManagerBottomNav(),
             appBar: showTopAppBar
                 ? AppBar(
@@ -73,6 +76,7 @@ class ManagerShellPage extends StatelessWidget {
                   )
                 : null,
             child: child,
+            ),
           );
         },
       ),

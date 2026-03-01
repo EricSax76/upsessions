@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/constants/app_routes.dart';
+import '../../../cubits/event_manager_auth_cubit.dart';
 
 class ManagerMenuList extends StatelessWidget {
   const ManagerMenuList({super.key, this.isCollapsed = false});
@@ -94,7 +96,70 @@ class ManagerMenuList extends StatelessWidget {
             route: AppRoutes.eventManagerSettings,
             currentLocation: location,
           ),
+          const Divider(height: 32),
+          _buildActionItem(
+            context,
+            icon: Icons.logout,
+            label: 'Cerrar Sesión',
+            onTap: () {
+              context.read<EventManagerAuthCubit>().logout();
+            },
+            color: Theme.of(context).colorScheme.error,
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color? color,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final contentColor = color ?? colorScheme.onSurfaceVariant;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {
+            onTap();
+            if (Scaffold.maybeOf(context)?.hasDrawer ?? false) {
+              Navigator.of(context).pop();
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+            child: Row(
+              mainAxisAlignment:
+                  isCollapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
+              children: [
+                Icon(
+                  icon,
+                  color: contentColor,
+                  size: 24,
+                ),
+                if (!isCollapsed) ...[
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: contentColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import '../../auth/repositories/auth_repository.dart';
 import '../repositories/manager_events_repository.dart';
-import '../repositories/jam_sessions_repository.dart';
+import '../../jam_sessions/repositories/jam_sessions_repository.dart';
 import 'manager_agenda_state.dart';
 
 class ManagerAgendaCubit extends Cubit<ManagerAgendaState> {

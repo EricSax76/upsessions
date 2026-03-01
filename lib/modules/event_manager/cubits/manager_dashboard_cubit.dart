@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import '../repositories/manager_events_repository.dart';
-// import '../repositories/jam_sessions_repository.dart';
+// import '../../jam_sessions/repositories/jam_sessions_repository.dart';
 // import '../repositories/musician_requests_repository.dart';
 import '../../auth/repositories/auth_repository.dart';
 import 'manager_dashboard_state.dart';
