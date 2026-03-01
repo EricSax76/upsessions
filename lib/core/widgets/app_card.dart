@@ -10,6 +10,7 @@ class AppCard extends StatelessWidget {
     this.shape,
     this.elevation = 1,
     this.clipBehavior,
+    this.color,
   });
 
   final Widget child;
@@ -19,6 +20,7 @@ class AppCard extends StatelessWidget {
   final ShapeBorder? shape;
   final double? elevation;
   final Clip? clipBehavior;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,7 @@ class AppCard extends StatelessWidget {
       elevation: elevation,
       clipBehavior: clipBehavior ?? Clip.antiAlias,
       shape: shape,
+      color: color,
       child: onTap == null ? content : InkWell(onTap: onTap, child: content),
     );
   }

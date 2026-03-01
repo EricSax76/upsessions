@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/core/ui/shell/sidebar_cubit.dart';
+import 'package:upsessions/features/home/ui/widgets/sidebar/user_sidebar.dart';
 
 /// A standardized shell widget that handles responsive layout for web and mobile.
 ///
@@ -58,7 +61,7 @@ class CoreShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    final width = MediaQuery.sizeOf(context).width;
     
     // Logic extracted from UserShellPage:
     // final isWideLayout = kIsWeb ? width >= 700 : width >= 1200;
@@ -77,13 +80,27 @@ class CoreShell extends StatelessWidget {
         children: [
           // Permanent Sidebar on wide layout
           if (isWideLayout && sidebar != null) ...[
-            SizedBox(
-              width: 300,
-              child: Material(
-                elevation: 0,
-                // Ensure sidebar backgrounds etc match design
-                child: sidebar!,
-              ),
+            BlocBuilder<SidebarCubit, bool>(
+              builder: (context, isCollapsed) {
+                // If sidebar is UserSidebar, inject isCollapsed
+                Widget sidebarWidget = sidebar!;
+                if (sidebarWidget is UserSidebar) {
+                  sidebarWidget = UserSidebar(isCollapsed: isCollapsed);
+                }
+
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOutCubic,
+                  width: isCollapsed ? 90 : 280,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: const BoxDecoration(),
+                  child: Material(
+                    elevation: 0,
+                    // Ensure sidebar backgrounds etc match design
+                    child: sidebarWidget,
+                  ),
+                );
+              },
             ),
             const VerticalDivider(width: 1, thickness: 1),
           ],

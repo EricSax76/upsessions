@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
-
+import '../../../../core/widgets/app_card.dart';
 import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
 import '../../cubits/contact_card_cubit.dart';
 import '../../cubits/contact_card_state.dart';
@@ -57,7 +57,8 @@ class ContactCard extends StatelessWidget {
               );
             }
 
-            return Card(
+            return AppCard(
+              onTap: viewProfile,
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -66,27 +67,20 @@ class ContactCard extends StatelessWidget {
                 ),
               ),
               color: colorScheme.surface,
-              child: InkWell(
-                onTap: viewProfile,
-                borderRadius: BorderRadius.circular(16),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      ContactCardHeader(musician: musician),
-                      const SizedBox(height: 16),
-                      BlocBuilder<ContactCardCubit, ContactCardState>(
-                        builder: (context, state) {
-                          return ContactCardActions(
-                            onViewProfile: viewProfile,
-                            onContact: () => cubit.contact(musician),
-                            isContacting: state.isContacting,
-                          );
-                        },
-                      ),
-                    ],
+              child: Column(
+                children: [
+                  ContactCardHeader(musician: musician),
+                  const SizedBox(height: 16),
+                  BlocBuilder<ContactCardCubit, ContactCardState>(
+                    builder: (context, state) {
+                      return ContactCardActions(
+                        onViewProfile: viewProfile,
+                        onContact: () => cubit.contact(musician),
+                        isContacting: state.isContacting,
+                      );
+                    },
                   ),
-                ),
+                ],
               ),
             );
           },

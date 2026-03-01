@@ -47,6 +47,23 @@ class AppRoutes {
   static const myBookings = '/my-bookings';
   static const matching = '/matching';
 
+  static const eventManager = '/event-manager';
+  static const eventManagerLogin = '/event-manager/login';
+  static const eventManagerRegister = '/event-manager/register';
+  static const eventManagerDashboard = '/event-manager/dashboard';
+  static const eventManagerEvents = '/event-manager/events';
+  static const eventManagerEventDetail = '/event-manager/events/:eventId';
+  static const eventManagerEventForm = '/event-manager/events/form';
+  static const eventManagerJamSessions = '/event-manager/jam-sessions';
+  static const eventManagerJamSessionDetail = '/event-manager/jam-sessions/:sessionId';
+  static const eventManagerJamSessionForm = '/event-manager/jam-sessions/form';
+  static const eventManagerAgenda = '/event-manager/agenda';
+  static const eventManagerHireMusicians = '/event-manager/hire';
+  static const eventManagerGigOffers = '/event-manager/gig-offers';
+  static const eventManagerGigOfferForm = '/event-manager/gig-offers/form';
+  static const eventManagerProfile = '/event-manager/profile';
+  static const eventManagerSettings = '/event-manager/settings';
+
   static const groupRoute = '/rehearsals/groups/:groupId';
   static const groupRehearsalsRoute = '/rehearsals/groups/:groupId/rehearsals';
   static const rehearsalDetailRoute =
@@ -128,5 +145,15 @@ class AppRoutes {
     final encodedStudioId = Uri.encodeComponent(studioId);
     final encodedRoomId = Uri.encodeComponent(roomId);
     return '/studios/$encodedStudioId/rooms/$encodedRoomId/edit';
+  }
+
+  static String eventManagerEventDetailPath(String eventId) {
+    final encodedId = Uri.encodeComponent(eventId);
+    return '/event-manager/events/$encodedId';
+  }
+
+  static String eventManagerJamSessionDetailPath(String sessionId) {
+    final encodedId = Uri.encodeComponent(sessionId);
+    return '/event-manager/jam-sessions/$encodedId';
   }
 }

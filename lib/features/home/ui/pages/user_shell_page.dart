@@ -18,6 +18,7 @@ import '../widgets/header/sm_app_bar.dart';
 import '../widgets/profile/profile_quick_actions_fab.dart';
 import '../widgets/sidebar/user_sidebar.dart';
 import '../widgets/bottom_nav_bar.dart';
+import 'package:upsessions/core/ui/shell/sidebar_cubit.dart';
 
 class UserShellPage extends StatelessWidget {
   const UserShellPage({
@@ -37,7 +38,7 @@ class UserShellPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    final width = MediaQuery.sizeOf(context).width;
     final isWideLayout = kIsWeb ? width >= 700 : width >= 1200;
     final location = GoRouterState.of(context).uri.path;
 
@@ -57,6 +58,9 @@ class UserShellPage extends StatelessWidget {
             chatRepository: chatRepository,
             inviteNotificationsRepository: inviteNotificationsRepository,
           ),
+        ),
+        BlocProvider(
+          create: (_) => SidebarCubit(),
         ),
         BlocProvider<LikedMusiciansCubit>.value(value: likedMusiciansCubit),
       ],

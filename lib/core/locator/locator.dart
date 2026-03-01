@@ -41,6 +41,11 @@ import 'package:upsessions/modules/studios/repositories/firestore_studios_reposi
 import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
 import 'package:upsessions/modules/studios/services/studio_image_service.dart';
 import 'package:upsessions/modules/matching/repositories/matching_repository.dart';
+import 'package:upsessions/modules/event_manager/repositories/event_manager_repository.dart';
+import 'package:upsessions/modules/event_manager/repositories/manager_events_repository.dart';
+import 'package:upsessions/modules/event_manager/repositories/jam_sessions_repository.dart';
+import 'package:upsessions/modules/event_manager/repositories/musician_requests_repository.dart';
+import 'package:upsessions/modules/event_manager/repositories/gig_offers_repository.dart';
 
 final GetIt getIt = GetIt.instance;
 final Set<String> _loggedLocateTypes = <String>{};
@@ -199,6 +204,36 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<MatchingRepository>(
       () => MatchingRepository(firestore: getIt<FirebaseFirestore>()),
+    )
+    ..registerLazySingleton<EventManagerRepository>(
+      () => EventManagerRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        storage: getIt<FirebaseStorage>(),
+      ),
+    )
+    ..registerLazySingleton<ManagerEventsRepository>(
+      () => ManagerEventsRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        authRepository: getIt<AuthRepository>(),
+      ),
+    )
+    ..registerLazySingleton<JamSessionsRepository>(
+      () => JamSessionsRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        authRepository: getIt<AuthRepository>(),
+      ),
+    )
+    ..registerLazySingleton<MusicianRequestsRepository>(
+      () => MusicianRequestsRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        authRepository: getIt<AuthRepository>(),
+      ),
+    )
+    ..registerLazySingleton<GigOffersRepository>(
+      () => GigOffersRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        authRepository: getIt<AuthRepository>(),
+      ),
     );
 }
 

@@ -530,6 +530,30 @@ service cloud.firestore {
       }
     }
 
+    match /event_managers/{managerId} {
+      allow read: if isSignedIn();
+      allow create, update: if isOwner(managerId);
+    }
+
+    match /jam_sessions/{sessionId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+    }
+
+    match /musician_requests/{requestId} {
+      allow read: if isSignedIn() && (resource.data.managerId == request.auth.uid || resource.data.musicianId == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.managerId == request.auth.uid;
+      allow update: if isSignedIn() && (resource.data.managerId == request.auth.uid || resource.data.musicianId == request.auth.uid);
+      allow delete: if isSignedIn() && resource.data.managerId == request.auth.uid;
+    }
+
+    match /gig_offers/{offerId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.managerId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.managerId == request.auth.uid;
+    }
+
     // Support collectionGroup('members') queries across all groups.
     match /{path=**}/members/{uid} {
       allow read: if isSignedIn() && request.auth.uid == resource.data.ownerId;

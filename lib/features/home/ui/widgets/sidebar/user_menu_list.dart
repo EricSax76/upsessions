@@ -8,14 +8,10 @@ import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
 import 'package:upsessions/modules/notifications/cubits/notifications_status_cubit.dart';
 
-class UserMenuList extends StatefulWidget {
-  const UserMenuList({super.key});
+class UserMenuList extends StatelessWidget {
+  const UserMenuList({super.key, this.isCollapsed = false});
 
-  @override
-  State<UserMenuList> createState() => _UserMenuListState();
-}
-
-class _UserMenuListState extends State<UserMenuList> {
+  final bool isCollapsed;
   static const List<_MenuItem> _allNavItems = [
     _MenuItem(
       label: 'Inicio',
@@ -100,11 +96,10 @@ class _UserMenuListState extends State<UserMenuList> {
 
   @override
   Widget build(BuildContext context) {
-    final contactsTotal = context.watch<LikedMusiciansCubit>().state.total;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final location = GoRouterState.of(context).uri.path;
-    final width = MediaQuery.of(context).size.width;
+    final width = MediaQuery.sizeOf(context).width;
     final isWideLayout = kIsWeb ? width >= 700 : width >= 1200;
 
     final visibleItems = isWideLayout
@@ -118,49 +113,66 @@ class _UserMenuListState extends State<UserMenuList> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final item in visibleItems)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: ListTile(
-              selected:
-                  item.route != null && _isSelectedRoute(location, item.route!),
-              leading: Icon(
-                item.icon,
-                color:
-                    (item.route != null &&
-                        _isSelectedRoute(location, item.route!))
-                    ? colorScheme.primary
-                    : colorScheme.onSurfaceVariant,
-              ),
-              title: Text(
-                item.route == AppRoutes.contacts
-                    ? 'Contactos ($contactsTotal)'
-                    : item.label,
-                style: TextStyle(
-                  fontWeight:
-                      (item.route != null &&
-                          _isSelectedRoute(location, item.route!))
-                      ? FontWeight.bold
-                      : FontWeight.normal,
-                  color:
-                      (item.route != null &&
-                          _isSelectedRoute(location, item.route!))
-                      ? colorScheme.primary
-                      : colorScheme.onSurface,
-                ),
-              ),
-              trailing: item.route == AppRoutes.notifications
-                  ? const _NotificationsMenuBadge()
-                  : null,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              selectedTileColor: colorScheme.primaryContainer.withValues(
-                alpha: 0.3,
-              ),
-              onTap: () => _handleTap(context, item),
-            ),
+        for (final item in visibleItems) ...[
+          Builder(
+            builder: (context) {
+              final isSelected = item.route != null && _isSelectedRoute(location, item.route!);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: isCollapsed
+                    ? InkWell(
+                        onTap: () => _handleTap(context, item),
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? colorScheme.primaryContainer.withValues(alpha: 0.3)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              item.icon,
+                              color: isSelected
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      )
+                    : ListTile(
+                        selected: isSelected,
+                        leading: Icon(
+                          item.icon,
+                          color: isSelected
+                              ? colorScheme.primary
+                              : colorScheme.onSurfaceVariant,
+                        ),
+                        title: item.route == AppRoutes.contacts
+                            ? _ContactsMenuTitle(isSelected: isSelected)
+                            : Text(
+                                item.label,
+                                style: TextStyle(
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+                                ),
+                              ),
+                        trailing: item.route == AppRoutes.notifications
+                            ? const _NotificationsMenuBadge()
+                            : null,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        selectedTileColor: colorScheme.primaryContainer.withValues(
+                          alpha: 0.3,
+                        ),
+                        onTap: () => _handleTap(context, item),
+                      ),
+              );
+            },
           ),
+        ]
       ],
     );
   }
@@ -172,6 +184,25 @@ class _MenuItem {
   final String label;
   final IconData icon;
   final String? route;
+}
+
+class _ContactsMenuTitle extends StatelessWidget {
+  const _ContactsMenuTitle({required this.isSelected});
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final contactsTotal = context.select((LikedMusiciansCubit cubit) => cubit.state.total);
+    final colorScheme = Theme.of(context).colorScheme;
+    
+    return Text(
+      'Contactos ($contactsTotal)',
+      style: TextStyle(
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+      ),
+    );
+  }
 }
 
 class _NotificationsMenuBadge extends StatelessWidget {

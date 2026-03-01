@@ -18,14 +18,7 @@ class HomeEventsRepository {
         .orderBy('start')
         .limit(limit)
         .get();
-    if (snapshot.docs.isEmpty) {
-      final fallback = await _firestore
-          .collection('events')
-          .orderBy('start', descending: true)
-          .limit(limit)
-          .get();
-      return fallback.docs.map(HomeRepositoryMappers.eventFromDoc).toList();
-    }
     return snapshot.docs.map(HomeRepositoryMappers.eventFromDoc).toList();
   }
+
 }
