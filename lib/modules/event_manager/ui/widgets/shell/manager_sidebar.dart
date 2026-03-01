@@ -26,12 +26,16 @@ class ManagerSidebar extends StatelessWidget {
                   : MainAxisAlignment.spaceBetween,
               children: [
                 if (!isCollapsed)
-                  Text(
-                    'UpSessions PRO',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                  Expanded(
+                    child: Text(
+                      'UpSessions PRO',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 IconButton(
                   icon: Icon(isCollapsed ? Icons.menu : Icons.menu_open),

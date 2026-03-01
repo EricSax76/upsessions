@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upsessions/core/ui/shell/sidebar_cubit.dart';
 import 'package:upsessions/features/home/ui/widgets/sidebar/user_sidebar.dart';
+import 'package:upsessions/modules/event_manager/ui/widgets/shell/manager_sidebar.dart';
 
 /// A standardized shell widget that handles responsive layout for web and mobile.
 ///
@@ -86,6 +87,8 @@ class CoreShell extends StatelessWidget {
                 Widget sidebarWidget = sidebar!;
                 if (sidebarWidget is UserSidebar) {
                   sidebarWidget = UserSidebar(isCollapsed: isCollapsed);
+                } else if (sidebarWidget is ManagerSidebar) {
+                  sidebarWidget = ManagerSidebar(isCollapsed: isCollapsed);
                 }
 
                 return AnimatedContainer(
