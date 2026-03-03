@@ -54,6 +54,7 @@ class ContactCardCubit extends Cubit<ContactCardState> {
       experienceYears: musician.experienceYears,
       photoUrl: musician.photoUrl,
       rating: musician.rating,
+      updatedAt: DateTime.now(),
     );
   }
 }

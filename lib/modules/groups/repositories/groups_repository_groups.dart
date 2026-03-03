@@ -8,6 +8,10 @@ mixin GroupsRepositoryGroups on GroupsRepositoryBase {
     String? genre,
     String? link1,
     String? link2,
+    String? description,
+    String? city,
+    String? province,
+    String? sgaeGroupCode,
     Uint8List? photoBytes,
     String? photoFileExtension,
   }) async {
@@ -28,7 +32,15 @@ mixin GroupsRepositoryGroups on GroupsRepositoryBase {
       'genre': (genre ?? '').trim(),
       'link1': (link1 ?? '').trim(),
       'link2': (link2 ?? '').trim(),
+      'description': (description ?? '').trim(),
+      'isActive': true,
       'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+      if (city != null && city.trim().isNotEmpty) 'city': city.trim(),
+      if (province != null && province.trim().isNotEmpty)
+        'province': province.trim(),
+      if (sgaeGroupCode != null && sgaeGroupCode.trim().isNotEmpty)
+        'sgaeGroupCode': sgaeGroupCode.trim(),
     });
     batch.set(memberDoc, _memberData(uid: uid, role: 'owner', addedBy: uid));
     await logFuture('createGroup commit', batch.commit());

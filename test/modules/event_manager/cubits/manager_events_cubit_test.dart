@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:upsessions/features/events/models/event_entity.dart';
+import 'package:upsessions/features/events/models/event_enums.dart';
 import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/event_manager/cubits/manager_events_cubit.dart';
@@ -17,10 +18,11 @@ void main() {
   late _MockManagerEventsRepository repository;
   late _MockAuthRepository authRepository;
 
-  const user = UserEntity(
+  final user = UserEntity(
     id: 'manager-1',
     email: 'mgr@test.com',
     displayName: 'Mgr',
+    createdAt: DateTime.now(),
   );
 
   final events = [
@@ -41,6 +43,10 @@ void main() {
       ticketInfo: '',
       capacity: 200,
       resources: const [],
+      isPublic: true,
+      isFree: false,
+      updatedAt: DateTime(2026, 4, 1),
+      status: EventStatus.draft,
     ),
     EventEntity(
       id: 'e2',
@@ -59,6 +65,10 @@ void main() {
       ticketInfo: '',
       capacity: 500,
       resources: const [],
+      isPublic: true,
+      isFree: false,
+      updatedAt: DateTime(2026, 5, 1),
+      status: EventStatus.draft,
     ),
   ];
 
@@ -89,14 +99,14 @@ void main() {
       'loadEvents carga los eventos del manager',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        when(() => repository.fetchMyEvents('manager-1'))
-            .thenAnswer((_) async => events);
+        when(
+          () => repository.fetchMyEvents('manager-1'),
+        ).thenAnswer((_) async => events);
         return buildCubit();
       },
       act: (cubit) => cubit.loadEvents(),
       expect: () => [
-        isA<ManagerEventsState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerEventsState>().having((s) => s.isLoading, 'loading', true),
         isA<ManagerEventsState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.events.length, 'count', 2),
@@ -111,8 +121,7 @@ void main() {
       },
       act: (cubit) => cubit.loadEvents(),
       expect: () => [
-        isA<ManagerEventsState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerEventsState>().having((s) => s.isLoading, 'loading', true),
         isA<ManagerEventsState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('No autenticado')),
@@ -123,14 +132,14 @@ void main() {
       'loadEvents emite error cuando falla el repositorio',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        when(() => repository.fetchMyEvents('manager-1'))
-            .thenThrow(Exception('fetch error'));
+        when(
+          () => repository.fetchMyEvents('manager-1'),
+        ).thenThrow(Exception('fetch error'));
         return buildCubit();
       },
       act: (cubit) => cubit.loadEvents(),
       expect: () => [
-        isA<ManagerEventsState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerEventsState>().having((s) => s.isLoading, 'loading', true),
         isA<ManagerEventsState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('fetch error')),
@@ -144,8 +153,11 @@ void main() {
       build: buildCubit,
       act: (cubit) => cubit.setFilter(ManagerEventFilter.upcoming),
       expect: () => [
-        isA<ManagerEventsState>()
-            .having((s) => s.filter, 'filter', ManagerEventFilter.upcoming),
+        isA<ManagerEventsState>().having(
+          (s) => s.filter,
+          'filter',
+          ManagerEventFilter.upcoming,
+        ),
       ],
     );
 
@@ -155,16 +167,16 @@ void main() {
       'deleteEvent elimina el evento y actualiza la lista',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        when(() => repository.fetchMyEvents('manager-1'))
-            .thenAnswer((_) async => events);
+        when(
+          () => repository.fetchMyEvents('manager-1'),
+        ).thenAnswer((_) async => events);
         when(() => repository.delete('e1')).thenAnswer((_) async {});
         return buildCubit();
       },
       seed: () => ManagerEventsState(isLoading: false, events: events),
       act: (cubit) => cubit.deleteEvent('e1'),
       expect: () => [
-        isA<ManagerEventsState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerEventsState>().having((s) => s.isLoading, 'loading', true),
         isA<ManagerEventsState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.events.length, 'count', 1)
@@ -175,15 +187,15 @@ void main() {
     blocTest<ManagerEventsCubit, ManagerEventsState>(
       'deleteEvent emite error cuando falla la eliminación',
       build: () {
-        when(() => repository.delete('e1'))
-            .thenThrow(Exception('delete failed'));
+        when(
+          () => repository.delete('e1'),
+        ).thenThrow(Exception('delete failed'));
         return buildCubit();
       },
       seed: () => ManagerEventsState(isLoading: false, events: events),
       act: (cubit) => cubit.deleteEvent('e1'),
       expect: () => [
-        isA<ManagerEventsState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerEventsState>().having((s) => s.isLoading, 'loading', true),
         isA<ManagerEventsState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('delete failed')),

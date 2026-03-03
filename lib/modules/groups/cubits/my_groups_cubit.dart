@@ -33,18 +33,22 @@ class MyGroupsCubit extends Cubit<MyGroupsState> {
     required String genre,
     String? link1,
     String? link2,
+    String? description,
+    String? city,
+    String? province,
+    String? sgaeGroupCode,
     Uint8List? photoBytes,
     String? photoFileExtension,
   }) async {
-    // Note: The repository call will update the stream, so we don't need to manually emit UserGroupsLoaded here 
-    // unless we want to handle optimistic updates or loading states for creation specifically.
-    // For now, we just return the result or throw, letting the UI handle the navigation/error feedback 
-    // while the stream updates the list.
     return _groupsRepository.createGroup(
       name: name,
       genre: genre,
       link1: link1,
       link2: link2,
+      description: description,
+      city: city,
+      province: province,
+      sgaeGroupCode: sgaeGroupCode,
       photoBytes: photoBytes,
       photoFileExtension: photoFileExtension,
     );

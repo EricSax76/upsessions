@@ -79,6 +79,8 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     DateTime? endsAt,
     String location = '',
     String notes = '',
+    String? title,
+    String? setlistId,
   }) async {
     final uid = await requireMusicianUid();
     logFirestore('createRehearsal groupId=$groupId uid=$uid');
@@ -92,6 +94,14 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
         'notes': notes.trim(),
         'createdBy': uid,
         'createdAt': FieldValue.serverTimestamp(),
+        // Normativa
+        'title': title?.trim(),
+        'setlistId': setlistId,
+        'attendees': const <String>[],
+        'isConfirmed': false,
+        'canceledAt': null,
+        'cancellationReason': null,
+        'updatedAt': FieldValue.serverTimestamp(),
       }),
     );
     return doc.id;
@@ -129,6 +139,8 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     DateTime? endsAt,
     String location = '',
     String notes = '',
+    String? title,
+    String? setlistId,
   }) async {
     await requireMusicianUid();
     logFirestore('updateRehearsal groupId=$groupId rehearsalId=$rehearsalId');
@@ -139,6 +151,9 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
         'endsAt': endsAt == null ? null : Timestamp.fromDate(endsAt),
         'location': location.trim(),
         'notes': notes.trim(),
+        if (title != null) 'title': title.trim(),
+        'setlistId': ?setlistId,
+        'updatedAt': FieldValue.serverTimestamp(),
       }),
     );
   }
@@ -227,6 +242,14 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
       notes: (data['notes'] ?? '').toString(),
       createdBy: (data['createdBy'] ?? '').toString(),
       bookingId: data['bookingId'] as String?,
+      // Normativa
+      title: data['title'] as String?,
+      setlistId: data['setlistId'] as String?,
+      attendees: List<String>.from(data['attendees'] ?? []),
+      isConfirmed: data['isConfirmed'] as bool? ?? false,
+      canceledAt: (data['canceledAt'] as Timestamp?)?.toDate(),
+      cancellationReason: data['cancellationReason'] as String?,
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
     );
   }
 }

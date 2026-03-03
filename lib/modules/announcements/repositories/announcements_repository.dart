@@ -45,6 +45,7 @@ class AnnouncementsRepository {
     int limit = 24,
   }) async {
     Query<Map<String, dynamic>> query = _collection
+        .where('isActive', isEqualTo: true)
         .orderBy('publishedAt', descending: true)
         .orderBy(FieldPath.documentId, descending: true)
         .limit(limit + 1);
@@ -120,6 +121,8 @@ class AnnouncementsRepository {
     final payload = {
       ...dto.toJson(),
       'publishedAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+      'isActive': true,
     };
 
     if (entity.id.isEmpty) {

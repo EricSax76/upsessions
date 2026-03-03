@@ -17,10 +17,11 @@ void main() {
   late _MockJamSessionsRepository repository;
   late _MockAuthRepository authRepository;
 
-  const user = UserEntity(
+  final user = UserEntity(
     id: 'manager-1',
     email: 'mgr@test.com',
     displayName: 'Mgr',
+    createdAt: DateTime.now(),
   );
 
   final sessions = [
@@ -34,6 +35,7 @@ void main() {
       location: 'Café Central',
       city: 'Madrid',
       instrumentRequirements: const ['Saxofón', 'Piano'],
+      createdAt: DateTime.now(),
     ),
     JamSessionEntity(
       id: 'js2',
@@ -44,6 +46,7 @@ void main() {
       time: '21:00',
       location: 'Bar Blues',
       city: 'Barcelona',
+      createdAt: DateTime.now(),
     ),
   ];
 
@@ -60,14 +63,17 @@ void main() {
   }
 
   group('JamSessionsCubit', () {
-    test('estado inicial tiene isLoading true, filtro upcoming y lista vacía', () {
-      final cubit = buildCubit();
-      expect(cubit.state.isLoading, true);
-      expect(cubit.state.sessions, isEmpty);
-      expect(cubit.state.filter, JamSessionFilter.upcoming);
-      expect(cubit.state.errorMessage, isNull);
-      cubit.close();
-    });
+    test(
+      'estado inicial tiene isLoading true, filtro upcoming y lista vacía',
+      () {
+        final cubit = buildCubit();
+        expect(cubit.state.isLoading, true);
+        expect(cubit.state.sessions, isEmpty);
+        expect(cubit.state.filter, JamSessionFilter.upcoming);
+        expect(cubit.state.errorMessage, isNull);
+        cubit.close();
+      },
+    );
 
     // -- loadSessions --
 
@@ -75,14 +81,14 @@ void main() {
       'loadSessions carga las jam sessions del manager',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        when(() => repository.fetchMySessions('manager-1'))
-            .thenAnswer((_) async => sessions);
+        when(
+          () => repository.fetchMySessions('manager-1'),
+        ).thenAnswer((_) async => sessions);
         return buildCubit();
       },
       act: (cubit) => cubit.loadSessions(),
       expect: () => [
-        isA<JamSessionsState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<JamSessionsState>().having((s) => s.isLoading, 'loading', true),
         isA<JamSessionsState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.sessions.length, 'count', 2),
@@ -97,8 +103,7 @@ void main() {
       },
       act: (cubit) => cubit.loadSessions(),
       expect: () => [
-        isA<JamSessionsState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<JamSessionsState>().having((s) => s.isLoading, 'loading', true),
         isA<JamSessionsState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('No autenticado')),
@@ -109,14 +114,14 @@ void main() {
       'loadSessions emite error cuando falla el repositorio',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        when(() => repository.fetchMySessions('manager-1'))
-            .thenThrow(Exception('fetch error'));
+        when(
+          () => repository.fetchMySessions('manager-1'),
+        ).thenThrow(Exception('fetch error'));
         return buildCubit();
       },
       act: (cubit) => cubit.loadSessions(),
       expect: () => [
-        isA<JamSessionsState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<JamSessionsState>().having((s) => s.isLoading, 'loading', true),
         isA<JamSessionsState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('fetch error')),
@@ -130,8 +135,11 @@ void main() {
       build: buildCubit,
       act: (cubit) => cubit.setFilter(JamSessionFilter.past),
       expect: () => [
-        isA<JamSessionsState>()
-            .having((s) => s.filter, 'filter', JamSessionFilter.past),
+        isA<JamSessionsState>().having(
+          (s) => s.filter,
+          'filter',
+          JamSessionFilter.past,
+        ),
       ],
     );
 
@@ -140,8 +148,11 @@ void main() {
       build: buildCubit,
       act: (cubit) => cubit.setFilter(JamSessionFilter.all),
       expect: () => [
-        isA<JamSessionsState>()
-            .having((s) => s.filter, 'filter', JamSessionFilter.all),
+        isA<JamSessionsState>().having(
+          (s) => s.filter,
+          'filter',
+          JamSessionFilter.all,
+        ),
       ],
     );
 
@@ -156,8 +167,7 @@ void main() {
       seed: () => JamSessionsState(isLoading: false, sessions: sessions),
       act: (cubit) => cubit.deleteSession('js1'),
       expect: () => [
-        isA<JamSessionsState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<JamSessionsState>().having((s) => s.isLoading, 'loading', true),
         isA<JamSessionsState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.sessions.length, 'count', 1)
@@ -168,15 +178,15 @@ void main() {
     blocTest<JamSessionsCubit, JamSessionsState>(
       'deleteSession emite error cuando falla la eliminación',
       build: () {
-        when(() => repository.delete('js1'))
-            .thenThrow(Exception('delete error'));
+        when(
+          () => repository.delete('js1'),
+        ).thenThrow(Exception('delete error'));
         return buildCubit();
       },
       seed: () => JamSessionsState(isLoading: false, sessions: sessions),
       act: (cubit) => cubit.deleteSession('js1'),
       expect: () => [
-        isA<JamSessionsState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<JamSessionsState>().having((s) => s.isLoading, 'loading', true),
         isA<JamSessionsState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('delete error')),

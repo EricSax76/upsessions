@@ -12,19 +12,23 @@ import 'package:upsessions/modules/studios/repositories/studios_repository.dart'
 import 'package:upsessions/core/services/push_notifications_service.dart';
 
 class _MockAuthRepository extends Mock implements AuthRepository {}
+
 class _MockStudiosRepository extends Mock implements StudiosRepository {}
-class _MockPushNotificationsService extends Mock implements PushNotificationsService {}
+
+class _MockPushNotificationsService extends Mock
+    implements PushNotificationsService {}
 
 void main() {
   late _MockAuthRepository authRepository;
   late _MockStudiosRepository studiosRepository;
   late _MockPushNotificationsService pushNotificationsService;
   late StreamController<UserEntity?> authChangesController;
-  const user = UserEntity(
+  final user = UserEntity(
     id: 'test-uid',
     email: 'solista@example.com',
     displayName: 'Solista Demo',
     isVerified: true,
+    createdAt: DateTime.now(),
   );
 
   setUpAll(() {
@@ -43,8 +47,12 @@ void main() {
     when(
       () => studiosRepository.getStudioByOwner(any()),
     ).thenAnswer((_) async => null);
-    when(() => pushNotificationsService.registerForUser(any())).thenAnswer((_) async {});
-    when(() => pushNotificationsService.unregisterUser(any())).thenAnswer((_) async {});
+    when(
+      () => pushNotificationsService.registerForUser(any()),
+    ).thenAnswer((_) async {});
+    when(
+      () => pushNotificationsService.unregisterUser(any()),
+    ).thenAnswer((_) async {});
   });
 
   tearDown(() async {
@@ -54,7 +62,7 @@ void main() {
   group('AuthCubit', () {
     test('empieza desautenticado cuando no hay sesión activa', () {
       final cubit = AuthCubit(
-        authRepository: authRepository, 
+        authRepository: authRepository,
         studiosRepository: studiosRepository,
         pushNotificationsService: pushNotificationsService,
       );
@@ -72,13 +80,13 @@ void main() {
           return user;
         });
         return AuthCubit(
-          authRepository: authRepository, 
+          authRepository: authRepository,
           studiosRepository: studiosRepository,
           pushNotificationsService: pushNotificationsService,
         );
       },
       act: (cubit) => cubit.signIn('solista@example.com', 'token'),
-      expect: () => const [
+      expect: () => [
         AuthState(
           status: AuthStatus.unauthenticated,
           isLoading: true,
@@ -111,7 +119,7 @@ void main() {
           () => authRepository.signIn(any(), any()),
         ).thenThrow(InvalidCredentialsException());
         return AuthCubit(
-          authRepository: authRepository, 
+          authRepository: authRepository,
           studiosRepository: studiosRepository,
           pushNotificationsService: pushNotificationsService,
         );

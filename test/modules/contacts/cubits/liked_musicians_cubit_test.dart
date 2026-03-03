@@ -48,7 +48,8 @@ void main() {
     styles: ['Jazz'],
   );
 
-  final mockUser = UserEntity(id: 'user-1', email: 'test@test.com', displayName: 'Test User');
+  final mockUser = UserEntity(id: 'user-1', email: 'test@test.com', displayName: 'Test User',
+    createdAt: DateTime.now(),);
 
   setUp(() {
     contactsRepository = MockContactsRepository();

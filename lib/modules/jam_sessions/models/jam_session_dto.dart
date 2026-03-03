@@ -14,6 +14,16 @@ class JamSessionDto {
     this.coverImageUrl,
     required this.instrumentRequirements,
     required this.isCanceled,
+    // Normativa
+    this.province,
+    this.maxAttendees,
+    this.isPublic = true,
+    this.venueId,
+    this.entryFee,
+    this.ageRestriction,
+    this.createdAt,
+    this.updatedAt,
+    this.attendees = const [],
   });
 
   final String id;
@@ -27,6 +37,17 @@ class JamSessionDto {
   final String? coverImageUrl;
   final List<String> instrumentRequirements;
   final bool isCanceled;
+
+  // Normativa
+  final String? province;
+  final int? maxAttendees;
+  final bool isPublic;
+  final String? venueId;
+  final double? entryFee;
+  final int? ageRestriction;
+  final Timestamp? createdAt;
+  final Timestamp? updatedAt;
+  final List<String> attendees;
 
   factory JamSessionDto.fromDocument(
     DocumentSnapshot<Map<String, dynamic>> snapshot, [
@@ -43,8 +64,19 @@ class JamSessionDto {
       location: data['location'] as String? ?? '',
       city: data['city'] as String? ?? '',
       coverImageUrl: data['coverImageUrl'] as String?,
-      instrumentRequirements: List<String>.from(data['instrumentRequirements'] ?? []),
+      instrumentRequirements:
+          List<String>.from(data['instrumentRequirements'] ?? []),
       isCanceled: data['isCanceled'] as bool? ?? false,
+      // Normativa
+      province: data['province'] as String?,
+      maxAttendees: (data['maxAttendees'] as num?)?.toInt(),
+      isPublic: data['isPublic'] as bool? ?? true,
+      venueId: data['venueId'] as String?,
+      entryFee: (data['entryFee'] as num?)?.toDouble(),
+      ageRestriction: (data['ageRestriction'] as num?)?.toInt(),
+      createdAt: data['createdAt'] as Timestamp?,
+      updatedAt: data['updatedAt'] as Timestamp?,
+      attendees: List<String>.from(data['attendees'] ?? []),
     );
   }
 
@@ -61,6 +93,18 @@ class JamSessionDto {
       coverImageUrl: entity.coverImageUrl,
       instrumentRequirements: entity.instrumentRequirements,
       isCanceled: entity.isCanceled,
+      // Normativa
+      province: entity.province,
+      maxAttendees: entity.maxAttendees,
+      isPublic: entity.isPublic,
+      venueId: entity.venueId,
+      entryFee: entity.entryFee,
+      ageRestriction: entity.ageRestriction,
+      createdAt:
+          entity.createdAt != null ? Timestamp.fromDate(entity.createdAt!) : null,
+      updatedAt:
+          entity.updatedAt != null ? Timestamp.fromDate(entity.updatedAt!) : null,
+      attendees: entity.attendees,
     );
   }
 
@@ -77,6 +121,16 @@ class JamSessionDto {
       coverImageUrl: coverImageUrl,
       instrumentRequirements: instrumentRequirements,
       isCanceled: isCanceled,
+      // Normativa
+      province: province,
+      maxAttendees: maxAttendees,
+      isPublic: isPublic,
+      venueId: venueId,
+      entryFee: entryFee,
+      ageRestriction: ageRestriction,
+      createdAt: createdAt?.toDate(),
+      updatedAt: updatedAt?.toDate(),
+      attendees: attendees,
     );
   }
 
@@ -85,13 +139,23 @@ class JamSessionDto {
       'ownerId': ownerId,
       'title': title,
       'description': description,
-      'date': date,
+      if (date != null) 'date': date,
       'time': time,
       'location': location,
       'city': city,
       if (coverImageUrl != null) 'coverImageUrl': coverImageUrl,
       'instrumentRequirements': instrumentRequirements,
       'isCanceled': isCanceled,
+      // Normativa
+      if (province != null) 'province': province,
+      if (maxAttendees != null) 'maxAttendees': maxAttendees,
+      'isPublic': isPublic,
+      if (venueId != null) 'venueId': venueId,
+      if (entryFee != null) 'entryFee': entryFee,
+      if (ageRestriction != null) 'ageRestriction': ageRestriction,
+      if (createdAt != null) 'createdAt': createdAt,
+      if (updatedAt != null) 'updatedAt': updatedAt,
+      if (attendees.isNotEmpty) 'attendees': attendees,
     };
   }
 }

@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:upsessions/features/events/models/event_entity.dart';
+import 'package:upsessions/features/events/models/event_enums.dart';
 import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/event_manager/cubits/manager_agenda_cubit.dart';
@@ -23,10 +24,11 @@ void main() {
   late _MockJamSessionsRepository jamSessionsRepository;
   late _MockAuthRepository authRepository;
 
-  const user = UserEntity(
+  final user = UserEntity(
     id: 'manager-1',
     email: 'mgr@test.com',
     displayName: 'Mgr',
+    createdAt: DateTime.now(),
   );
 
   final upcomingEvents = [
@@ -47,6 +49,10 @@ void main() {
       ticketInfo: '',
       capacity: 200,
       resources: const [],
+      isPublic: true,
+      isFree: false,
+      updatedAt: DateTime(2026, 4, 10),
+      status: EventStatus.draft,
     ),
   ];
 
@@ -60,6 +66,7 @@ void main() {
       time: '20:00',
       location: 'Café Central',
       city: 'Madrid',
+      createdAt: DateTime.now(),
     ),
   ];
 
@@ -89,16 +96,17 @@ void main() {
       'loadAgenda combina eventos y jam sessions ordenados por fecha',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        when(() => eventsRepository.fetchUpcoming('manager-1'))
-            .thenAnswer((_) async => upcomingEvents);
-        when(() => jamSessionsRepository.fetchUpcoming('manager-1'))
-            .thenAnswer((_) async => upcomingSessions);
+        when(
+          () => eventsRepository.fetchUpcoming('manager-1'),
+        ).thenAnswer((_) async => upcomingEvents);
+        when(
+          () => jamSessionsRepository.fetchUpcoming('manager-1'),
+        ).thenAnswer((_) async => upcomingSessions);
         return buildCubit();
       },
       act: (cubit) => cubit.loadAgenda(),
       expect: () => [
-        isA<ManagerAgendaState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerAgendaState>().having((s) => s.isLoading, 'loading', true),
         isA<ManagerAgendaState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.items.length, 'count', 2)
@@ -112,16 +120,17 @@ void main() {
       'loadAgenda funciona con solo jam sessions (sin eventos)',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        when(() => eventsRepository.fetchUpcoming('manager-1'))
-            .thenAnswer((_) async => []);
-        when(() => jamSessionsRepository.fetchUpcoming('manager-1'))
-            .thenAnswer((_) async => upcomingSessions);
+        when(
+          () => eventsRepository.fetchUpcoming('manager-1'),
+        ).thenAnswer((_) async => []);
+        when(
+          () => jamSessionsRepository.fetchUpcoming('manager-1'),
+        ).thenAnswer((_) async => upcomingSessions);
         return buildCubit();
       },
       act: (cubit) => cubit.loadAgenda(),
       expect: () => [
-        isA<ManagerAgendaState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerAgendaState>().having((s) => s.isLoading, 'loading', true),
         isA<ManagerAgendaState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.items.length, 'count', 1)
@@ -137,8 +146,7 @@ void main() {
       },
       act: (cubit) => cubit.loadAgenda(),
       expect: () => [
-        isA<ManagerAgendaState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerAgendaState>().having((s) => s.isLoading, 'loading', true),
         isA<ManagerAgendaState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('No autenticado')),
@@ -149,16 +157,17 @@ void main() {
       'loadAgenda emite error cuando falla un repositorio',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        when(() => eventsRepository.fetchUpcoming('manager-1'))
-            .thenThrow(Exception('events error'));
-        when(() => jamSessionsRepository.fetchUpcoming('manager-1'))
-            .thenAnswer((_) async => []);
+        when(
+          () => eventsRepository.fetchUpcoming('manager-1'),
+        ).thenThrow(Exception('events error'));
+        when(
+          () => jamSessionsRepository.fetchUpcoming('manager-1'),
+        ).thenAnswer((_) async => []);
         return buildCubit();
       },
       act: (cubit) => cubit.loadAgenda(),
       expect: () => [
-        isA<ManagerAgendaState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerAgendaState>().having((s) => s.isLoading, 'loading', true),
         isA<ManagerAgendaState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('events error')),

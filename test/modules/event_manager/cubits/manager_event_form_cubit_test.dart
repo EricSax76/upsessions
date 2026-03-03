@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:upsessions/features/events/models/event_entity.dart';
+import 'package:upsessions/features/events/models/event_enums.dart';
 import 'package:upsessions/modules/event_manager/cubits/manager_event_form_cubit.dart';
 import 'package:upsessions/modules/event_manager/cubits/manager_event_form_state.dart';
 import 'package:upsessions/modules/event_manager/repositories/manager_events_repository.dart';
@@ -29,6 +30,10 @@ void main() {
     ticketInfo: '',
     capacity: 100,
     resources: const [],
+    isPublic: true,
+    isFree: false,
+    updatedAt: DateTime(2026, 3, 1),
+    status: EventStatus.draft,
   );
 
   setUpAll(() {

@@ -43,6 +43,7 @@ class MockInviteNotificationsRepository extends Mock
     implements InviteNotificationsRepository {}
 
 class MockStudiosRepository extends Mock implements StudiosRepository {}
+
 class MockLikedMusiciansCubit extends MockCubit<LikedMusiciansState>
     implements LikedMusiciansCubit {}
 
@@ -61,10 +62,11 @@ void main() {
     authCubit = MockAuthCubit();
     final authState = AuthState(
       status: AuthStatus.authenticated,
-      user: const UserEntity(
+      user: UserEntity(
         id: 'u1',
         email: 'test@example.com',
         displayName: 'Test User',
+        createdAt: DateTime.now(),
       ),
     );
     when(() => authCubit.state).thenReturn(authState);
@@ -136,9 +138,9 @@ void main() {
       const Stream<LikedMusiciansState>.empty(),
       initialState: likedState,
     );
-    when(() => studiosRepository.getStudioByOwner(any())).thenAnswer(
-      (_) async => null,
-    );
+    when(
+      () => studiosRepository.getStudioByOwner(any()),
+    ).thenAnswer((_) async => null);
     when(() => invitesRepository.watchMyInvites()).thenAnswer(
       (_) => Stream<List<InviteNotificationEntity>>.value(
         const <InviteNotificationEntity>[],
@@ -153,9 +155,7 @@ void main() {
       ..registerSingleton<ChatRepository>(chatRepository)
       ..registerSingleton<InviteNotificationsRepository>(invitesRepository)
       ..registerSingleton<StudiosRepository>(studiosRepository)
-      ..registerSingleton<LikedMusiciansCubit>(
-        likedMusiciansCubit,
-      );
+      ..registerSingleton<LikedMusiciansCubit>(likedMusiciansCubit);
   });
 
   tearDown(() async {

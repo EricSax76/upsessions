@@ -50,7 +50,8 @@ void main() {
       city: 'Valencia',
       styles: const ['Rock'],
       experienceYears: 5,
-    );
+    
+    updatedAt: DateTime.now(),);
 
     final mockAnnouncement = AnnouncementEntity(
       id: '1',

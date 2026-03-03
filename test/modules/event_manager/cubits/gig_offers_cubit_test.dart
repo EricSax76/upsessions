@@ -24,6 +24,7 @@ void main() {
       status: GigOfferStatus.open,
       applicants: const [],
       createdAt: DateTime(2026, 3, 1),
+      updatedAt: DateTime.now(),
     ),
     GigOfferEntity(
       id: 'g2',
@@ -37,6 +38,7 @@ void main() {
       status: GigOfferStatus.closed,
       applicants: const ['m1'],
       createdAt: DateTime(2026, 3, 5),
+      updatedAt: DateTime.now(),
     ),
   ];
 
@@ -61,14 +63,14 @@ void main() {
     blocTest<GigOffersCubit, GigOffersState>(
       'loadOffers carga las ofertas del manager',
       build: () {
-        when(() => repository.fetchManagerOffers())
-            .thenAnswer((_) async => offers);
+        when(
+          () => repository.fetchManagerOffers(),
+        ).thenAnswer((_) async => offers);
         return buildCubit();
       },
       act: (cubit) => cubit.loadOffers(),
       expect: () => [
-        isA<GigOffersState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<GigOffersState>().having((s) => s.isLoading, 'loading', true),
         isA<GigOffersState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.offers.length, 'count', 2),
@@ -78,14 +80,14 @@ void main() {
     blocTest<GigOffersCubit, GigOffersState>(
       'loadOffers emite error cuando falla el repositorio',
       build: () {
-        when(() => repository.fetchManagerOffers())
-            .thenThrow(Exception('load error'));
+        when(
+          () => repository.fetchManagerOffers(),
+        ).thenThrow(Exception('load error'));
         return buildCubit();
       },
       act: (cubit) => cubit.loadOffers(),
       expect: () => [
-        isA<GigOffersState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<GigOffersState>().having((s) => s.isLoading, 'loading', true),
         isA<GigOffersState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('load error')),
@@ -103,8 +105,7 @@ void main() {
       seed: () => GigOffersState(isLoading: false, offers: offers),
       act: (cubit) => cubit.deleteOffer('g1'),
       expect: () => [
-        isA<GigOffersState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<GigOffersState>().having((s) => s.isLoading, 'loading', true),
         isA<GigOffersState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.offers.length, 'count', 1)
@@ -115,15 +116,15 @@ void main() {
     blocTest<GigOffersCubit, GigOffersState>(
       'deleteOffer emite error cuando falla la eliminación',
       build: () {
-        when(() => repository.deleteOffer('g1'))
-            .thenThrow(Exception('delete error'));
+        when(
+          () => repository.deleteOffer('g1'),
+        ).thenThrow(Exception('delete error'));
         return buildCubit();
       },
       seed: () => GigOffersState(isLoading: false, offers: offers),
       act: (cubit) => cubit.deleteOffer('g1'),
       expect: () => [
-        isA<GigOffersState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<GigOffersState>().having((s) => s.isLoading, 'loading', true),
         isA<GigOffersState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('delete error')),

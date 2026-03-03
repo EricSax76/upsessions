@@ -25,7 +25,7 @@ void main() {
       when(
         () => artistImageRepository.resolveArtists(any()),
       ).thenAnswer((_) async => const {});
-      initialProfile = const ProfileEntity(
+      initialProfile = ProfileEntity(
         id: 'profile-1',
         name: 'Old Name',
         bio: 'Old Bio',
@@ -35,6 +35,8 @@ void main() {
         influences: {
           'Rock': ['Queen'],
         },
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
     });
 

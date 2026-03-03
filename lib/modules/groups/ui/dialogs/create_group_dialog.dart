@@ -18,6 +18,8 @@ class _CreateGroupDialogState extends State<CreateGroupDialog> {
   final _genreController = TextEditingController();
   final _link1Controller = TextEditingController();
   final _link2Controller = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _cityController = TextEditingController();
 
   bool _canSubmit = false;
 
@@ -42,6 +44,8 @@ class _CreateGroupDialogState extends State<CreateGroupDialog> {
     _genreController.dispose();
     _link1Controller.dispose();
     _link2Controller.dispose();
+    _descriptionController.dispose();
+    _cityController.dispose();
     super.dispose();
   }
 
@@ -52,6 +56,10 @@ class _CreateGroupDialogState extends State<CreateGroupDialog> {
       genre: _genreController.text.trim(),
       link1: _link1Controller.text.trim(),
       link2: _link2Controller.text.trim(),
+      description: _descriptionController.text.trim(),
+      city: _cityController.text.trim().isEmpty
+          ? null
+          : _cityController.text.trim(),
       photoBytes: cubit.state.photoBytes,
       photoFileExtension: cubit.state.photoExtension,
     );
@@ -69,6 +77,8 @@ class _CreateGroupDialogState extends State<CreateGroupDialog> {
             genreController: _genreController,
             link1Controller: _link1Controller,
             link2Controller: _link2Controller,
+            descriptionController: _descriptionController,
+            cityController: _cityController,
             onCancel: () => Navigator.of(context).pop(),
             onSubmit: () => _handleSubmit(context),
             canSubmit: _canSubmit,

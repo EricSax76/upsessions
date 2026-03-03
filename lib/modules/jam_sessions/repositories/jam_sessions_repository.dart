@@ -26,6 +26,7 @@ class JamSessionsRepository {
     final now = Timestamp.fromDate(DateTime.now());
     final snapshot = await _collection
         .where('ownerId', isEqualTo: managerId)
+        .where('isPublic', isEqualTo: true)
         .where('date', isGreaterThanOrEqualTo: now)
         .orderBy('date')
         .get();
@@ -67,6 +68,17 @@ class JamSessionsRepository {
 
   Future<void> delete(String sessionId) async {
     await _collection.doc(sessionId).delete();
+  }
+
+  /// Añade un usuario a la lista de asistentes (Responsabilidad civil / aforo).
+  Future<void> joinJam({
+    required String sessionId,
+    required String userId,
+  }) async {
+    await _collection.doc(sessionId).update({
+      'attendees': FieldValue.arrayUnion([userId]),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
   }
 
   List<JamSessionEntity> _toEntities(

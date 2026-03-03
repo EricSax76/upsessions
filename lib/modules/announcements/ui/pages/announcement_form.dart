@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../models/announcement_entity.dart';
+import '../../models/announcement_enums.dart';
 import '../widgets/announcement_form/basic_info_section.dart';
 import '../widgets/announcement_form/image_section.dart';
 import '../widgets/announcement_form/location_instrument_section.dart';
+import '../widgets/announcement_form/requirements_section.dart';
 
 class AnnouncementForm extends StatefulWidget {
   const AnnouncementForm({
@@ -28,6 +30,14 @@ class _AnnouncementFormState extends State<AnnouncementForm> {
   final _provinceController = TextEditingController();
   final _instrumentController = TextEditingController();
   final _stylesController = TextEditingController();
+
+  // ── Campos normativos ────────────────────────────────────────────
+  final _budgetController = TextEditingController();
+  final _experienceController = TextEditingController();
+  ContactMethod? _selectedContactMethod;
+  AnnouncementContractType? _selectedContractType;
+  bool _locationRemote = false;
+
   XFile? _pickedImage;
 
   @override
@@ -38,18 +48,23 @@ class _AnnouncementFormState extends State<AnnouncementForm> {
     _provinceController.dispose();
     _instrumentController.dispose();
     _stylesController.dispose();
+    _budgetController.dispose();
+    _experienceController.dispose();
     super.dispose();
   }
 
   void _submit() {
     if (widget.isLoading) return;
     if (!_formKey.currentState!.validate()) return;
-    final styles =
-        _stylesController.text
-            .split(',')
-            .map((e) => e.trim())
-            .where((e) => e.isNotEmpty)
-            .toList();
+
+    final styles = _stylesController.text
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    final experienceRaw = int.tryParse(_experienceController.text.trim());
+
     final entity = AnnouncementEntity(
       id: '',
       title: _titleController.text.trim(),
@@ -61,7 +76,16 @@ class _AnnouncementFormState extends State<AnnouncementForm> {
       instrument: _instrumentController.text.trim(),
       styles: styles,
       publishedAt: DateTime.now(),
+      // ── Campos normativos ──────────────────────────────────────────
+      budget: _budgetController.text.trim().isEmpty
+          ? null
+          : _budgetController.text.trim(),
+      requiredExperienceYears: experienceRaw,
+      contactMethod: _selectedContactMethod,
+      contractType: _selectedContractType,
+      locationRemote: _locationRemote,
     );
+
     widget.onSubmit(entity, _pickedImage);
   }
 
@@ -83,6 +107,20 @@ class _AnnouncementFormState extends State<AnnouncementForm> {
             stylesController: _stylesController,
           ),
           const SizedBox(height: 16),
+          RequirementsSection(
+            budgetController: _budgetController,
+            experienceController: _experienceController,
+            selectedContactMethod: _selectedContactMethod,
+            selectedContractType: _selectedContractType,
+            locationRemote: _locationRemote,
+            onContactMethodChanged: (v) =>
+                setState(() => _selectedContactMethod = v),
+            onContractTypeChanged: (v) =>
+                setState(() => _selectedContractType = v),
+            onLocationRemoteChanged: (v) =>
+                setState(() => _locationRemote = v),
+          ),
+          const SizedBox(height: 16),
           ImageSection(
             pickedImage: _pickedImage,
             onImagePicked: (image) => setState(() => _pickedImage = image),
@@ -99,14 +137,13 @@ class _AnnouncementFormState extends State<AnnouncementForm> {
                   vertical: 16,
                 ),
               ),
-              icon:
-                  widget.isLoading
-                      ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                      : const Icon(Icons.check_circle_outline),
+              icon: widget.isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.check_circle_outline),
               label: Text(
                 widget.isLoading ? 'Publicando...' : 'Publicar anuncio',
               ),
@@ -118,3 +155,4 @@ class _AnnouncementFormState extends State<AnnouncementForm> {
     );
   }
 }
+

@@ -16,7 +16,7 @@ void main() {
   late _MockMusiciansRepository repository;
   late _MockHomeMetadataRepository metadataRepository;
 
-  const mockResults = [
+  final mockResults = [
     MusicianEntity(
       id: '1',
       ownerId: 'owner-1',
@@ -25,6 +25,7 @@ void main() {
       city: 'CDMX',
       styles: ['Soul'],
       experienceYears: 8,
+      updatedAt: DateTime.now(),
     ),
     MusicianEntity(
       id: '2',
@@ -34,6 +35,7 @@ void main() {
       city: 'GDL',
       styles: ['Rock'],
       experienceYears: 12,
+      updatedAt: DateTime.now(),
     ),
   ];
 
@@ -65,7 +67,7 @@ void main() {
       act: (cubit) => cubit.search(query: 'rock'),
       expect: () => [
         const MusicianSearchState(isLoading: true, query: 'rock', results: []),
-        const MusicianSearchState(
+        MusicianSearchState(
           isLoading: false,
           query: 'rock',
           results: mockResults,

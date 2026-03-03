@@ -12,7 +12,7 @@ void main() {
   late _MockMusiciansRepository repository;
 
   final musicians = [
-    const MusicianEntity(
+    MusicianEntity(
       id: 'm1',
       ownerId: 'm1',
       name: 'Carlos López',
@@ -21,8 +21,9 @@ void main() {
       styles: ['Rock', 'Blues'],
       experienceYears: 5,
       availableForHire: true,
+      updatedAt: DateTime.now(),
     ),
-    const MusicianEntity(
+    MusicianEntity(
       id: 'm2',
       ownerId: 'm2',
       name: 'Ana García',
@@ -31,6 +32,7 @@ void main() {
       styles: ['Jazz', 'Funk'],
       experienceYears: 8,
       availableForHire: true,
+      updatedAt: DateTime.now(),
     ),
   ];
 
@@ -57,14 +59,14 @@ void main() {
     blocTest<HireMusiciansCubit, HireMusiciansState>(
       'loadMusicians carga músicos disponibles para contratar',
       build: () {
-        when(() => repository.searchAvailableForHire(query: ''))
-            .thenAnswer((_) async => musicians);
+        when(
+          () => repository.searchAvailableForHire(query: ''),
+        ).thenAnswer((_) async => musicians);
         return buildCubit();
       },
       act: (cubit) => cubit.loadMusicians(),
       expect: () => [
-        isA<HireMusiciansState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<HireMusiciansState>().having((s) => s.isLoading, 'loading', true),
         isA<HireMusiciansState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.musicians.length, 'count', 2),
@@ -74,14 +76,14 @@ void main() {
     blocTest<HireMusiciansCubit, HireMusiciansState>(
       'loadMusicians emite error cuando falla',
       build: () {
-        when(() => repository.searchAvailableForHire(query: ''))
-            .thenThrow(Exception('load error'));
+        when(
+          () => repository.searchAvailableForHire(query: ''),
+        ).thenThrow(Exception('load error'));
         return buildCubit();
       },
       act: (cubit) => cubit.loadMusicians(),
       expect: () => [
-        isA<HireMusiciansState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<HireMusiciansState>().having((s) => s.isLoading, 'loading', true),
         isA<HireMusiciansState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.error, 'err', contains('load error')),
@@ -93,8 +95,9 @@ void main() {
     blocTest<HireMusiciansCubit, HireMusiciansState>(
       'search filtra músicos por query',
       build: () {
-        when(() => repository.searchAvailableForHire(query: 'guitarra'))
-            .thenAnswer((_) async => [musicians.first]);
+        when(
+          () => repository.searchAvailableForHire(query: 'guitarra'),
+        ).thenAnswer((_) async => [musicians.first]);
         return buildCubit();
       },
       act: (cubit) => cubit.search('guitarra'),
@@ -112,14 +115,14 @@ void main() {
     blocTest<HireMusiciansCubit, HireMusiciansState>(
       'search emite error cuando falla la búsqueda',
       build: () {
-        when(() => repository.searchAvailableForHire(query: 'test'))
-            .thenThrow(Exception('search error'));
+        when(
+          () => repository.searchAvailableForHire(query: 'test'),
+        ).thenThrow(Exception('search error'));
         return buildCubit();
       },
       act: (cubit) => cubit.search('test'),
       expect: () => [
-        isA<HireMusiciansState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<HireMusiciansState>().having((s) => s.isLoading, 'loading', true),
         isA<HireMusiciansState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.error, 'err', contains('search error')),

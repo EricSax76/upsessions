@@ -13,6 +13,9 @@ class GigOffersRepository {
   final CollectionReference<Map<String, dynamic>> _collection;
   final AuthRepository _authRepository;
 
+  // ── Lectura ────────────────────────────────────────────────────────────────
+
+  /// Ofertas del manager autenticado.
   Future<List<GigOfferEntity>> fetchManagerOffers() async {
     final managerId = _authRepository.currentUser?.id ?? '';
     if (managerId.isEmpty) throw Exception('No autenticado');
@@ -24,6 +27,7 @@ class GigOffersRepository {
     return _toEntities(snapshot.docs);
   }
 
+  /// Ofertas abiertas (filtro por status).
   Future<List<GigOfferEntity>> fetchOpenOffers() async {
     final snapshot = await _collection
         .where('status', isEqualTo: GigOfferStatus.open.name)
@@ -32,6 +36,27 @@ class GigOffersRepository {
     return _toEntities(snapshot.docs);
   }
 
+  /// Ofertas abiertas y públicas — visibles en el directorio.
+  /// Filtra adicionalmente por [isPublic] == true y [expiresAt] no vencida.
+  Future<List<GigOfferEntity>> fetchOpenPublicOffers() async {
+    final snapshot = await _collection
+        .where('status', isEqualTo: GigOfferStatus.open.name)
+        .where('isPublic', isEqualTo: true)
+        .orderBy('createdAt', descending: true)
+        .get();
+    final now = DateTime.now();
+    return _toEntities(snapshot.docs)
+        // Filtrar en cliente las vencidas (expiresAt ya pasado)
+        .where((o) => o.expiresAt == null || o.expiresAt!.isAfter(now))
+        .toList();
+  }
+
+  // ── Escritura ──────────────────────────────────────────────────────────────
+
+  /// Crea o actualiza una oferta.
+  ///
+  /// Estampa automáticamente [createdAt] (creaciones) y [updatedAt]
+  /// (RGPD Art. 5.1.d — trazabilidad de modificaciones).
   Future<GigOfferEntity> saveOffer(GigOfferEntity offer) async {
     final managerId = _authRepository.currentUser?.id ?? '';
     if (managerId.isEmpty) throw Exception('No autenticado');
@@ -40,6 +65,7 @@ class GigOffersRepository {
     final now = FieldValue.serverTimestamp();
     final payload = {
       ...dto.toJson(),
+      'updatedAt': now,
       if (offer.id.isEmpty) 'createdAt': now,
     };
 
@@ -54,10 +80,25 @@ class GigOffersRepository {
     return GigOfferDto.fromDocument(snapshot).toEntity();
   }
 
+  /// Cierra una oferta y registra el músico seleccionado.
+  ///
+  /// Útil para generar el contrato (RD 1434/1992).
+  Future<void> selectMusician({
+    required String offerId,
+    required String musicianId,
+  }) async {
+    await _collection.doc(offerId).set({
+      'selectedMusicianId': musicianId,
+      'status': GigOfferStatus.closed.name,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
+
   Future<void> deleteOffer(String offerId) async {
     await _collection.doc(offerId).delete();
   }
 
+  // ── Helpers ────────────────────────────────────────────────────────────────
   List<GigOfferEntity> _toEntities(
     List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
   ) {

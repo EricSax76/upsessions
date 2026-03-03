@@ -32,6 +32,11 @@ class BookingCard extends StatelessWidget {
         statusOnColor = scheme.onErrorContainer;
         statusText = 'CANCELADA';
         break;
+      case BookingStatus.refunded:
+        statusColor = scheme.tertiaryContainer;
+        statusOnColor = scheme.onTertiaryContainer;
+        statusText = 'REEMBOLSADA';
+        break;
       case BookingStatus.pending:
         statusColor = scheme.surfaceContainerHighest;
         statusOnColor = scheme.onSurfaceVariant;

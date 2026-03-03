@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'announcement_enums.dart';
+
 @immutable
 class AnnouncementEntity {
   const AnnouncementEntity({
@@ -14,6 +16,23 @@ class AnnouncementEntity {
     required this.styles,
     required this.publishedAt,
     this.imageUrl,
+    // ── Campos normativos ──────────────────────────────────────────
+    /// RGPD Art. 5.1.e — limitación del plazo de conservación.
+    this.expiresAt,
+    /// RGPD Art. 5.1.d — exactitud; se actualiza en cada modificación.
+    this.updatedAt,
+    /// Estado del anuncio; false oculta el anuncio del feed público.
+    this.isActive = true,
+    /// LSSI Art. 10 — canal preferido de contacto.
+    this.contactMethod,
+    /// RD 1434/1992 — caché o presupuesto ofrecido (texto libre, ej. "300 €").
+    this.budget,
+    /// RD 1434/1992 — tipo de relación laboral ofrecida.
+    this.contractType,
+    /// Años de experiencia mínimos solicitados.
+    this.requiredExperienceYears,
+    /// Si se acepta colaboración en remoto (grabación, sesiones online).
+    this.locationRemote = false,
   });
 
   final String id;
@@ -29,6 +48,16 @@ class AnnouncementEntity {
   final DateTime publishedAt;
   final String? imageUrl;
 
+  // ── Campos normativos ────────────────────────────────────────────
+  final DateTime? expiresAt;
+  final DateTime? updatedAt;
+  final bool isActive;
+  final ContactMethod? contactMethod;
+  final String? budget;
+  final AnnouncementContractType? contractType;
+  final int? requiredExperienceYears;
+  final bool locationRemote;
+
   AnnouncementEntity copyWith({
     String? id,
     String? title,
@@ -41,6 +70,14 @@ class AnnouncementEntity {
     List<String>? styles,
     DateTime? publishedAt,
     String? imageUrl,
+    DateTime? expiresAt,
+    DateTime? updatedAt,
+    bool? isActive,
+    ContactMethod? contactMethod,
+    String? budget,
+    AnnouncementContractType? contractType,
+    int? requiredExperienceYears,
+    bool? locationRemote,
   }) {
     return AnnouncementEntity(
       id: id ?? this.id,
@@ -54,6 +91,15 @@ class AnnouncementEntity {
       styles: styles ?? this.styles,
       publishedAt: publishedAt ?? this.publishedAt,
       imageUrl: imageUrl ?? this.imageUrl,
+      expiresAt: expiresAt ?? this.expiresAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      isActive: isActive ?? this.isActive,
+      contactMethod: contactMethod ?? this.contactMethod,
+      budget: budget ?? this.budget,
+      contractType: contractType ?? this.contractType,
+      requiredExperienceYears:
+          requiredExperienceYears ?? this.requiredExperienceYears,
+      locationRemote: locationRemote ?? this.locationRemote,
     );
   }
 }

@@ -92,7 +92,9 @@ class MusiciansRepository {
 
       final musicians = snapshot.docs
           .map(MusicianDto.fromDocument)
-          .map((dto) => dto.toEntity());
+          .map((dto) => dto.toEntity())
+          // Excluir perfiles con soft-delete (RGPD Art. 17)
+          .where((m) => m.isActive);
 
       for (final musician in musicians) {
         if (_matchesSearchFilters(
@@ -260,6 +262,13 @@ class MusiciansRepository {
     String? gender,
     Map<String, List<String>> influences = const {},
     bool availableForHire = false,
+    // ── Campos normativos ─────────────────────────────────────────────────
+    bool isVerifiedArtist = false,
+    List<String> languages = const [],
+    int? workRadius,
+    double? minimumFee,
+    bool hasPublicLiabilityInsurance = false,
+    String? unionMembership,
   }) async {
     final now = FieldValue.serverTimestamp();
     await _firestore.collection(_collectionName).doc(musicianId).set({
@@ -279,6 +288,21 @@ class MusiciansRepository {
       'ownerId': musicianId,
       'createdAt': now,
       'updatedAt': now,
+      // Normativa
+      'isVerifiedArtist': isVerifiedArtist,
+      'languages': languages,
+      'workRadius': ?workRadius,
+      'minimumFee': ?minimumFee,
+      'hasPublicLiabilityInsurance': hasPublicLiabilityInsurance,
+      'unionMembership': ?unionMembership,
+    }, SetOptions(merge: true));
+  }
+
+  /// Soft-delete: marca [deletedAt] sin eliminar el documento de Firestore.
+  /// RGPD Art. 17 — derecho al olvido con TTL.
+  Future<void> softDelete(String musicianId) async {
+    await _firestore.collection(_collectionName).doc(musicianId).set({
+      'deletedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
 }

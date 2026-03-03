@@ -123,6 +123,9 @@ class BookingCubit extends Cubit<BookingState> {
         totalPrice: state.totalPrice,
         rehearsalId: rehearsalContext?.rehearsalId,
         groupId: rehearsalContext?.groupId,
+        createdAt: DateTime.now(),
+        confirmedAt: DateTime.now(),
+        paymentStatus: BookingPaymentStatus.pending,
       );
 
       await _studiosRepository.createBooking(booking);

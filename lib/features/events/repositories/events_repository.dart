@@ -3,6 +3,7 @@ import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 
 import '../models/event_entity.dart';
 import '../models/event_dto.dart';
+import '../models/event_enums.dart';
 
 class EventsRepository {
   EventsRepository({
@@ -78,10 +79,13 @@ class EventsRepository {
 
     final dto = EventDto.fromEntity(event.copyWith(ownerId: ownerId));
     final now = FieldValue.serverTimestamp();
+    final isPublishing = event.status == EventStatus.published &&
+        event.publishedAt == null;
     final payload = {
       ...dto.toJson(),
       'updatedAt': now,
       if (event.id.isEmpty) 'createdAt': now,
+      if (isPublishing) 'publishedAt': now,
     };
 
     if (event.id.isEmpty) {

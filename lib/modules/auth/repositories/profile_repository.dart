@@ -29,6 +29,7 @@ class ProfileRepository {
 
     final collection = _firestore.collection('musicians');
     DocumentSnapshot<Map<String, dynamic>>? doc;
+
     final directDoc = await collection.doc(id).get();
     if (directDoc.exists) {
       doc = directDoc;
@@ -41,40 +42,18 @@ class ProfileRepository {
         doc = query.docs.first;
       }
     }
+
     if (doc == null) {
       throw Exception('Perfil no encontrado.');
     }
-    final resolvedDoc = doc;
-    final data = resolvedDoc.data() ?? <String, dynamic>{};
-    return ProfileDto(
-      id: resolvedDoc.id,
-      name: (data['name'] ?? '') as String,
-      bio: (data['bio'] ?? '') as String,
-      location: (data['city'] ?? '') as String,
-      skills: _stringList(data['styles']),
-      links: _stringMap(data['links']),
-      photoUrl: data['photoUrl'] as String?,
-      influences: _influencesMap(data['influences']),
-      availableForHire: (data['availableForHire'] as bool?) ?? false,
-    );
+
+    final data = doc.data() ?? <String, dynamic>{};
+    return ProfileDto.fromFirestore(doc.id, data);
   }
 
   Future<ProfileDto> updateProfile(ProfileEntity profile) async {
-    final data = {
-      'name': profile.name,
-      'bio': profile.bio,
-      'city': profile.location,
-      'styles': profile.skills,
-      'links': profile.links,
-      'photoUrl': profile.photoUrl,
-      'influences': profile.influences,
-      'availableForHire': profile.availableForHire,
-    };
-    await _firestore
-        .collection('musicians')
-        .doc(profile.id)
-        .set(data, SetOptions(merge: true));
-    return ProfileDto(
+    final now = DateTime.now();
+    final dto = ProfileDto(
       id: profile.id,
       name: profile.name,
       bio: profile.bio,
@@ -84,7 +63,24 @@ class ProfileRepository {
       photoUrl: profile.photoUrl,
       influences: profile.influences,
       availableForHire: profile.availableForHire,
+      createdAt: profile.createdAt,
+      updatedAt: now,
+      isniCode: profile.isniCode,
+      ipiCode: profile.ipiCode,
+      sgaeRegistered: profile.sgaeRegistered,
+      taxId: profile.taxId,
+      vatRegistered: profile.vatRegistered,
+      isPublic: profile.isPublic,
+      ageConsent: profile.ageConsent,
+      nationality: profile.nationality,
     );
+
+    await _firestore
+        .collection('musicians')
+        .doc(profile.id)
+        .set(dto.toFirestore(), SetOptions(merge: true));
+
+    return dto;
   }
 
   Future<ProfileDto> uploadProfilePhoto({
@@ -104,6 +100,7 @@ class ProfileRepository {
     final musicianDocId = await _locateMusicianDocId(userId);
     await _firestore.collection('musicians').doc(musicianDocId).set({
       'photoUrl': downloadUrl,
+      'updatedAt': Timestamp.fromDate(DateTime.now()),
     }, SetOptions(merge: true));
     return fetchProfile(profileId: userId);
   }
@@ -113,9 +110,8 @@ class ProfileRepository {
         .collection('musicians')
         .doc(userId)
         .get();
-    if (directDoc.exists) {
-      return directDoc.id;
-    }
+    if (directDoc.exists) return directDoc.id;
+
     final query = await _firestore
         .collection('musicians')
         .where('ownerId', isEqualTo: userId)
@@ -127,47 +123,9 @@ class ProfileRepository {
     return query.docs.first.id;
   }
 
-  static List<String> _stringList(dynamic raw) {
-    if (raw is Iterable) {
-      return raw.map((element) => element.toString()).toList();
-    }
-    return const [];
-  }
-
-  static Map<String, String> _stringMap(dynamic raw) {
-    if (raw is Map) {
-      return raw.map(
-        (key, value) => MapEntry(key.toString(), value.toString()),
-      );
-    }
-    return const {};
-  }
-
-  static Map<String, List<String>> _influencesMap(dynamic raw) {
-    if (raw is! Map) {
-      return const {};
-    }
-    final mapped = <String, List<String>>{};
-    raw.forEach((key, value) {
-      if (value is! Iterable) {
-        return;
-      }
-      final artists = value
-          .map((element) => element.toString().trim())
-          .where((element) => element.isNotEmpty)
-          .toList();
-      if (artists.isNotEmpty) {
-        mapped[key.toString()] = artists;
-      }
-    });
-    return mapped;
-  }
-
   static String _normalizeExtension(String input) {
     final normalized = input.toLowerCase().replaceAll('.', '');
-    if (normalized.isEmpty) {
-      return 'jpeg';
-    }
+    if (normalized.isEmpty) return 'jpeg';
     switch (normalized) {
       case 'jpg':
       case 'jpeg':

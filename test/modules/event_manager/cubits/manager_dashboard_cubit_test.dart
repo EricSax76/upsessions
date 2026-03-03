@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:upsessions/features/events/models/event_entity.dart';
+import 'package:upsessions/features/events/models/event_enums.dart';
 import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/event_manager/cubits/manager_dashboard_cubit.dart';
@@ -35,6 +36,10 @@ EventEntity _event({
     ticketInfo: '',
     capacity: capacity,
     resources: const [],
+    isPublic: true,
+    isFree: false,
+    updatedAt: start,
+    status: EventStatus.draft,
   );
 }
 
@@ -42,10 +47,11 @@ void main() {
   late _MockManagerEventsRepository eventsRepository;
   late _MockAuthRepository authRepository;
 
-  const user = UserEntity(
+  final user = UserEntity(
     id: 'manager-1',
     email: 'mgr@test.com',
     displayName: 'Mgr',
+    createdAt: DateTime.now(),
   );
 
   setUp(() {
@@ -74,23 +80,40 @@ void main() {
       build: () {
         final now = DateTime.now();
         final allEvents = [
-          _event(id: 'e1', start: now.add(const Duration(days: 2)), capacity: 100),
-          _event(id: 'e2', start: now.add(const Duration(days: 10)), capacity: 200),
-          _event(id: 'e3', start: now.subtract(const Duration(days: 5)), capacity: 50),
+          _event(
+            id: 'e1',
+            start: now.add(const Duration(days: 2)),
+            capacity: 100,
+          ),
+          _event(
+            id: 'e2',
+            start: now.add(const Duration(days: 10)),
+            capacity: 200,
+          ),
+          _event(
+            id: 'e3',
+            start: now.subtract(const Duration(days: 5)),
+            capacity: 50,
+          ),
         ];
         final upcoming = [allEvents[0], allEvents[1]];
 
         when(() => authRepository.currentUser).thenReturn(user);
-        when(() => eventsRepository.fetchMyEvents('manager-1'))
-            .thenAnswer((_) async => allEvents);
-        when(() => eventsRepository.fetchUpcoming('manager-1'))
-            .thenAnswer((_) async => upcoming);
+        when(
+          () => eventsRepository.fetchMyEvents('manager-1'),
+        ).thenAnswer((_) async => allEvents);
+        when(
+          () => eventsRepository.fetchUpcoming('manager-1'),
+        ).thenAnswer((_) async => upcoming);
         return buildCubit();
       },
       act: (cubit) => cubit.loadDashboard(),
       expect: () => [
-        isA<ManagerDashboardState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerDashboardState>().having(
+          (s) => s.isLoading,
+          'loading',
+          true,
+        ),
         isA<ManagerDashboardState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.totalEvents, 'total', 3)
@@ -107,8 +130,11 @@ void main() {
       },
       act: (cubit) => cubit.loadDashboard(),
       expect: () => [
-        isA<ManagerDashboardState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerDashboardState>().having(
+          (s) => s.isLoading,
+          'loading',
+          true,
+        ),
         isA<ManagerDashboardState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('No autenticado')),
@@ -119,14 +145,18 @@ void main() {
       'loadDashboard emite error cuando falla el repositorio',
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
-        when(() => eventsRepository.fetchMyEvents('manager-1'))
-            .thenThrow(Exception('network'));
+        when(
+          () => eventsRepository.fetchMyEvents('manager-1'),
+        ).thenThrow(Exception('network'));
         return buildCubit();
       },
       act: (cubit) => cubit.loadDashboard(),
       expect: () => [
-        isA<ManagerDashboardState>()
-            .having((s) => s.isLoading, 'loading', true),
+        isA<ManagerDashboardState>().having(
+          (s) => s.isLoading,
+          'loading',
+          true,
+        ),
         isA<ManagerDashboardState>()
             .having((s) => s.isLoading, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('network')),

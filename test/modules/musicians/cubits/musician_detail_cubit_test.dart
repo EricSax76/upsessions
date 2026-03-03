@@ -17,7 +17,7 @@ void main() {
   late _MockChatRepository chatRepository;
   late _MockGroupsRepository groupsRepository;
 
-  const mockMusician = MusicianEntity(
+  final mockMusician = MusicianEntity(
     id: '1',
     ownerId: 'owner-1',
     name: 'Test Musician',
@@ -25,6 +25,7 @@ void main() {
     city: 'CDMX',
     styles: ['Jazz'],
     experienceYears: 5,
+    updatedAt: DateTime.now(),
   );
 
   setUp(() {
@@ -130,7 +131,7 @@ void main() {
         chatRepository: chatRepository,
         groupsRepository: groupsRepository,
       );
-      const musicianNoOwner = MusicianEntity(
+      final musicianNoOwner = MusicianEntity(
         id: 'user-123',
         ownerId: '',
         name: 'Test',
@@ -138,6 +139,7 @@ void main() {
         city: 'CDMX',
         styles: [],
         experienceYears: 1,
+        updatedAt: DateTime.now(),
       );
       expect(cubit.getParticipantId(musicianNoOwner), 'user-123');
     });

@@ -6,7 +6,6 @@ import 'package:upsessions/l10n/app_localizations.dart';
 import '../../cubits/create_group_cubit.dart';
 import '../../cubits/create_group_state.dart';
 
-
 const _dialogMaxWidth = 520.0;
 const _avatarRadius = 22.0;
 
@@ -17,6 +16,8 @@ class CreateGroupDialogView extends StatelessWidget {
     required this.genreController,
     required this.link1Controller,
     required this.link2Controller,
+    required this.descriptionController,
+    required this.cityController,
     required this.onCancel,
     required this.onSubmit,
     required this.canSubmit,
@@ -26,6 +27,8 @@ class CreateGroupDialogView extends StatelessWidget {
   final TextEditingController genreController;
   final TextEditingController link1Controller;
   final TextEditingController link2Controller;
+  final TextEditingController descriptionController;
+  final TextEditingController cityController;
   final VoidCallback onCancel;
   final VoidCallback? onSubmit;
   final bool canSubmit;
@@ -57,7 +60,10 @@ class CreateGroupDialogView extends StatelessWidget {
                 genreController: genreController,
                 link1Controller: link1Controller,
                 link2Controller: link2Controller,
-                onShowPhotoOptions: () => _showPhotoOptions(context, cubit, state),
+                descriptionController: descriptionController,
+                cityController: cityController,
+                onShowPhotoOptions: () =>
+                    _showPhotoOptions(context, cubit, state),
               ),
             ),
           ),
@@ -80,13 +86,12 @@ class CreateGroupDialogView extends StatelessWidget {
   ) {
     showModalBottomSheet<void>(
       context: context,
-      builder:
-          (context) => _PhotoOptionsSheet(
-            hasPhoto: state.photoBytes != null,
-            onPickGallery: () => cubit.pickPhoto(ImageSource.gallery),
-            onPickCamera: () => cubit.pickPhoto(ImageSource.camera),
-            onRemove: cubit.clearPhoto,
-          ),
+      builder: (context) => _PhotoOptionsSheet(
+        hasPhoto: state.photoBytes != null,
+        onPickGallery: () => cubit.pickPhoto(ImageSource.gallery),
+        onPickCamera: () => cubit.pickPhoto(ImageSource.camera),
+        onRemove: cubit.clearPhoto,
+      ),
     );
   }
 }
@@ -98,6 +103,8 @@ class _DialogContent extends StatelessWidget {
     required this.genreController,
     required this.link1Controller,
     required this.link2Controller,
+    required this.descriptionController,
+    required this.cityController,
     required this.onShowPhotoOptions,
   });
 
@@ -106,6 +113,8 @@ class _DialogContent extends StatelessWidget {
   final TextEditingController genreController;
   final TextEditingController link1Controller;
   final TextEditingController link2Controller;
+  final TextEditingController descriptionController;
+  final TextEditingController cityController;
   final VoidCallback onShowPhotoOptions;
 
   @override
@@ -132,6 +141,19 @@ class _DialogContent extends StatelessWidget {
           controller: genreController,
           labelText: 'Género',
           hintText: 'Ej. Rock / Jazz',
+        ),
+        gapMedium,
+        _CreateGroupTextField(
+          controller: descriptionController,
+          labelText: 'Descripción del grupo',
+          hintText: 'Historia, estilo, trayectoria...',
+          maxLines: 3,
+        ),
+        gapMedium,
+        _CreateGroupTextField(
+          controller: cityController,
+          labelText: 'Ciudad base',
+          hintText: 'Ej. Madrid',
         ),
         gapMedium,
         _CreateGroupTextField(
@@ -164,23 +186,22 @@ class _PhotoTile extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
         radius: _avatarRadius,
-        backgroundImage:
-            state.photoBytes == null ? null : MemoryImage(state.photoBytes!),
-        child:
-            state.photoBytes == null ? const Icon(Icons.groups_outlined) : null,
+        backgroundImage: state.photoBytes == null
+            ? null
+            : MemoryImage(state.photoBytes!),
+        child: state.photoBytes == null
+            ? const Icon(Icons.groups_outlined)
+            : null,
       ),
       title: const Text('Foto del grupo'),
-      subtitle: Text(
-        state.photoBytes == null ? 'Opcional' : 'Seleccionada',
-      ),
-      trailing:
-          state.isPickingPhoto
-              ? const SizedBox(
-                height: 18,
-                width: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-              : const Icon(Icons.edit_outlined),
+      subtitle: Text(state.photoBytes == null ? 'Opcional' : 'Seleccionada'),
+      trailing: state.isPickingPhoto
+          ? const SizedBox(
+              height: 18,
+              width: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Icon(Icons.edit_outlined),
       onTap: onTap,
     );
   }
@@ -192,6 +213,7 @@ class _CreateGroupTextField extends StatelessWidget {
     required this.labelText,
     required this.hintText,
     this.keyboardType,
+    this.maxLines,
     this.autofocus = false,
   });
 
@@ -199,6 +221,7 @@ class _CreateGroupTextField extends StatelessWidget {
   final String labelText;
   final String hintText;
   final TextInputType? keyboardType;
+  final int? maxLines;
   final bool autofocus;
 
   @override
@@ -207,6 +230,8 @@ class _CreateGroupTextField extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(labelText: labelText, hintText: hintText),
       keyboardType: keyboardType,
+      maxLines: maxLines ?? 1,
+      minLines: 1,
       autofocus: autofocus,
     );
   }

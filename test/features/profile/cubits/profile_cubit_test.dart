@@ -17,8 +17,11 @@ import 'package:upsessions/core/services/push_notifications_service.dart';
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 class _MockProfileRepository extends Mock implements ProfileRepository {}
+
 class _MockStudiosRepository extends Mock implements StudiosRepository {}
-class _MockPushNotificationsService extends Mock implements PushNotificationsService {}
+
+class _MockPushNotificationsService extends Mock
+    implements PushNotificationsService {}
 
 void main() {
   late _MockAuthRepository authRepository;
@@ -27,14 +30,17 @@ void main() {
   late _MockPushNotificationsService pushNotificationsService;
   late StreamController<UserEntity?> authChangesController;
 
-  const user = UserEntity(
+  final now = DateTime(2026, 1, 1);
+
+  final user = UserEntity(
     id: 'test-uid',
     email: 'solista@example.com',
     displayName: 'Solista Demo',
     isVerified: true,
+    createdAt: now,
   );
 
-  const profileDto = ProfileDto(
+  final profileDto = ProfileDto(
     id: 'test-uid',
     name: 'Solista Demo',
     bio: 'Bio',
@@ -42,9 +48,11 @@ void main() {
     skills: ['rock'],
     links: {'instagram': 'https://instagram.com/solista'},
     photoUrl: null,
+    createdAt: now,
+    updatedAt: now,
   );
 
-  const profileEntity = ProfileEntity(
+  final profileEntity = ProfileEntity(
     id: 'test-uid',
     name: 'Solista Demo',
     bio: 'Bio',
@@ -52,6 +60,8 @@ void main() {
     skills: ['rock'],
     links: {'instagram': 'https://instagram.com/solista'},
     photoUrl: null,
+    createdAt: now,
+    updatedAt: now,
   );
 
   setUpAll(() {
@@ -75,8 +85,12 @@ void main() {
     when(
       () => studiosRepository.getStudioByOwner(any()),
     ).thenAnswer((_) async => null);
-    when(() => pushNotificationsService.registerForUser(any())).thenAnswer((_) async {});
-    when(() => pushNotificationsService.unregisterUser(any())).thenAnswer((_) async {});
+    when(
+      () => pushNotificationsService.registerForUser(any()),
+    ).thenAnswer((_) async {});
+    when(
+      () => pushNotificationsService.unregisterUser(any()),
+    ).thenAnswer((_) async {});
   });
 
   tearDown(() async {
@@ -89,7 +103,7 @@ void main() {
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
         final authCubit = AuthCubit(
-          authRepository: authRepository, 
+          authRepository: authRepository,
           studiosRepository: studiosRepository,
           pushNotificationsService: pushNotificationsService,
         );
@@ -105,7 +119,7 @@ void main() {
           () => profileRepository.fetchProfile(profileId: user.id),
         ).called(1);
       },
-      expect: () => const [
+      expect: () => [
         ProfileState(status: ProfileStatus.loading),
         ProfileState(status: ProfileStatus.success, profile: profileEntity),
       ],
@@ -115,7 +129,7 @@ void main() {
       'carga el perfil cuando AuthCubit emite un usuario después del login',
       build: () {
         final authCubit = AuthCubit(
-          authRepository: authRepository, 
+          authRepository: authRepository,
           studiosRepository: studiosRepository,
           pushNotificationsService: pushNotificationsService,
         );
@@ -134,7 +148,7 @@ void main() {
           () => profileRepository.fetchProfile(profileId: user.id),
         ).called(1);
       },
-      expect: () => const [
+      expect: () => [
         ProfileState(status: ProfileStatus.loading),
         ProfileState(status: ProfileStatus.success, profile: profileEntity),
       ],
@@ -145,7 +159,7 @@ void main() {
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
         final authCubit = AuthCubit(
-          authRepository: authRepository, 
+          authRepository: authRepository,
           studiosRepository: studiosRepository,
           pushNotificationsService: pushNotificationsService,
         );
@@ -159,7 +173,7 @@ void main() {
         authChangesController.add(null);
       },
       wait: const Duration(milliseconds: 1),
-      expect: () => const [
+      expect: () => [
         ProfileState(status: ProfileStatus.loading),
         ProfileState(status: ProfileStatus.success, profile: profileEntity),
         ProfileState(),

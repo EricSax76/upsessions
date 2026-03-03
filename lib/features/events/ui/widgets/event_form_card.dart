@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/gap.dart';
 import '../../models/event_entity.dart';
+import '../../models/event_enums.dart';
+import 'event_form/compliance_section.dart';
 import 'event_form/contact_section.dart';
 import 'event_form/general_info_section.dart';
 import 'event_form/location_calendar_section.dart';
@@ -36,10 +38,20 @@ class _EventFormCardState extends State<EventFormCard> {
   final _capacityController = TextEditingController(text: '');
   final _resourcesController = TextEditingController(text: '');
   final _notesController = TextEditingController(text: '');
+  final _provinceController = TextEditingController(text: '');
+  final _postalCodeController = TextEditingController(text: '');
+  final _eventLicenseNumberController = TextEditingController(text: '');
+  final _ticketPriceController = TextEditingController(text: '');
+  final _vatRateController = TextEditingController(text: '');
+  final _ageRestrictionController = TextEditingController(text: '');
+  final _accessibilityInfoController = TextEditingController(text: '');
+  final _cancellationPolicyController = TextEditingController(text: '');
 
   DateTime? _selectedDate;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
+  bool _isPublic = true;
+  bool _isFree = false;
 
   @override
   void dispose() {
@@ -56,6 +68,14 @@ class _EventFormCardState extends State<EventFormCard> {
     _capacityController.dispose();
     _resourcesController.dispose();
     _notesController.dispose();
+    _provinceController.dispose();
+    _postalCodeController.dispose();
+    _eventLicenseNumberController.dispose();
+    _ticketPriceController.dispose();
+    _vatRateController.dispose();
+    _ageRestrictionController.dispose();
+    _accessibilityInfoController.dispose();
+    _cancellationPolicyController.dispose();
     super.dispose();
   }
 
@@ -124,6 +144,10 @@ class _EventFormCardState extends State<EventFormCard> {
       endTime.minute,
     );
     final capacity = int.tryParse(_capacityController.text.trim()) ?? 0;
+    final ticketPrice = double.tryParse(_ticketPriceController.text.trim());
+    final vatRate = double.tryParse(_vatRateController.text.trim());
+    final ageRestriction = int.tryParse(_ageRestrictionController.text.trim());
+    final now = DateTime.now();
     final event = EventEntity(
       id: '',
       ownerId: ownerId,
@@ -144,6 +168,28 @@ class _EventFormCardState extends State<EventFormCard> {
       notes: _notesController.text.trim().isEmpty
           ? null
           : _notesController.text.trim(),
+      province: _provinceController.text.trim().isEmpty
+          ? null
+          : _provinceController.text.trim(),
+      postalCode: _postalCodeController.text.trim().isEmpty
+          ? null
+          : _postalCodeController.text.trim(),
+      eventLicenseNumber: _eventLicenseNumberController.text.trim().isEmpty
+          ? null
+          : _eventLicenseNumberController.text.trim(),
+      ticketPrice: ticketPrice,
+      vatRate: vatRate,
+      isPublic: _isPublic,
+      ageRestriction: ageRestriction,
+      accessibilityInfo: _accessibilityInfoController.text.trim().isEmpty
+          ? null
+          : _accessibilityInfoController.text.trim(),
+      isFree: _isFree,
+      cancellationPolicy: _cancellationPolicyController.text.trim().isEmpty
+          ? null
+          : _cancellationPolicyController.text.trim(),
+      updatedAt: now,
+      status: EventStatus.draft,
     );
     widget.onGenerateDraft(event);
   }
@@ -200,6 +246,21 @@ class _EventFormCardState extends State<EventFormCard> {
             contactEmailController: _contactEmailController,
             contactPhoneController: _contactPhoneController,
             notesController: _notesController,
+          ),
+          const VSpace(16),
+          ComplianceSection(
+            provinceController: _provinceController,
+            postalCodeController: _postalCodeController,
+            eventLicenseNumberController: _eventLicenseNumberController,
+            ticketPriceController: _ticketPriceController,
+            vatRateController: _vatRateController,
+            ageRestrictionController: _ageRestrictionController,
+            accessibilityInfoController: _accessibilityInfoController,
+            cancellationPolicyController: _cancellationPolicyController,
+            isPublic: _isPublic,
+            isFree: _isFree,
+            onIsPublicChanged: (v) => setState(() => _isPublic = v),
+            onIsFreeChanged: (v) => setState(() => _isFree = v),
           ),
           const VSpace(24),
           Align(

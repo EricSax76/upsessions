@@ -54,6 +54,7 @@ void main() {
           endTime: DateTime.now(),
           status: BookingStatus.confirmed, // Entity status
           totalPrice: 0,
+          createdAt: DateTime.now(),
         ),
       );
     });

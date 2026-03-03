@@ -22,7 +22,8 @@ void main() {
     location: 'Sala Groove',
     city: 'Sevilla',
     instrumentRequirements: const ['Bajo', 'Batería'],
-  );
+  
+      createdAt: DateTime.now(),);
 
   setUpAll(() {
     registerFallbackValue(session);

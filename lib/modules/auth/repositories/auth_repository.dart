@@ -100,15 +100,17 @@ class AuthRepository {
   }
 
   UserEntity? _mapUser(User? firebaseUser) {
-    if (firebaseUser == null) {
-      return null;
-    }
+    if (firebaseUser == null) return null;
     return UserEntity(
       id: firebaseUser.uid,
       email: firebaseUser.email ?? '',
       displayName: firebaseUser.displayName ?? firebaseUser.email ?? 'Músico',
       photoUrl: firebaseUser.photoURL,
       isVerified: firebaseUser.emailVerified,
+      // createdAt desde Firebase Auth metadata; se enriquece con Firestore
+      // a través de UserRepository.fetchOrCreate().
+      createdAt:
+          firebaseUser.metadata.creationTime ?? DateTime.now(),
     );
   }
 }

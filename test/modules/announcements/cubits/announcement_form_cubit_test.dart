@@ -37,6 +37,9 @@ void main() {
         instrument: 'Instr',
         styles: const [],
         publishedAt: DateTime.now(),
+        // Valores por defecto de los campos normativos
+        isActive: true,
+        locationRemote: false,
       );
 
       registerFallbackValue(dummyEntity);

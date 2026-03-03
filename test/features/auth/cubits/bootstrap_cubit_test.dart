@@ -15,6 +15,7 @@ class _MockFirebaseInitializer extends Mock implements FirebaseInitializer {}
 class _MockAuthRepository extends Mock implements AuthRepository {}
 
 class _MockMusiciansRepository extends Mock implements MusiciansRepository {}
+
 class _MockStudiosRepository extends Mock implements StudiosRepository {}
 
 void main() {
@@ -38,10 +39,11 @@ void main() {
     ).thenAnswer((_) async => null);
   });
 
-  const storedUser = UserEntity(
+  final storedUser = UserEntity(
     id: 'uid',
     email: 'demo@upsessions.com',
     displayName: 'Demo',
+    createdAt: DateTime.now(),
   );
 
   group('BootstrapCubit', () {
@@ -87,7 +89,7 @@ void main() {
         );
       },
       act: (cubit) => cubit.initialize(),
-      expect: () => const [
+      expect: () => [
         BootstrapState(
           status: BootstrapStatus.loading,
           errorMessage: null,
@@ -144,7 +146,7 @@ void main() {
         );
       },
       act: (cubit) => cubit.initialize(),
-      expect: () => const [
+      expect: () => [
         BootstrapState(
           status: BootstrapStatus.loading,
           errorMessage: null,
@@ -162,7 +164,9 @@ void main() {
       'emite studioAuthenticated cuando hay estudio asociado',
       build: () {
         when(() => authRepository.currentUser).thenReturn(storedUser);
-        when(() => studiosRepository.getStudioByOwner(storedUser.id)).thenAnswer(
+        when(
+          () => studiosRepository.getStudioByOwner(storedUser.id),
+        ).thenAnswer(
           (_) async => const StudioEntity(
             id: 'studio-1',
             ownerId: 'uid',
@@ -183,7 +187,7 @@ void main() {
         );
       },
       act: (cubit) => cubit.initialize(),
-      expect: () => const [
+      expect: () => [
         BootstrapState(
           status: BootstrapStatus.loading,
           errorMessage: null,

@@ -23,6 +23,7 @@ void main() {
     status: GigOfferStatus.open,
     applicants: const [],
     createdAt: DateTime(2026, 3, 1),
+    updatedAt: DateTime.now(),
   );
 
   setUpAll(() {
@@ -49,8 +50,9 @@ void main() {
     blocTest<GigOfferFormCubit, GigOfferFormState>(
       'saveOffer emite saving y success cuando se guarda correctamente',
       build: () {
-        when(() => repository.saveOffer(any()))
-            .thenAnswer((_) async => offer.copyWith(id: 'g-new'));
+        when(
+          () => repository.saveOffer(any()),
+        ).thenAnswer((_) async => offer.copyWith(id: 'g-new'));
         return buildCubit();
       },
       act: (cubit) => cubit.saveOffer(offer),
@@ -67,14 +69,14 @@ void main() {
     blocTest<GigOfferFormCubit, GigOfferFormState>(
       'saveOffer emite error cuando falla el guardado',
       build: () {
-        when(() => repository.saveOffer(any()))
-            .thenThrow(Exception('save error'));
+        when(
+          () => repository.saveOffer(any()),
+        ).thenThrow(Exception('save error'));
         return buildCubit();
       },
       act: (cubit) => cubit.saveOffer(offer),
       expect: () => [
-        isA<GigOfferFormState>()
-            .having((s) => s.isSaving, 'saving', true),
+        isA<GigOfferFormState>().having((s) => s.isSaving, 'saving', true),
         isA<GigOfferFormState>()
             .having((s) => s.isSaving, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('save error')),

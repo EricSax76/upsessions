@@ -4,6 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:upsessions/features/events/cubits/event_detail_cubit.dart';
 import 'package:upsessions/features/events/cubits/event_detail_state.dart';
 import 'package:upsessions/features/events/models/event_entity.dart';
+import 'package:upsessions/features/events/models/event_enums.dart';
 import 'package:upsessions/features/events/repositories/events_repository.dart';
 import 'package:upsessions/features/events/services/image_upload_service.dart';
 
@@ -30,6 +31,10 @@ void main() {
       ticketInfo: '',
       capacity: 0,
       resources: const [],
+      isPublic: true,
+      isFree: false,
+      updatedAt: DateTime(2026),
+      status: EventStatus.draft,
     ));
   });
 
@@ -53,6 +58,10 @@ void main() {
     ticketInfo: '10€',
     capacity: 100,
     resources: const [],
+    isPublic: true,
+    isFree: false,
+    updatedAt: DateTime(2026, 3, 1),
+    status: EventStatus.draft,
   );
 
   setUp(() {

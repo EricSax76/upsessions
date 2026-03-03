@@ -82,10 +82,11 @@ void main() {
     tester,
   ) async {
     when(() => authRepository.currentUser).thenReturn(
-      const UserEntity(
+      UserEntity(
         id: 'studio-user',
         email: 'studio@test.com',
         displayName: 'Studio User',
+        createdAt: DateTime.now(),
       ),
     );
 

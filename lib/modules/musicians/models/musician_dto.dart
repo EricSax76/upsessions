@@ -2,6 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'musician_entity.dart';
 
+/// DTO para serialización/deserialización de [MusicianEntity] desde Firestore.
+///
+/// Campos normativos añadidos (espejo de [MusicianEntity]):
+/// [updatedAt], [deletedAt], [isVerifiedArtist], [languages],
+/// [workRadius], [minimumFee], [hasPublicLiabilityInsurance], [unionMembership].
 class MusicianDto {
   const MusicianDto({
     required this.id,
@@ -11,6 +16,7 @@ class MusicianDto {
     required this.city,
     required this.styles,
     required this.experienceYears,
+    required this.updatedAt,
     this.photoUrl,
     this.province,
     this.profileType,
@@ -20,9 +26,19 @@ class MusicianDto {
     this.links = const {},
     this.influences = const {},
     this.availableForHire = false,
+    // ── Normativa ───────────────────────────────────────────────────────────
+    this.isVerifiedArtist = false,
+    this.languages = const [],
+    this.workRadius,
+    this.minimumFee,
+    this.hasPublicLiabilityInsurance = false,
+    this.unionMembership,
+    this.deletedAt,
   });
 
-  factory MusicianDto.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory MusicianDto.fromDocument(
+    DocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
     final data = doc.data() ?? <String, dynamic>{};
     final stylesDynamic = data['styles'];
     return MusicianDto(
@@ -41,13 +57,11 @@ class MusicianDto {
       gender: data['gender'] as String?,
       rating: (data['rating'] as num?)?.toDouble(),
       bio: (data['bio'] ?? '') as String,
-      links:
-          (data['links'] as Map<String, dynamic>?)?.map(
+      links: (data['links'] as Map<String, dynamic>?)?.map(
             (key, value) => MapEntry(key, value.toString()),
           ) ??
           const {},
-      influences:
-          (data['influences'] as Map<String, dynamic>?)?.map(
+      influences: (data['influences'] as Map<String, dynamic>?)?.map(
             (key, value) => MapEntry(
               key,
               (value as List<dynamic>).map((e) => e.toString()).toList(),
@@ -55,9 +69,20 @@ class MusicianDto {
           ) ??
           const {},
       availableForHire: (data['availableForHire'] as bool?) ?? false,
+      // ── Normativa ─────────────────────────────────────────────────────────
+      updatedAt: _toDateTime(data['updatedAt']) ?? DateTime.now(),
+      deletedAt: _toDateTime(data['deletedAt']),
+      isVerifiedArtist: (data['isVerifiedArtist'] as bool?) ?? false,
+      languages: _stringList(data['languages']),
+      workRadius: (data['workRadius'] as num?)?.toInt(),
+      minimumFee: (data['minimumFee'] as num?)?.toDouble(),
+      hasPublicLiabilityInsurance:
+          (data['hasPublicLiabilityInsurance'] as bool?) ?? false,
+      unionMembership: data['unionMembership'] as String?,
     );
   }
 
+  // ── Campos existentes ─────────────────────────────────────────────────────
   final String id;
   final String ownerId;
   final String name;
@@ -74,6 +99,46 @@ class MusicianDto {
   final Map<String, String> links;
   final Map<String, List<String>> influences;
   final bool availableForHire;
+
+  // ── Normativa ─────────────────────────────────────────────────────────────
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final bool isVerifiedArtist;
+  final List<String> languages;
+  final int? workRadius;
+  final double? minimumFee;
+  final bool hasPublicLiabilityInsurance;
+  final String? unionMembership;
+
+  /// Serializa a mapa para Firestore.
+  Map<String, dynamic> toFirestore() {
+    return {
+      'ownerId': ownerId,
+      'name': name,
+      'instrument': instrument,
+      'city': city,
+      'styles': styles,
+      'experienceYears': experienceYears,
+      if (photoUrl != null) 'photoUrl': photoUrl,
+      if (province != null) 'province': province,
+      if (profileType != null) 'profileType': profileType,
+      if (gender != null) 'gender': gender,
+      if (rating != null) 'rating': rating,
+      'bio': bio,
+      'links': links,
+      'influences': influences,
+      'availableForHire': availableForHire,
+      // Normativa
+      'updatedAt': Timestamp.fromDate(updatedAt),
+      if (deletedAt != null) 'deletedAt': Timestamp.fromDate(deletedAt!),
+      'isVerifiedArtist': isVerifiedArtist,
+      'languages': languages,
+      if (workRadius != null) 'workRadius': workRadius,
+      if (minimumFee != null) 'minimumFee': minimumFee,
+      'hasPublicLiabilityInsurance': hasPublicLiabilityInsurance,
+      if (unionMembership != null) 'unionMembership': unionMembership,
+    };
+  }
 
   MusicianEntity toEntity() {
     return MusicianEntity(
@@ -93,6 +158,26 @@ class MusicianDto {
       links: links,
       influences: influences,
       availableForHire: availableForHire,
+      updatedAt: updatedAt,
+      deletedAt: deletedAt,
+      isVerifiedArtist: isVerifiedArtist,
+      languages: languages,
+      workRadius: workRadius,
+      minimumFee: minimumFee,
+      hasPublicLiabilityInsurance: hasPublicLiabilityInsurance,
+      unionMembership: unionMembership,
     );
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  static DateTime? _toDateTime(dynamic raw) {
+    if (raw is Timestamp) return raw.toDate();
+    if (raw is String) return DateTime.tryParse(raw);
+    return null;
+  }
+
+  static List<String> _stringList(dynamic raw) {
+    if (raw is Iterable) return raw.map((e) => e.toString()).toList();
+    return const [];
   }
 }

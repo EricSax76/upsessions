@@ -65,6 +65,10 @@ void main() {
         genre: any(named: 'genre'),
         link1: any(named: 'link1'),
         link2: any(named: 'link2'),
+        description: any(named: 'description'),
+        city: any(named: 'city'),
+        province: any(named: 'province'),
+        sgaeGroupCode: any(named: 'sgaeGroupCode'),
         photoBytes: any(named: 'photoBytes'),
         photoFileExtension: any(named: 'photoFileExtension'),
       )).thenAnswer((_) async => 'new-group-id');
