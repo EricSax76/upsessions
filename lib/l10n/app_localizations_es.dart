@@ -137,8 +137,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get eventsTotalCapacityLabel => 'Capacidad total';
 
   @override
+  String get eventsEmptyTitle => 'No hay eventos';
+
+  @override
   String get eventsEmptyMessage =>
       'Aún no hay eventos publicados. Sé el primero en crear uno desde la sección Eventos.';
+
+  @override
+  String get announcementsEmptyTitle => 'No hay anuncios';
+
+  @override
+  String get announcementsEmptySubtitle =>
+      'Publica el primero o vuelve más tarde.';
 
   @override
   String get noEventsOnDate => 'No hay eventos registrados en esta fecha.';

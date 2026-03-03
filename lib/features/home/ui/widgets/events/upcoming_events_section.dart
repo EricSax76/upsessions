@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
+import 'package:upsessions/core/widgets/empty_state_card.dart';
 import 'package:upsessions/core/widgets/event_banner_preview.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
@@ -20,7 +21,11 @@ class UpcomingEventsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
     if (events.isEmpty) {
-      return _EventsEmptyState(message: loc.eventsEmptyMessage);
+      return EmptyStateCard(
+        icon: Icons.event_busy_outlined,
+        title: loc.eventsEmptyTitle,
+        subtitle: loc.eventsEmptyMessage,
+      );
     }
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -46,9 +51,7 @@ class UpcomingEventsSection extends StatelessWidget {
                 child: _EventCard(
                   event: event,
                   isCompact: isCompact,
-                  onTap: onEventTap == null
-                      ? null
-                      : () => onEventTap!(event),
+                  onTap: onEventTap == null ? null : () => onEventTap!(event),
                 ),
               );
             },
@@ -60,11 +63,7 @@ class UpcomingEventsSection extends StatelessWidget {
 }
 
 class _EventCard extends StatelessWidget {
-  const _EventCard({
-    required this.event,
-    required this.isCompact,
-    this.onTap,
-  });
+  const _EventCard({required this.event, required this.isCompact, this.onTap});
 
   final HomeEventModel event;
   final bool isCompact;
@@ -157,32 +156,6 @@ class _EventCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _EventsEmptyState extends StatelessWidget {
-  const _EventsEmptyState({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.dividerColor),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.event_busy, color: theme.colorScheme.primary),
-          const SizedBox(width: 16),
-          Expanded(child: Text(message)),
-        ],
       ),
     );
   }

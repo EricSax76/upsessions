@@ -338,11 +338,29 @@ abstract class AppLocalizations {
   /// **'Capacidad total'**
   String get eventsTotalCapacityLabel;
 
+  /// No description provided for @eventsEmptyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay eventos'**
+  String get eventsEmptyTitle;
+
   /// No description provided for @eventsEmptyMessage.
   ///
   /// In es, this message translates to:
   /// **'Aún no hay eventos publicados. Sé el primero en crear uno desde la sección Eventos.'**
   String get eventsEmptyMessage;
+
+  /// No description provided for @announcementsEmptyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay anuncios'**
+  String get announcementsEmptyTitle;
+
+  /// No description provided for @announcementsEmptySubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Publica el primero o vuelve más tarde.'**
+  String get announcementsEmptySubtitle;
 
   /// No description provided for @noEventsOnDate.
   ///

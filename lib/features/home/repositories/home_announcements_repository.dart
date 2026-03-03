@@ -13,6 +13,7 @@ class HomeAnnouncementsRepository {
   Future<List<AnnouncementEntity>> fetchRecentAnnouncements() async {
     final snapshot = await _firestore
         .collection('announcements')
+        .where('isActive', isEqualTo: true)
         .orderBy('publishedAt', descending: true)
         .limit(5)
         .get();

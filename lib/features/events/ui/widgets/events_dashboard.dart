@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/core/widgets/empty_state_card.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../models/event_entity.dart';
 import 'event_cards.dart';
@@ -33,6 +35,7 @@ class EventsDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final content = events.isEmpty && loading
         ? const Center(child: CircularProgressIndicator())
         : RefreshIndicator(
@@ -41,14 +44,14 @@ class EventsDashboard extends StatelessWidget {
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 SliverPadding(
-                   padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-                   sliver: SliverToBoxAdapter(
-                      child: EventsHeroSection(
-                        eventsCount: eventsCount,
-                        thisWeekCount: thisWeekCount,
-                        onCreateEvent: onCreateEvent,
-                      ),
-                   ),
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: EventsHeroSection(
+                      eventsCount: eventsCount,
+                      thisWeekCount: thisWeekCount,
+                      onCreateEvent: onCreateEvent,
+                    ),
+                  ),
                 ),
                 const SliverToBoxAdapter(child: SizedBox(height: 24)),
                 if (events.isNotEmpty)
@@ -58,6 +61,17 @@ class EventsDashboard extends StatelessWidget {
                       events: events,
                       onSelect: onSelectForPreview,
                       onViewDetails: onViewDetails,
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
+                    sliver: SliverToBoxAdapter(
+                      child: EmptyStateCard(
+                        icon: Icons.event_busy_outlined,
+                        title: loc.eventsEmptyTitle,
+                        subtitle: loc.eventsEmptyMessage,
+                      ),
                     ),
                   ),
               ],

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -76,10 +77,12 @@ class UserHomePage extends StatelessWidget {
         final isWide = width >= 1200;
         final isMedium = width >= 800;
         final isCompact = width < 700;
+        final isExtendedWeb = kIsWeb && isMedium;
 
         final colorScheme = Theme.of(context).colorScheme;
         final cubit = context.read<UserHomeCubit>();
         final loc = AppLocalizations.of(context);
+        final hasAnnouncements = state.announcements.isNotEmpty;
 
         return Container(
           color: colorScheme.surfaceContainerLow,
@@ -100,7 +103,31 @@ class UserHomePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 48),
 
-                    if (isMedium)
+                    if (isExtendedWeb)
+                      Column(
+                        children: [
+                          _buildWideRow(
+                            left: _buildEventsSection(context, loc, state),
+                            right: hasAnnouncements
+                                ? _buildAnnouncementsSection(
+                                    context,
+                                    loc,
+                                    state,
+                                  )
+                                : _buildRecommendedSection(context, loc, state),
+                          ),
+                          const SizedBox(height: 32),
+                          _buildWideRow(
+                            left: hasAnnouncements
+                                ? _buildRecommendedSection(context, loc, state)
+                                : _buildNewTalentSection(context, loc, state),
+                            right: hasAnnouncements
+                                ? _buildNewTalentSection(context, loc, state)
+                                : null,
+                          ),
+                        ],
+                      )
+                    else if (isMedium)
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -119,12 +146,14 @@ class UserHomePage extends StatelessWidget {
                             flex: 2,
                             child: Column(
                               children: [
-                                _buildAnnouncementsSection(
-                                  context,
-                                  loc,
-                                  state,
-                                ),
-                                const SizedBox(height: 32),
+                                if (hasAnnouncements) ...[
+                                  _buildAnnouncementsSection(
+                                    context,
+                                    loc,
+                                    state,
+                                  ),
+                                  const SizedBox(height: 32),
+                                ],
                                 _buildNewTalentSection(context, loc, state),
                               ],
                             ),
@@ -136,8 +165,10 @@ class UserHomePage extends StatelessWidget {
                         children: [
                           _buildEventsSection(context, loc, state),
                           const SizedBox(height: 32),
-                          _buildAnnouncementsSection(context, loc, state),
-                          const SizedBox(height: 32),
+                          if (hasAnnouncements) ...[
+                            _buildAnnouncementsSection(context, loc, state),
+                            const SizedBox(height: 32),
+                          ],
                           _buildRecommendedSection(context, loc, state),
                           const SizedBox(height: 32),
                           _buildNewTalentSection(context, loc, state),
@@ -187,6 +218,20 @@ class UserHomePage extends StatelessWidget {
     );
   }
 
+  Widget _buildWideRow({required Widget left, Widget? right}) {
+    if (right == null) {
+      return left;
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(flex: 3, child: left),
+        const SizedBox(width: 32),
+        Expanded(flex: 2, child: right),
+      ],
+    );
+  }
+
   Widget _buildEventsSection(
     BuildContext context,
     AppLocalizations loc,
@@ -212,6 +257,9 @@ class UserHomePage extends StatelessWidget {
     AppLocalizations loc,
     UserHomeState state,
   ) {
+    if (state.announcements.isEmpty) {
+      return const SizedBox.shrink();
+    }
     return SectionCard(
       title: loc.announcements,
       action: TextButton.icon(

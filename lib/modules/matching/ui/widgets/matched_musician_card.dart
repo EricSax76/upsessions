@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_card.dart';
+import '../../../../core/widgets/sm_avatar.dart';
 import '../../repositories/matching_repository.dart';
 
 class MatchedMusicianCard extends StatelessWidget {
@@ -13,6 +14,15 @@ class MatchedMusicianCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final name = match.musician.name.trim();
+    final initials = name.isEmpty
+        ? null
+        : name
+              .split(RegExp(r'\s+'))
+              .where((word) => word.isNotEmpty)
+              .take(2)
+              .map((word) => word[0])
+              .join();
 
     return AppCard(
       onTap: onTap,
@@ -26,15 +36,11 @@ class MatchedMusicianCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                CircleAvatar(
+                SmAvatar(
                   radius: 30,
+                  imageUrl: match.musician.photoUrl,
+                  initials: initials,
                   backgroundColor: colors.primaryContainer,
-                  backgroundImage: match.musician.photoUrl != null
-                      ? NetworkImage(match.musician.photoUrl!)
-                      : null,
-                  child: match.musician.photoUrl == null
-                      ? Text(match.musician.name.characters.first)
-                      : null,
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -43,20 +49,24 @@ class MatchedMusicianCard extends StatelessWidget {
                     children: [
                       Text(
                         match.musician.name,
-                        style: theme.textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Text(
                         '${match.musician.instrument} • ${match.musician.city}',
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(color: colors.onSurfaceVariant),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: colors.tertiaryContainer,
                     borderRadius: BorderRadius.circular(20),
@@ -92,12 +102,15 @@ class MatchedMusicianCard extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 4),
                       child: RichText(
                         text: TextSpan(
-                          style: theme.textTheme.bodySmall
-                              ?.copyWith(color: colors.onSurface),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurface,
+                          ),
                           children: [
                             TextSpan(
                               text: '${entry.key}: ',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             TextSpan(text: entry.value.join(', ')),
                           ],

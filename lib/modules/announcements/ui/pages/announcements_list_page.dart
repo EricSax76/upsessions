@@ -6,6 +6,7 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/widgets/announcement_card.dart';
 import '../../../../core/widgets/layout/searchable_list_page.dart';
 import '../../../../core/locator/locator.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../cubits/announcements_list_cubit.dart';
 import '../../models/announcement_entity.dart';
 import '../../repositories/announcements_repository.dart';
@@ -31,10 +32,10 @@ class AnnouncementsListPage extends StatelessWidget {
       errorMessage: state.errorMessage,
       loadMoreErrorMessage:
           state.status == AnnouncementsListStatus.success &&
-                  !state.hasMore &&
-                  state.errorMessage != null
-              ? state.errorMessage
-              : null,
+              !state.hasMore &&
+              state.errorMessage != null
+          ? state.errorMessage
+          : null,
       onRetryLoadMore: () => context.read<AnnouncementsListCubit>().loadMore(),
       onLoadMore: () => context.read<AnnouncementsListCubit>().loadMore(),
     );
@@ -43,59 +44,45 @@ class AnnouncementsListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AnnouncementsListCubit(
-        repository: locate<AnnouncementsRepository>(),
-      ),
+      create: (context) =>
+          AnnouncementsListCubit(repository: locate<AnnouncementsRepository>()),
       child: Builder(
         builder: (context) {
           return BlocBuilder<AnnouncementsListCubit, AnnouncementsListState>(
             builder: (context, state) {
+              final loc = AppLocalizations.of(context);
               return SearchableListPage<AnnouncementEntity>(
                 items: state.items,
                 isLoading: state.status == AnnouncementsListStatus.loading,
-                errorMessage:
-                    state.items.isEmpty ? state.errorMessage : null,
-                onRetry:
-                    () => context.read<AnnouncementsListCubit>().load(
-                      refresh: true,
-                    ),
-                onRefresh:
-                    () => context.read<AnnouncementsListCubit>().load(
-                      refresh: true,
-                    ),
+                errorMessage: state.items.isEmpty ? state.errorMessage : null,
+                onRetry: () =>
+                    context.read<AnnouncementsListCubit>().load(refresh: true),
+                onRefresh: () =>
+                    context.read<AnnouncementsListCubit>().load(refresh: true),
                 searchEnabled: false,
                 gridLayout: true,
                 gridSpacing: 24,
                 emptyIcon: Icons.campaign_outlined,
-                emptyTitle: 'No hay anuncios',
-                emptySubtitle: 'Crea el primero o vuelve más tarde.',
-                headerBuilder:
-                    (_, _, _) => AnnouncementsHeroSection(
-                      onNewAnnouncement: () => _openForm(context),
-                    ),
-                filterBuilder:
-                    (_) => AnnouncementFilterPanel(
-                      onChanged:
-                          (filter) => context
-                              .read<AnnouncementsListCubit>()
-                              .setFilter(filter),
-                    ),
+                emptyTitle: loc.announcementsEmptyTitle,
+                emptySubtitle: loc.announcementsEmptySubtitle,
+                headerBuilder: (_, _, _) => AnnouncementsHeroSection(
+                  onNewAnnouncement: () => _openForm(context),
+                ),
+                filterBuilder: (_) => AnnouncementFilterPanel(
+                  onChanged: (filter) =>
+                      context.read<AnnouncementsListCubit>().setFilter(filter),
+                ),
                 footerBuilder: (_) => _buildFooter(context, state),
-                itemBuilder:
-                    (announcement, index) => AnnouncementCard(
-                      title: announcement.title,
-                      subtitle:
-                          '${announcement.city} · ${announcement.author}',
-                      dateText:
-                          '${announcement.publishedAt.day}/${announcement.publishedAt.month}',
-                      onTap:
-                          () => context.push(
-                            AppRoutes.announcementDetailPath(
-                              announcement.id,
-                            ),
-                            extra: announcement,
-                          ),
-                    ),
+                itemBuilder: (announcement, index) => AnnouncementCard(
+                  title: announcement.title,
+                  subtitle: '${announcement.city} · ${announcement.author}',
+                  dateText:
+                      '${announcement.publishedAt.day}/${announcement.publishedAt.month}',
+                  onTap: () => context.push(
+                    AppRoutes.announcementDetailPath(announcement.id),
+                    extra: announcement,
+                  ),
+                ),
               );
             },
           );
