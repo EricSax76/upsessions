@@ -171,7 +171,7 @@ class HomeHeroQuickActionsGrid extends StatelessWidget {
       crossAxisCount: 2,
       mainAxisSpacing: AppSpacing.md,
       crossAxisSpacing: AppSpacing.md,
-      childAspectRatio: 1.4,
+      childAspectRatio: 1.1,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
@@ -237,12 +237,11 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
     return AppCard(
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
-      elevation: 0,
+      elevation: 2,
       onTap: onTap,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.lg),
-        side: BorderSide(color: colorScheme.outlineVariant, width: 1),
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -271,12 +270,12 @@ class _HomeHeroQuickActionTile extends StatelessWidget {
                 label,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: colorScheme.onInverseSurface,
+                  color: Colors.white.withValues(alpha: 0.95),
                   shadows: [
                     Shadow(
-                      color: colorScheme.scrim.withValues(alpha: 0.5),
+                      color: Colors.black.withValues(alpha: 0.55),
                       offset: const Offset(0, 1),
-                      blurRadius: 4,
+                      blurRadius: 6,
                     ),
                   ],
                 ),

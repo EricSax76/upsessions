@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/features/home/ui/widgets/legal/legal_compliance_gate.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/widgets/app_logo.dart';
@@ -93,7 +94,10 @@ class StudioShellPage extends StatelessWidget {
               ),
               const VerticalDivider(width: 1, thickness: 1),
             ],
-            Expanded(key: const ValueKey('studio-shell-content'), child: child),
+            Expanded(
+              key: const ValueKey('studio-shell-content'),
+              child: LegalComplianceGate(child: child),
+            ),
           ],
         ),
       ),

@@ -413,5 +413,9 @@
   "roomDetailConfirmBookingForRehearsal": "Confirmar reserva",
   "@roomDetailConfirmBookingForRehearsal": {},
   "roomDetailConfirmBooking": "Confirmar reserva",
-  "@roomDetailConfirmBooking": {}
+  "@roomDetailConfirmBooking": {},
+  "homeExploreLabel": "Explorar",
+  "@homeExploreLabel": {},
+  "homeGreetingSubtitle": "Aquí está tu resumen de hoy",
+  "@homeGreetingSubtitle": {}
 }

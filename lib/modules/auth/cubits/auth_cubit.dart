@@ -7,9 +7,9 @@ import 'package:equatable/equatable.dart';
 import '../models/auth_exceptions.dart';
 import '../repositories/auth_repository.dart';
 import '../models/user_entity.dart';
+import '../../../core/services/cloud_functions_service.dart';
 import '../../../core/services/push_notifications_service.dart';
 import '../../studios/repositories/studios_repository.dart';
-
 
 part 'auth_state.dart';
 
@@ -18,9 +18,11 @@ class AuthCubit extends Cubit<AuthState> {
     required AuthRepository authRepository,
     required StudiosRepository studiosRepository,
     required PushNotificationsService pushNotificationsService,
+    CloudFunctionsService? cloudFunctionsService,
   }) : _authRepository = authRepository,
        _studiosRepository = studiosRepository,
        _pushNotificationsService = pushNotificationsService,
+       _cloudFunctionsService = cloudFunctionsService,
        super(const AuthState()) {
     _authSubscription = _authRepository.authStateChanges.listen(
       _handleUserChanged,
@@ -36,6 +38,7 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthRepository _authRepository;
   final PushNotificationsService _pushNotificationsService;
   final StudiosRepository _studiosRepository;
+  final CloudFunctionsService? _cloudFunctionsService;
   StreamSubscription<UserEntity?>? _authSubscription;
 
   Future<void> signIn(String email, String password) async {
@@ -160,7 +163,7 @@ class AuthCubit extends Cubit<AuthState> {
     log(
       '[AuthCubit] User state changed: ${user != null ? 'Authenticated' : 'Unauthenticated'} (user ID: ${user?.id})',
     );
-    
+
     String? studioId;
     if (user != null) {
       try {
@@ -185,6 +188,10 @@ class AuthCubit extends Cubit<AuthState> {
       ),
     );
     if (user != null) {
+      final cloudFunctionsService = _cloudFunctionsService;
+      if (cloudFunctionsService != null) {
+        unawaited(cloudFunctionsService.syncUserSession());
+      }
       unawaited(_pushNotificationsService.registerForUser(user.id));
     }
   }

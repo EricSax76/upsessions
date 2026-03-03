@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:upsessions/core/constants/app_spacing.dart';
+import 'package:upsessions/core/widgets/sm_avatar.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'home_hero_view_model.dart';
 import 'home_hero_widgets.dart';
@@ -22,35 +23,81 @@ class HomeHeroCompact extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Hola, $titleName 👋',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface,
-          ),
-        )
-            .animate()
-            .fade(duration: 500.ms, curve: Curves.easeOut)
-            .slideY(begin: 0.05, end: 0, duration: 500.ms, curve: Curves.easeOutCubic),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SmAvatar(
+              radius: 26,
+              imageUrl: viewModel.photoUrl,
+              initials: viewModel.initials,
+            )
+                .animate()
+                .fade(duration: 400.ms)
+                .scale(begin: const Offset(0.88, 0.88), end: const Offset(1, 1), duration: 400.ms, curve: Curves.easeOutBack),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Hola, $titleName 👋',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    loc.homeGreetingSubtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              )
+                  .animate()
+                  .fade(duration: 500.ms, curve: Curves.easeOut)
+                  .slideY(begin: 0.05, end: 0, duration: 500.ms, curve: Curves.easeOutCubic),
+            ),
+          ],
+        ),
         const SizedBox(height: AppSpacing.lg),
         if (viewModel.upcomingRehearsals.isNotEmpty)
           viewModel.upcomingRehearsals.length > 1
               ? RehearsalsQuickView(rehearsals: viewModel.upcomingRehearsals)
               : HomeHeroNextRehearsalCard(rehearsal: viewModel.nextRehearsal),
-        const SizedBox(height: AppSpacing.lg),
-        Align(
-          alignment: Alignment.center,
+        const SizedBox(height: AppSpacing.xl),
+        _ExploreDividerLabel(label: loc.homeExploreLabel),
+        const SizedBox(height: AppSpacing.sm),
+        const HomeHeroQuickActionsGrid(),
+      ],
+    );
+  }
+}
+
+class _ExploreDividerLabel extends StatelessWidget {
+  const _ExploreDividerLabel({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        const Expanded(child: Divider()),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Text(
-            'EXPLORAR',
-            style: theme.textTheme.labelLarge?.copyWith(
+            label.toUpperCase(),
+            style: theme.textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-              color: theme.colorScheme.onSurface,
+              letterSpacing: 1.4,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
-        const HomeHeroQuickActionsGrid(),
+        const Expanded(child: Divider()),
       ],
     );
   }

@@ -4,6 +4,14 @@ import { admin } from './firebase';
 import { region } from './region';
 export { seedChatThreads } from './chatSeeder';
 export { resolveSpotifyArtistImages } from './spotify_artist_images';
+export {
+  acceptLegalBundle,
+  acceptLegalDocs,
+  onAuthUserCreateBootstrap,
+  onAuthUserDeleteSoftDelete,
+  syncUserSession,
+  updateUserComplianceProfile,
+} from './legalCompliance';
 
 function stringList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];

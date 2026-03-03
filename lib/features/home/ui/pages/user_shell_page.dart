@@ -15,6 +15,7 @@ import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import '../widgets/header/sm_app_bar.dart';
+import '../widgets/legal/legal_compliance_gate.dart';
 import '../widgets/profile/profile_quick_actions_fab.dart';
 import '../widgets/sidebar/user_sidebar.dart';
 import '../widgets/bottom_nav_bar.dart';
@@ -59,9 +60,7 @@ class UserShellPage extends StatelessWidget {
             inviteNotificationsRepository: inviteNotificationsRepository,
           ),
         ),
-        BlocProvider(
-          create: (_) => SidebarCubit(),
-        ),
+        BlocProvider(create: (_) => SidebarCubit()),
         BlocProvider<LikedMusiciansCubit>.value(value: likedMusiciansCubit),
       ],
       child: BlocListener<AuthCubit, AuthState>(
@@ -80,9 +79,11 @@ class UserShellPage extends StatelessWidget {
           floatingActionButton: showQuickActionsFab
               ? const ProfileQuickActionsFab()
               : null,
-          child: KeyedSubtree(
-            key: const ValueKey('user-shell-content'),
-            child: child,
+          child: LegalComplianceGate(
+            child: KeyedSubtree(
+              key: const ValueKey('user-shell-content'),
+              child: child,
+            ),
           ),
         ),
       ),

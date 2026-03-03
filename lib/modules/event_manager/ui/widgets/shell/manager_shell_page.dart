@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/features/home/ui/widgets/legal/legal_compliance_gate.dart';
 
 import '../../../../../core/constants/app_routes.dart';
 import '../../../../../core/ui/shell/core_shell.dart';
@@ -41,41 +42,44 @@ class ManagerShellPage extends StatelessWidget {
             create: (_) => SidebarCubit(),
             child: CoreShell(
               sidebar: const ManagerSidebar(),
-            bottomNavigationBar: const ManagerBottomNav(),
-            appBar: showTopAppBar
-                ? AppBar(
-                    centerTitle: true,
-                    title: AppLogo(
-                      label: 'UpSessions PRO',
-                      textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                      iconSize: 22,
-                    ),
-                    leading: isWideLayout
-                        ? null
-                        : Builder(
-                            builder: (context) => IconButton(
-                              icon: const Icon(Icons.menu),
-                              onPressed: () => Scaffold.of(context).openDrawer(),
+              bottomNavigationBar: const ManagerBottomNav(),
+              appBar: showTopAppBar
+                  ? AppBar(
+                      centerTitle: true,
+                      title: AppLogo(
+                        label: 'UpSessions PRO',
+                        textStyle: Theme.of(context).textTheme.titleLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                        iconSize: 22,
+                      ),
+                      leading: isWideLayout
+                          ? null
+                          : Builder(
+                              builder: (context) => IconButton(
+                                icon: const Icon(Icons.menu),
+                                onPressed: () =>
+                                    Scaffold.of(context).openDrawer(),
+                              ),
+                            ),
+                      actions: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 16),
+                          child: InkWell(
+                            onTap: () =>
+                                context.push(AppRoutes.eventManagerProfile),
+                            borderRadius: BorderRadius.circular(24),
+                            child: SmAvatar(
+                              radius: 16,
+                              imageUrl: manager?.logoUrl,
+                              initials: initials,
+                              fallbackIcon: Icons.store_outlined,
                             ),
                           ),
-                    actions: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: InkWell(
-                          onTap: () => context.push(AppRoutes.eventManagerProfile),
-                          borderRadius: BorderRadius.circular(24),
-                          child: SmAvatar(
-                            radius: 16,
-                            imageUrl: manager?.logoUrl,
-                            initials: initials,
-                            fallbackIcon: Icons.store_outlined,
-                          ),
                         ),
-                      ),
-                    ],
-                  )
-                : null,
-            child: child,
+                      ],
+                    )
+                  : null,
+              child: LegalComplianceGate(child: child),
             ),
           );
         },

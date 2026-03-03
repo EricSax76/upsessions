@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/core/services/app_links_service.dart';
+import 'package:upsessions/core/services/cloud_functions_service.dart';
 import 'package:upsessions/core/services/firebase_initializer.dart';
 import 'package:upsessions/core/services/push_notifications_service.dart';
 import 'package:upsessions/core/theme/app_theme.dart';
@@ -84,6 +85,7 @@ class UpsessionsApp extends StatelessWidget {
               studiosRepository: context.read<StudiosRepository>(),
               pushNotificationsService: context
                   .read<PushNotificationsService>(),
+              cloudFunctionsService: locate<CloudFunctionsService>(),
             ),
           ),
           BlocProvider(

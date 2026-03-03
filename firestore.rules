@@ -554,6 +554,18 @@ service cloud.firestore {
       allow update, delete: if isSignedIn() && resource.data.managerId == request.auth.uid;
     }
 
+    // Compliance profile and legal consent evidence.
+    // Writes are only allowed through trusted backend code (Admin SDK / Cloud Functions).
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update, delete: if false;
+
+      match /policy_acceptances/{acceptanceId} {
+        allow read: if isOwner(uid);
+        allow create, update, delete: if false;
+      }
+    }
+
     // Support collectionGroup('members') queries across all groups.
     match /{path=**}/members/{uid} {
       allow read: if isSignedIn() && request.auth.uid == resource.data.ownerId;

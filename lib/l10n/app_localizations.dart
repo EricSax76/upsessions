@@ -1057,6 +1057,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Confirmar reserva'**
   String get roomDetailConfirmBooking;
+
+  /// No description provided for @homeExploreLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Explorar'**
+  String get homeExploreLabel;
+
+  /// No description provided for @homeGreetingSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí está tu resumen de hoy'**
+  String get homeGreetingSubtitle;
 }
 
 class _AppLocalizationsDelegate

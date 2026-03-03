@@ -554,4 +554,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomDetailConfirmBooking => 'Confirm booking';
+
+  @override
+  String get homeExploreLabel => 'Explore';
+
+  @override
+  String get homeGreetingSubtitle => 'Here\'s your summary for today';
 }
