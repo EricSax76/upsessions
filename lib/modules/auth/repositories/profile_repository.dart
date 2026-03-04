@@ -72,6 +72,10 @@ class ProfileRepository {
       vatRegistered: profile.vatRegistered,
       isPublic: profile.isPublic,
       ageConsent: profile.ageConsent,
+      birthDate: profile.birthDate,
+      legalGuardianEmail: profile.legalGuardianEmail,
+      legalGuardianConsent: profile.legalGuardianConsent,
+      legalGuardianConsentAt: profile.legalGuardianConsentAt,
       nationality: profile.nationality,
     );
 

@@ -9,6 +9,7 @@ import 'package:upsessions/core/theme/app_theme.dart';
 import 'package:upsessions/core/theme/theme_cubit.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/l10n/cubit/locale_cubit.dart';
+import 'package:upsessions/core/widgets/legal/cookie_consent_layer.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
@@ -116,6 +117,11 @@ class UpsessionsApp extends StatelessWidget {
                     supportedLocales: AppLocalizations.supportedLocales,
                     locale: locale,
                     routerConfig: _appRouter.router,
+                    builder: (context, child) {
+                      return CookieConsentLayer(
+                        child: child ?? const SizedBox.shrink(),
+                      );
+                    },
                   ),
                 );
               },

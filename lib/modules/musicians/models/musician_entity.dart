@@ -11,6 +11,9 @@ import 'package:flutter/foundation.dart';
 /// - [minimumFee]                  → RD 1434/1992 / negociación — caché mínima del artista
 /// - [hasPublicLiabilityInsurance] → Reglamento de espectáculos públicos — seguro RC obligatorio en venues
 /// - [unionMembership]             → Estándar profesional — sindicato (UME, MUSICAE, etc.)
+/// - [birthDate]                   → LOPDGDD Art. 7 — verificación de edad mínima (14+)
+/// - [legalGuardianEmail]          → LOPDGDD Art. 7 — contacto del tutor legal para menores
+/// - [legalGuardianConsent]        → LOPDGDD Art. 7 — constancia de consentimiento del tutor
 @immutable
 class MusicianEntity {
   const MusicianEntity({
@@ -38,6 +41,11 @@ class MusicianEntity {
     this.minimumFee,
     this.hasPublicLiabilityInsurance = false,
     this.unionMembership,
+    this.birthDate,
+    this.legalGuardianEmail,
+    this.legalGuardianConsent = false,
+    this.legalGuardianConsentAt,
+    this.ageConsent,
     this.deletedAt,
   });
 
@@ -88,6 +96,21 @@ class MusicianEntity {
   /// Sindicato al que pertenece (UME, MUSICAE, etc.).
   final String? unionMembership;
 
+  /// LOPDGDD Art. 7 — fecha de nacimiento para validación 14+.
+  final DateTime? birthDate;
+
+  /// LOPDGDD Art. 7 — email del tutor legal para menores.
+  final String? legalGuardianEmail;
+
+  /// LOPDGDD Art. 7 — confirma consentimiento del tutor legal.
+  final bool legalGuardianConsent;
+
+  /// LOPDGDD Art. 7 — fecha de registro del consentimiento del tutor.
+  final DateTime? legalGuardianConsentAt;
+
+  /// LOPDGDD Art. 7 — marca de control de edad mínima.
+  final bool? ageConsent;
+
   /// Indica si el perfil está activo (no borrado con soft-delete).
   bool get isActive => deletedAt == null;
 
@@ -116,6 +139,11 @@ class MusicianEntity {
     double? minimumFee,
     bool? hasPublicLiabilityInsurance,
     String? unionMembership,
+    DateTime? birthDate,
+    String? legalGuardianEmail,
+    bool? legalGuardianConsent,
+    DateTime? legalGuardianConsentAt,
+    bool? ageConsent,
   }) {
     return MusicianEntity(
       id: id ?? this.id,
@@ -143,6 +171,12 @@ class MusicianEntity {
       hasPublicLiabilityInsurance:
           hasPublicLiabilityInsurance ?? this.hasPublicLiabilityInsurance,
       unionMembership: unionMembership ?? this.unionMembership,
+      birthDate: birthDate ?? this.birthDate,
+      legalGuardianEmail: legalGuardianEmail ?? this.legalGuardianEmail,
+      legalGuardianConsent: legalGuardianConsent ?? this.legalGuardianConsent,
+      legalGuardianConsentAt:
+          legalGuardianConsentAt ?? this.legalGuardianConsentAt,
+      ageConsent: ageConsent ?? this.ageConsent,
     );
   }
 }

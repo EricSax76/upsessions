@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/core/utils/age_gate_utils.dart';
 import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
 import 'package:upsessions/modules/musicians/application/affinity_flow.dart';
 
@@ -26,6 +27,9 @@ class ProfileFormCubit extends Cubit<ProfileFormState> {
            location: profile.location,
            influences: Map.from(profile.influences),
            availableForHire: profile.availableForHire,
+           birthDate: profile.birthDate,
+           legalGuardianEmail: profile.legalGuardianEmail ?? '',
+           legalGuardianConsent: profile.legalGuardianConsent,
          ),
        ) {
     unawaited(_primeExistingInfluencesImages(profile.influences));
@@ -45,6 +49,35 @@ class ProfileFormCubit extends Cubit<ProfileFormState> {
 
   void locationChanged(String value) {
     emit(state.copyWith(location: value));
+  }
+
+  void birthDateChanged(DateTime? value) {
+    final isMinor = isMusicianMinor(value);
+    emit(
+      state.copyWith(
+        birthDate: value,
+        legalGuardianEmail: isMinor ? state.legalGuardianEmail : '',
+        legalGuardianConsent: isMinor ? state.legalGuardianConsent : false,
+      ),
+    );
+  }
+
+  void legalGuardianEmailChanged(String value) {
+    emit(state.copyWith(legalGuardianEmail: value));
+  }
+
+  void legalGuardianConsentChanged(bool value) {
+    emit(state.copyWith(legalGuardianConsent: value));
+  }
+
+  bool get isMinor => isMusicianMinor(state.birthDate);
+
+  String? validateAgeGate() {
+    return validateMusicianAgeGate(
+      birthDate: state.birthDate,
+      legalGuardianEmail: state.legalGuardianEmail,
+      legalGuardianConsent: state.legalGuardianConsent,
+    );
   }
 
   Future<void> styleChanged(String? style) async {
@@ -114,11 +147,20 @@ class ProfileFormCubit extends Cubit<ProfileFormState> {
   }
 
   ProfileEntity getUpdatedProfile(ProfileEntity original) {
+    final isMinor = isMusicianMinor(state.birthDate);
+    final guardianEmail = state.legalGuardianEmail.trim();
     return original.copyWith(
       bio: state.bio.trim(),
       location: state.location.trim(),
       influences: state.influences,
       availableForHire: state.availableForHire,
+      birthDate: state.birthDate,
+      ageConsent: true,
+      legalGuardianEmail: isMinor ? guardianEmail : null,
+      legalGuardianConsent: isMinor && state.legalGuardianConsent,
+      legalGuardianConsentAt: isMinor && state.legalGuardianConsent
+          ? DateTime.now()
+          : null,
     );
   }
 

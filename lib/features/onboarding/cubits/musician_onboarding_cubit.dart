@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/core/utils/age_gate_utils.dart';
 import 'package:upsessions/modules/musicians/application/affinity_flow.dart';
 
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
@@ -51,9 +52,30 @@ class MusicianOnboardingCubit extends Cubit<MusicianOnboardingState> {
     required String city,
     required List<String> styles,
     required int experienceYears,
+    required DateTime? birthDate,
+    required String legalGuardianEmail,
+    required bool legalGuardianConsent,
     String? photoUrl,
     String? bio,
   }) async {
+    final ageGateError = validateMusicianAgeGate(
+      birthDate: birthDate,
+      legalGuardianEmail: legalGuardianEmail,
+      legalGuardianConsent: legalGuardianConsent,
+    );
+    if (ageGateError != null) {
+      emit(
+        state.copyWith(
+          status: MusicianOnboardingStatus.error,
+          errorMessage: ageGateError,
+        ),
+      );
+      return;
+    }
+
+    final isMinor = isMusicianMinor(birthDate);
+    final guardianEmail = legalGuardianEmail.trim();
+
     emit(state.copyWith(status: MusicianOnboardingStatus.saving));
     try {
       await _repository.saveProfile(
@@ -67,6 +89,13 @@ class MusicianOnboardingCubit extends Cubit<MusicianOnboardingState> {
         bio: bio,
         influences: state.influences,
         availableForHire: state.availableForHire,
+        birthDate: birthDate,
+        legalGuardianEmail: isMinor ? guardianEmail : null,
+        legalGuardianConsent: isMinor && legalGuardianConsent,
+        legalGuardianConsentAt: isMinor && legalGuardianConsent
+            ? DateTime.now()
+            : null,
+        ageConsent: true,
       );
       if (isClosed) return;
       emit(state.copyWith(status: MusicianOnboardingStatus.saved));

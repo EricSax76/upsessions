@@ -10,7 +10,7 @@ enum UserRole { musician, manager, studio, admin }
 /// - [lastLoginAt]           → RGPD Art. 32 — seguridad / detección de accesos no autorizados
 /// - [acceptedTermsAt]       → LSSI Art. 23 / RGPD Art. 7 — prueba de aceptación de T&C
 /// - [acceptedPrivacyAt]     → RGPD Art. 7.1 — consentimiento explícito a política de privacidad
-/// - [dataProcessingConsent] → RGPD Art. 6 — base legal del tratamiento
+/// - [dataProcessingLegalBasis] → RGPD Art. 6 — base jurídica principal del tratamiento
 /// - [marketingConsent]      → LSSI Art. 21 — consentimiento para comunicaciones comerciales
 /// - [deletedAt]             → RGPD Art. 17 — derecho al olvido / soft-delete con TTL
 /// - [locale]                → LSSI Art. 10 — idioma para comunicaciones legales
@@ -29,6 +29,7 @@ class UserEntity {
     this.acceptedTermsAt,
     this.acceptedPrivacyAt,
     this.dataProcessingConsent = false,
+    this.dataProcessingLegalBasis = 'contract',
     this.marketingConsent = false,
     this.deletedAt,
     this.locale,
@@ -58,7 +59,12 @@ class UserEntity {
   final DateTime? acceptedPrivacyAt;
 
   /// RGPD Art. 6 — consentimiento al tratamiento de datos personales.
+  /// Campo legacy: para tratamiento principal usar [dataProcessingLegalBasis].
   final bool dataProcessingConsent;
+
+  /// RGPD Art. 6 — base jurídica principal del tratamiento.
+  /// Valores esperados: `contract` o `consent`.
+  final String dataProcessingLegalBasis;
 
   /// LSSI Art. 21 — opt-in para comunicaciones comerciales.
   final bool marketingConsent;
@@ -94,6 +100,7 @@ class UserEntity {
     DateTime? acceptedTermsAt,
     DateTime? acceptedPrivacyAt,
     bool? dataProcessingConsent,
+    String? dataProcessingLegalBasis,
     bool? marketingConsent,
     DateTime? deletedAt,
     String? locale,
@@ -112,6 +119,8 @@ class UserEntity {
       acceptedPrivacyAt: acceptedPrivacyAt ?? this.acceptedPrivacyAt,
       dataProcessingConsent:
           dataProcessingConsent ?? this.dataProcessingConsent,
+      dataProcessingLegalBasis:
+          dataProcessingLegalBasis ?? this.dataProcessingLegalBasis,
       marketingConsent: marketingConsent ?? this.marketingConsent,
       deletedAt: deletedAt ?? this.deletedAt,
       locale: locale ?? this.locale,

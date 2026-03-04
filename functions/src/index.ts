@@ -9,6 +9,9 @@ export {
   acceptLegalDocs,
   onAuthUserCreateBootstrap,
   onAuthUserDeleteSoftDelete,
+  purgeExpiredComplianceData,
+  requestAccountDeletion,
+  requestDataExport,
   syncUserSession,
   updateUserComplianceProfile,
 } from './legalCompliance';

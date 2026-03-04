@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/core/services/cloud_functions_service.dart';
+import 'package:upsessions/features/legal/legal_policy_registry.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
-
-const String _termsVersion = '2026-03-02';
-const String _privacyVersion = '2026-03-02';
-const String _marketingVersion = '2026-03-02';
 
 class LegalComplianceGate extends StatefulWidget {
   const LegalComplianceGate({super.key, required this.child});
@@ -23,6 +23,8 @@ class LegalComplianceGate extends StatefulWidget {
 
 class _LegalComplianceGateState extends State<LegalComplianceGate> {
   bool _isSubmitting = false;
+  bool _acceptTermsChecked = false;
+  bool _acceptPrivacyChecked = false;
   bool _marketingOptIn = false;
   String? _errorMessage;
 
@@ -52,12 +54,15 @@ class _LegalComplianceGateState extends State<LegalComplianceGate> {
     final cloudFunctionsService = locate<CloudFunctionsService>();
     try {
       await cloudFunctionsService.acceptLegalBundle(
-        termsVersion: _termsVersion,
-        privacyVersion: _privacyVersion,
-        marketingVersion: _marketingVersion,
+        termsVersion: LegalPolicyRegistry.termsVersion,
+        privacyVersion: LegalPolicyRegistry.privacyVersion,
+        marketingVersion: LegalPolicyRegistry.marketingVersion,
         acceptTerms: needsTerms,
         acceptPrivacy: needsPrivacy,
         marketingOptIn: _marketingOptIn,
+        termsPolicyHash: LegalPolicyRegistry.termsPolicyHash,
+        privacyPolicyHash: LegalPolicyRegistry.privacyPolicyHash,
+        marketingPolicyHash: LegalPolicyRegistry.marketingPolicyHash,
         source: _source,
       );
     } on FirebaseFunctionsException catch (error) {
@@ -85,6 +90,9 @@ class _LegalComplianceGateState extends State<LegalComplianceGate> {
     if (uid == null || uid.isEmpty) {
       return widget.child;
     }
+    if (Firebase.apps.isEmpty) {
+      return widget.child;
+    }
 
     final userDocStream = FirebaseFirestore.instance
         .collection('users')
@@ -104,6 +112,9 @@ class _LegalComplianceGateState extends State<LegalComplianceGate> {
         final acceptedPrivacyAt = data?['acceptedPrivacyAt'];
         final needsTerms = acceptedTermsAt == null;
         final needsPrivacy = acceptedPrivacyAt == null;
+        final canSubmit =
+            (!needsTerms || _acceptTermsChecked) &&
+            (!needsPrivacy || _acceptPrivacyChecked);
 
         if (!needsTerms && !needsPrivacy) {
           return widget.child;
@@ -141,15 +152,57 @@ class _LegalComplianceGateState extends State<LegalComplianceGate> {
                     ),
                     const SizedBox(height: 16),
                     if (needsTerms)
-                      const _PendingRow(
-                        icon: Icons.check_circle_outline,
-                        label: 'Términos y condiciones',
+                      CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        value: _acceptTermsChecked,
+                        title: const Text('Acepto los términos y condiciones'),
+                        subtitle: TextButton(
+                          onPressed: () => context.push(AppRoutes.legalTerms),
+                          child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Leer términos'),
+                          ),
+                        ),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        onChanged: _isSubmitting
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  _acceptTermsChecked = value ?? false;
+                                });
+                              },
                       ),
                     if (needsPrivacy)
-                      const _PendingRow(
-                        icon: Icons.privacy_tip_outlined,
-                        label: 'Política de privacidad',
+                      CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        value: _acceptPrivacyChecked,
+                        title: const Text('Acepto la política de privacidad'),
+                        subtitle: TextButton(
+                          onPressed: () => context.push(AppRoutes.legalPrivacy),
+                          child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Leer política de privacidad'),
+                          ),
+                        ),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        onChanged: _isSubmitting
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  _acceptPrivacyChecked = value ?? false;
+                                });
+                              },
                       ),
+                    const Text(
+                      'Puedes consultar también nuestra política de cookies.',
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton(
+                        onPressed: () => context.push(AppRoutes.legalCookies),
+                        child: const Text('Leer política de cookies'),
+                      ),
+                    ),
                     const SizedBox(height: 12),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
@@ -180,7 +233,7 @@ class _LegalComplianceGateState extends State<LegalComplianceGate> {
                       builder: (context, constraints) {
                         final compact = constraints.maxWidth < 360;
                         final acceptButton = ElevatedButton(
-                          onPressed: _isSubmitting
+                          onPressed: _isSubmitting || !canSubmit
                               ? null
                               : () => _acceptPending(
                                   needsTerms: needsTerms,
@@ -230,27 +283,6 @@ class _LegalComplianceGateState extends State<LegalComplianceGate> {
           ),
         );
       },
-    );
-  }
-}
-
-class _PendingRow extends StatelessWidget {
-  const _PendingRow({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 18),
-          const SizedBox(width: 8),
-          Expanded(child: Text(label)),
-        ],
-      ),
     );
   }
 }

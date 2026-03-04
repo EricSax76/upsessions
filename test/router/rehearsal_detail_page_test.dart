@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
@@ -59,6 +60,8 @@ void main() {
   late MockLikedMusiciansCubit likedMusiciansCubit;
 
   setUp(() async {
+    Animate.restartOnHotReload = false;
+
     authCubit = MockAuthCubit();
     final authState = AuthState(
       status: AuthStatus.authenticated,
@@ -223,6 +226,10 @@ void main() {
     );
 
     await tester.pump();
+    await tester.pump(1.ms);
     expect(find.byType(RehearsalDetailPage), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
   });
 }

@@ -9,6 +9,7 @@ import '../modules/contacts/ui/pages/contacts_page.dart';
 import '../features/events/ui/pages/create_event_page.dart';
 import '../features/events/ui/pages/events_page.dart';
 import '../features/media/ui/pages/media_gallery_page.dart';
+import '../features/legal/ui/pages/legal_pages.dart';
 import '../modules/notifications/ui/pages/notifications_page.dart';
 import '../features/onboarding/ui/pages/app_welcome_page.dart';
 import '../features/onboarding/ui/pages/musician_onboarding_page.dart';
@@ -126,6 +127,18 @@ List<GoRoute> buildAppRoutes() {
     GoRoute(
       path: AppRoutes.forgotPassword,
       builder: (context, state) => const ForgotPasswordPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.legalTerms,
+      builder: (context, state) => const TermsPolicyPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.legalPrivacy,
+      builder: (context, state) => const PrivacyPolicyPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.legalCookies,
+      builder: (context, state) => const CookiesPolicyPage(),
     ),
     GoRoute(
       path: AppRoutes.musicianOnboarding,
@@ -534,7 +547,9 @@ List<GoRoute> buildAppRoutes() {
           managerRepository: locate<EventManagerRepository>(),
         )..loadProfile(),
         child: ManagerShellPage(
-          child: ManagerEventDetailPage(eventId: state.pathParameters['eventId']!),
+          child: ManagerEventDetailPage(
+            eventId: state.pathParameters['eventId']!,
+          ),
         ),
       ),
     ),
@@ -585,7 +600,9 @@ List<GoRoute> buildAppRoutes() {
           managerRepository: locate<EventManagerRepository>(),
         )..loadProfile(),
         child: ManagerShellPage(
-          child: JamSessionDetailPage(sessionId: state.pathParameters['sessionId']!),
+          child: JamSessionDetailPage(
+            sessionId: state.pathParameters['sessionId']!,
+          ),
         ),
       ),
     ),
@@ -626,9 +643,8 @@ List<GoRoute> buildAppRoutes() {
             ),
           ),
           BlocProvider(
-            create: (context) => HireMusiciansCubit(
-              repository: locate<MusiciansRepository>(),
-            ),
+            create: (context) =>
+                HireMusiciansCubit(repository: locate<MusiciansRepository>()),
           ),
         ],
         child: const ManagerShellPage(child: HireMusiciansPage()),
@@ -645,9 +661,8 @@ List<GoRoute> buildAppRoutes() {
             )..loadProfile(),
           ),
           BlocProvider(
-            create: (context) => GigOffersCubit(
-              repository: locate<GigOffersRepository>(),
-            ),
+            create: (context) =>
+                GigOffersCubit(repository: locate<GigOffersRepository>()),
           ),
         ],
         child: const ManagerShellPage(child: GigOffersPage()),
@@ -664,9 +679,8 @@ List<GoRoute> buildAppRoutes() {
             )..loadProfile(),
           ),
           BlocProvider(
-            create: (context) => GigOfferFormCubit(
-              repository: locate<GigOffersRepository>(),
-            ),
+            create: (context) =>
+                GigOfferFormCubit(repository: locate<GigOffersRepository>()),
           ),
         ],
         child: const ManagerShellPage(child: GigOfferForm()),

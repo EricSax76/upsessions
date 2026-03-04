@@ -6,7 +6,8 @@ import 'musician_entity.dart';
 ///
 /// Campos normativos añadidos (espejo de [MusicianEntity]):
 /// [updatedAt], [deletedAt], [isVerifiedArtist], [languages],
-/// [workRadius], [minimumFee], [hasPublicLiabilityInsurance], [unionMembership].
+/// [workRadius], [minimumFee], [hasPublicLiabilityInsurance], [unionMembership],
+/// [birthDate], [legalGuardianEmail], [legalGuardianConsent], [legalGuardianConsentAt], [ageConsent].
 class MusicianDto {
   const MusicianDto({
     required this.id,
@@ -33,12 +34,15 @@ class MusicianDto {
     this.minimumFee,
     this.hasPublicLiabilityInsurance = false,
     this.unionMembership,
+    this.birthDate,
+    this.legalGuardianEmail,
+    this.legalGuardianConsent = false,
+    this.legalGuardianConsentAt,
+    this.ageConsent,
     this.deletedAt,
   });
 
-  factory MusicianDto.fromDocument(
-    DocumentSnapshot<Map<String, dynamic>> doc,
-  ) {
+  factory MusicianDto.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data() ?? <String, dynamic>{};
     final stylesDynamic = data['styles'];
     return MusicianDto(
@@ -57,11 +61,13 @@ class MusicianDto {
       gender: data['gender'] as String?,
       rating: (data['rating'] as num?)?.toDouble(),
       bio: (data['bio'] ?? '') as String,
-      links: (data['links'] as Map<String, dynamic>?)?.map(
+      links:
+          (data['links'] as Map<String, dynamic>?)?.map(
             (key, value) => MapEntry(key, value.toString()),
           ) ??
           const {},
-      influences: (data['influences'] as Map<String, dynamic>?)?.map(
+      influences:
+          (data['influences'] as Map<String, dynamic>?)?.map(
             (key, value) => MapEntry(
               key,
               (value as List<dynamic>).map((e) => e.toString()).toList(),
@@ -79,6 +85,11 @@ class MusicianDto {
       hasPublicLiabilityInsurance:
           (data['hasPublicLiabilityInsurance'] as bool?) ?? false,
       unionMembership: data['unionMembership'] as String?,
+      birthDate: _toDateTime(data['birthDate']),
+      legalGuardianEmail: data['legalGuardianEmail'] as String?,
+      legalGuardianConsent: (data['legalGuardianConsent'] as bool?) ?? false,
+      legalGuardianConsentAt: _toDateTime(data['legalGuardianConsentAt']),
+      ageConsent: data['ageConsent'] as bool?,
     );
   }
 
@@ -109,6 +120,11 @@ class MusicianDto {
   final double? minimumFee;
   final bool hasPublicLiabilityInsurance;
   final String? unionMembership;
+  final DateTime? birthDate;
+  final String? legalGuardianEmail;
+  final bool legalGuardianConsent;
+  final DateTime? legalGuardianConsentAt;
+  final bool? ageConsent;
 
   /// Serializa a mapa para Firestore.
   Map<String, dynamic> toFirestore() {
@@ -137,6 +153,12 @@ class MusicianDto {
       if (minimumFee != null) 'minimumFee': minimumFee,
       'hasPublicLiabilityInsurance': hasPublicLiabilityInsurance,
       if (unionMembership != null) 'unionMembership': unionMembership,
+      if (birthDate != null) 'birthDate': Timestamp.fromDate(birthDate!),
+      'legalGuardianEmail': legalGuardianEmail,
+      'legalGuardianConsent': legalGuardianConsent,
+      if (legalGuardianConsentAt != null)
+        'legalGuardianConsentAt': Timestamp.fromDate(legalGuardianConsentAt!),
+      'ageConsent': ageConsent,
     };
   }
 
@@ -166,6 +188,11 @@ class MusicianDto {
       minimumFee: minimumFee,
       hasPublicLiabilityInsurance: hasPublicLiabilityInsurance,
       unionMembership: unionMembership,
+      birthDate: birthDate,
+      legalGuardianEmail: legalGuardianEmail,
+      legalGuardianConsent: legalGuardianConsent,
+      legalGuardianConsentAt: legalGuardianConsentAt,
+      ageConsent: ageConsent,
     );
   }
 

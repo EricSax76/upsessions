@@ -269,6 +269,11 @@ class MusiciansRepository {
     double? minimumFee,
     bool hasPublicLiabilityInsurance = false,
     String? unionMembership,
+    DateTime? birthDate,
+    String? legalGuardianEmail,
+    bool legalGuardianConsent = false,
+    DateTime? legalGuardianConsentAt,
+    bool? ageConsent,
   }) async {
     final now = FieldValue.serverTimestamp();
     await _firestore.collection(_collectionName).doc(musicianId).set({
@@ -295,6 +300,12 @@ class MusiciansRepository {
       'minimumFee': ?minimumFee,
       'hasPublicLiabilityInsurance': hasPublicLiabilityInsurance,
       'unionMembership': ?unionMembership,
+      if (birthDate != null) 'birthDate': Timestamp.fromDate(birthDate),
+      'legalGuardianEmail': legalGuardianEmail,
+      'legalGuardianConsent': legalGuardianConsent,
+      if (legalGuardianConsentAt != null)
+        'legalGuardianConsentAt': Timestamp.fromDate(legalGuardianConsentAt),
+      'ageConsent': ageConsent,
     }, SetOptions(merge: true));
   }
 

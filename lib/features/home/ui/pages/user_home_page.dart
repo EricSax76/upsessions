@@ -11,7 +11,6 @@ import '../../cubits/user_home_state.dart';
 import 'package:upsessions/core/widgets/announcement_card.dart';
 import 'package:upsessions/features/home/ui/widgets/announcements/new_announcements_section.dart';
 import 'package:upsessions/features/home/ui/widgets/events/upcoming_events_section.dart';
-import 'package:upsessions/features/home/ui/widgets/footer/bottom_cookie_bar.dart';
 import 'package:upsessions/core/widgets/section_card.dart';
 import 'package:upsessions/features/home/ui/widgets/home_hero_section.dart';
 import 'package:upsessions/features/home/ui/widgets/musicians/musicians_by_instrument_section.dart';
@@ -207,7 +206,6 @@ class UserHomePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 48),
-                    const BottomCookieBar(),
                   ],
                 ),
               ),

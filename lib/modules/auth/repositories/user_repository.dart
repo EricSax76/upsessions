@@ -56,10 +56,16 @@ class UserRepository {
     required String userId,
     required bool dataProcessingConsent,
     required bool marketingConsent,
+    String dataProcessingLegalBasis = 'contract',
   }) async {
     final now = Timestamp.fromDate(DateTime.now());
+    final normalizedBasis =
+        dataProcessingLegalBasis.trim().toLowerCase() == 'consent'
+        ? 'consent'
+        : 'contract';
     await _users.doc(userId).set({
       'dataProcessingConsent': dataProcessingConsent,
+      'dataProcessingLegalBasis': normalizedBasis,
       'marketingConsent': marketingConsent,
       if (dataProcessingConsent) 'acceptedPrivacyAt': now,
       'acceptedTermsAt': now,
@@ -95,6 +101,7 @@ class UserRepository {
       acceptedTermsAt: user.acceptedTermsAt,
       acceptedPrivacyAt: user.acceptedPrivacyAt,
       dataProcessingConsent: user.dataProcessingConsent,
+      dataProcessingLegalBasis: user.dataProcessingLegalBasis,
       marketingConsent: user.marketingConsent,
       deletedAt: user.deletedAt,
       locale: user.locale,

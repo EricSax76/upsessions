@@ -11,7 +11,8 @@ class AppRoutes {
   static const userHome = '/home';
   static const musicians = '/musicians';
   static const musicianDetailRoute = '/musicians/:musicianId';
-  static const musicianDetailLegacyRoute = '/musicians/:musicianId/:musicianName';
+  static const musicianDetailLegacyRoute =
+      '/musicians/:musicianId/:musicianName';
   static const announcements = '/announcements';
   static const announcementDetailRoute = '/announcements/:announcementId';
   static const announcementForm = '/announcements/form';
@@ -33,6 +34,9 @@ class AppRoutes {
   static const settings = '/settings';
   static const help = '/settings/help';
   static const notifications = '/notifications';
+  static const legalTerms = '/legal/terms';
+  static const legalPrivacy = '/legal/privacy';
+  static const legalCookies = '/legal/cookies';
 
   static const studios = '/studios';
   static const studiosLogin = '/studios/login';
@@ -55,7 +59,8 @@ class AppRoutes {
   static const eventManagerEventDetail = '/event-manager/events/:eventId';
   static const eventManagerEventForm = '/event-manager/events/form';
   static const eventManagerJamSessions = '/event-manager/jam-sessions';
-  static const eventManagerJamSessionDetail = '/event-manager/jam-sessions/:sessionId';
+  static const eventManagerJamSessionDetail =
+      '/event-manager/jam-sessions/:sessionId';
   static const eventManagerJamSessionForm = '/event-manager/jam-sessions/form';
   static const eventManagerAgenda = '/event-manager/agenda';
   static const eventManagerHireMusicians = '/event-manager/hire';

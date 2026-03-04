@@ -27,6 +27,10 @@ class ProfileDto {
     this.vatRegistered = false,
     this.isPublic = true,
     this.ageConsent,
+    this.birthDate,
+    this.legalGuardianEmail,
+    this.legalGuardianConsent = false,
+    this.legalGuardianConsentAt,
     this.nationality,
   });
 
@@ -50,13 +54,14 @@ class ProfileDto {
   final bool vatRegistered;
   final bool isPublic;
   final bool? ageConsent;
+  final DateTime? birthDate;
+  final String? legalGuardianEmail;
+  final bool legalGuardianConsent;
+  final DateTime? legalGuardianConsentAt;
   final String? nationality;
 
   /// Convierte el mapa de Firestore en un [ProfileDto].
-  factory ProfileDto.fromFirestore(
-    String id,
-    Map<String, dynamic> data,
-  ) {
+  factory ProfileDto.fromFirestore(String id, Map<String, dynamic> data) {
     return ProfileDto(
       id: id,
       name: (data['name'] ?? '') as String,
@@ -77,6 +82,10 @@ class ProfileDto {
       vatRegistered: (data['vatRegistered'] as bool?) ?? false,
       isPublic: (data['isPublic'] as bool?) ?? true,
       ageConsent: data['ageConsent'] as bool?,
+      birthDate: _toDateTime(data['birthDate']),
+      legalGuardianEmail: data['legalGuardianEmail'] as String?,
+      legalGuardianConsent: (data['legalGuardianConsent'] as bool?) ?? false,
+      legalGuardianConsentAt: _toDateTime(data['legalGuardianConsentAt']),
       nationality: data['nationality'] as String?,
     );
   }
@@ -102,6 +111,11 @@ class ProfileDto {
       'vatRegistered': vatRegistered,
       'isPublic': isPublic,
       'ageConsent': ageConsent,
+      if (birthDate != null) 'birthDate': Timestamp.fromDate(birthDate!),
+      'legalGuardianEmail': legalGuardianEmail,
+      'legalGuardianConsent': legalGuardianConsent,
+      if (legalGuardianConsentAt != null)
+        'legalGuardianConsentAt': Timestamp.fromDate(legalGuardianConsentAt!),
       'nationality': nationality,
     };
   }
@@ -126,6 +140,10 @@ class ProfileDto {
       vatRegistered: vatRegistered,
       isPublic: isPublic,
       ageConsent: ageConsent,
+      birthDate: birthDate,
+      legalGuardianEmail: legalGuardianEmail,
+      legalGuardianConsent: legalGuardianConsent,
+      legalGuardianConsentAt: legalGuardianConsentAt,
       nationality: nationality,
     );
   }

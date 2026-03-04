@@ -564,6 +564,11 @@ service cloud.firestore {
         allow read: if isOwner(uid);
         allow create, update, delete: if false;
       }
+
+      match /privacy_requests/{requestId} {
+        allow read: if isOwner(uid);
+        allow create, update, delete: if false;
+      }
     }
 
     // Support collectionGroup('members') queries across all groups.

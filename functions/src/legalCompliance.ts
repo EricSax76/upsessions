@@ -9,14 +9,23 @@ type PolicyType = 'terms' | 'privacy' | 'marketing';
 type ConsentAction = 'accept' | 'revoke';
 type ConsentSource = 'web' | 'android' | 'ios' | 'api';
 type UserRole = 'musician' | 'event_manager' | 'studio' | 'admin' | 'multi';
+type DataProcessingLegalBasis = 'contract' | 'consent';
+type PrivacyRequestType = 'data_export' | 'account_deletion';
+type PrivacyRequestStatus = 'pending' | 'in_progress' | 'completed' | 'rejected';
 
 const POLICY_TYPES: readonly PolicyType[] = ['terms', 'privacy', 'marketing'];
 const CONSENT_SOURCES: readonly ConsentSource[] = ['web', 'android', 'ios', 'api'];
 const VERSION_PATTERN = /^[A-Za-z0-9._-]{1,64}$/;
 const LOCALE_PATTERN = /^[a-z]{2}(?:-[A-Z]{2})?$/;
 const PHONE_PATTERN = /^[+0-9()\-.\s]{6,24}$/;
+const POLICY_HASH_PATTERN = /^[a-f0-9]{64}$/;
 const DEFAULT_ROLE: UserRole = 'musician';
+const DEFAULT_DATA_PROCESSING_LEGAL_BASIS: DataProcessingLegalBasis = 'contract';
 const GDPR_RETENTION_DAYS = 30;
+const CONSENT_EVIDENCE_RETENTION_DAYS = 365 * 6;
+const PRIVACY_REQUEST_RETENTION_DAYS = 365 * 6;
+const RETENTION_PURGE_BATCH_SIZE = 200;
+const RETENTION_PURGE_MAX_BATCHES = 15;
 
 function isPolicyType(value: string): value is PolicyType {
   return (POLICY_TYPES as readonly string[]).includes(value);
@@ -55,13 +64,15 @@ function assertVersionOrThrow(version: string, fieldName = 'version'): void {
   }
 }
 
-function normalizePolicyHash(value: unknown): string | null {
+function normalizePolicyHash(value: unknown, fieldName = 'policyHash'): string {
   const hash = stringOrEmpty(value).trim().toLowerCase();
-  if (!hash) return null;
-  // sha256 hex canonical length.
-  if (/^[a-f0-9]{64}$/.test(hash)) return hash;
-  // Store a normalized hash if caller sends plain text by mistake.
-  return createHash('sha256').update(hash).digest('hex');
+  if (!POLICY_HASH_PATTERN.test(hash)) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      `${fieldName} must be a 64-char sha256 hex hash.`,
+    );
+  }
+  return hash;
 }
 
 function sanitizeLocale(value: unknown): string | null {
@@ -167,6 +178,16 @@ function nowPlusDays(days: number): Date {
   return new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 }
 
+function timestampPlusDays(days: number): admin.firestore.Timestamp {
+  return admin.firestore.Timestamp.fromDate(nowPlusDays(days));
+}
+
+function sanitizeReason(value: unknown): string | null {
+  const reason = stringOrEmpty(value).trim();
+  if (!reason) return null;
+  return reason.slice(0, 1000);
+}
+
 export const onAuthUserCreateBootstrap = region.auth.user().onCreate(async (user) => {
   const userRef = admin.firestore().collection('users').doc(user.uid);
   const timestamp = admin.firestore.FieldValue.serverTimestamp();
@@ -187,7 +208,8 @@ export const onAuthUserCreateBootstrap = region.auth.user().onCreate(async (user
       privacyVersion: null,
       acceptedTermsAt: null,
       acceptedPrivacyAt: null,
-      dataProcessingConsent: true,
+      dataProcessingConsent: false,
+      dataProcessingLegalBasis: DEFAULT_DATA_PROCESSING_LEGAL_BASIS,
       createdAt: timestamp,
       lastLoginAt: timestamp,
       deletedAt: null,
@@ -233,7 +255,8 @@ export const syncUserSession = region.https.onCall(async (data, context) => {
           marketingConsent: false,
           marketingConsentAt: null,
           marketingConsentRevokedAt: null,
-          dataProcessingConsent: true,
+          dataProcessingConsent: false,
+          dataProcessingLegalBasis: DEFAULT_DATA_PROCESSING_LEGAL_BASIS,
           deletedAt: null,
           purgeAt: null,
         },
@@ -248,6 +271,8 @@ export const syncUserSession = region.https.onCall(async (data, context) => {
       isVerified: Boolean(token.email_verified),
       role: primaryRole,
       roles,
+      dataProcessingConsent: false,
+      dataProcessingLegalBasis: DEFAULT_DATA_PROCESSING_LEGAL_BASIS,
       lastLoginAt: timestamp,
       updatedAt: timestamp,
     };
@@ -339,9 +364,16 @@ export const acceptLegalBundle = region.https.onCall(async (data, context) => {
   }
   assertVersionOrThrow(marketingVersion, 'marketingVersion');
 
-  const termsPolicyHash = normalizePolicyHash(policyHashes.terms);
-  const privacyPolicyHash = normalizePolicyHash(policyHashes.privacy);
-  const marketingPolicyHash = normalizePolicyHash(policyHashes.marketing);
+  const termsPolicyHash = acceptTerms
+    ? normalizePolicyHash(policyHashes.terms, 'policyHashes.terms')
+    : null;
+  const privacyPolicyHash = acceptPrivacy
+    ? normalizePolicyHash(policyHashes.privacy, 'policyHashes.privacy')
+    : null;
+  const marketingPolicyHash = normalizePolicyHash(
+    policyHashes.marketing,
+    'policyHashes.marketing',
+  );
 
   const uid = context.auth.uid;
   const roles = await resolveRoles(uid, tokenRole(context));
@@ -361,7 +393,8 @@ export const acceptLegalBundle = region.https.onCall(async (data, context) => {
           marketingConsent: false,
           marketingConsentAt: null,
           marketingConsentRevokedAt: null,
-          dataProcessingConsent: true,
+          dataProcessingConsent: false,
+          dataProcessingLegalBasis: DEFAULT_DATA_PROCESSING_LEGAL_BASIS,
           deletedAt: null,
           purgeAt: null,
         },
@@ -374,6 +407,8 @@ export const acceptLegalBundle = region.https.onCall(async (data, context) => {
       consentSource: source,
       ipHash,
       userAgentHash,
+      evidenceRetentionDays: CONSENT_EVIDENCE_RETENTION_DAYS,
+      evidencePurgeAt: timestampPlusDays(CONSENT_EVIDENCE_RETENTION_DAYS),
       updatedAt: timestamp,
     };
 
@@ -439,6 +474,8 @@ export const acceptLegalBundle = region.https.onCall(async (data, context) => {
       marketingConsent: marketingOptIn,
       marketingConsentAt: marketingOptIn ? timestamp : null,
       marketingConsentRevokedAt: marketingOptIn ? null : timestamp,
+      dataProcessingConsent: false,
+      dataProcessingLegalBasis: DEFAULT_DATA_PROCESSING_LEGAL_BASIS,
     };
 
     if (acceptTerms) {
@@ -475,7 +512,7 @@ export const acceptLegalDocs = region.https.onCall(async (data, context) => {
   const version = stringOrEmpty(body.version).trim();
   const actionRaw = stringOrEmpty(body.action).trim().toLowerCase() || 'accept';
   const source = normalizeSource(body.source);
-  const policyHash = normalizePolicyHash(body.policyHash);
+  const policyHash = normalizePolicyHash(body.policyHash, 'policyHash');
 
   if (!isPolicyType(policyType)) {
     throw new functions.https.HttpsError(
@@ -515,7 +552,8 @@ export const acceptLegalDocs = region.https.onCall(async (data, context) => {
           marketingConsent: false,
           marketingConsentAt: null,
           marketingConsentRevokedAt: null,
-          dataProcessingConsent: true,
+          dataProcessingConsent: false,
+          dataProcessingLegalBasis: DEFAULT_DATA_PROCESSING_LEGAL_BASIS,
           deletedAt: null,
           purgeAt: null,
         },
@@ -531,6 +569,8 @@ export const acceptLegalDocs = region.https.onCall(async (data, context) => {
       policyHash,
       ipHash,
       userAgentHash,
+      evidenceRetentionDays: CONSENT_EVIDENCE_RETENTION_DAYS,
+      evidencePurgeAt: timestampPlusDays(CONSENT_EVIDENCE_RETENTION_DAYS),
       updatedAt: timestamp,
     };
 
@@ -552,6 +592,8 @@ export const acceptLegalDocs = region.https.onCall(async (data, context) => {
       updatedAt: timestamp,
       role: primaryRole,
       roles,
+      dataProcessingConsent: false,
+      dataProcessingLegalBasis: DEFAULT_DATA_PROCESSING_LEGAL_BASIS,
     };
 
     if (policyType === 'terms') {
@@ -581,3 +623,197 @@ export const acceptLegalDocs = region.https.onCall(async (data, context) => {
     source,
   };
 });
+
+async function createPrivacyRequest({
+  uid,
+  requestType,
+  reason,
+  source,
+  status = 'pending',
+}: {
+  uid: string;
+  requestType: PrivacyRequestType;
+  reason: string | null;
+  source: ConsentSource;
+  status?: PrivacyRequestStatus;
+}): Promise<{ requestId: string }> {
+  const db = admin.firestore();
+  const requestsRef = db.collection('users').doc(uid).collection('privacy_requests');
+  const requestDoc = requestsRef.doc();
+  const timestamp = admin.firestore.FieldValue.serverTimestamp();
+
+  await requestDoc.set({
+    requestType,
+    status,
+    reason,
+    source,
+    evidenceRetentionDays: PRIVACY_REQUEST_RETENTION_DAYS,
+    evidencePurgeAt: timestampPlusDays(PRIVACY_REQUEST_RETENTION_DAYS),
+    createdAt: timestamp,
+    updatedAt: timestamp,
+  });
+
+  return { requestId: requestDoc.id };
+}
+
+export const requestDataExport = region.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'Authentication required.');
+  }
+
+  const body = record(data);
+  const source = normalizeSource(body.source);
+  const reason = sanitizeReason(body.reason);
+  const uid = context.auth.uid;
+
+  const { requestId } = await createPrivacyRequest({
+    uid,
+    requestType: 'data_export',
+    reason,
+    source,
+  });
+
+  return {
+    ok: true,
+    uid,
+    requestId,
+    requestType: 'data_export',
+  };
+});
+
+export const requestAccountDeletion = region.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'Authentication required.');
+  }
+
+  const body = record(data);
+  const source = normalizeSource(body.source);
+  const reason = sanitizeReason(body.reason);
+  const uid = context.auth.uid;
+  const timestamp = admin.firestore.FieldValue.serverTimestamp();
+
+  const { requestId } = await createPrivacyRequest({
+    uid,
+    requestType: 'account_deletion',
+    reason,
+    source,
+  });
+
+  await admin.firestore().collection('users').doc(uid).set(
+    {
+      deletionRequestedAt: timestamp,
+      updatedAt: timestamp,
+    },
+    { merge: true },
+  );
+
+  return {
+    ok: true,
+    uid,
+    requestId,
+    requestType: 'account_deletion',
+  };
+});
+
+async function purgeUsersPastRetention(now: admin.firestore.Timestamp): Promise<number> {
+  const db = admin.firestore();
+  const usersToPurge = await db
+    .collection('users')
+    .where('purgeAt', '<=', now)
+    .limit(RETENTION_PURGE_BATCH_SIZE)
+    .get();
+
+  if (usersToPurge.empty) {
+    return 0;
+  }
+
+  let removed = 0;
+  for (const doc of usersToPurge.docs) {
+    const data = record(doc.data());
+    if (data.deletedAt == null) {
+      await doc.ref.set(
+        {
+          purgeAt: null,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
+      continue;
+    }
+    await db.recursiveDelete(doc.ref);
+    removed += 1;
+  }
+
+  return removed;
+}
+
+async function purgeExpiredEvidenceBatch(
+  collectionId: 'policy_acceptances' | 'privacy_requests',
+  now: admin.firestore.Timestamp,
+): Promise<number> {
+  const db = admin.firestore();
+  const expiredDocs = await db
+    .collectionGroup(collectionId)
+    .where('evidencePurgeAt', '<=', now)
+    .limit(RETENTION_PURGE_BATCH_SIZE)
+    .get();
+
+  if (expiredDocs.empty) {
+    return 0;
+  }
+
+  const batch = db.batch();
+  for (const doc of expiredDocs.docs) {
+    batch.delete(doc.ref);
+  }
+  await batch.commit();
+  return expiredDocs.size;
+}
+
+async function runRetentionInBatches(
+  purgeBatch: () => Promise<number>,
+): Promise<{ deleted: number; reachedCap: boolean }> {
+  let total = 0;
+  let reachedCap = false;
+
+  for (let i = 0; i < RETENTION_PURGE_MAX_BATCHES; i += 1) {
+    const deleted = await purgeBatch();
+    total += deleted;
+    if (deleted < RETENTION_PURGE_BATCH_SIZE) {
+      return { deleted: total, reachedCap: false };
+    }
+    if (i === RETENTION_PURGE_MAX_BATCHES - 1) {
+      reachedCap = true;
+    }
+  }
+
+  return { deleted: total, reachedCap };
+}
+
+export const purgeExpiredComplianceData = region.pubsub
+  .schedule('15 3 * * *')
+  .timeZone('Etc/UTC')
+  .onRun(async () => {
+    const now = admin.firestore.Timestamp.now();
+    const users = await runRetentionInBatches(() => purgeUsersPastRetention(now));
+    const policyAcceptances = await runRetentionInBatches(() =>
+      purgeExpiredEvidenceBatch('policy_acceptances', now),
+    );
+    const privacyRequests = await runRetentionInBatches(() =>
+      purgeExpiredEvidenceBatch('privacy_requests', now),
+    );
+
+    functions.logger.info('Compliance retention job completed', {
+      usersPurged: users.deleted,
+      usersReachedCap: users.reachedCap,
+      policyAcceptancesPurged: policyAcceptances.deleted,
+      policyAcceptancesReachedCap: policyAcceptances.reachedCap,
+      privacyRequestsPurged: privacyRequests.deleted,
+      privacyRequestsReachedCap: privacyRequests.reachedCap,
+      retentionBatchSize: RETENTION_PURGE_BATCH_SIZE,
+      retentionMaxBatches: RETENTION_PURGE_MAX_BATCHES,
+      executedAt: new Date().toISOString(),
+    });
+
+    return null;
+  });

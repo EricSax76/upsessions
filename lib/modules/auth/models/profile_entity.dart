@@ -13,6 +13,9 @@ import 'package:flutter/foundation.dart';
 /// - [updatedAt]      → RGPD Art. 5.1.d — exactitud del dato; política de caducidad
 /// - [isPublic]       → RGPD Art. 5.1.b — minimización: perfil público vs. datos internos
 /// - [ageConsent]     → LOPDGDD Art. 7 — verificación de mayoría de edad (mín. 14 años)
+/// - [birthDate]      → LOPDGDD Art. 7 — control de edad mínima para uso de la app
+/// - [legalGuardianEmail] → LOPDGDD Art. 7 — contacto del tutor legal para menores
+/// - [legalGuardianConsent] → LOPDGDD Art. 7 — constancia de consentimiento del tutor
 /// - [nationality]    → RD 1434/1992 Art. 3 — para contratos artísticos y permisos de trabajo
 @immutable
 class ProfileEntity extends Equatable {
@@ -38,6 +41,10 @@ class ProfileEntity extends Equatable {
     this.vatRegistered = false,
     this.isPublic = true,
     this.ageConsent,
+    this.birthDate,
+    this.legalGuardianEmail,
+    this.legalGuardianConsent = false,
+    this.legalGuardianConsentAt,
     this.nationality,
   });
 
@@ -63,6 +70,18 @@ class ProfileEntity extends Equatable {
 
   /// LOPDGDD Art. 7 — el músico ha verificado tener 14+ años.
   final bool? ageConsent;
+
+  /// LOPDGDD Art. 7 — fecha de nacimiento para verificación de edad.
+  final DateTime? birthDate;
+
+  /// LOPDGDD Art. 7 — email de contacto del tutor legal (si menor).
+  final String? legalGuardianEmail;
+
+  /// LOPDGDD Art. 7 — confirma que existe consentimiento del tutor legal.
+  final bool legalGuardianConsent;
+
+  /// LOPDGDD Art. 7 — fecha de registro del consentimiento del tutor legal.
+  final DateTime? legalGuardianConsentAt;
 
   // ── Identificadores de la industria ───────────────────────────────────────
   /// ISO 27729 / SGAE — International Standard Name Identifier del artista.
@@ -105,6 +124,10 @@ class ProfileEntity extends Equatable {
     String? taxId,
     bool? vatRegistered,
     String? nationality,
+    DateTime? birthDate,
+    String? legalGuardianEmail,
+    bool? legalGuardianConsent,
+    DateTime? legalGuardianConsentAt,
   }) {
     return ProfileEntity(
       id: id ?? this.id,
@@ -113,7 +136,9 @@ class ProfileEntity extends Equatable {
       location: location ?? this.location,
       skills: skills ?? this.skills,
       links: links ?? this.links,
-      photoUrl: identical(photoUrl, _unset) ? this.photoUrl : photoUrl as String?,
+      photoUrl: identical(photoUrl, _unset)
+          ? this.photoUrl
+          : photoUrl as String?,
       influences: influences ?? this.influences,
       availableForHire: availableForHire ?? this.availableForHire,
       createdAt: createdAt ?? this.createdAt,
@@ -125,6 +150,11 @@ class ProfileEntity extends Equatable {
       sgaeRegistered: sgaeRegistered ?? this.sgaeRegistered,
       taxId: taxId ?? this.taxId,
       vatRegistered: vatRegistered ?? this.vatRegistered,
+      birthDate: birthDate ?? this.birthDate,
+      legalGuardianEmail: legalGuardianEmail ?? this.legalGuardianEmail,
+      legalGuardianConsent: legalGuardianConsent ?? this.legalGuardianConsent,
+      legalGuardianConsentAt:
+          legalGuardianConsentAt ?? this.legalGuardianConsentAt,
       nationality: nationality ?? this.nationality,
     );
   }
@@ -144,6 +174,10 @@ class ProfileEntity extends Equatable {
     updatedAt,
     isPublic,
     ageConsent,
+    birthDate,
+    legalGuardianEmail,
+    legalGuardianConsent,
+    legalGuardianConsentAt,
     isniCode,
     ipiCode,
     sgaeRegistered,

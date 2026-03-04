@@ -38,19 +38,17 @@ class CloudFunctionsService {
   Future<void> acceptLegalDocs({
     required String policyType,
     required String version,
+    required String policyHash,
     String action = 'accept',
     String? source,
-    String? policyHash,
   }) async {
     final callable = _functions.httpsCallable('acceptLegalDocs');
     final payload = <String, Object?>{
       'policyType': policyType,
       'version': version,
       'action': action,
+      'policyHash': policyHash,
       ...?source == null ? null : <String, Object?>{'source': source},
-      ...?policyHash == null
-          ? null
-          : <String, Object?>{'policyHash': policyHash},
     };
     await callable.call(payload);
   }
@@ -60,12 +58,12 @@ class CloudFunctionsService {
     required String privacyVersion,
     required String marketingVersion,
     required bool marketingOptIn,
+    required String termsPolicyHash,
+    required String privacyPolicyHash,
+    required String marketingPolicyHash,
     bool acceptTerms = true,
     bool acceptPrivacy = true,
     String? source,
-    String? termsPolicyHash,
-    String? privacyPolicyHash,
-    String? marketingPolicyHash,
   }) async {
     final callable = _functions.httpsCallable('acceptLegalBundle');
     final payload = <String, Object?>{
@@ -75,26 +73,48 @@ class CloudFunctionsService {
       'marketingOptIn': marketingOptIn,
       'acceptTerms': acceptTerms,
       'acceptPrivacy': acceptPrivacy,
+      'policyHashes': <String, Object?>{
+        'terms': termsPolicyHash,
+        'privacy': privacyPolicyHash,
+        'marketing': marketingPolicyHash,
+      },
       ...?source == null ? null : <String, Object?>{'source': source},
-      ...?termsPolicyHash == null &&
-              privacyPolicyHash == null &&
-              marketingPolicyHash == null
-          ? null
-          : <String, Object?>{
-              'policyHashes': <String, Object?>{
-                ...?termsPolicyHash == null
-                    ? null
-                    : <String, Object?>{'terms': termsPolicyHash},
-                ...?privacyPolicyHash == null
-                    ? null
-                    : <String, Object?>{'privacy': privacyPolicyHash},
-                ...?marketingPolicyHash == null
-                    ? null
-                    : <String, Object?>{'marketing': marketingPolicyHash},
-              },
-            },
     };
     await callable.call(payload);
+  }
+
+  Future<String> requestDataExport({
+    String? reason,
+    String? source,
+  }) async {
+    final callable = _functions.httpsCallable('requestDataExport');
+    final payload = <String, Object?>{
+      ...?reason == null ? null : <String, Object?>{'reason': reason},
+      ...?source == null ? null : <String, Object?>{'source': source},
+    };
+    final response = await callable.call(payload);
+    final data = response.data;
+    if (data is Map && data['requestId'] is String) {
+      return data['requestId'] as String;
+    }
+    return '';
+  }
+
+  Future<String> requestAccountDeletion({
+    String? reason,
+    String? source,
+  }) async {
+    final callable = _functions.httpsCallable('requestAccountDeletion');
+    final payload = <String, Object?>{
+      ...?reason == null ? null : <String, Object?>{'reason': reason},
+      ...?source == null ? null : <String, Object?>{'source': source},
+    };
+    final response = await callable.call(payload);
+    final data = response.data;
+    if (data is Map && data['requestId'] is String) {
+      return data['requestId'] as String;
+    }
+    return '';
   }
 
   Future<void> notifyChatMessage({

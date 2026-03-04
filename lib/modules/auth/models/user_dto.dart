@@ -19,6 +19,7 @@ class UserDto {
     this.acceptedTermsAt,
     this.acceptedPrivacyAt,
     this.dataProcessingConsent = false,
+    this.dataProcessingLegalBasis = 'contract',
     this.marketingConsent = false,
     this.deletedAt,
     this.locale,
@@ -36,6 +37,7 @@ class UserDto {
   final DateTime? acceptedTermsAt;
   final DateTime? acceptedPrivacyAt;
   final bool dataProcessingConsent;
+  final String dataProcessingLegalBasis;
   final bool marketingConsent;
   final DateTime? deletedAt;
   final String? locale;
@@ -55,6 +57,8 @@ class UserDto {
       acceptedTermsAt: _toDateTime(data['acceptedTermsAt']),
       acceptedPrivacyAt: _toDateTime(data['acceptedPrivacyAt']),
       dataProcessingConsent: (data['dataProcessingConsent'] as bool?) ?? false,
+      dataProcessingLegalBasis:
+          (data['dataProcessingLegalBasis'] as String?) ?? 'contract',
       marketingConsent: (data['marketingConsent'] as bool?) ?? false,
       deletedAt: _toDateTime(data['deletedAt']),
       locale: data['locale'] as String?,
@@ -71,13 +75,13 @@ class UserDto {
       if (photoUrl != null) 'photoUrl': photoUrl,
       'isVerified': isVerified,
       'createdAt': Timestamp.fromDate(createdAt),
-      if (lastLoginAt != null)
-        'lastLoginAt': Timestamp.fromDate(lastLoginAt!),
+      if (lastLoginAt != null) 'lastLoginAt': Timestamp.fromDate(lastLoginAt!),
       if (acceptedTermsAt != null)
         'acceptedTermsAt': Timestamp.fromDate(acceptedTermsAt!),
       if (acceptedPrivacyAt != null)
         'acceptedPrivacyAt': Timestamp.fromDate(acceptedPrivacyAt!),
       'dataProcessingConsent': dataProcessingConsent,
+      'dataProcessingLegalBasis': dataProcessingLegalBasis,
       'marketingConsent': marketingConsent,
       if (deletedAt != null) 'deletedAt': Timestamp.fromDate(deletedAt!),
       if (locale != null) 'locale': locale,
@@ -101,6 +105,7 @@ class UserDto {
       acceptedTermsAt: acceptedTermsAt,
       acceptedPrivacyAt: acceptedPrivacyAt,
       dataProcessingConsent: dataProcessingConsent,
+      dataProcessingLegalBasis: dataProcessingLegalBasis,
       marketingConsent: marketingConsent,
       deletedAt: deletedAt,
       locale: locale,

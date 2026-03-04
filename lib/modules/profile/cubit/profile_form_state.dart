@@ -16,6 +16,9 @@ class ProfileFormState extends Equatable {
     this.isLoadingSuggestions = false,
     this.errorMessage,
     this.availableForHire = false,
+    this.birthDate,
+    this.legalGuardianEmail = '',
+    this.legalGuardianConsent = false,
   });
 
   final ProfileFormStatus status;
@@ -28,6 +31,9 @@ class ProfileFormState extends Equatable {
   final bool isLoadingSuggestions;
   final String? errorMessage;
   final bool availableForHire;
+  final DateTime? birthDate;
+  final String legalGuardianEmail;
+  final bool legalGuardianConsent;
 
   ProfileFormState copyWith({
     ProfileFormStatus? status,
@@ -40,6 +46,9 @@ class ProfileFormState extends Equatable {
     bool? isLoadingSuggestions,
     String? errorMessage,
     bool? availableForHire,
+    Object? birthDate = _unset,
+    String? legalGuardianEmail,
+    bool? legalGuardianConsent,
   }) {
     return ProfileFormState(
       status: status ?? this.status,
@@ -54,6 +63,11 @@ class ProfileFormState extends Equatable {
       isLoadingSuggestions: isLoadingSuggestions ?? this.isLoadingSuggestions,
       errorMessage: errorMessage ?? this.errorMessage,
       availableForHire: availableForHire ?? this.availableForHire,
+      birthDate: identical(birthDate, _unset)
+          ? this.birthDate
+          : birthDate as DateTime?,
+      legalGuardianEmail: legalGuardianEmail ?? this.legalGuardianEmail,
+      legalGuardianConsent: legalGuardianConsent ?? this.legalGuardianConsent,
     );
   }
 
@@ -70,6 +84,9 @@ class ProfileFormState extends Equatable {
       isLoadingSuggestions: isLoadingSuggestions,
       errorMessage: errorMessage,
       availableForHire: availableForHire,
+      birthDate: birthDate,
+      legalGuardianEmail: legalGuardianEmail,
+      legalGuardianConsent: legalGuardianConsent,
     );
   }
 
@@ -85,5 +102,8 @@ class ProfileFormState extends Equatable {
     isLoadingSuggestions,
     errorMessage,
     availableForHire,
+    birthDate,
+    legalGuardianEmail,
+    legalGuardianConsent,
   ];
 }

@@ -9,7 +9,7 @@ class MockMusiciansRepository extends Mock implements MusiciansRepository {}
 
 void main() {
   late MockMusiciansRepository repository;
-  
+
   setUp(() {
     repository = MockMusiciansRepository();
   });
@@ -31,10 +31,8 @@ void main() {
         cubit.nextStep();
       },
       expect: () => [
-        isA<MusicianOnboardingState>()
-            .having((s) => s.currentStep, 'step', 1),
-        isA<MusicianOnboardingState>()
-            .having((s) => s.currentStep, 'step', 2),
+        isA<MusicianOnboardingState>().having((s) => s.currentStep, 'step', 1),
+        isA<MusicianOnboardingState>().having((s) => s.currentStep, 'step', 2),
       ],
     );
 
@@ -47,10 +45,8 @@ void main() {
         cubit.previousStep(); // still 0
       },
       expect: () => [
-        isA<MusicianOnboardingState>()
-            .having((s) => s.currentStep, 'step', 1),
-        isA<MusicianOnboardingState>()
-            .having((s) => s.currentStep, 'step', 0),
+        isA<MusicianOnboardingState>().having((s) => s.currentStep, 'step', 1),
+        isA<MusicianOnboardingState>().having((s) => s.currentStep, 'step', 0),
       ],
     );
 
@@ -91,9 +87,11 @@ void main() {
     blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
       'addInfluence ignores duplicates (case insensitive)',
       build: () => MusicianOnboardingCubit(repository: repository),
-      seed: () => const MusicianOnboardingState(influences: {
-        'Rock': ['Led Zeppelin'],
-      }),
+      seed: () => const MusicianOnboardingState(
+        influences: {
+          'Rock': ['Led Zeppelin'],
+        },
+      ),
       act: (cubit) => cubit.addInfluence('Rock', 'led zeppelin'),
       expect: () => <MusicianOnboardingState>[],
     );
@@ -101,10 +99,12 @@ void main() {
     blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
       'removeInfluence removes artist and cleans empty style',
       build: () => MusicianOnboardingCubit(repository: repository),
-      seed: () => const MusicianOnboardingState(influences: {
-        'Rock': ['Led Zeppelin'],
-        'Jazz': ['Miles Davis', 'Coltrane'],
-      }),
+      seed: () => const MusicianOnboardingState(
+        influences: {
+          'Rock': ['Led Zeppelin'],
+          'Jazz': ['Miles Davis', 'Coltrane'],
+        },
+      ),
       act: (cubit) {
         cubit.removeInfluence('Rock', 'Led Zeppelin');
         cubit.removeInfluence('Jazz', 'Miles Davis');
@@ -135,66 +135,128 @@ void main() {
       });
 
       blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
-        'emits saving then saved on success',
-        build: () {
-          when(() => repository.saveProfile(
-                musicianId: any(named: 'musicianId'),
-                name: any(named: 'name'),
-                instrument: any(named: 'instrument'),
-                city: any(named: 'city'),
-                styles: any(named: 'styles'),
-                experienceYears: any(named: 'experienceYears'),
-                photoUrl: any(named: 'photoUrl'),
-                bio: any(named: 'bio'),
-                influences: any(named: 'influences'),
-              )).thenAnswer((_) async {});
-          return MusicianOnboardingCubit(repository: repository);
-        },
+        'blocks submit when user is under 14',
+        build: () => MusicianOnboardingCubit(repository: repository),
         act: (cubit) => cubit.submit(
-          // repository param removed
           musicianId: 'id-1',
           name: 'John',
           instrument: 'Guitar',
           city: 'NYC',
           styles: ['Rock'],
           experienceYears: 5,
+          birthDate: DateTime.now().subtract(const Duration(days: 10 * 365)),
+          legalGuardianEmail: '',
+          legalGuardianConsent: false,
         ),
         expect: () => [
           isA<MusicianOnboardingState>()
-              .having((s) => s.status, 'saving', MusicianOnboardingStatus.saving),
-          isA<MusicianOnboardingState>()
-              .having((s) => s.status, 'saved', MusicianOnboardingStatus.saved),
+              .having((s) => s.status, 'error', MusicianOnboardingStatus.error)
+              .having((s) => s.errorMessage, 'msg', contains('14 años')),
+        ],
+        verify: (_) {
+          verifyNever(
+            () => repository.saveProfile(
+              musicianId: any(named: 'musicianId'),
+              name: any(named: 'name'),
+              instrument: any(named: 'instrument'),
+              city: any(named: 'city'),
+              styles: any(named: 'styles'),
+              experienceYears: any(named: 'experienceYears'),
+            ),
+          );
+        },
+      );
+
+      blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
+        'emits saving then saved on success',
+        build: () {
+          when(
+            () => repository.saveProfile(
+              musicianId: any(named: 'musicianId'),
+              name: any(named: 'name'),
+              instrument: any(named: 'instrument'),
+              city: any(named: 'city'),
+              styles: any(named: 'styles'),
+              experienceYears: any(named: 'experienceYears'),
+              photoUrl: any(named: 'photoUrl'),
+              bio: any(named: 'bio'),
+              influences: any(named: 'influences'),
+              availableForHire: any(named: 'availableForHire'),
+              birthDate: any(named: 'birthDate'),
+              legalGuardianEmail: any(named: 'legalGuardianEmail'),
+              legalGuardianConsent: any(named: 'legalGuardianConsent'),
+              legalGuardianConsentAt: any(named: 'legalGuardianConsentAt'),
+              ageConsent: any(named: 'ageConsent'),
+            ),
+          ).thenAnswer((_) async {});
+          return MusicianOnboardingCubit(repository: repository);
+        },
+        act: (cubit) => cubit.submit(
+          musicianId: 'id-1',
+          name: 'John',
+          instrument: 'Guitar',
+          city: 'NYC',
+          styles: ['Rock'],
+          experienceYears: 5,
+          birthDate: DateTime(2000, 1, 1),
+          legalGuardianEmail: '',
+          legalGuardianConsent: false,
+        ),
+        expect: () => [
+          isA<MusicianOnboardingState>().having(
+            (s) => s.status,
+            'saving',
+            MusicianOnboardingStatus.saving,
+          ),
+          isA<MusicianOnboardingState>().having(
+            (s) => s.status,
+            'saved',
+            MusicianOnboardingStatus.saved,
+          ),
         ],
       );
 
-        blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
+      blocTest<MusicianOnboardingCubit, MusicianOnboardingState>(
         'emits error on failure',
         build: () {
-          when(() => repository.saveProfile(
-                musicianId: any(named: 'musicianId'),
-                name: any(named: 'name'),
-                instrument: any(named: 'instrument'),
-                city: any(named: 'city'),
-                styles: any(named: 'styles'),
-                experienceYears: any(named: 'experienceYears'),
-                photoUrl: any(named: 'photoUrl'),
-                bio: any(named: 'bio'),
-                influences: any(named: 'influences'),
-              )).thenThrow(Exception('Save failed'));
+          when(
+            () => repository.saveProfile(
+              musicianId: any(named: 'musicianId'),
+              name: any(named: 'name'),
+              instrument: any(named: 'instrument'),
+              city: any(named: 'city'),
+              styles: any(named: 'styles'),
+              experienceYears: any(named: 'experienceYears'),
+              photoUrl: any(named: 'photoUrl'),
+              bio: any(named: 'bio'),
+              influences: any(named: 'influences'),
+              availableForHire: any(named: 'availableForHire'),
+              birthDate: any(named: 'birthDate'),
+              legalGuardianEmail: any(named: 'legalGuardianEmail'),
+              legalGuardianConsent: any(named: 'legalGuardianConsent'),
+              legalGuardianConsentAt: any(named: 'legalGuardianConsentAt'),
+              ageConsent: any(named: 'ageConsent'),
+            ),
+          ).thenThrow(Exception('Save failed'));
           return MusicianOnboardingCubit(repository: repository);
         },
         act: (cubit) => cubit.submit(
-          // repository param removed
           musicianId: 'id-1',
           name: 'John',
           instrument: 'Guitar',
           city: 'NYC',
           styles: ['Rock'],
           experienceYears: 5,
+          birthDate: DateTime(2000, 1, 1),
+          legalGuardianEmail: '',
+          legalGuardianConsent: false,
         ),
         expect: () => [
-          isA<MusicianOnboardingState>()
-              .having((s) => s.status, 'saving', MusicianOnboardingStatus.saving),
+          isA<MusicianOnboardingState>().having(
+            (s) => s.status,
+            'saving',
+            MusicianOnboardingStatus.saving,
+          ),
           isA<MusicianOnboardingState>()
               .having((s) => s.status, 'error', MusicianOnboardingStatus.error)
               .having((s) => s.errorMessage, 'msg', contains('Save failed')),

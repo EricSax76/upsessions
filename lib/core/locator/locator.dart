@@ -6,6 +6,8 @@ import 'package:upsessions/features/events/services/image_upload_service.dart';
 import 'package:upsessions/core/services/firebase_initializer.dart';
 import 'package:upsessions/core/services/push_notifications_service.dart';
 import 'package:upsessions/core/services/analytics_service.dart';
+import 'package:upsessions/core/services/cookie_consent_service.dart';
+import 'package:upsessions/core/services/cookie_consent_storage.dart';
 import 'package:upsessions/core/services/remote_config_service.dart';
 import 'package:upsessions/l10n/cubit/locale_cubit.dart';
 import 'package:upsessions/core/theme/theme_cubit.dart';
@@ -78,7 +80,13 @@ Future<void> setupServiceLocator() async {
         firestore: getIt<FirebaseFirestore>(),
       ),
     )
-    ..registerLazySingleton<AnalyticsService>(() => const AnalyticsService())
+    ..registerLazySingleton<CookieConsentService>(
+      () => CookieConsentService(storage: createCookieConsentStorage()),
+    )
+    ..registerLazySingleton<AnalyticsService>(
+      () =>
+          AnalyticsService(cookieConsentService: getIt<CookieConsentService>()),
+    )
     ..registerLazySingleton<RemoteConfigService>(
       () => const RemoteConfigService(),
     )

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_routes.dart';
+import 'package:upsessions/core/utils/age_gate_utils.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
@@ -41,11 +43,14 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
 
   final _nameController = TextEditingController();
   final _instrumentController = TextEditingController();
+  final _legalGuardianEmailController = TextEditingController();
   final _cityController = TextEditingController();
   final _stylesController = TextEditingController();
   final _yearsController = TextEditingController(text: '0');
   final _bioController = TextEditingController();
   final ImagePicker _imagePicker = ImagePicker();
+  DateTime? _birthDate;
+  bool _legalGuardianConsent = false;
   XFile? _selectedPhoto;
   bool _isUploadingPhoto = false;
 
@@ -53,6 +58,7 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
   void dispose() {
     _nameController.dispose();
     _instrumentController.dispose();
+    _legalGuardianEmailController.dispose();
     _cityController.dispose();
     _stylesController.dispose();
     _yearsController.dispose();
@@ -78,6 +84,14 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
     if (photo == null) return null;
     final value = photo.name.trim();
     return value.isEmpty ? null : value;
+  }
+
+  bool get _isMinor => isMusicianMinor(_birthDate);
+
+  String get _birthDateLabel {
+    final birthDate = _birthDate;
+    if (birthDate == null) return '';
+    return DateFormat('dd/MM/yyyy').format(birthDate);
   }
 
   bool _validateCurrentStep(int step) {
@@ -167,6 +181,24 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
         formKey: _basicInfoKey,
         nameController: _nameController,
         instrumentController: _instrumentController,
+        birthDate: _birthDate,
+        birthDateLabel: _birthDateLabel,
+        onBirthDateChanged: (value) {
+          setState(() {
+            _birthDate = value;
+            if (!isMusicianMinor(value)) {
+              _legalGuardianEmailController.clear();
+              _legalGuardianConsent = false;
+            }
+          });
+        },
+        legalGuardianEmailController: _legalGuardianEmailController,
+        legalGuardianConsent: _legalGuardianConsent,
+        onLegalGuardianConsentChanged: (value) {
+          setState(() {
+            _legalGuardianConsent = value;
+          });
+        },
       ),
       MusicianExperienceStep(
         formKey: _experienceKey,
@@ -212,6 +244,11 @@ class _MusicianOnboardingPageState extends State<MusicianOnboardingPage> {
       city: _cityController.text.trim(),
       styles: _parsedStyles,
       experienceYears: _parsedExperienceYears,
+      birthDate: _birthDate,
+      legalGuardianEmail: _isMinor
+          ? _legalGuardianEmailController.text.trim()
+          : '',
+      legalGuardianConsent: _isMinor && _legalGuardianConsent,
       bio: _bioOrNull,
     );
 

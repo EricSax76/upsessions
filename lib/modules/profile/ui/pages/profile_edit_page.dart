@@ -92,6 +92,13 @@ class ProfileEditPage extends StatelessWidget {
                     onSave: isLoading
                         ? null
                         : () async {
+                            final ageGateError = formCubit.validateAgeGate();
+                            if (ageGateError != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(ageGateError)),
+                              );
+                              return;
+                            }
                             await context.read<ProfileCubit>().updateProfile(
                               formCubit.getUpdatedProfile(profile),
                             );
