@@ -32,8 +32,9 @@ export function primaryRoleFrom(roles: UserRole[]): UserRole {
 
 export async function resolveRoles(uid: string, hintedRole: UserRole | null): Promise<UserRole[]> {
   const db = admin.firestore();
-  const [managerDoc, studioDocs, musicianDoc, musicianByOwnerId] = await Promise.all([
+  const [managerDoc, managerByOwnerId, studioDocs, musicianDoc, musicianByOwnerId] = await Promise.all([
     db.collection('event_managers').doc(uid).get(),
+    db.collection('event_managers').where('ownerId', '==', uid).limit(1).get(),
     db.collection('studios').where('ownerId', '==', uid).limit(1).get(),
     db.collection('musicians').doc(uid).get(),
     db.collection('musicians').where('ownerId', '==', uid).limit(1).get(),
@@ -43,7 +44,7 @@ export async function resolveRoles(uid: string, hintedRole: UserRole | null): Pr
   if (hintedRole != null) {
     roles.add(hintedRole);
   }
-  if (managerDoc.exists) {
+  if (managerDoc.exists || !managerByOwnerId.empty) {
     roles.add('event_manager');
   }
   if (!studioDocs.empty) {

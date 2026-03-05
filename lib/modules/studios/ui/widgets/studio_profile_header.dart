@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:upsessions/core/widgets/sm_avatar.dart';
 import '../../models/studio_entity.dart';
@@ -36,6 +37,9 @@ class StudioProfileHeader extends StatelessWidget {
               Image.network(
                 studio.bannerUrl!,
                 fit: BoxFit.cover,
+                webHtmlElementStrategy: kIsWeb
+                    ? WebHtmlElementStrategy.prefer
+                    : WebHtmlElementStrategy.never,
                 errorBuilder: (context, error, stackTrace) => Container(
                   color: Theme.of(context).colorScheme.primaryContainer,
                   child: Icon(

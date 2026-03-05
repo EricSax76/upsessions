@@ -12,3 +12,4 @@ export {
   syncUserSession,
   updateUserComplianceProfile,
 } from './legalCompliance/sessionHandlers';
+export { onEventManagerWriteSyncUserRole } from './legalCompliance/roleSyncTriggers';

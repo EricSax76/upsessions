@@ -157,7 +157,9 @@ class _CookieConsentLayerState extends State<CookieConsentLayer> {
     }
 
     final showBanner = _cookieConsentService.shouldShowBanner;
+    final width = MediaQuery.sizeOf(context).width;
     final bottomInset = MediaQuery.of(context).padding.bottom;
+    final showButtonOnRight = width >= 700;
     final buttonBottomOffset = showBanner
         ? 144 + bottomInset
         : 12 + bottomInset;
@@ -166,7 +168,8 @@ class _CookieConsentLayerState extends State<CookieConsentLayer> {
       children: [
         widget.child,
         Positioned(
-          left: 12,
+          left: showButtonOnRight ? null : 12,
+          right: showButtonOnRight ? 12 : null,
           bottom: buttonBottomOffset,
           child: SafeArea(
             top: false,

@@ -9,6 +9,7 @@ export {
   acceptLegalDocs,
   onAuthUserCreateBootstrap,
   onAuthUserDeleteSoftDelete,
+  onEventManagerWriteSyncUserRole,
   purgeExpiredComplianceData,
   requestAccountDeletion,
   requestDataExport,

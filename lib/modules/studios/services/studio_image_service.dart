@@ -23,6 +23,29 @@ class StudioImageService {
     );
   }
 
+  Future<List<XFile>> pickRoomPhotos() async {
+    return _picker.pickMultiImage(maxWidth: 1024, maxHeight: 1024, imageQuality: 85);
+  }
+
+  Future<String?> uploadRoomPhoto(String studioId, String roomId, XFile image) async {
+    try {
+      final path = 'studios/$studioId/rooms/$roomId/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final ref = _storage.ref().child(path);
+      final data = await image.readAsBytes();
+      final snapshot = await ref.putData(
+        data,
+        SettableMetadata(
+          contentType: 'image/jpeg',
+          customMetadata: {'studioId': studioId, 'roomId': roomId, 'type': 'room_photo'},
+        ),
+      );
+      return await snapshot.ref.getDownloadURL();
+    } catch (e) {
+      debugPrint('Error uploading room photo: $e');
+      return null;
+    }
+  }
+
   Future<String?> _uploadImage({
     required String path,
     required Map<String, String> metadata,
