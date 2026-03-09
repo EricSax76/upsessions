@@ -8,9 +8,22 @@ void main() {
     late GoRouter router;
     late List<GoRoute> goRoutes;
 
+    List<GoRoute> extractGoRoutes(List<RouteBase> routes) {
+      final result = <GoRoute>[];
+      for (final route in routes) {
+        if (route is GoRoute) {
+          result.add(route);
+          result.addAll(extractGoRoutes(route.routes));
+        } else if (route is ShellRoute) {
+          result.addAll(extractGoRoutes(route.routes));
+        }
+      }
+      return result;
+    }
+
     setUp(() {
       router = AppRouter().router;
-      goRoutes = router.configuration.routes.whereType<GoRoute>().toList();
+      goRoutes = extractGoRoutes(router.configuration.routes);
     });
 
     test('starts on splash route', () {

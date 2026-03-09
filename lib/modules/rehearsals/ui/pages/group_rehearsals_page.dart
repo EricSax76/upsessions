@@ -5,15 +5,12 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/loading_indicator.dart';
-import '../../../../features/home/ui/pages/user_shell_page.dart';
 
 import '../../../auth/repositories/auth_repository.dart';
 import '../../models/rehearsal_filter.dart';
 import '../../../groups/models/group_dtos.dart';
 import '../../../groups/repositories/groups_repository.dart';
-import '../../../../modules/messaging/repositories/chat_repository.dart';
-import '../../../../modules/notifications/repositories/invite_notifications_repository.dart';
-import '../../../../modules/contacts/cubits/liked_musicians_cubit.dart';
+
 import '../../../musicians/repositories/musicians_repository.dart';
 
 import '../dialogs/invite_musician_dialog.dart';
@@ -30,30 +27,13 @@ import '../../use_cases/create_rehearsal_use_case.dart';
 import '../../utils/rehearsal_date_utils.dart';
 
 class GroupRehearsalsPage extends StatelessWidget {
-  const GroupRehearsalsPage({
-    super.key,
-    required this.groupId,
-    required this.groupsRepository,
-    required this.chatRepository,
-    required this.inviteNotificationsRepository,
-    required this.likedMusiciansCubit,
-  });
+  const GroupRehearsalsPage({super.key, required this.groupId});
 
   final String groupId;
-  final GroupsRepository groupsRepository;
-  final ChatRepository chatRepository;
-  final InviteNotificationsRepository inviteNotificationsRepository;
-  final LikedMusiciansCubit likedMusiciansCubit;
 
   @override
   Widget build(BuildContext context) {
-    return UserShellPage(
-      groupsRepository: groupsRepository,
-      chatRepository: chatRepository,
-      inviteNotificationsRepository: inviteNotificationsRepository,
-      likedMusiciansCubit: likedMusiciansCubit,
-      child: GroupRehearsalsView(groupId: groupId),
-    );
+    return GroupRehearsalsView(groupId: groupId);
   }
 }
 

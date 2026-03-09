@@ -9,39 +9,18 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/empty_state_card.dart';
 import '../../../../core/widgets/layout/searchable_list_page.dart';
-import '../../../../features/home/ui/pages/user_shell_page.dart';
 
 import '../../models/group_membership_entity.dart';
-import '../../../../modules/groups/repositories/groups_repository.dart';
-import '../../../../modules/messaging/repositories/chat_repository.dart';
-import '../../../../modules/notifications/repositories/invite_notifications_repository.dart';
-import '../../../../modules/contacts/cubits/liked_musicians_cubit.dart';
+
 import '../widgets/groups_widgets.dart';
 import '../widgets/groups_list/groups_hero_section.dart';
 
 class GroupsPage extends StatelessWidget {
-  const GroupsPage({
-    super.key,
-    required this.groupsRepository,
-    required this.chatRepository,
-    required this.inviteNotificationsRepository,
-    required this.likedMusiciansCubit,
-  });
-
-  final GroupsRepository groupsRepository;
-  final ChatRepository chatRepository;
-  final InviteNotificationsRepository inviteNotificationsRepository;
-  final LikedMusiciansCubit likedMusiciansCubit;
+  const GroupsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return UserShellPage(
-      groupsRepository: groupsRepository,
-      chatRepository: chatRepository,
-      inviteNotificationsRepository: inviteNotificationsRepository,
-      likedMusiciansCubit: likedMusiciansCubit,
-      child: const _GroupsView(),
-    );
+    return const _GroupsView();
   }
 }
 
@@ -53,18 +32,20 @@ class _GroupsView extends StatelessWidget {
     return BlocBuilder<MyGroupsCubit, MyGroupsState>(
       builder: (context, state) {
         // Default to empty list if not loaded yet
-        final groups = state is MyGroupsLoaded ? state.groups : const <GroupMembershipEntity>[];
+        final groups = state is MyGroupsLoaded
+            ? state.groups
+            : const <GroupMembershipEntity>[];
         final isLoading = state is MyGroupsLoading;
         final error = state is MyGroupsError ? state.message : null;
-        
+
         return SearchableListPage<GroupMembershipEntity>(
           items: groups,
           isLoading: isLoading,
           errorMessage: error,
-          // onRetry/onRefresh logic might need adjustment if we want to force re-fetch in Cubit, 
+          // onRetry/onRefresh logic might need adjustment if we want to force re-fetch in Cubit,
           // but for now the stream in Cubit should auto-update.
           // We can leave them empty or trigger a refresh method if we add one to Cubit.
-          onRetry: () {}, 
+          onRetry: () {},
           onRefresh: () async {},
           searchEnabled: false,
           sortComparator: _compareGroups,
@@ -100,7 +81,7 @@ class _GroupsView extends StatelessWidget {
             onTap: () => context.go(AppRoutes.groupPage(group.groupId)),
           ),
           footerBuilder: (context) {
-             if (error == null || groups.isEmpty) {
+            if (error == null || groups.isEmpty) {
               return const SizedBox.shrink();
             }
             final textTheme = Theme.of(context).textTheme;
@@ -126,7 +107,7 @@ class _GroupsView extends StatelessWidget {
     if (result == null || result.name.trim().isEmpty) {
       return;
     }
-    
+
     // Check if mounted before using context
     if (!context.mounted) return;
 

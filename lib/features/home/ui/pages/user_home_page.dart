@@ -14,12 +14,9 @@ import 'package:upsessions/features/home/ui/widgets/events/upcoming_events_secti
 import 'package:upsessions/core/widgets/section_card.dart';
 import 'package:upsessions/features/home/ui/widgets/home_hero_section.dart';
 import 'package:upsessions/features/home/ui/widgets/musicians/musicians_by_instrument_section.dart';
-import 'package:upsessions/features/home/ui/pages/user_shell_page.dart';
+
 import 'package:upsessions/features/home/ui/widgets/studios/studios_promo_card.dart';
-import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
-import 'package:upsessions/modules/notifications/repositories/invite_notifications_repository.dart';
-import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
+
 import 'package:upsessions/features/home/repositories/home_announcements_repository.dart';
 import 'package:upsessions/features/home/repositories/home_events_repository.dart';
 import 'package:upsessions/features/home/repositories/home_metadata_repository.dart';
@@ -29,18 +26,7 @@ import 'package:upsessions/features/home/ui/widgets/musicians/recommended_users_
 import 'package:upsessions/features/home/ui/widgets/musicians/new_musicians_section.dart';
 
 class UserHomePage extends StatelessWidget {
-  const UserHomePage({
-    super.key,
-    required this.groupsRepository,
-    required this.chatRepository,
-    required this.inviteNotificationsRepository,
-    required this.likedMusiciansCubit,
-  });
-
-  final GroupsRepository groupsRepository;
-  final ChatRepository chatRepository;
-  final InviteNotificationsRepository inviteNotificationsRepository;
-  final LikedMusiciansCubit likedMusiciansCubit;
+  const UserHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,19 +38,13 @@ class UserHomePage extends StatelessWidget {
         eventsRepository: context.read<HomeEventsRepository>(),
         rehearsalsRepository: context.read<HomeRehearsalsRepository>(),
       )..loadHome(),
-      child: UserShellPage(
-        groupsRepository: groupsRepository,
-        chatRepository: chatRepository,
-        inviteNotificationsRepository: inviteNotificationsRepository,
-        likedMusiciansCubit: likedMusiciansCubit,
-        child: BlocBuilder<UserHomeCubit, UserHomeState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              return const Center(child: LoadingIndicator());
-            }
-            return _buildMainContent(context, state);
-          },
-        ),
+      child: BlocBuilder<UserHomeCubit, UserHomeState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(child: LoadingIndicator());
+          }
+          return _buildMainContent(context, state);
+        },
       ),
     );
   }

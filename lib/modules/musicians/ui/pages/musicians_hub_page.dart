@@ -1,34 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../../features/home/ui/pages/user_shell_page.dart';
 import 'musician_search_page.dart';
-import '../../../../modules/groups/repositories/groups_repository.dart';
-import '../../../../modules/messaging/repositories/chat_repository.dart';
-import '../../../../modules/notifications/repositories/invite_notifications_repository.dart';
-import '../../../../modules/contacts/cubits/liked_musicians_cubit.dart';
 
 class MusiciansHubPage extends StatelessWidget {
-  const MusiciansHubPage({
-    super.key,
-    required this.groupsRepository,
-    required this.chatRepository,
-    required this.inviteNotificationsRepository,
-    required this.likedMusiciansCubit,
-  });
-
-  final GroupsRepository groupsRepository;
-  final ChatRepository chatRepository;
-  final InviteNotificationsRepository inviteNotificationsRepository;
-  final LikedMusiciansCubit likedMusiciansCubit;
+  const MusiciansHubPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return UserShellPage(
-      groupsRepository: groupsRepository,
-      chatRepository: chatRepository,
-      inviteNotificationsRepository: inviteNotificationsRepository,
-      likedMusiciansCubit: likedMusiciansCubit,
-      child: const MusicianSearchPage(showAppBar: false),
-    );
+    return const MusicianSearchPage(showAppBar: false);
   }
 }
