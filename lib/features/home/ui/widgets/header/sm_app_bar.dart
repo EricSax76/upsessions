@@ -107,10 +107,10 @@ class SmAppBar extends StatelessWidget implements PreferredSizeWidget {
                       onSelected: (action) {
                         switch (action) {
                           case _AvatarMenuAction.profile:
-                            context.push(AppRoutes.profile);
+                            context.go(AppRoutes.profile);
                             break;
                           case _AvatarMenuAction.accountSettings:
-                            context.push(AppRoutes.settings);
+                            context.go(AppRoutes.settings);
                             break;
                           case _AvatarMenuAction.signOut:
                             context.read<AuthCubit>().signOut();

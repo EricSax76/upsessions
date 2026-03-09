@@ -20,9 +20,15 @@ class StudiosState extends Equatable {
     this.myRooms = const [],
     this.bookings = const [],
     this.myBookings = const [],
+    this.hasMoreMyBookings = false,
+    this.isLoadingMyBookingsMore = false,
+    this.myBookingsCursor,
     this.upcomingMyBookings = const [],
     this.pastMyBookings = const [],
     this.studioBookings = const [],
+    this.hasMoreStudioBookings = false,
+    this.isLoadingStudioBookingsMore = false,
+    this.studioBookingsCursor,
     this.errorMessage,
   });
 
@@ -37,9 +43,15 @@ class StudiosState extends Equatable {
   final List<RoomEntity> myRooms;
   final List<BookingEntity> bookings;
   final List<BookingEntity> myBookings;
+  final bool hasMoreMyBookings;
+  final bool isLoadingMyBookingsMore;
+  final String? myBookingsCursor;
   final List<BookingEntity> upcomingMyBookings;
   final List<BookingEntity> pastMyBookings;
   final List<BookingEntity> studioBookings;
+  final bool hasMoreStudioBookings;
+  final bool isLoadingStudioBookingsMore;
+  final String? studioBookingsCursor;
   final String? errorMessage;
 
   StudiosState copyWith({
@@ -54,9 +66,15 @@ class StudiosState extends Equatable {
     List<RoomEntity>? myRooms,
     List<BookingEntity>? bookings,
     List<BookingEntity>? myBookings,
+    bool? hasMoreMyBookings,
+    bool? isLoadingMyBookingsMore,
+    Object? myBookingsCursor = _unset,
     List<BookingEntity>? upcomingMyBookings,
     List<BookingEntity>? pastMyBookings,
     List<BookingEntity>? studioBookings,
+    bool? hasMoreStudioBookings,
+    bool? isLoadingStudioBookingsMore,
+    Object? studioBookingsCursor = _unset,
     Object? errorMessage = _unset,
   }) {
     return StudiosState(
@@ -79,9 +97,22 @@ class StudiosState extends Equatable {
       myRooms: myRooms ?? this.myRooms,
       bookings: bookings ?? this.bookings,
       myBookings: myBookings ?? this.myBookings,
+      hasMoreMyBookings: hasMoreMyBookings ?? this.hasMoreMyBookings,
+      isLoadingMyBookingsMore:
+          isLoadingMyBookingsMore ?? this.isLoadingMyBookingsMore,
+      myBookingsCursor: identical(myBookingsCursor, _unset)
+          ? this.myBookingsCursor
+          : myBookingsCursor as String?,
       upcomingMyBookings: upcomingMyBookings ?? this.upcomingMyBookings,
       pastMyBookings: pastMyBookings ?? this.pastMyBookings,
       studioBookings: studioBookings ?? this.studioBookings,
+      hasMoreStudioBookings:
+          hasMoreStudioBookings ?? this.hasMoreStudioBookings,
+      isLoadingStudioBookingsMore:
+          isLoadingStudioBookingsMore ?? this.isLoadingStudioBookingsMore,
+      studioBookingsCursor: identical(studioBookingsCursor, _unset)
+          ? this.studioBookingsCursor
+          : studioBookingsCursor as String?,
       errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
           : errorMessage as String?,
@@ -101,9 +132,15 @@ class StudiosState extends Equatable {
     myRooms,
     bookings,
     myBookings,
+    hasMoreMyBookings,
+    isLoadingMyBookingsMore,
+    myBookingsCursor,
     upcomingMyBookings,
     pastMyBookings,
     studioBookings,
+    hasMoreStudioBookings,
+    isLoadingStudioBookingsMore,
+    studioBookingsCursor,
     errorMessage,
   ];
 }

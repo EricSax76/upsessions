@@ -19,7 +19,6 @@ import '../modules/studios/repositories/studios_repository.dart';
 import '../modules/studios/ui/consumer/room_detail_page.dart';
 import '../modules/studios/ui/consumer/studios_list_page.dart';
 import '../modules/studios/ui/provider/edit_room_page.dart';
-import 'app_router_shell.dart';
 
 class UnknownRouteScreen extends StatelessWidget {
   const UnknownRouteScreen({super.key, required this.name, this.message});
@@ -84,10 +83,7 @@ class _MusicianDetailLoaderState extends State<MusicianDetailLoader> {
       future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return buildUserShell(
-            context,
-            const Center(child: CircularProgressIndicator()),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         final musician = snapshot.data;
@@ -100,7 +96,7 @@ class _MusicianDetailLoaderState extends State<MusicianDetailLoader> {
           );
         }
 
-        return buildUserShell(context, MusicianDetailPage(musician: musician));
+        return MusicianDetailPage(musician: musician);
       },
     );
   }
@@ -124,10 +120,7 @@ class AnnouncementDetailLoader extends StatelessWidget {
       future: announcementsRepository.findById(announcementId),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
-          return buildUserShell(
-            context,
-            const Center(child: CircularProgressIndicator()),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError || snapshot.data == null) {
@@ -139,10 +132,7 @@ class AnnouncementDetailLoader extends StatelessWidget {
           );
         }
 
-        return buildUserShell(
-          context,
-          AnnouncementDetailPage(announcement: snapshot.data!),
-        );
+        return AnnouncementDetailPage(announcement: snapshot.data!);
       },
     );
   }
@@ -206,8 +196,7 @@ class ChatThreadDetailLoader extends StatefulWidget {
   final ChatThread? initialThread;
 
   @override
-  State<ChatThreadDetailLoader> createState() =>
-      _ChatThreadDetailLoaderState();
+  State<ChatThreadDetailLoader> createState() => _ChatThreadDetailLoaderState();
 }
 
 class _ChatThreadDetailLoaderState extends State<ChatThreadDetailLoader> {
@@ -273,8 +262,7 @@ class StudioRoomDetailLoader extends StatefulWidget {
   final RehearsalBookingContext? rehearsalContext;
 
   @override
-  State<StudioRoomDetailLoader> createState() =>
-      _StudioRoomDetailLoaderState();
+  State<StudioRoomDetailLoader> createState() => _StudioRoomDetailLoaderState();
 }
 
 class _StudioRoomDetailLoaderState extends State<StudioRoomDetailLoader> {
@@ -351,8 +339,7 @@ class StudioRoomEditorLoader extends StatefulWidget {
   final StudiosRepository studiosRepository;
 
   @override
-  State<StudioRoomEditorLoader> createState() =>
-      _StudioRoomEditorLoaderState();
+  State<StudioRoomEditorLoader> createState() => _StudioRoomEditorLoaderState();
 }
 
 class _StudioRoomEditorLoaderState extends State<StudioRoomEditorLoader> {

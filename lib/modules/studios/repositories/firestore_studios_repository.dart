@@ -8,6 +8,9 @@ class FirestoreStudiosRepository implements StudiosRepository {
   FirestoreStudiosRepository({required FirebaseFirestore firestore})
     : _firestore = firestore;
 
+  static const int _bookingsPageSize = 200;
+  static const int _bookingsDefaultLimit = 20;
+
   final FirebaseFirestore _firestore;
 
   @override
@@ -381,35 +384,137 @@ class FirestoreStudiosRepository implements StudiosRepository {
 
   @override
   Future<List<BookingEntity>> getBookingsByRoom(String roomId) async {
-    final querySnapshot = await _firestore
-        .collection('bookings')
-        .where('roomId', isEqualTo: roomId)
-        .orderBy('startTime', descending: true)
-        .get();
-
-    return querySnapshot.docs.map((doc) => _mapBooking(doc)).toList();
+    return _collectBookingPages(
+      (cursor) =>
+          getBookingsByRoomPage(roomId: roomId, cursor: cursor, limit: 100),
+    );
   }
 
   @override
   Future<List<BookingEntity>> getBookingsByUser(String userId) async {
-    final querySnapshot = await _firestore
-        .collection('bookings')
-        .where('ownerId', isEqualTo: userId)
-        .orderBy('startTime', descending: true)
-        .get();
-
-    return querySnapshot.docs.map((doc) => _mapBooking(doc)).toList();
+    return _collectBookingPages(
+      (cursor) =>
+          getBookingsByUserPage(userId: userId, cursor: cursor, limit: 100),
+    );
   }
 
   @override
   Future<List<BookingEntity>> getBookingsByStudio(String studioId) async {
-    final querySnapshot = await _firestore
-        .collection('bookings')
-        .where('studioId', isEqualTo: studioId)
-        .orderBy('startTime', descending: true)
-        .get();
+    return _collectBookingPages(
+      (cursor) => getBookingsByStudioPage(
+        studioId: studioId,
+        cursor: cursor,
+        limit: _bookingsPageSize,
+      ),
+    );
+  }
 
-    return querySnapshot.docs.map((doc) => _mapBooking(doc)).toList();
+  @override
+  Future<BookingsPage> getBookingsByRoomPage({
+    required String roomId,
+    String? cursor,
+    int limit = 20,
+  }) {
+    return _getBookingsPageByIndexedField(
+      field: 'roomId',
+      value: roomId,
+      cursor: cursor,
+      limit: limit,
+    );
+  }
+
+  @override
+  Future<BookingsPage> getBookingsByUserPage({
+    required String userId,
+    String? cursor,
+    int limit = 20,
+  }) {
+    return _getBookingsPageByIndexedField(
+      field: 'ownerId',
+      value: userId,
+      cursor: cursor,
+      limit: limit,
+    );
+  }
+
+  @override
+  Future<BookingsPage> getBookingsByStudioPage({
+    required String studioId,
+    String? cursor,
+    int limit = 20,
+  }) {
+    return _getBookingsPageByIndexedField(
+      field: 'studioId',
+      value: studioId,
+      cursor: cursor,
+      limit: limit,
+    );
+  }
+
+  Future<List<BookingEntity>> _collectBookingPages(
+    Future<BookingsPage> Function(String? cursor) loadPage,
+  ) async {
+    final bookings = <BookingEntity>[];
+    String? cursor;
+    while (true) {
+      final page = await loadPage(cursor);
+      bookings.addAll(page.items);
+      if (!page.hasMore || page.nextCursor == null) {
+        break;
+      }
+      cursor = page.nextCursor;
+    }
+    return bookings;
+  }
+
+  int _normalizePageLimit(int value) {
+    if (value <= 0) return _bookingsDefaultLimit;
+    return value > _bookingsPageSize ? _bookingsPageSize : value;
+  }
+
+  Future<BookingsPage> _getBookingsPageByIndexedField({
+    required String field,
+    required String value,
+    String? cursor,
+    int limit = _bookingsDefaultLimit,
+  }) async {
+    final normalizedValue = value.trim();
+    if (normalizedValue.isEmpty) {
+      return const BookingsPage(items: <BookingEntity>[], hasMore: false);
+    }
+
+    final pageLimit = _normalizePageLimit(limit);
+    Query<Map<String, dynamic>> query = _firestore
+        .collection('bookings')
+        .where(field, isEqualTo: normalizedValue)
+        .orderBy('startTime', descending: true)
+        .limit(pageLimit + 1);
+
+    final cursorId = (cursor ?? '').trim();
+    if (cursorId.isNotEmpty) {
+      final cursorDoc = await _firestore
+          .collection('bookings')
+          .doc(cursorId)
+          .get();
+      final cursorData = cursorDoc.data();
+      if (cursorDoc.exists &&
+          cursorData != null &&
+          cursorData['startTime'] != null) {
+        query = query.startAfterDocument(cursorDoc);
+      }
+    }
+
+    final snapshot = await query.get();
+    final docs = snapshot.docs;
+    final hasMore = docs.length > pageLimit;
+    final pageDocs = hasMore ? docs.take(pageLimit).toList() : docs;
+    final nextCursor = hasMore && pageDocs.isNotEmpty ? pageDocs.last.id : null;
+
+    return BookingsPage(
+      items: pageDocs.map(_mapBooking).toList(),
+      hasMore: hasMore,
+      nextCursor: nextCursor,
+    );
   }
 
   BookingEntity _mapBooking(DocumentSnapshot<Map<String, dynamic>> doc) {

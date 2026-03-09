@@ -1,8 +1,21 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'app_colors.dart';
 import 'app_fonts.dart';
+import 'no_animation_page_transitions_builder.dart';
+
+const PageTransitionsTheme _webNoTransitionsTheme = PageTransitionsTheme(
+  builders: <TargetPlatform, PageTransitionsBuilder>{
+    TargetPlatform.android: NoAnimationPageTransitionsBuilder(),
+    TargetPlatform.iOS: NoAnimationPageTransitionsBuilder(),
+    TargetPlatform.linux: NoAnimationPageTransitionsBuilder(),
+    TargetPlatform.macOS: NoAnimationPageTransitionsBuilder(),
+    TargetPlatform.windows: NoAnimationPageTransitionsBuilder(),
+    TargetPlatform.fuchsia: NoAnimationPageTransitionsBuilder(),
+  },
+);
 
 ThemeData buildDarkTheme() {
   return ThemeData(
@@ -136,6 +149,9 @@ ThemeData buildDarkTheme() {
       elevation: 0,
       shape: CircleBorder(),
     ),
+    pageTransitionsTheme: kIsWeb
+        ? _webNoTransitionsTheme
+        : const PageTransitionsTheme(),
     useMaterial3: true,
   );
 }

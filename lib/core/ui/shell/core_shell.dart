@@ -60,22 +60,42 @@ class CoreShell extends StatelessWidget {
   /// Breakpoint width for desktop layout (used for non-web platforms usually, or general wide logic).
   final double desktopBreakpoint;
 
+  static const Duration _webSidebarExpandDuration = Duration(milliseconds: 160);
+  static const Duration _webSidebarCollapseDuration = Duration(
+    milliseconds: 120,
+  );
+  static const Duration _defaultSidebarDuration = Duration(milliseconds: 220);
+
+  Duration _sidebarDuration(bool isCollapsed) {
+    if (!kIsWeb) return _defaultSidebarDuration;
+    return isCollapsed
+        ? _webSidebarCollapseDuration
+        : _webSidebarExpandDuration;
+  }
+
+  Curve _sidebarCurve(bool isCollapsed) {
+    if (!kIsWeb) return Curves.easeInOutCubic;
+    return isCollapsed ? Curves.easeInCubic : Curves.easeOutCubic;
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    
+
     // Logic extracted from UserShellPage:
     // final isWideLayout = kIsWeb ? width >= 700 : width >= 1200;
-    final isWideLayout = kIsWeb ? width >= mobileBreakpoint : width >= desktopBreakpoint;
+    final isWideLayout = kIsWeb
+        ? width >= mobileBreakpoint
+        : width >= desktopBreakpoint;
 
     return Scaffold(
       // Drawer is only shown if sidebar is provided and we are NOT in wide layout
       drawer: (!isWideLayout && sidebar != null)
           ? Drawer(child: SafeArea(child: sidebar!))
           : null,
-      
+
       appBar: appBar,
-      
+
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -92,8 +112,8 @@ class CoreShell extends StatelessWidget {
                 }
 
                 return AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOutCubic,
+                  duration: _sidebarDuration(isCollapsed),
+                  curve: _sidebarCurve(isCollapsed),
                   width: isCollapsed ? 90 : 280,
                   clipBehavior: Clip.hardEdge,
                   decoration: const BoxDecoration(),
@@ -107,17 +127,15 @@ class CoreShell extends StatelessWidget {
             ),
             const VerticalDivider(width: 1, thickness: 1),
           ],
-          
+
           // Main Content
-          Expanded(
-            child: child,
-          ),
+          Expanded(child: child),
         ],
       ),
-      
+
       // Bottom Nav only on small screens
       bottomNavigationBar: !isWideLayout ? bottomNavigationBar : null,
-      
+
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
     );

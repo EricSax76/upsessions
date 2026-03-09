@@ -532,7 +532,14 @@ service cloud.firestore {
 
     match /event_managers/{managerId} {
       allow read: if isSignedIn();
-      allow create, update: if isOwner(managerId);
+      allow create: if isOwner(managerId)
+        && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isSignedIn()
+        && (
+          isOwner(managerId)
+          || resource.data.ownerId == request.auth.uid
+        )
+        && request.resource.data.ownerId == resource.data.ownerId;
     }
 
     match /jam_sessions/{sessionId} {

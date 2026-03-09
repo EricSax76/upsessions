@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/core/widgets/sm_avatar.dart';
 import '../widgets/hiring/musician_request_dialog.dart';
 import '../../cubits/musician_requests_cubit.dart';
 import '../../cubits/hire_musicians_cubit.dart';
@@ -13,6 +14,17 @@ class HireMusiciansPage extends StatefulWidget {
 }
 
 class _HireMusiciansPageState extends State<HireMusiciansPage> {
+  String _initials(String name) {
+    final words = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty)
+        .take(2)
+        .toList(growable: false);
+    if (words.isEmpty) return '?';
+    return words.map((word) => word[0].toUpperCase()).join();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -29,11 +41,14 @@ class _HireMusiciansPageState extends State<HireMusiciansPage> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
-              onChanged: (value) => context.read<HireMusiciansCubit>().search(value),
+              onChanged: (value) =>
+                  context.read<HireMusiciansCubit>().search(value),
               decoration: InputDecoration(
                 hintText: 'Buscar por instrumento, ciudad...',
                 prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
                 filled: true,
                 fillColor: Theme.of(context).colorScheme.surface,
               ),
@@ -50,7 +65,9 @@ class _HireMusiciansPageState extends State<HireMusiciansPage> {
             return Center(child: Text('Error: ${state.error}'));
           }
           if (state.musicians.isEmpty) {
-            return const Center(child: Text('No se encontraron músicos disponibles.'));
+            return const Center(
+              child: Text('No se encontraron músicos disponibles.'),
+            );
           }
 
           return ListView.builder(
@@ -62,17 +79,18 @@ class _HireMusiciansPageState extends State<HireMusiciansPage> {
                 margin: const EdgeInsets.only(bottom: 16),
                 child: ListTile(
                   isThreeLine: true,
-                  leading: CircleAvatar(
-                    backgroundImage: mus.photoUrl != null && mus.photoUrl!.isNotEmpty
-                        ? NetworkImage(mus.photoUrl!)
-                        : null,
-                    child: mus.photoUrl == null || mus.photoUrl!.isEmpty
-                        ? Text(mus.name.isNotEmpty ? mus.name[0].toUpperCase() : '?')
-                        : null,
+                  leading: SmAvatar(
+                    radius: 24,
+                    imageUrl: mus.photoUrl,
+                    initials: _initials(mus.name),
+                    fallbackIcon: Icons.person_outline,
                   ),
-                  title: Text(mus.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(
+                    mus.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   subtitle: Text(
-                    '${mus.instrument} • ${mus.city}\nEstilos: ${mus.styles.join(", ")}'
+                    '${mus.instrument} • ${mus.city}\nEstilos: ${mus.styles.join(", ")}',
                   ),
                   trailing: FilledButton.tonal(
                     onPressed: () {

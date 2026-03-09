@@ -136,7 +136,9 @@ class ChatRepository extends ChatRepositoryBase {
     } on FirebaseException catch (error) {
       if (error.code == 'permission-denied') {
         // Reading messages should still work even if unread tracking is blocked by rules.
-        log('markThreadRead: permission-denied for $threadId (${error.message})');
+        log(
+          'markThreadRead: permission-denied for $threadId (${error.message})',
+        );
         return;
       }
       if (error.code == 'not-found') {
@@ -172,29 +174,6 @@ class ChatRepository extends ChatRepositoryBase {
       log('fetchMessages: FirebaseException - ${error.code}: ${error.message}');
       if (error.code == 'permission-denied') {
         throw Exception('No tienes permisos para leer los mensajes.');
-      }
-      rethrow;
-    }
-  }
-
-  Future<ChatMessage?> fetchLastMessage(String threadId) async {
-    final currentUser = authRepository.currentUser;
-    try {
-      log('fetchLastMessage: Fetching last message for thread $threadId');
-      final snapshot = await messages(
-        threadId,
-      ).orderBy('sentAt', descending: true).limit(1).get();
-      if (snapshot.docs.isEmpty) {
-        return null;
-      }
-      return _mapper.messageFromQueryDoc(
-        snapshot.docs.first,
-        currentUserId: currentUser?.id,
-      );
-    } on FirebaseException catch (error) {
-      log('fetchLastMessage: FirebaseException - ${error.code}: ${error.message}');
-      if (error.code == 'permission-denied') {
-        return null;
       }
       rethrow;
     }

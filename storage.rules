@@ -17,8 +17,18 @@ service firebase.storage {
       return /databases/(default)/documents/musicians/$(uid);
     }
 
+    function eventManagerDocPath(managerId) {
+      return /databases/(default)/documents/event_managers/$(managerId);
+    }
+
     function isMusician() {
       return isSignedIn() && firestore.exists(musicianDocPath(request.auth.uid));
+    }
+
+    function isEventManagerOwner(managerId) {
+      return isSignedIn()
+        && firestore.exists(eventManagerDocPath(managerId))
+        && firestore.get(eventManagerDocPath(managerId)).data.ownerId == request.auth.uid;
     }
 
     function isGroupOwner(groupId) {
@@ -63,6 +73,17 @@ function isActiveMember(groupId) {
       allow read: if true;
       allow write: if isSignedIn()
                    && firestore.get(/databases/(default)/documents/studios/$(studioId)).data.ownerId == request.auth.uid
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+
+    match /event_managers/{managerId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isSignedIn()
+                   && (
+                     request.auth.uid == managerId
+                     || isEventManagerOwner(managerId)
+                   )
                    && request.resource.size < 5 * 1024 * 1024
                    && request.resource.contentType.matches('image/.*');
     }

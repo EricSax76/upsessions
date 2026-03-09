@@ -55,7 +55,12 @@ class MusicianDto {
           ? List<String>.from(stylesDynamic)
           : const <String>[],
       experienceYears: (data['experienceYears'] as num?)?.toInt() ?? 0,
-      photoUrl: data['photoUrl'] as String?,
+      photoUrl: _firstNonEmptyString([
+        data['photoUrl'],
+        data['photoURL'],
+        data['imageUrl'],
+        data['avatarUrl'],
+      ]),
       province: data['province'] as String?,
       profileType: data['profileType'] as String?,
       gender: data['gender'] as String?,
@@ -206,5 +211,17 @@ class MusicianDto {
   static List<String> _stringList(dynamic raw) {
     if (raw is Iterable) return raw.map((e) => e.toString()).toList();
     return const [];
+  }
+
+  static String? _firstNonEmptyString(List<dynamic> candidates) {
+    for (final candidate in candidates) {
+      if (candidate is String) {
+        final trimmed = candidate.trim();
+        if (trimmed.isNotEmpty) {
+          return trimmed;
+        }
+      }
+    }
+    return null;
   }
 }

@@ -60,14 +60,16 @@ class ChatPageCubit extends Cubit<ChatPageState> {
       selected ??= threads.isNotEmpty ? threads.first : null;
       if (isClosed) return;
 
-      emit(state.copyWith(
-        threads: threads,
-        selectedThread: () => selected,
-        errorMessage: () => null,
-      ));
+      emit(
+        state.copyWith(
+          threads: threads,
+          selectedThread: () => selected,
+          errorMessage: () => null,
+        ),
+      );
 
       await _prefetchAvatars(threads);
-      await _prefetchLastMessages(threads);
+      _hydrateLastMessagesFromThreads(threads);
 
       if (selected != null) {
         await loadMessages(selected.id);
@@ -76,12 +78,14 @@ class ChatPageCubit extends Cubit<ChatPageState> {
       }
     } catch (error) {
       if (isClosed) return;
-      emit(state.copyWith(
-        threads: const [],
-        messages: const [],
-        selectedThread: () => null,
-        errorMessage: () => 'No se pudieron cargar los chats: $error',
-      ));
+      emit(
+        state.copyWith(
+          threads: const [],
+          messages: const [],
+          selectedThread: () => null,
+          errorMessage: () => 'No se pudieron cargar los chats: $error',
+        ),
+      );
     }
   }
 
@@ -98,7 +102,18 @@ class ChatPageCubit extends Cubit<ChatPageState> {
     try {
       final messages = await _chatRepository.fetchMessages(threadId);
       if (isClosed) return;
-      emit(state.copyWith(messages: messages));
+      final updatedLastMessages = Map<String, ChatMessage?>.from(
+        state.lastMessageByThreadId,
+      );
+      if (messages.isNotEmpty) {
+        updatedLastMessages[threadId] = messages.last;
+      }
+      emit(
+        state.copyWith(
+          messages: messages,
+          lastMessageByThreadId: updatedLastMessages,
+        ),
+      );
 
       var threadUnreadCount = 0;
       if (state.selectedThread?.id == threadId) {
@@ -116,9 +131,11 @@ class ChatPageCubit extends Cubit<ChatPageState> {
       }
     } catch (error) {
       if (isClosed) return;
-      emit(state.copyWith(
-        errorMessage: () => 'No se pudieron cargar los mensajes: $error',
-      ));
+      emit(
+        state.copyWith(
+          errorMessage: () => 'No se pudieron cargar los mensajes: $error',
+        ),
+      );
     }
   }
 
@@ -130,12 +147,22 @@ class ChatPageCubit extends Cubit<ChatPageState> {
     try {
       final message = await _chatRepository.sendMessage(thread.id, text);
       if (isClosed) return;
-      emit(state.copyWith(messages: [...state.messages, message]));
+      final updatedLastMessages = Map<String, ChatMessage?>.from(
+        state.lastMessageByThreadId,
+      )..[thread.id] = message;
+      emit(
+        state.copyWith(
+          messages: [...state.messages, message],
+          lastMessageByThreadId: updatedLastMessages,
+        ),
+      );
     } catch (error) {
       if (isClosed) return;
-      emit(state.copyWith(
-        errorMessage: () => 'No se pudo enviar el mensaje: $error',
-      ));
+      emit(
+        state.copyWith(
+          errorMessage: () => 'No se pudo enviar el mensaje: $error',
+        ),
+      );
     }
   }
 
@@ -176,33 +203,19 @@ class ChatPageCubit extends Cubit<ChatPageState> {
         message.body.trim().toLowerCase() == 'aún no hay mensajes.';
   }
 
-  Future<void> _prefetchLastMessages(List<ChatThread> threads) async {
+  void _hydrateLastMessagesFromThreads(List<ChatThread> threads) {
     final current = Map<String, ChatMessage?>.from(state.lastMessageByThreadId);
-    final idsToFetch = <String>{};
-
     for (final thread in threads) {
-      if (current.containsKey(thread.id)) continue;
-      if (isNoMessagesPlaceholder(thread.lastMessage)) {
-        idsToFetch.add(thread.id);
-      } else {
-        current[thread.id] = thread.lastMessage;
+      final cached = current[thread.id];
+      if (cached != null && !isNoMessagesPlaceholder(cached)) {
+        continue;
       }
+      final fromThread = thread.lastMessage;
+      current[thread.id] = isNoMessagesPlaceholder(fromThread)
+          ? null
+          : fromThread;
     }
-
-    if (idsToFetch.isNotEmpty) {
-      final results = await Future.wait(
-        idsToFetch.map((threadId) async {
-          final message = await _chatRepository.fetchLastMessage(threadId);
-          return MapEntry(threadId, message);
-        }),
-      );
-
-      if (isClosed) return;
-      for (final entry in results) {
-        current[entry.key] = entry.value;
-      }
-    }
-
-    if (!isClosed) emit(state.copyWith(lastMessageByThreadId: current));
+    if (isClosed) return;
+    emit(state.copyWith(lastMessageByThreadId: current));
   }
 }

@@ -1,9 +1,17 @@
 import 'package:equatable/equatable.dart';
 import '../models/event_manager_entity.dart';
 
-enum EventManagerAuthStatus { initial, loading, authenticated, unauthenticated, error }
+enum EventManagerAuthStatus {
+  initial,
+  loading,
+  authenticated,
+  unauthenticated,
+  error,
+}
 
 class EventManagerAuthState extends Equatable {
+  static const Object _unset = Object();
+
   const EventManagerAuthState({
     this.status = EventManagerAuthStatus.initial,
     this.manager,
@@ -16,13 +24,17 @@ class EventManagerAuthState extends Equatable {
 
   EventManagerAuthState copyWith({
     EventManagerAuthStatus? status,
-    EventManagerEntity? manager,
-    String? errorMessage,
+    Object? manager = _unset,
+    Object? errorMessage = _unset,
   }) {
     return EventManagerAuthState(
       status: status ?? this.status,
-      manager: manager ?? this.manager,
-      errorMessage: errorMessage ?? this.errorMessage,
+      manager: identical(manager, _unset)
+          ? this.manager
+          : manager as EventManagerEntity?,
+      errorMessage: identical(errorMessage, _unset)
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 

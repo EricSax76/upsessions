@@ -12,25 +12,11 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
   Future<List<RehearsalEntity>> getMyRehearsals() async {
     final uid = await requireMusicianUid();
     logFirestore('getMyRehearsals uid=$uid');
-    try {
-      final snapshot = await logFuture(
-        'getMyRehearsals get',
-        firestore.collectionGroup('rehearsals').orderBy('startsAt').limit(100).get(),
-      );
-      return snapshot.docs
-          .map((doc) {
-            final groupId = doc.reference.parent.parent?.id ?? '';
-            if (groupId.isEmpty) return null;
-            return _mapRehearsalFromMap(doc.id, doc.data(), groupId);
-          })
-          .whereType<RehearsalEntity>()
-          .toList();
-    } on FirebaseException catch (error) {
-      logFirestore(
-        'getMyRehearsals fallback by membership due to ${error.code}',
-      );
-      return _getMyRehearsalsByMembership(uid);
+    final groupIds = await _fetchActiveGroupIds(uid);
+    if (groupIds.isEmpty) {
+      return [];
     }
+    return _getMyRehearsalsByMembership(groupIds);
   }
 
   Future<List<RehearsalEntity>> getRehearsals(String groupId) async {
@@ -88,6 +74,7 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     await logFuture(
       'createRehearsal set',
       doc.set({
+        'groupId': groupId,
         'startsAt': Timestamp.fromDate(startsAt),
         'endsAt': endsAt == null ? null : Timestamp.fromDate(endsAt),
         'location': location.trim(),
@@ -147,6 +134,7 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     await logFuture(
       'updateRehearsal update',
       rehearsals(groupId).doc(rehearsalId).update({
+        'groupId': groupId,
         'startsAt': Timestamp.fromDate(startsAt),
         'endsAt': endsAt == null ? null : Timestamp.fromDate(endsAt),
         'location': location.trim(),
@@ -180,28 +168,87 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     return _mapRehearsalFromMap(doc.id, doc.data(), groupId);
   }
 
-  Future<List<RehearsalEntity>> _getMyRehearsalsByMembership(
-    String ownerId,
-  ) async {
+  Future<List<String>> _fetchActiveGroupIds(String ownerId) async {
     final memberships = await logFuture(
-      'getMyRehearsals fallback memberships',
+      'getMyRehearsals memberships ownerId=$ownerId',
       firestore
           .collectionGroup('members')
           .where('ownerId', isEqualTo: ownerId)
           .where('status', isEqualTo: 'active')
           .get(),
     );
-
-    final groupIds = memberships.docs
+    return memberships.docs
         .map((doc) => doc.reference.parent.parent?.id ?? '')
         .where((groupId) => groupId.isNotEmpty)
         .toSet()
-        .toList();
-    if (groupIds.isEmpty) {
-      return [];
+        .toList()
+      ..sort();
+  }
+
+  Future<List<RehearsalEntity>> _getMyRehearsalsByMembership(
+    List<String> groupIds,
+  ) async {
+    try {
+      final indexed = await _getMyRehearsalsByGroupIndex(groupIds);
+      // Legacy rehearsals might miss `groupId` until backfill is complete.
+      if (indexed.isNotEmpty) {
+        return indexed;
+      }
+    } on FirebaseException catch (error) {
+      logFirestore(
+        'getMyRehearsals indexed query unavailable (${error.code}), using group fan-out fallback',
+      );
     }
 
-    // Cap to first 20 groups to prevent unbounded fan-out.
+    return _getMyRehearsalsByGroupFanOut(groupIds);
+  }
+
+  Future<List<RehearsalEntity>> _getMyRehearsalsByGroupIndex(
+    List<String> groupIds,
+  ) async {
+    const maxResults = 100;
+    final chunks = _chunk(groupIds, 10);
+    final rawPerChunkLimit = (maxResults / chunks.length).ceil();
+    final perChunkLimit = rawPerChunkLimit < 10 ? 10 : rawPerChunkLimit;
+
+    final chunkResults = await Future.wait(
+      chunks.map((chunk) async {
+        final snapshot = await logFuture(
+          'getMyRehearsals indexed chunk=${chunk.length}',
+          firestore
+              .collectionGroup('rehearsals')
+              .where('groupId', whereIn: chunk)
+              .orderBy('startsAt', descending: false)
+              .limit(perChunkLimit)
+              .get(),
+        );
+        return snapshot.docs
+            .map((doc) {
+              final data = doc.data();
+              final groupIdFromData = (data['groupId'] ?? '').toString().trim();
+              final groupId = groupIdFromData.isNotEmpty
+                  ? groupIdFromData
+                  : (doc.reference.parent.parent?.id ?? '');
+              if (groupId.isEmpty) return null;
+              return _mapRehearsalFromMap(doc.id, data, groupId);
+            })
+            .whereType<RehearsalEntity>()
+            .toList();
+      }),
+    );
+
+    // Hard cap result size to prevent oversized payloads.
+    final merged = chunkResults.expand((items) => items).toList()
+      ..sort((a, b) => a.startsAt.compareTo(b.startsAt));
+    if (merged.length > maxResults) {
+      return merged.take(maxResults).toList();
+    }
+    return merged;
+  }
+
+  Future<List<RehearsalEntity>> _getMyRehearsalsByGroupFanOut(
+    List<String> groupIds,
+  ) async {
     final cappedGroupIds = groupIds.take(20).toList();
 
     final byGroup = await Future.wait(
@@ -209,7 +256,9 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
         try {
           final snapshot = await logFuture(
             'getMyRehearsals fallback group=$groupId',
-            rehearsals(groupId).orderBy('startsAt', descending: false).limit(50).get(),
+            rehearsals(
+              groupId,
+            ).orderBy('startsAt', descending: false).limit(50).get(),
           );
           return snapshot.docs
               .map((doc) => _mapRehearsal(doc, groupId))
@@ -226,6 +275,16 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     final rehearsalsList = byGroup.expand((items) => items).toList()
       ..sort((a, b) => a.startsAt.compareTo(b.startsAt));
     return rehearsalsList;
+  }
+
+  List<List<String>> _chunk(List<String> input, int size) {
+    final chunks = <List<String>>[];
+    for (var i = 0; i < input.length; i += size) {
+      chunks.add(
+        input.sublist(i, i + size > input.length ? input.length : i + size),
+      );
+    }
+    return chunks;
   }
 
   RehearsalEntity _mapRehearsalFromMap(

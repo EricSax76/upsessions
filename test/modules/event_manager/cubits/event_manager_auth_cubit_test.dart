@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -36,11 +38,15 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(manager);
+    registerFallbackValue(Uint8List(0));
   });
 
   setUp(() {
     authRepository = _MockAuthRepository();
     managerRepository = _MockEventManagerRepository();
+    when(
+      () => managerRepository.fetchById(any()),
+    ).thenAnswer((_) async => null);
   });
 
   EventManagerAuthCubit buildCubit() {
@@ -288,6 +294,94 @@ void main() {
     );
 
     // -- logout --
+
+    blocTest<EventManagerAuthCubit, EventManagerAuthState>(
+      'updateProfile actualiza nombre y persiste en repositorio',
+      build: () {
+        when(() => managerRepository.update(any())).thenAnswer((_) async {});
+        return buildCubit();
+      },
+      seed: () => const EventManagerAuthState(
+        status: EventManagerAuthStatus.authenticated,
+        manager: manager,
+      ),
+      act: (cubit) => cubit.updateProfile(managerName: 'Manager Renombrado'),
+      expect: () => [
+        isA<EventManagerAuthState>()
+            .having((s) => s.status, 'loading', EventManagerAuthStatus.loading)
+            .having((s) => s.manager, 'manager', manager),
+        isA<EventManagerAuthState>()
+            .having(
+              (s) => s.status,
+              'authenticated',
+              EventManagerAuthStatus.authenticated,
+            )
+            .having(
+              (s) => s.manager?.name,
+              'updated name',
+              'Manager Renombrado',
+            ),
+      ],
+      verify: (_) {
+        verify(
+          () => managerRepository.update(
+            manager.copyWith(name: 'Manager Renombrado'),
+          ),
+        ).called(1);
+      },
+    );
+
+    blocTest<EventManagerAuthCubit, EventManagerAuthState>(
+      'updateProfile sube logo cuando hay foto y guarda url en perfil',
+      build: () {
+        when(
+          () => managerRepository.uploadLogoBytes(
+            any(),
+            any(),
+            fileExtension: any(named: 'fileExtension'),
+          ),
+        ).thenAnswer((_) async => 'https://cdn/logo.png');
+        when(() => managerRepository.update(any())).thenAnswer((_) async {});
+        return buildCubit();
+      },
+      seed: () => const EventManagerAuthState(
+        status: EventManagerAuthStatus.authenticated,
+        manager: manager,
+      ),
+      act: (cubit) => cubit.updateProfile(
+        managerName: 'Test Manager',
+        photoBytes: Uint8List.fromList([1, 2, 3, 4]),
+        photoExtension: 'png',
+      ),
+      expect: () => [
+        isA<EventManagerAuthState>().having(
+          (s) => s.status,
+          'loading',
+          EventManagerAuthStatus.loading,
+        ),
+        isA<EventManagerAuthState>()
+            .having(
+              (s) => s.status,
+              'authenticated',
+              EventManagerAuthStatus.authenticated,
+            )
+            .having((s) => s.manager?.logoUrl, 'logo', 'https://cdn/logo.png'),
+      ],
+      verify: (_) {
+        verify(
+          () => managerRepository.uploadLogoBytes(
+            'user-1',
+            any(),
+            fileExtension: 'png',
+          ),
+        ).called(1);
+        verify(
+          () => managerRepository.update(
+            manager.copyWith(logoUrl: 'https://cdn/logo.png'),
+          ),
+        ).called(1);
+      },
+    );
 
     blocTest<EventManagerAuthCubit, EventManagerAuthState>(
       'logout emite loading y luego unauthenticated',

@@ -81,6 +81,10 @@ import '../modules/musicians/repositories/musicians_repository.dart';
 import 'app_router_builders.dart';
 import 'app_router_shell.dart';
 
+NoTransitionPage<void> _noTransitionPage(GoRouterState state, Widget child) {
+  return NoTransitionPage<void>(key: state.pageKey, child: child);
+}
+
 List<RouteBase> buildAppRoutes() {
   return [
     GoRoute(
@@ -152,11 +156,13 @@ List<RouteBase> buildAppRoutes() {
       routes: [
         GoRoute(
           path: AppRoutes.userHome,
-          builder: (context, state) => const UserHomePage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const UserHomePage()),
         ),
         GoRoute(
           path: AppRoutes.musicians,
-          builder: (context, state) => const MusiciansHubPage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const MusiciansHubPage()),
         ),
         GoRoute(
           path: '/musicians/detail',
@@ -173,15 +179,22 @@ List<RouteBase> buildAppRoutes() {
         ),
         GoRoute(
           path: AppRoutes.musicianDetailRoute,
-          builder: buildMusicianDetailRoute,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            buildMusicianDetailRoute(context, state),
+          ),
         ),
         GoRoute(
           path: AppRoutes.musicianDetailLegacyRoute,
-          builder: buildMusicianDetailRoute,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            buildMusicianDetailRoute(context, state),
+          ),
         ),
         GoRoute(
           path: AppRoutes.announcements,
-          builder: (context, state) => const AnnouncementsHubPage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const AnnouncementsHubPage()),
         ),
         GoRoute(
           path: '/announcements/detail',
@@ -203,29 +216,49 @@ List<RouteBase> buildAppRoutes() {
         ),
         GoRoute(
           path: AppRoutes.announcementDetailRoute,
-          builder: buildAnnouncementDetailRoute,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            buildAnnouncementDetailRoute(context, state),
+          ),
         ),
         GoRoute(
           path: AppRoutes.media,
-          builder: (context, state) => MediaGalleryPage(repository: context.read<MediaRepository>()),
+          builder: (context, state) =>
+              MediaGalleryPage(repository: context.read<MediaRepository>()),
         ),
-        GoRoute(path: AppRoutes.messages, builder: buildMessagesRoute),
-        GoRoute(path: AppRoutes.messagesThreadRoute, builder: buildMessagesRoute),
+        GoRoute(
+          path: AppRoutes.messages,
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, buildMessagesRoute(context, state)),
+        ),
+        GoRoute(
+          path: AppRoutes.messagesThreadRoute,
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, buildMessagesRoute(context, state)),
+        ),
         GoRoute(
           path: AppRoutes.messagesThreadDetailRoute,
-          builder: buildChatThreadDetailRoute,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            buildChatThreadDetailRoute(context, state),
+          ),
         ),
         GoRoute(
           path: AppRoutes.contacts,
-          builder: (context, state) => ContactsPage(chatRepository: context.read<ChatRepository>()),
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            ContactsPage(chatRepository: context.read<ChatRepository>()),
+          ),
         ),
         GoRoute(
           path: AppRoutes.calendar,
-          builder: (context, state) => const CalendarPage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const CalendarPage()),
         ),
         GoRoute(
           path: AppRoutes.events,
-          builder: (context, state) => const EventsPage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const EventsPage()),
         ),
         GoRoute(
           path: '/events/detail',
@@ -246,72 +279,117 @@ List<RouteBase> buildAppRoutes() {
         ),
         GoRoute(
           path: AppRoutes.notifications,
-          builder: (context, state) => NotificationsPage(
-            chatRepository: context.read<ChatRepository>(),
-            inviteNotificationsRepository: context
-                .read<InviteNotificationsRepository>(),
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            NotificationsPage(
+              chatRepository: context.read<ChatRepository>(),
+              inviteNotificationsRepository: context
+                  .read<InviteNotificationsRepository>(),
+            ),
           ),
         ),
         GoRoute(
           path: AppRoutes.rehearsals,
-          builder: (context, state) => const GroupsPage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const GroupsPage()),
         ),
-        GoRoute(path: AppRoutes.groupRoute, builder: buildGroupRoute),
+        GoRoute(
+          path: AppRoutes.groupRoute,
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, buildGroupRoute(context, state)),
+        ),
         GoRoute(
           path: AppRoutes.groupRehearsalsRoute,
-          builder: buildGroupRehearsalsRoute,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            buildGroupRehearsalsRoute(context, state),
+          ),
         ),
         GoRoute(
           path: AppRoutes.rehearsalDetailRoute,
-          builder: buildRehearsalDetailRoute,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            buildRehearsalDetailRoute(context, state),
+          ),
         ),
         GoRoute(path: AppRoutes.invite, builder: buildInviteAcceptRoute),
         GoRoute(path: AppRoutes.inviteRoute, builder: buildInviteAcceptRoute),
-        GoRoute(path: AppRoutes.eventDetailRoute, builder: buildEventDetailRoute),
+        GoRoute(
+          path: AppRoutes.eventDetailRoute,
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, buildEventDetailRoute(context, state)),
+        ),
         GoRoute(
           path: AppRoutes.profile,
-          builder: (context, state) => const AccountPage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const AccountPage()),
         ),
         GoRoute(
           path: AppRoutes.profileEdit,
-          builder: (context, state) => ProfileEditPage(
-            affinityOptionsRepository: context.read<AffinityOptionsRepository>(),
-            artistImageRepository: context.read<ArtistImageRepository>(),
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            ProfileEditPage(
+              affinityOptionsRepository: context
+                  .read<AffinityOptionsRepository>(),
+              artistImageRepository: context.read<ArtistImageRepository>(),
+            ),
           ),
         ),
         GoRoute(
           path: AppRoutes.account,
-          builder: (context, state) => const AccountPage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const AccountPage()),
         ),
         GoRoute(
           path: AppRoutes.settings,
-          builder: (context, state) => const AccountSettingsPage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const AccountSettingsPage()),
         ),
         GoRoute(
           path: AppRoutes.help,
-          builder: (context, state) => const HelpPage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const HelpPage()),
         ),
-        GoRoute(path: AppRoutes.studios, builder: buildStudiosListRoute),
-        GoRoute(path: AppRoutes.studiosRoomsRoute, builder: buildStudiosRoomsRoute),
+        GoRoute(
+          path: AppRoutes.studios,
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, buildStudiosListRoute(context, state)),
+        ),
+        GoRoute(
+          path: AppRoutes.studiosRoomsRoute,
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, buildStudiosRoomsRoute(context, state)),
+        ),
         GoRoute(
           path: AppRoutes.studiosRoomCreateRoute,
-          builder: buildStudiosRoomCreateRoute,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            buildStudiosRoomCreateRoute(context, state),
+          ),
         ),
         GoRoute(
           path: AppRoutes.studiosRoomEditRoute,
-          builder: buildStudiosRoomEditRoute,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            buildStudiosRoomEditRoute(context, state),
+          ),
         ),
         GoRoute(
           path: AppRoutes.studiosRoomDetailRoute,
-          builder: buildStudiosRoomDetailRoute,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            buildStudiosRoomDetailRoute(context, state),
+          ),
         ),
         GoRoute(
           path: AppRoutes.myBookings,
-          builder: (context, state) => const MusicianBookingsPage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const MusicianBookingsPage()),
         ),
         GoRoute(
           path: AppRoutes.matching,
-          builder: (context, state) => const MatchingPage(),
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const MatchingPage()),
         ),
       ],
     ),
@@ -335,24 +413,31 @@ List<RouteBase> buildAppRoutes() {
     ),
     GoRoute(
       path: AppRoutes.studiosDashboard,
-      builder: (context, state) {
+      pageBuilder: (context, state) {
         final authRepo = locate<AuthRepository>();
         final userId = authRepo.currentUser?.id;
-        return BlocProvider(
-          create: (context) {
-            final cubit = MyStudioCubit(
-              repository: locate<StudiosRepository>(),
-            );
-            if (userId != null) {
-              cubit.loadMyStudio(userId);
-            }
-            return cubit;
-          },
-          child: const StudioShellPage(child: StudioDashboardPage()),
+        return _noTransitionPage(
+          state,
+          BlocProvider(
+            create: (context) {
+              final cubit = MyStudioCubit(
+                repository: locate<StudiosRepository>(),
+              );
+              if (userId != null) {
+                cubit.loadMyStudio(userId);
+              }
+              return cubit;
+            },
+            child: const StudioShellPage(child: StudioDashboardPage()),
+          ),
         );
       },
     ),
-    GoRoute(path: AppRoutes.studiosProfile, builder: buildStudiosProfileRoute),
+    GoRoute(
+      path: AppRoutes.studiosProfile,
+      pageBuilder: (context, state) =>
+          _noTransitionPage(state, buildStudiosProfileRoute(context, state)),
+    ),
     GoRoute(
       path: AppRoutes.eventManagerLogin,
       builder: (context, state) => const ManagerLoginPage(),
@@ -363,42 +448,48 @@ List<RouteBase> buildAppRoutes() {
     ),
     GoRoute(
       path: AppRoutes.eventManagerDashboard,
-      builder: (context, state) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => EventManagerAuthCubit(
-              authRepository: locate<AuthRepository>(),
-              managerRepository: locate<EventManagerRepository>(),
-            )..loadProfile(),
-          ),
-          BlocProvider(
-            create: (context) => ManagerDashboardCubit(
-              eventsRepository: locate<ManagerEventsRepository>(),
-              authRepository: locate<AuthRepository>(),
+      pageBuilder: (context, state) => _noTransitionPage(
+        state,
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => EventManagerAuthCubit(
+                authRepository: locate<AuthRepository>(),
+                managerRepository: locate<EventManagerRepository>(),
+              )..loadProfile(),
             ),
-          ),
-        ],
-        child: const ManagerShellPage(child: ManagerDashboardPage()),
+            BlocProvider(
+              create: (context) => ManagerDashboardCubit(
+                eventsRepository: locate<ManagerEventsRepository>(),
+                authRepository: locate<AuthRepository>(),
+              ),
+            ),
+          ],
+          child: const ManagerShellPage(child: ManagerDashboardPage()),
+        ),
       ),
     ),
     GoRoute(
       path: AppRoutes.eventManagerEvents,
-      builder: (context, state) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => EventManagerAuthCubit(
-              authRepository: locate<AuthRepository>(),
-              managerRepository: locate<EventManagerRepository>(),
-            )..loadProfile(),
-          ),
-          BlocProvider(
-            create: (context) => ManagerEventsCubit(
-              repository: locate<ManagerEventsRepository>(),
-              authRepository: locate<AuthRepository>(),
+      pageBuilder: (context, state) => _noTransitionPage(
+        state,
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => EventManagerAuthCubit(
+                authRepository: locate<AuthRepository>(),
+                managerRepository: locate<EventManagerRepository>(),
+              )..loadProfile(),
             ),
-          ),
-        ],
-        child: const ManagerShellPage(child: ManagerEventsPage()),
+            BlocProvider(
+              create: (context) => ManagerEventsCubit(
+                repository: locate<ManagerEventsRepository>(),
+                authRepository: locate<AuthRepository>(),
+              ),
+            ),
+          ],
+          child: const ManagerShellPage(child: ManagerEventsPage()),
+        ),
       ),
     ),
     GoRoute(
@@ -436,22 +527,25 @@ List<RouteBase> buildAppRoutes() {
     ),
     GoRoute(
       path: AppRoutes.eventManagerJamSessions,
-      builder: (context, state) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => EventManagerAuthCubit(
-              authRepository: locate<AuthRepository>(),
-              managerRepository: locate<EventManagerRepository>(),
-            )..loadProfile(),
-          ),
-          BlocProvider(
-            create: (context) => JamSessionsCubit(
-              repository: locate<JamSessionsRepository>(),
-              authRepository: locate<AuthRepository>(),
+      pageBuilder: (context, state) => _noTransitionPage(
+        state,
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => EventManagerAuthCubit(
+                authRepository: locate<AuthRepository>(),
+                managerRepository: locate<EventManagerRepository>(),
+              )..loadProfile(),
             ),
-          ),
-        ],
-        child: const ManagerShellPage(child: JamSessionsPage()),
+            BlocProvider(
+              create: (context) => JamSessionsCubit(
+                repository: locate<JamSessionsRepository>(),
+                authRepository: locate<AuthRepository>(),
+              ),
+            ),
+          ],
+          child: const ManagerShellPage(child: JamSessionsPage()),
+        ),
       ),
     ),
     GoRoute(
@@ -489,64 +583,73 @@ List<RouteBase> buildAppRoutes() {
     ),
     GoRoute(
       path: AppRoutes.eventManagerAgenda,
-      builder: (context, state) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => EventManagerAuthCubit(
-              authRepository: locate<AuthRepository>(),
-              managerRepository: locate<EventManagerRepository>(),
-            )..loadProfile(),
-          ),
-          BlocProvider(
-            create: (context) => ManagerAgendaCubit(
-              eventsRepository: locate<ManagerEventsRepository>(),
-              jamSessionsRepository: locate<JamSessionsRepository>(),
-              authRepository: locate<AuthRepository>(),
+      pageBuilder: (context, state) => _noTransitionPage(
+        state,
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => EventManagerAuthCubit(
+                authRepository: locate<AuthRepository>(),
+                managerRepository: locate<EventManagerRepository>(),
+              )..loadProfile(),
             ),
-          ),
-        ],
-        child: const ManagerShellPage(child: ManagerAgendaPage()),
+            BlocProvider(
+              create: (context) => ManagerAgendaCubit(
+                eventsRepository: locate<ManagerEventsRepository>(),
+                jamSessionsRepository: locate<JamSessionsRepository>(),
+                authRepository: locate<AuthRepository>(),
+              ),
+            ),
+          ],
+          child: const ManagerShellPage(child: ManagerAgendaPage()),
+        ),
       ),
     ),
     GoRoute(
       path: AppRoutes.eventManagerHireMusicians,
-      builder: (context, state) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => EventManagerAuthCubit(
-              authRepository: locate<AuthRepository>(),
-              managerRepository: locate<EventManagerRepository>(),
-            )..loadProfile(),
-          ),
-          BlocProvider(
-            create: (context) => MusicianRequestsCubit(
-              repository: locate<MusicianRequestsRepository>(),
+      pageBuilder: (context, state) => _noTransitionPage(
+        state,
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => EventManagerAuthCubit(
+                authRepository: locate<AuthRepository>(),
+                managerRepository: locate<EventManagerRepository>(),
+              )..loadProfile(),
             ),
-          ),
-          BlocProvider(
-            create: (context) =>
-                HireMusiciansCubit(repository: locate<MusiciansRepository>()),
-          ),
-        ],
-        child: const ManagerShellPage(child: HireMusiciansPage()),
+            BlocProvider(
+              create: (context) => MusicianRequestsCubit(
+                repository: locate<MusicianRequestsRepository>(),
+              ),
+            ),
+            BlocProvider(
+              create: (context) =>
+                  HireMusiciansCubit(repository: locate<MusiciansRepository>()),
+            ),
+          ],
+          child: const ManagerShellPage(child: HireMusiciansPage()),
+        ),
       ),
     ),
     GoRoute(
       path: AppRoutes.eventManagerGigOffers,
-      builder: (context, state) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => EventManagerAuthCubit(
-              authRepository: locate<AuthRepository>(),
-              managerRepository: locate<EventManagerRepository>(),
-            )..loadProfile(),
-          ),
-          BlocProvider(
-            create: (context) =>
-                GigOffersCubit(repository: locate<GigOffersRepository>()),
-          ),
-        ],
-        child: const ManagerShellPage(child: GigOffersPage()),
+      pageBuilder: (context, state) => _noTransitionPage(
+        state,
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => EventManagerAuthCubit(
+                authRepository: locate<AuthRepository>(),
+                managerRepository: locate<EventManagerRepository>(),
+              )..loadProfile(),
+            ),
+            BlocProvider(
+              create: (context) =>
+                  GigOffersCubit(repository: locate<GigOffersRepository>()),
+            ),
+          ],
+          child: const ManagerShellPage(child: GigOffersPage()),
+        ),
       ),
     ),
     GoRoute(
@@ -569,22 +672,28 @@ List<RouteBase> buildAppRoutes() {
     ),
     GoRoute(
       path: AppRoutes.eventManagerProfile,
-      builder: (context, state) => BlocProvider(
-        create: (context) => EventManagerAuthCubit(
-          authRepository: locate<AuthRepository>(),
-          managerRepository: locate<EventManagerRepository>(),
-        )..loadProfile(),
-        child: const ManagerShellPage(child: ManagerProfilePage()),
+      pageBuilder: (context, state) => _noTransitionPage(
+        state,
+        BlocProvider(
+          create: (context) => EventManagerAuthCubit(
+            authRepository: locate<AuthRepository>(),
+            managerRepository: locate<EventManagerRepository>(),
+          )..loadProfile(),
+          child: const ManagerShellPage(child: ManagerProfilePage()),
+        ),
       ),
     ),
     GoRoute(
       path: AppRoutes.eventManagerSettings,
-      builder: (context, state) => BlocProvider(
-        create: (context) => EventManagerAuthCubit(
-          authRepository: locate<AuthRepository>(),
-          managerRepository: locate<EventManagerRepository>(),
-        )..loadProfile(),
-        child: const ManagerShellPage(child: ManagerSettingsPage()),
+      pageBuilder: (context, state) => _noTransitionPage(
+        state,
+        BlocProvider(
+          create: (context) => EventManagerAuthCubit(
+            authRepository: locate<AuthRepository>(),
+            managerRepository: locate<EventManagerRepository>(),
+          )..loadProfile(),
+          child: const ManagerShellPage(child: ManagerSettingsPage()),
+        ),
       ),
     ),
   ];

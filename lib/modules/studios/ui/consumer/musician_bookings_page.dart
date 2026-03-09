@@ -48,7 +48,9 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
       value: _cubit!,
       child: BlocBuilder<BookingsCubit, StudiosState>(
         builder: (context, state) {
-          if (state.status == StudiosStatus.loading) {
+          if (state.status == StudiosStatus.loading ||
+              (state.status == StudiosStatus.initial &&
+                  state.myBookings.isEmpty)) {
             return const Center(child: CircularProgressIndicator());
           }
           if (state.status == StudiosStatus.failure) {
@@ -68,7 +70,9 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
               ),
             );
           }
-          if (state.myBookings.isEmpty) {
+          if (state.myBookings.isEmpty &&
+              !state.isLoadingMyBookingsMore &&
+              !state.hasMoreMyBookings) {
             return const Center(child: Text('No bookings found.'));
           }
           final upcoming = state.upcomingMyBookings;
@@ -111,6 +115,24 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
                       ),
                     ),
                   ],
+                  const SizedBox(height: 8),
+                  if (state.isLoadingMyBookingsMore)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  else if (state.hasMoreMyBookings)
+                    Center(
+                      child: OutlinedButton.icon(
+                        onPressed: () => context
+                            .read<BookingsCubit>()
+                            .loadMoreMyBookings(userId),
+                        icon: const Icon(Icons.expand_more),
+                        label: const Text('Cargar más reservas'),
+                      ),
+                    ),
                 ],
               ),
             ),
