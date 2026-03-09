@@ -145,7 +145,6 @@ Future<void> setupServiceLocator() async {
       () => ChatRepository(
         firestore: getIt<FirebaseFirestore>(),
         authRepository: getIt<AuthRepository>(),
-        cloudFunctionsService: getIt<CloudFunctionsService>(),
       ),
     )
     ..registerLazySingleton<MediaRepository>(

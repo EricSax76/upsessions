@@ -1,21 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../../core/services/cloud_functions_service.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
-
-
 
 class ChatRepositoryBase {
   ChatRepositoryBase({
     required this.firestore,
     required this.authRepository,
-    required this.cloudFunctionsService,
   });
 
   final FirebaseFirestore firestore;
   final AuthRepository authRepository;
-  final CloudFunctionsService cloudFunctionsService;
 
   void log(String message) {
     if (!kDebugMode) return;

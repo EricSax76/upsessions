@@ -128,26 +128,54 @@ mixin GroupsRepositoryMemberships on GroupsRepositoryBase {
   }
 
   Future<Map<String, GroupDoc>> _fetchGroupsById(List<String> groupIds) async {
-    // Fetching with a `whereIn(documentId)` query can fail the whole request if
-    // any single group is not readable due to security rules. Fetching
-    // individually lets us keep the readable ones.
-    final futures = groupIds.map((groupId) async {
+    final map = <String, GroupDoc>{};
+    if (groupIds.isEmpty) return map;
+
+    // chunk groupIds into batches of 10
+    final chunks = <List<String>>[];
+    for (var i = 0; i < groupIds.length; i += 10) {
+      chunks.add(
+        groupIds.sublist(
+          i,
+          i + 10 > groupIds.length ? groupIds.length : i + 10,
+        ),
+      );
+    }
+
+    final chunkFutures = chunks.map((chunk) async {
       try {
-        final snap = await groupDoc(groupId).get();
-        if (!snap.exists) return null;
-        return GroupDoc.fromGroupDoc(snap);
-      } catch (_) {
-        return null;
+        final snap = await firestore
+            .collection('groups')
+            .where(FieldPath.documentId, whereIn: chunk)
+            .get();
+
+        for (final doc in snap.docs) {
+          final group = GroupDoc.fromGroupDoc(doc);
+          if (group.id.isNotEmpty) {
+            map[group.id] = group;
+          }
+        }
+      } catch (e) {
+        logFirestore('Batch fetch failed for chunk: $chunk, error: $e. Falling back to individual fetches.');
+        // Fallback
+        final individualFutures = chunk.map((groupId) async {
+          try {
+            final snap = await groupDoc(groupId).get();
+            if (!snap.exists) return;
+            final group = GroupDoc.fromGroupDoc(snap);
+            if (group.id.isNotEmpty) {
+              map[group.id] = group;
+            }
+          } catch (_) {} // ignore individual failure
+        });
+        await Future.wait(individualFutures);
       }
     });
-    final results = await Future.wait(futures);
-    final map = <String, GroupDoc>{};
-    for (final group in results) {
-      if (group == null || group.id.isEmpty) continue;
-      map[group.id] = group;
-    }
+
+    await Future.wait(chunkFutures);
     return map;
   }
+
 
   Future<void> _ensureCanonicalOwnerMemberships(
     String uid,
@@ -185,37 +213,53 @@ mixin GroupsRepositoryMemberships on GroupsRepositoryBase {
   ) async {
     if (snapshot.docs.isEmpty) return [];
 
-    final futures = snapshot.docs.map((doc) async {
+    // Collect member metadata from snapshot docs.
+    final memberMetas = snapshot.docs.map((doc) {
       final data = doc.data();
-      final uid = doc.id;
-      final role = data['role']?.toString() ?? 'member';
-      final status = data['status']?.toString() ?? 'active';
+      return (
+        uid: doc.id,
+        role: data['role']?.toString() ?? 'member',
+        status: data['status']?.toString() ?? 'active',
+      );
+    }).toList();
 
+    // Batch-fetch musician profiles using whereIn (max 10 per query).
+    final allUids = memberMetas.map((m) => m.uid).toSet().toList();
+    final musiciansById = <String, Map<String, dynamic>>{};
+
+    final chunks = <List<String>>[];
+    for (var i = 0; i < allUids.length; i += 10) {
+      chunks.add(allUids.sublist(
+        i,
+        i + 10 > allUids.length ? allUids.length : i + 10,
+      ));
+    }
+
+    await Future.wait(chunks.map((chunk) async {
       try {
-        final musicianDoc = await firestore
+        final snap = await firestore
             .collection('musicians')
-            .doc(uid)
+            .where(FieldPath.documentId, whereIn: chunk)
             .get();
-        final musicianData = musicianDoc.data() ?? {};
-
-        return GroupMember(
-          id: uid,
-          name: musicianData['name']?.toString() ?? 'Musician',
-          role: role,
-          status: status,
-          photoUrl: musicianData['photoUrl']?.toString(),
-          instrument: musicianData['instrument']?.toString(),
-        );
+        for (final doc in snap.docs) {
+          musiciansById[doc.id] = doc.data();
+        }
       } catch (e) {
-        logFirestore('Error fetching musician profile for $uid: $e');
-        return GroupMember(
-          id: uid,
-          name: 'Musician',
-          role: role,
-          status: status,
-        );
+        logFirestore('Batch musician fetch failed: $e');
       }
-    });
-    return Future.wait(futures);
+    }));
+
+    // Map results back to GroupMember list.
+    return memberMetas.map((m) {
+      final musicianData = musiciansById[m.uid] ?? {};
+      return GroupMember(
+        id: m.uid,
+        name: musicianData['name']?.toString() ?? 'Musician',
+        role: m.role,
+        status: m.status,
+        photoUrl: musicianData['photoUrl']?.toString(),
+        instrument: musicianData['instrument']?.toString(),
+      );
+    }).toList();
   }
 }

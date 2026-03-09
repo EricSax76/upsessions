@@ -15,7 +15,7 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     try {
       final snapshot = await logFuture(
         'getMyRehearsals get',
-        firestore.collectionGroup('rehearsals').orderBy('startsAt').get(),
+        firestore.collectionGroup('rehearsals').orderBy('startsAt').limit(100).get(),
       );
       return snapshot.docs
           .map((doc) {
@@ -201,12 +201,15 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
       return [];
     }
 
+    // Cap to first 20 groups to prevent unbounded fan-out.
+    final cappedGroupIds = groupIds.take(20).toList();
+
     final byGroup = await Future.wait(
-      groupIds.map((groupId) async {
+      cappedGroupIds.map((groupId) async {
         try {
           final snapshot = await logFuture(
             'getMyRehearsals fallback group=$groupId',
-            rehearsals(groupId).orderBy('startsAt', descending: false).get(),
+            rehearsals(groupId).orderBy('startsAt', descending: false).limit(50).get(),
           );
           return snapshot.docs
               .map((doc) => _mapRehearsal(doc, groupId))

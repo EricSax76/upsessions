@@ -14,6 +14,7 @@ import '../modules/musicians/models/musician_entity.dart';
 import '../modules/musicians/repositories/musicians_repository.dart';
 import '../modules/musicians/ui/pages/musician_detail_page.dart';
 import '../modules/studios/models/room_entity.dart';
+import '../modules/studios/models/studio_entity.dart';
 import '../modules/studios/repositories/studios_repository.dart';
 import '../modules/studios/ui/consumer/room_detail_page.dart';
 import '../modules/studios/ui/consumer/studios_list_page.dart';
@@ -52,7 +53,7 @@ class UnknownRouteScreen extends StatelessWidget {
   }
 }
 
-class MusicianDetailLoader extends StatelessWidget {
+class MusicianDetailLoader extends StatefulWidget {
   const MusicianDetailLoader({
     super.key,
     required this.musicianId,
@@ -65,9 +66,22 @@ class MusicianDetailLoader extends StatelessWidget {
   final MusiciansRepository musiciansRepository;
 
   @override
+  State<MusicianDetailLoader> createState() => _MusicianDetailLoaderState();
+}
+
+class _MusicianDetailLoaderState extends State<MusicianDetailLoader> {
+  late final Future<MusicianEntity?> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = widget.musiciansRepository.findById(widget.musicianId);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<MusicianEntity?>(
-      future: musiciansRepository.findById(musicianId),
+      future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return buildUserShell(
@@ -79,7 +93,7 @@ class MusicianDetailLoader extends StatelessWidget {
         final musician = snapshot.data;
         if (snapshot.hasError || musician == null) {
           return UnknownRouteScreen(
-            name: location,
+            name: widget.location,
             message: snapshot.hasError
                 ? snapshot.error.toString()
                 : 'No se encontro el musico solicitado.',
@@ -174,7 +188,7 @@ class EventDetailLoader extends StatelessWidget {
   }
 }
 
-class ChatThreadDetailLoader extends StatelessWidget {
+class ChatThreadDetailLoader extends StatefulWidget {
   const ChatThreadDetailLoader({
     super.key,
     required this.threadId,
@@ -191,18 +205,29 @@ class ChatThreadDetailLoader extends StatelessWidget {
   final String location;
   final ChatThread? initialThread;
 
-  Future<ChatThread?> _loadThread() async {
-    final seedThread = initialThread;
-    if (seedThread != null && seedThread.id == threadId) {
-      return seedThread;
+  @override
+  State<ChatThreadDetailLoader> createState() =>
+      _ChatThreadDetailLoaderState();
+}
+
+class _ChatThreadDetailLoaderState extends State<ChatThreadDetailLoader> {
+  late final Future<ChatThread?> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    final seedThread = widget.initialThread;
+    if (seedThread != null && seedThread.id == widget.threadId) {
+      _future = Future.value(seedThread);
+    } else {
+      _future = widget.chatRepository.fetchThread(widget.threadId);
     }
-    return chatRepository.fetchThread(threadId);
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<ChatThread?>(
-      future: _loadThread(),
+      future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
@@ -213,25 +238,25 @@ class ChatThreadDetailLoader extends StatelessWidget {
         final thread = snapshot.data;
         if (snapshot.hasError || thread == null) {
           return UnknownRouteScreen(
-            name: location,
+            name: widget.location,
             message: snapshot.hasError
                 ? snapshot.error.toString()
                 : 'No se encontro el chat solicitado.',
           );
         }
 
-        final currentUserId = authRepository.currentUser?.id ?? '';
+        final currentUserId = widget.authRepository.currentUser?.id ?? '';
         return ChatThreadDetailPage(
           thread: thread,
           threadTitle: thread.titleFor(currentUserId),
-          chatRepository: chatRepository,
+          chatRepository: widget.chatRepository,
         );
       },
     );
   }
 }
 
-class StudioRoomDetailLoader extends StatelessWidget {
+class StudioRoomDetailLoader extends StatefulWidget {
   const StudioRoomDetailLoader({
     super.key,
     required this.studioId,
@@ -247,21 +272,33 @@ class StudioRoomDetailLoader extends StatelessWidget {
   final StudiosRepository studiosRepository;
   final RehearsalBookingContext? rehearsalContext;
 
+  @override
+  State<StudioRoomDetailLoader> createState() =>
+      _StudioRoomDetailLoaderState();
+}
+
+class _StudioRoomDetailLoaderState extends State<StudioRoomDetailLoader> {
+  late final Future<_StudioRoomDetailData?> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _loadRoomDetail();
+  }
+
   Future<_StudioRoomDetailData?> _loadRoomDetail() async {
-    final studio = await studiosRepository.getStudioById(studioId);
-    final rooms = await studiosRepository.getRoomsByStudio(studioId);
+    final results = await Future.wait([
+      widget.studiosRepository.getStudioById(widget.studioId),
+      widget.studiosRepository.getRoomById(
+        studioId: widget.studioId,
+        roomId: widget.roomId,
+      ),
+    ]);
 
-    RoomEntity? room;
-    for (final candidate in rooms) {
-      if (candidate.id == roomId) {
-        room = candidate;
-        break;
-      }
-    }
+    final studio = results[0] as StudioEntity?;
+    final room = results[1] as RoomEntity?;
 
-    if (room == null) {
-      return null;
-    }
+    if (room == null) return null;
 
     final resolvedStudioName = (studio?.name ?? '').trim();
     return _StudioRoomDetailData(
@@ -273,7 +310,7 @@ class StudioRoomDetailLoader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<_StudioRoomDetailData?>(
-      future: _loadRoomDetail(),
+      future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
@@ -282,7 +319,7 @@ class StudioRoomDetailLoader extends StatelessWidget {
         final data = snapshot.data;
         if (snapshot.hasError || data == null) {
           return UnknownRouteScreen(
-            name: location,
+            name: widget.location,
             message: snapshot.hasError
                 ? snapshot.error.toString()
                 : 'No se encontro la sala solicitada.',
@@ -292,14 +329,14 @@ class StudioRoomDetailLoader extends StatelessWidget {
         return RoomDetailPage(
           room: data.room,
           studioName: data.studioName,
-          rehearsalContext: rehearsalContext,
+          rehearsalContext: widget.rehearsalContext,
         );
       },
     );
   }
 }
 
-class StudioRoomEditorLoader extends StatelessWidget {
+class StudioRoomEditorLoader extends StatefulWidget {
   const StudioRoomEditorLoader({
     super.key,
     required this.studioId,
@@ -313,20 +350,27 @@ class StudioRoomEditorLoader extends StatelessWidget {
   final String location;
   final StudiosRepository studiosRepository;
 
-  Future<RoomEntity?> _loadRoom() async {
-    final rooms = await studiosRepository.getRoomsByStudio(studioId);
-    for (final candidate in rooms) {
-      if (candidate.id == roomId) {
-        return candidate;
-      }
-    }
-    return null;
+  @override
+  State<StudioRoomEditorLoader> createState() =>
+      _StudioRoomEditorLoaderState();
+}
+
+class _StudioRoomEditorLoaderState extends State<StudioRoomEditorLoader> {
+  late final Future<RoomEntity?> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = widget.studiosRepository.getRoomById(
+      studioId: widget.studioId,
+      roomId: widget.roomId,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<RoomEntity?>(
-      future: _loadRoom(),
+      future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
@@ -337,14 +381,14 @@ class StudioRoomEditorLoader extends StatelessWidget {
         final room = snapshot.data;
         if (snapshot.hasError || room == null) {
           return UnknownRouteScreen(
-            name: location,
+            name: widget.location,
             message: snapshot.hasError
                 ? snapshot.error.toString()
                 : 'No se encontro la sala solicitada.',
           );
         }
 
-        return EditRoomPage(studioId: studioId, room: room);
+        return EditRoomPage(studioId: widget.studioId, room: room);
       },
     );
   }

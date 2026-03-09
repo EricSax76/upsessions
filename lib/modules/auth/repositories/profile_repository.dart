@@ -21,6 +21,28 @@ class ProfileRepository {
   final AuthRepository _authRepository;
   final FirebaseStorage _storage;
 
+  /// Fetches only the photo URLs for the given [ids] in batches of 10
+  /// (Firestore `whereIn` limit). Returns a map of id → photoUrl (nullable).
+  Future<Map<String, String?>> fetchProfilePhotos(List<String> ids) async {
+    if (ids.isEmpty) return const {};
+    final result = <String, String?>{};
+    for (var i = 0; i < ids.length; i += 10) {
+      final chunk = ids.sublist(i, i + 10 > ids.length ? ids.length : i + 10);
+      final snapshot = await _firestore
+          .collection('musicians')
+          .where(FieldPath.documentId, whereIn: chunk)
+          .get();
+      for (final doc in snapshot.docs) {
+        result[doc.id] = doc.data()['photoUrl'] as String?;
+      }
+      // Mark IDs not found as null so callers know they were attempted.
+      for (final id in chunk) {
+        result.putIfAbsent(id, () => null);
+      }
+    }
+    return result;
+  }
+
   Future<ProfileDto> fetchProfile({String? profileId}) async {
     final id = profileId ?? _authRepository.currentUser?.id;
     if (id == null) {

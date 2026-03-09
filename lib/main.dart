@@ -17,7 +17,7 @@ Future<void> main() async {
   await locate<CookieConsentService>().init();
   await locate<FirebaseInitializer>().init();
   locate<AnalyticsService>();
-  await locate<RemoteConfigService>().init();
+  locate<RemoteConfigService>().init(); // fire-and-forget: don't block cold start
   runApp(
     BlocProvider(create: (_) => locate<LocaleCubit>(), child: UpsessionsApp()),
   );

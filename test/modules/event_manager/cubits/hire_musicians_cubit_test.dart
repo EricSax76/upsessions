@@ -65,6 +65,7 @@ void main() {
         return buildCubit();
       },
       act: (cubit) => cubit.loadMusicians(),
+      wait: const Duration(milliseconds: 300),
       expect: () => [
         isA<HireMusiciansState>().having((s) => s.isLoading, 'loading', true),
         isA<HireMusiciansState>()
@@ -82,6 +83,7 @@ void main() {
         return buildCubit();
       },
       act: (cubit) => cubit.loadMusicians(),
+      wait: const Duration(milliseconds: 300),
       expect: () => [
         isA<HireMusiciansState>().having((s) => s.isLoading, 'loading', true),
         isA<HireMusiciansState>()
@@ -101,6 +103,7 @@ void main() {
         return buildCubit();
       },
       act: (cubit) => cubit.search('guitarra'),
+      wait: const Duration(milliseconds: 300),
       expect: () => [
         isA<HireMusiciansState>()
             .having((s) => s.isLoading, 'loading', true)
@@ -121,6 +124,7 @@ void main() {
         return buildCubit();
       },
       act: (cubit) => cubit.search('test'),
+      wait: const Duration(milliseconds: 300),
       expect: () => [
         isA<HireMusiciansState>().having((s) => s.isLoading, 'loading', true),
         isA<HireMusiciansState>()

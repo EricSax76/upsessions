@@ -6,15 +6,29 @@ import '../../../../core/locator/locator.dart';
 import '../../../../features/events/repositories/events_repository.dart';
 import '../../repositories/manager_events_repository.dart';
 
-class ManagerEventDetailPage extends StatelessWidget {
+class ManagerEventDetailPage extends StatefulWidget {
   const ManagerEventDetailPage({super.key, required this.eventId});
-  
+
   final String eventId;
+
+  @override
+  State<ManagerEventDetailPage> createState() =>
+      _ManagerEventDetailPageState();
+}
+
+class _ManagerEventDetailPageState extends State<ManagerEventDetailPage> {
+  late final Future<EventEntity?> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = locate<ManagerEventsRepository>().findById(widget.eventId);
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<EventEntity?>(
-      future: locate<ManagerEventsRepository>().findById(eventId),
+      future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(

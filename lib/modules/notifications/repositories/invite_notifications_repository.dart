@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../modules/rehearsals/repositories/rehearsals_repository_base.dart';
@@ -9,12 +11,28 @@ class InviteNotificationsRepository extends RehearsalsRepositoryBase {
     required super.authRepository,
   });
 
+  Stream<List<InviteNotificationEntity>>? _sharedStream;
+  StreamController<List<InviteNotificationEntity>>? _controller;
+  StreamSubscription? _sourceSubscription;
+
   CollectionReference<Map<String, dynamic>> _invitesRef(String uid) {
     return firestore.collection('musicians').doc(uid).collection('invites');
   }
 
-  Stream<List<InviteNotificationEntity>> watchMyInvites() async* {
-    yield* authRepository.idTokenChanges.asyncExpand((user) {
+  /// Returns a shared broadcast stream so multiple listeners reuse a single
+  /// Firestore snapshot subscription. The underlying listener is torn down
+  /// automatically when the last consumer cancels.
+  Stream<List<InviteNotificationEntity>> watchMyInvites() {
+    if (_controller != null && !_controller!.isClosed) {
+      return _sharedStream!;
+    }
+
+    _controller = StreamController<List<InviteNotificationEntity>>.broadcast(
+      onCancel: _tearDown,
+    );
+    _sharedStream = _controller!.stream;
+
+    _sourceSubscription = authRepository.idTokenChanges.asyncExpand((user) {
       if (user == null) {
         return Stream.value(const <InviteNotificationEntity>[]);
       }
@@ -29,7 +47,24 @@ class InviteNotificationsRepository extends RehearsalsRepositoryBase {
                 .toList();
           });
       return logStream('watchMyInvites snapshots', stream);
-    });
+    }).listen(
+      (data) {
+        if (!_controller!.isClosed) _controller!.add(data);
+      },
+      onError: (Object e, StackTrace s) {
+        if (!_controller!.isClosed) _controller!.addError(e, s);
+      },
+    );
+
+    return _sharedStream!;
+  }
+
+  void _tearDown() {
+    _sourceSubscription?.cancel();
+    _sourceSubscription = null;
+    _controller?.close();
+    _controller = null;
+    _sharedStream = null;
   }
 
   Future<void> markRead(String inviteId) async {

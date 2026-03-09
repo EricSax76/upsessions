@@ -4,15 +4,28 @@ import '../../../../core/locator/locator.dart';
 import '../../models/jam_session_entity.dart';
 import '../../repositories/jam_sessions_repository.dart';
 
-class JamSessionDetailPage extends StatelessWidget {
+class JamSessionDetailPage extends StatefulWidget {
   const JamSessionDetailPage({super.key, required this.sessionId});
 
   final String sessionId;
 
   @override
+  State<JamSessionDetailPage> createState() => _JamSessionDetailPageState();
+}
+
+class _JamSessionDetailPageState extends State<JamSessionDetailPage> {
+  late final Future<JamSessionEntity?> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = locate<JamSessionsRepository>().findById(widget.sessionId);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder<JamSessionEntity?>(
-      future: locate<JamSessionsRepository>().findById(sessionId),
+      future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(

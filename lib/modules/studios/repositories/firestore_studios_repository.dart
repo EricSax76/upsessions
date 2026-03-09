@@ -218,6 +218,48 @@ class FirestoreStudiosRepository implements StudiosRepository {
   }
 
   @override
+  Future<RoomEntity?> getRoomById({
+    required String studioId,
+    required String roomId,
+  }) async {
+    final doc = await _firestore
+        .collection('studios')
+        .doc(studioId)
+        .collection('rooms')
+        .doc(roomId)
+        .get();
+
+    if (!doc.exists) return null;
+
+    final data = doc.data()!;
+    final legacyPhotoUrl = data['photoUrl'];
+    final photos = List<String>.from(data['photos'] ?? []);
+    if (photos.isEmpty &&
+        legacyPhotoUrl is String &&
+        legacyPhotoUrl.isNotEmpty) {
+      photos.add(legacyPhotoUrl);
+    }
+    return RoomEntity(
+      id: data['id'] ?? doc.id,
+      studioId: data['studioId'] ?? studioId,
+      name: data['name'] ?? '',
+      capacity: (data['capacity'] as num?)?.toInt() ?? 0,
+      size: data['size'] ?? '',
+      pricePerHour: (data['pricePerHour'] as num?)?.toDouble() ?? 0.0,
+      equipment: List<String>.from(data['equipment'] ?? []),
+      amenities: List<String>.from(data['amenities'] ?? []),
+      photos: photos,
+      isActive: (data['isActive'] as bool?) ?? true,
+      isAccessible: (data['isAccessible'] as bool?) ?? false,
+      minBookingHours: (data['minBookingHours'] as num?)?.toInt() ?? 1,
+      maxDecibels: (data['maxDecibels'] as num?)?.toDouble(),
+      cancellationPolicy: data['cancellationPolicy'] as String?,
+      ageRestriction: (data['ageRestriction'] as num?)?.toInt(),
+      updatedAt: _tsToDate(data['updatedAt']),
+    );
+  }
+
+  @override
   Future<List<RoomEntity>> getRoomsByStudio(String studioId) async {
     final querySnapshot = await _firestore
         .collection('studios')

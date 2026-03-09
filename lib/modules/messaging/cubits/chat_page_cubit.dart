@@ -161,22 +161,13 @@ class ChatPageCubit extends Cubit<ChatPageState> {
     }
     if (idsToFetch.isEmpty) return;
 
-    final results = await Future.wait(
-      idsToFetch.map((id) async {
-        try {
-          final profile = await _profileRepository.fetchProfile(profileId: id);
-          return MapEntry(id, profile.photoUrl);
-        } catch (_) {
-          return MapEntry(id, null);
-        }
-      }),
+    final photoMap = await _profileRepository.fetchProfilePhotos(
+      idsToFetch.toList(),
     );
 
     if (isClosed) return;
     final updated = Map<String, String?>.from(state.avatarUrlsByUserId);
-    for (final entry in results) {
-      updated[entry.key] = entry.value;
-    }
+    updated.addAll(photoMap);
     emit(state.copyWith(avatarUrlsByUserId: updated));
   }
 

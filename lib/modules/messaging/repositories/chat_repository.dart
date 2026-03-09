@@ -9,7 +9,6 @@ class ChatRepository extends ChatRepositoryBase {
   ChatRepository({
     required super.firestore,
     required super.authRepository,
-    required super.cloudFunctionsService,
     ChatFirestoreMapper? mapper,
   }) : _mapper = mapper ?? const ChatFirestoreMapper();
 
@@ -234,11 +233,6 @@ class ChatRepository extends ChatRepositoryBase {
           rethrow;
         }
       }
-      await cloudFunctionsService.notifyChatMessage(
-        threadId: threadId,
-        sender: user.id,
-        body: body,
-      );
       return ChatMessage(
         id: docRef.id,
         sender: user.id,

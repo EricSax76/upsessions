@@ -71,16 +71,25 @@ class MusiciansRepository {
     }
 
     const pageSize = 100;
-    const maxPages = 12;
+    const maxPages = 4;
     var pageCount = 0;
     QueryDocumentSnapshot<Map<String, dynamic>>? cursor;
     final matched = <MusicianEntity>[];
 
     while (matched.length < limit && pageCount < maxPages) {
       Query<Map<String, dynamic>> queryRef = _firestore
-          .collection(_collectionName)
-          .orderBy('name')
-          .limit(pageSize);
+          .collection(_collectionName);
+
+      if (onlyAvailableForHire) {
+        queryRef = queryRef.where('availableForHire', isEqualTo: true);
+      }
+      
+      if (normalizedInstrument.isNotEmpty) {
+        queryRef = queryRef.where('instrument', isEqualTo: instrument);
+      }
+
+      queryRef = queryRef.orderBy('name').limit(pageSize);
+
       if (cursor != null) {
         queryRef = queryRef.startAfterDocument(cursor);
       }
