@@ -118,9 +118,7 @@ class _EventFormCardState extends State<EventFormCard> {
     if (ownerId == null || ownerId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Debes iniciar sesión como músico para crear un evento.',
-          ),
+          content: Text('Debes iniciar sesión para crear un evento.'),
         ),
       );
       return;

@@ -25,6 +25,14 @@ class ManagerEventsRepository {
     return _toEntities(snapshot.docs);
   }
 
+  Future<List<EventEntity>> fetchAllMyEvents(String managerId) async {
+    final snapshot = await _collection
+        .where('ownerId', isEqualTo: managerId)
+        .orderBy('start', descending: true)
+        .get();
+    return _toEntities(snapshot.docs);
+  }
+
   Future<List<EventEntity>> fetchUpcoming(String managerId) async {
     final now = Timestamp.fromDate(DateTime.now());
     final snapshot = await _collection
@@ -46,9 +54,15 @@ class ManagerEventsRepository {
   }
 
   Future<EventEntity?> findById(String eventId) async {
+    final managerId = _authRepository.currentUser?.id ?? '';
+    if (managerId.isEmpty) return null;
+
     final doc = await _collection.doc(eventId).get();
     if (!doc.exists) return null;
-    return EventDto.fromDocument(doc).toEntity();
+
+    final event = EventDto.fromDocument(doc).toEntity();
+    if (event.ownerId != managerId) return null;
+    return event;
   }
 
   Future<EventEntity> saveDraft(EventEntity event) async {

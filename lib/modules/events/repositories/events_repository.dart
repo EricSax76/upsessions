@@ -18,6 +18,7 @@ class EventsRepository {
   Future<List<EventEntity>> fetchUpcoming({int limit = 20}) async {
     final now = Timestamp.fromDate(DateTime.now());
     final upcomingSnapshot = await _collection
+        .where('isPublic', isEqualTo: true)
         .where('start', isGreaterThanOrEqualTo: now)
         .orderBy('start')
         .limit(limit)
@@ -27,6 +28,7 @@ class EventsRepository {
     }
 
     final fallbackSnapshot = await _collection
+        .where('isPublic', isEqualTo: true)
         .orderBy('start')
         .limit(limit)
         .get();
@@ -42,12 +44,14 @@ class EventsRepository {
     final now = Timestamp.fromDate(DateTime.now());
 
     final upcomingFuture = _collection
+        .where('isPublic', isEqualTo: true)
         .where('start', isGreaterThanOrEqualTo: now)
         .orderBy('start')
         .limit(upcomingLimit)
         .get();
 
     final pastFuture = _collection
+        .where('isPublic', isEqualTo: true)
         .where('start', isLessThan: now)
         .orderBy('start', descending: true)
         .limit(pastLimit)

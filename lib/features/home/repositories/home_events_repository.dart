@@ -14,11 +14,11 @@ class HomeEventsRepository {
     final now = Timestamp.fromDate(DateTime.now());
     final snapshot = await _firestore
         .collection('events')
+        .where('isPublic', isEqualTo: true)
         .where('start', isGreaterThanOrEqualTo: now)
         .orderBy('start')
         .limit(limit)
         .get();
     return snapshot.docs.map(HomeRepositoryMappers.eventFromDoc).toList();
   }
-
 }

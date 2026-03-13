@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import '../models/musician_request_entity.dart';
 
 class MusicianRequestsState extends Equatable {
+  static const Object _unset = Object();
+
   const MusicianRequestsState({
     this.requests = const [],
     this.isLoading = true,
@@ -15,12 +17,14 @@ class MusicianRequestsState extends Equatable {
   MusicianRequestsState copyWith({
     List<MusicianRequestEntity>? requests,
     bool? isLoading,
-    String? errorMessage,
+    Object? errorMessage = _unset,
   }) {
     return MusicianRequestsState(
       requests: requests ?? this.requests,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: identical(errorMessage, _unset)
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 

@@ -4,6 +4,8 @@ import '../../../../modules/events/models/event_entity.dart';
 enum ManagerEventFilter { all, upcoming, past }
 
 class ManagerEventsState extends Equatable {
+  static const Object _unset = Object();
+
   const ManagerEventsState({
     this.events = const [],
     this.isLoading = true,
@@ -20,13 +22,15 @@ class ManagerEventsState extends Equatable {
     List<EventEntity>? events,
     bool? isLoading,
     ManagerEventFilter? filter,
-    String? errorMessage,
+    Object? errorMessage = _unset,
   }) {
     return ManagerEventsState(
       events: events ?? this.events,
       isLoading: isLoading ?? this.isLoading,
       filter: filter ?? this.filter,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: identical(errorMessage, _unset)
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 

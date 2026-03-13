@@ -100,7 +100,7 @@ void main() {
 
         when(() => authRepository.currentUser).thenReturn(user);
         when(
-          () => eventsRepository.fetchMyEvents('manager-1'),
+          () => eventsRepository.fetchAllMyEvents('manager-1'),
         ).thenAnswer((_) async => allEvents);
         when(
           () => eventsRepository.fetchUpcoming('manager-1'),
@@ -146,7 +146,7 @@ void main() {
       build: () {
         when(() => authRepository.currentUser).thenReturn(user);
         when(
-          () => eventsRepository.fetchMyEvents('manager-1'),
+          () => eventsRepository.fetchAllMyEvents('manager-1'),
         ).thenThrow(Exception('network'));
         return buildCubit();
       },

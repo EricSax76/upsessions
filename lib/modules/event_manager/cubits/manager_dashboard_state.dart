@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import '../../../../modules/events/models/event_entity.dart';
 
 class ManagerDashboardState extends Equatable {
+  static const Object _unset = Object();
+
   const ManagerDashboardState({
     this.isLoading = true,
     this.upcomingEvents = const [],
@@ -33,7 +35,7 @@ class ManagerDashboardState extends Equatable {
     int? totalEvents,
     int? totalCapacity,
     int? eventsThisWeek,
-    String? errorMessage,
+    Object? errorMessage = _unset,
   }) {
     return ManagerDashboardState(
       isLoading: isLoading ?? this.isLoading,
@@ -44,7 +46,9 @@ class ManagerDashboardState extends Equatable {
       totalEvents: totalEvents ?? this.totalEvents,
       totalCapacity: totalCapacity ?? this.totalCapacity,
       eventsThisWeek: eventsThisWeek ?? this.eventsThisWeek,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: identical(errorMessage, _unset)
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 

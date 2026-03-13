@@ -96,6 +96,7 @@ class _HireMusiciansPageState extends State<HireMusiciansPage> {
                     onPressed: () {
                       showDialog(
                         context: context,
+                        barrierDismissible: false,
                         builder: (ctx) => BlocProvider.value(
                           value: context.read<MusicianRequestsCubit>(),
                           child: MusicianRequestDialog(

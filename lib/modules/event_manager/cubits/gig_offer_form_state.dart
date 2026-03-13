@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 class GigOfferFormState extends Equatable {
+  static const Object _unset = Object();
+
   const GigOfferFormState({
     this.isSaving = false,
     this.errorMessage,
@@ -13,12 +15,14 @@ class GigOfferFormState extends Equatable {
 
   GigOfferFormState copyWith({
     bool? isSaving,
-    String? errorMessage,
+    Object? errorMessage = _unset,
     bool? success,
   }) {
     return GigOfferFormState(
       isSaving: isSaving ?? this.isSaving,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: identical(errorMessage, _unset)
+          ? this.errorMessage
+          : errorMessage as String?,
       success: success ?? this.success,
     );
   }

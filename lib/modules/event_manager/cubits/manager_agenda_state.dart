@@ -22,6 +22,8 @@ class ManagerAgendaItem extends Equatable {
 }
 
 class ManagerAgendaState extends Equatable {
+  static const Object _unset = Object();
+
   const ManagerAgendaState({
     this.items = const [],
     this.isLoading = true,
@@ -35,12 +37,14 @@ class ManagerAgendaState extends Equatable {
   ManagerAgendaState copyWith({
     List<ManagerAgendaItem>? items,
     bool? isLoading,
-    String? errorMessage,
+    Object? errorMessage = _unset,
   }) {
     return ManagerAgendaState(
       items: items ?? this.items,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: identical(errorMessage, _unset)
+          ? this.errorMessage
+          : errorMessage as String?,
     );
   }
 

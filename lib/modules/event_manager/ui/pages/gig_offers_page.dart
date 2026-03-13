@@ -25,7 +25,12 @@ class _GigOffersPageState extends State<GigOffersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoutes.eventManagerGigOfferForm),
+        onPressed: () async {
+          final offersCubit = context.read<GigOffersCubit>();
+          await context.push(AppRoutes.eventManagerGigOfferForm);
+          if (!mounted) return;
+          offersCubit.loadOffers();
+        },
         icon: const Icon(Icons.add),
         label: const Text('Nueva Oferta'),
       ),
@@ -46,9 +51,16 @@ class _GigOffersPageState extends State<GigOffersPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.work_outline, size: 64, color: Theme.of(context).colorScheme.outline),
+                  Icon(
+                    Icons.work_outline,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
                   const SizedBox(height: 16),
-                  Text('No tienes ofertas publicadas.', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    'No tienes ofertas publicadas.',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ],
               ),
             );
@@ -67,16 +79,26 @@ class _GigOffersPageState extends State<GigOffersPage> {
                   padding: const EdgeInsets.only(bottom: 24.0),
                   child: Text(
                     'Mis Ofertas (Casting)',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 );
               }
               final offer = offers[index - 1];
               return ListTile(
-                title: Text(offer.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text('${offer.location} • ${_formatDate(offer.date)}'),
+                title: Text(
+                  offer.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  '${offer.location} • ${_formatDate(offer.date)}',
+                ),
                 trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: offer.status == GigOfferStatus.open
                         ? Colors.green.withValues(alpha: 0.2)
@@ -86,7 +108,9 @@ class _GigOffersPageState extends State<GigOffersPage> {
                   child: Text(
                     offer.status.name.toUpperCase(),
                     style: TextStyle(
-                      color: offer.status == GigOfferStatus.open ? Colors.green[800] : Colors.red[800],
+                      color: offer.status == GigOfferStatus.open
+                          ? Colors.green[800]
+                          : Colors.red[800],
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),

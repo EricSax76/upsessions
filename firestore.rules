@@ -9,14 +9,6 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    function userId() {
-      return isSignedIn() ? request.auth.uid : null;
-    }
-
-    function userEmail() {
-      return isSignedIn() ? request.auth.token.email : null;
-    }
-
     function isStringList(field) {
       return field is list;
     }
@@ -26,10 +18,6 @@ service cloud.firestore {
         && data != null
         && data.participants is list
         && request.auth.uid in data.participants;
-    }
-
-    function threadForId(threadId) {
-      return get(/databases/$(database)/documents/chat_threads/$(threadId));
     }
 
     function isValidAnnouncement() {
@@ -84,6 +72,18 @@ service cloud.firestore {
         'createdAt',
         'updatedAt',
         'ownerId',
+        'status',
+        'isPublic',
+        'isFree',
+        'province',
+        'postalCode',
+        'eventLicenseNumber',
+        'ticketPrice',
+        'vatRate',
+        'ageRestriction',
+        'accessibilityInfo',
+        'cancellationPolicy',
+        'publishedAt',
       ])
       && request.resource.data.title is string
       && request.resource.data.city is string
@@ -104,7 +104,19 @@ service cloud.firestore {
       && (!('notes' in request.resource.data) || request.resource.data.notes is string)
       && (!('bannerImageUrl' in request.resource.data) || request.resource.data.bannerImageUrl is string)
       && (!('createdAt' in request.resource.data) || request.resource.data.createdAt is timestamp)
-      && (!('updatedAt' in request.resource.data) || request.resource.data.updatedAt is timestamp);
+      && (!('updatedAt' in request.resource.data) || request.resource.data.updatedAt is timestamp)
+      && (!('status' in request.resource.data) || request.resource.data.status in ['draft', 'published', 'cancelled', 'completed'])
+      && (!('isPublic' in request.resource.data) || request.resource.data.isPublic is bool)
+      && (!('isFree' in request.resource.data) || request.resource.data.isFree is bool)
+      && (!('province' in request.resource.data) || request.resource.data.province is string)
+      && (!('postalCode' in request.resource.data) || request.resource.data.postalCode is string)
+      && (!('eventLicenseNumber' in request.resource.data) || request.resource.data.eventLicenseNumber is string)
+      && (!('ticketPrice' in request.resource.data) || request.resource.data.ticketPrice is number)
+      && (!('vatRate' in request.resource.data) || request.resource.data.vatRate is number)
+      && (!('ageRestriction' in request.resource.data) || request.resource.data.ageRestriction is number)
+      && (!('accessibilityInfo' in request.resource.data) || request.resource.data.accessibilityInfo is string)
+      && (!('cancellationPolicy' in request.resource.data) || request.resource.data.cancellationPolicy is string)
+      && (!('publishedAt' in request.resource.data) || request.resource.data.publishedAt is timestamp);
     }
 
 
@@ -196,12 +208,17 @@ service cloud.firestore {
     }
 
     match /events/{eventId} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn()
+        && (
+          resource.data.ownerId == request.auth.uid
+          || resource.data.isPublic == true
+        );
       allow create: if isSignedIn() && isValidEvent();
       allow update: if isSignedIn()
         && isValidEvent()
         && resource.data.ownerId == request.auth.uid;
-      allow delete: if false;
+      allow delete: if isSignedIn()
+        && resource.data.ownerId == request.auth.uid;
     }
 
     match /instrument_categories/{document} {
@@ -229,14 +246,6 @@ service cloud.firestore {
         return changedKeys.hasOnly([request.auth.uid])
           && after[request.auth.uid] is number
           && after[request.auth.uid] >= 0;
-      }
-
-      function isOwnUnreadWriteFieldsOnly() {
-        let fields = request.writeFields;
-        let uid = request.auth.uid;
-        return fields.hasOnly(['unreadCounts.' + uid])
-          || fields.hasOnly(['unreadCounts', 'unreadCounts.' + uid])
-          || (fields.hasOnly(['unreadCounts']) && isOwnUnreadCountUpdateOnly());
       }
 
       function isAllowedThreadUpdate() {
@@ -273,7 +282,7 @@ service cloud.firestore {
         // Some clients update only nested fields (e.g. unreadCounts.<uid>), so
         // guard against missing participants in request.resource.
         return !('participants' in request.resource.data)
-          || resource.data.participants.diff(request.resource.data.participants).removed.size() == 0;
+          || request.resource.data.participants.hasAll(resource.data.participants);
       }
 
 	      // Allow fetching non-existent threads so clients can determine whether they need to
@@ -398,7 +407,7 @@ service cloud.firestore {
         && canAcceptInvite(groupId, request.resource.data.inviteId);
     }
 
-    function isInviteMarkUsed(groupId, inviteId) {
+    function isInviteMarkUsed() {
       return isSignedIn()
         && canAcceptInviteData(resource.data)
         && request.resource.data.status == 'used'
@@ -449,7 +458,7 @@ service cloud.firestore {
           && request.resource.data.targetUid is string
           && request.resource.data.status == 'active'
           && request.resource.data.expiresAt is timestamp;
-        allow update: if isAdminOrOwner(groupId) || isInviteMarkUsed(groupId, inviteId);
+        allow update: if isAdminOrOwner(groupId) || isInviteMarkUsed();
         allow delete: if false;
       }
     }
