@@ -40,6 +40,7 @@ class BookingCubit extends Cubit<BookingState> {
   final AuthRepository _authRepository;
   final StudiosRepository _studiosRepository;
   final RehearsalsRepository _rehearsalsRepository;
+  Future<void>? _attendeesLoadFuture;
 
   void _initialize() {
     if (rehearsalContext != null) {
@@ -58,6 +59,8 @@ class BookingCubit extends Cubit<BookingState> {
         durationHours: duration,
         totalPrice: roomPricePerHour * duration,
       ));
+
+      _attendeesLoadFuture = _loadAttendees();
     } else {
       emit(state.copyWith(
         selectedDate: DateTime.now(),
@@ -65,6 +68,17 @@ class BookingCubit extends Cubit<BookingState> {
         durationHours: 2,
         totalPrice: roomPricePerHour * 2,
       ));
+    }
+  }
+
+  Future<void> _loadAttendees() async {
+    if (rehearsalContext == null) return;
+    try {
+      final memberIds = await _rehearsalsRepository
+          .getGroupMemberIds(rehearsalContext!.groupId);
+      emit(state.copyWith(attendees: memberIds));
+    } catch (_) {
+      // Non-blocking: attendees are optional for the booking flow.
     }
   }
 
@@ -83,6 +97,10 @@ class BookingCubit extends Cubit<BookingState> {
     ));
   }
 
+  void paymentMethodChanged(BookingPaymentMethod method) {
+    emit(state.copyWith(paymentMethod: method));
+  }
+
   Future<void> confirmBooking() async {
     final user = _authRepository.currentUser;
     if (user == null) {
@@ -96,6 +114,8 @@ class BookingCubit extends Cubit<BookingState> {
     emit(state.copyWith(status: BookingFormStatus.loading));
 
     try {
+      await _attendeesLoadFuture;
+
       final date = state.selectedDate!;
       final time = state.selectedTime!;
       
@@ -110,6 +130,8 @@ class BookingCubit extends Cubit<BookingState> {
       final endDateTime = startDateTime.add(Duration(hours: state.durationHours));
       final bookingId = const Uuid().v4();
 
+      final vatAmount = state.totalPrice * 0.21;
+
       final booking = BookingEntity(
         id: bookingId,
         roomId: roomId,
@@ -121,11 +143,14 @@ class BookingCubit extends Cubit<BookingState> {
         endTime: endDateTime,
         status: BookingStatus.confirmed,
         totalPrice: state.totalPrice,
+        vatAmount: vatAmount,
+        paymentMethod: state.paymentMethod,
         rehearsalId: rehearsalContext?.rehearsalId,
         groupId: rehearsalContext?.groupId,
         createdAt: DateTime.now(),
         confirmedAt: DateTime.now(),
         paymentStatus: BookingPaymentStatus.pending,
+        attendees: state.attendees,
       );
 
       await _studiosRepository.createBooking(booking);

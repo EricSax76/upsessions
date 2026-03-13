@@ -16,6 +16,17 @@ class StudioRegistrationDraft {
     required this.description,
     required this.address,
     required this.phone,
+    // Normativa
+    required this.vatNumber,
+    required this.licenseNumber,
+    required this.openingHours,
+    required this.city,
+    required this.province,
+    required this.postalCode,
+    required this.maxRoomCapacity,
+    required this.accessibilityInfo,
+    required this.noiseOrdinanceCompliant,
+    required this.insuranceExpiry,
   });
 
   final String email;
@@ -26,6 +37,17 @@ class StudioRegistrationDraft {
   final String description;
   final String address;
   final String phone;
+  // Normativa
+  final String vatNumber;
+  final String licenseNumber;
+  final Map<String, String> openingHours;
+  final String city;
+  final String province;
+  final String postalCode;
+  final int maxRoomCapacity;
+  final String accessibilityInfo;
+  final bool noiseOrdinanceCompliant;
+  final DateTime insuranceExpiry;
 }
 
 class StudioRegistrationCoordinator {
@@ -61,6 +83,17 @@ class StudioRegistrationCoordinator {
         address: draft.address.trim(),
         contactEmail: draft.email.trim(),
         contactPhone: draft.phone.trim(),
+        // Normativa
+        vatNumber: draft.vatNumber.trim(),
+        licenseNumber: draft.licenseNumber.trim(),
+        openingHours: draft.openingHours,
+        city: draft.city.trim(),
+        province: draft.province.trim(),
+        postalCode: draft.postalCode.trim(),
+        maxRoomCapacity: draft.maxRoomCapacity,
+        accessibilityInfo: draft.accessibilityInfo.trim(),
+        noiseOrdinanceCompliant: draft.noiseOrdinanceCompliant,
+        insuranceExpiry: draft.insuranceExpiry,
       ),
     );
   }

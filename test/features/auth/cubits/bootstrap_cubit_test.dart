@@ -167,7 +167,7 @@ void main() {
         when(
           () => studiosRepository.getStudioByOwner(storedUser.id),
         ).thenAnswer(
-          (_) async => const StudioEntity(
+          (_) async => StudioEntity(
             id: 'studio-1',
             ownerId: 'uid',
             name: 'Studio Demo',
@@ -177,6 +177,16 @@ void main() {
             contactPhone: '123',
             cif: 'CIF1',
             businessName: 'Studio Demo SL',
+            vatNumber: 'ES12345678A',
+            licenseNumber: 'LIC-001',
+            openingHours: const {'lun': '09:00-18:00'},
+            city: 'Madrid',
+            province: 'Madrid',
+            postalCode: '28001',
+            maxRoomCapacity: 50,
+            accessibilityInfo: 'Acceso adaptado',
+            noiseOrdinanceCompliant: true,
+            insuranceExpiry: DateTime(2027, 1, 1),
           ),
         );
         return BootstrapCubit(

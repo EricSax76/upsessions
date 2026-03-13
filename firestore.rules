@@ -499,12 +499,32 @@ service cloud.firestore {
         && request.resource.data.ownerId == request.auth.uid
         && request.resource.data.name is string
         && request.resource.data.cif is string
-        && request.resource.data.businessName is string;
+        && request.resource.data.businessName is string
+        && request.resource.data.city is string
+        && request.resource.data.province is string
+        && request.resource.data.postalCode is string
+        && request.resource.data.vatNumber is string
+        && request.resource.data.licenseNumber is string
+        && request.resource.data.maxRoomCapacity is int
+        && request.resource.data.accessibilityInfo is string
+        && request.resource.data.noiseOrdinanceCompliant is bool
+        && request.resource.data.insuranceExpiry is timestamp
+        && request.resource.data.openingHours is map;
       allow update: if isSignedIn()
         && resource.data.ownerId == request.auth.uid
         && request.resource.data.name is string
         && request.resource.data.cif is string
-        && request.resource.data.businessName is string;
+        && request.resource.data.businessName is string
+        && request.resource.data.city is string
+        && request.resource.data.province is string
+        && request.resource.data.postalCode is string
+        && request.resource.data.vatNumber is string
+        && request.resource.data.licenseNumber is string
+        && request.resource.data.maxRoomCapacity is int
+        && request.resource.data.accessibilityInfo is string
+        && request.resource.data.noiseOrdinanceCompliant is bool
+        && request.resource.data.insuranceExpiry is timestamp
+        && request.resource.data.openingHours is map;
       allow delete: if isSignedIn()
         && resource.data.ownerId == request.auth.uid;
 

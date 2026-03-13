@@ -29,16 +29,16 @@ class StudioEntity extends Equatable {
     this.logoUrl,
     this.bannerUrl,
     // ── Normativa ────────────────────────────────────────────────────────────
-    this.vatNumber,
-    this.licenseNumber,
-    this.openingHours = const {},
-    this.city = '',
-    this.province = '',
-    this.postalCode,
-    this.maxRoomCapacity,
-    this.accessibilityInfo,
-    this.noiseOrdinanceCompliant,
-    this.insuranceExpiry,
+    required this.vatNumber,
+    required this.licenseNumber,
+    required this.openingHours,
+    required this.city,
+    required this.province,
+    required this.postalCode,
+    required this.maxRoomCapacity,
+    required this.accessibilityInfo,
+    required this.noiseOrdinanceCompliant,
+    required this.insuranceExpiry,
     this.updatedAt,
     this.isActive = true,
   });
@@ -58,24 +58,24 @@ class StudioEntity extends Equatable {
 
   // ── Normativa fiscal ──────────────────────────────────────────────────────
   /// LIVA — NIF-IVA del estudio para facturas intracomunitarias dentro de la UE.
-  final String? vatNumber;
+  final String vatNumber;
 
   // ── Normativa administrativa / seguridad ──────────────────────────────────
   /// Reglamento espectáculos / Ayuntamiento — número de licencia municipal
   /// de actividad o de aforo. Exigible para actuaciones en vivo.
-  final String? licenseNumber;
+  final String licenseNumber;
 
   /// Reglamento espectáculos — aforo máximo total de las instalaciones;
   /// requerimiento de seguridad y condición de la licencia.
-  final int? maxRoomCapacity;
+  final int maxRoomCapacity;
 
   /// Reglamento espectáculos — fecha de caducidad del seguro de
   /// responsabilidad civil; obligatorio para operar como local público.
-  final DateTime? insuranceExpiry;
+  final DateTime insuranceExpiry;
 
   /// Ordenanzas municipales de ruido — el estudio cumple la normativa acústica
   /// local; relevante para la obtención y renovación de permisos.
-  final bool? noiseOrdinanceCompliant;
+  final bool noiseOrdinanceCompliant;
 
   // ── Normativa LSSI / geolocalización ─────────────────────────────────────
   /// LSSI Art. 10 — horario de atención al público; obligatorio en la
@@ -89,12 +89,12 @@ class StudioEntity extends Equatable {
   final String province;
 
   /// Código postal; necesario para facturación y localización exacta.
-  final String? postalCode;
+  final String postalCode;
 
   // ── Normativa accesibilidad ───────────────────────────────────────────────
   /// RD 1/2013 (LIONDAU) / Ley 49/2007 — información de accesibilidad para
   /// personas con discapacidad; obligatorio en servicios abiertos al público.
-  final String? accessibilityInfo;
+  final String accessibilityInfo;
 
   // ── RGPD / operacional ────────────────────────────────────────────────────
   /// RGPD Art. 5.1.d — última modificación del registro; política de caducidad.

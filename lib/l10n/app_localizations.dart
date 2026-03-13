@@ -1058,6 +1058,72 @@ abstract class AppLocalizations {
   /// **'{hours, plural, one{Duración: # hora} other{Duración: # horas}}'**
   String roomDetailDurationHours(int hours);
 
+  /// No description provided for @roomDetailMinBookingHours.
+  ///
+  /// In es, this message translates to:
+  /// **'Reserva mínima: {hours}h'**
+  String roomDetailMinBookingHours(int hours);
+
+  /// No description provided for @roomDetailMaxDecibels.
+  ///
+  /// In es, this message translates to:
+  /// **'Máx. decibelios: {decibels} dB'**
+  String roomDetailMaxDecibels(String decibels);
+
+  /// No description provided for @roomDetailMinimumAge.
+  ///
+  /// In es, this message translates to:
+  /// **'Edad mínima: {age} años'**
+  String roomDetailMinimumAge(int age);
+
+  /// No description provided for @roomDetailAccessibleMobility.
+  ///
+  /// In es, this message translates to:
+  /// **'Accesible movilidad reducida'**
+  String get roomDetailAccessibleMobility;
+
+  /// No description provided for @roomDetailCancellationPolicyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Política de cancelación'**
+  String get roomDetailCancellationPolicyTitle;
+
+  /// No description provided for @roomDetailPaymentMethodLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Método de pago'**
+  String get roomDetailPaymentMethodLabel;
+
+  /// No description provided for @roomDetailVatLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'IVA (21%):'**
+  String get roomDetailVatLabel;
+
+  /// No description provided for @paymentMethodCard.
+  ///
+  /// In es, this message translates to:
+  /// **'Tarjeta'**
+  String get paymentMethodCard;
+
+  /// No description provided for @paymentMethodTransfer.
+  ///
+  /// In es, this message translates to:
+  /// **'Transferencia'**
+  String get paymentMethodTransfer;
+
+  /// No description provided for @paymentMethodCash.
+  ///
+  /// In es, this message translates to:
+  /// **'Efectivo'**
+  String get paymentMethodCash;
+
+  /// No description provided for @paymentMethodBizum.
+  ///
+  /// In es, this message translates to:
+  /// **'Bizum'**
+  String get paymentMethodBizum;
+
   /// No description provided for @roomDetailTotalPriceLabel.
   ///
   /// In es, this message translates to:

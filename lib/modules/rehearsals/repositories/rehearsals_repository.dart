@@ -19,6 +19,16 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     return _getMyRehearsalsByMembership(groupIds);
   }
 
+  /// Returns the user IDs of all members in a group.
+  Future<List<String>> getGroupMemberIds(String groupId) async {
+    logFirestore('getGroupMemberIds groupId=$groupId');
+    final snapshot = await logFuture(
+      'getGroupMemberIds get',
+      members(groupId).get(),
+    );
+    return snapshot.docs.map((doc) => doc.id).toList();
+  }
+
   Future<List<RehearsalEntity>> getRehearsals(String groupId) async {
     await requireMusicianUid();
     logFirestore('getRehearsals groupId=$groupId');

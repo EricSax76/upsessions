@@ -557,6 +557,45 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String roomDetailMinBookingHours(int hours) {
+    return 'Minimum booking: ${hours}h';
+  }
+
+  @override
+  String roomDetailMaxDecibels(String decibels) {
+    return 'Max decibels: ${decibels} dB';
+  }
+
+  @override
+  String roomDetailMinimumAge(int age) {
+    return 'Minimum age: ${age} years';
+  }
+
+  @override
+  String get roomDetailAccessibleMobility => 'Accessible for reduced mobility';
+
+  @override
+  String get roomDetailCancellationPolicyTitle => 'Cancellation policy';
+
+  @override
+  String get roomDetailPaymentMethodLabel => 'Payment method';
+
+  @override
+  String get roomDetailVatLabel => 'VAT (21%):';
+
+  @override
+  String get paymentMethodCard => 'Card';
+
+  @override
+  String get paymentMethodTransfer => 'Transfer';
+
+  @override
+  String get paymentMethodCash => 'Cash';
+
+  @override
+  String get paymentMethodBizum => 'Bizum';
+
+  @override
   String get roomDetailTotalPriceLabel => 'Total price:';
 
   @override

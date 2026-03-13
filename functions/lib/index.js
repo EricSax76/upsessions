@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onChatThreadWrite = exports.onGroupInviteUsedCreateContacts = exports.onGroupInviteCreated = exports.ping = exports.updateUserComplianceProfile = exports.syncUserSession = exports.requestDataExport = exports.requestAccountDeletion = exports.purgeExpiredComplianceData = exports.onEventManagerWriteSyncUserRole = exports.onAuthUserDeleteSoftDelete = exports.onAuthUserCreateBootstrap = exports.acceptLegalDocs = exports.acceptLegalBundle = exports.resolveSpotifyArtistImages = exports.seedChatThreads = void 0;
+exports.onChatThreadWrite = exports.onGroupInviteUsedCreateContacts = exports.onGroupInviteCreated = exports.ping = exports.onBookingCreated = exports.onStudioUpdated = exports.onStudioCreated = exports.updateUserComplianceProfile = exports.syncUserSession = exports.requestDataExport = exports.requestAccountDeletion = exports.purgeExpiredComplianceData = exports.onEventManagerWriteSyncUserRole = exports.onAuthUserDeleteSoftDelete = exports.onAuthUserCreateBootstrap = exports.acceptLegalDocs = exports.acceptLegalBundle = exports.resolveSpotifyArtistImages = exports.seedChatThreads = void 0;
 const firebase_1 = require("./firebase");
 const region_1 = require("./region");
 var chatSeeder_1 = require("./chatSeeder");
@@ -18,6 +18,11 @@ Object.defineProperty(exports, "requestAccountDeletion", { enumerable: true, get
 Object.defineProperty(exports, "requestDataExport", { enumerable: true, get: function () { return legalCompliance_1.requestDataExport; } });
 Object.defineProperty(exports, "syncUserSession", { enumerable: true, get: function () { return legalCompliance_1.syncUserSession; } });
 Object.defineProperty(exports, "updateUserComplianceProfile", { enumerable: true, get: function () { return legalCompliance_1.updateUserComplianceProfile; } });
+var onStudioWrite_1 = require("./studios/onStudioWrite");
+Object.defineProperty(exports, "onStudioCreated", { enumerable: true, get: function () { return onStudioWrite_1.onStudioCreated; } });
+Object.defineProperty(exports, "onStudioUpdated", { enumerable: true, get: function () { return onStudioWrite_1.onStudioUpdated; } });
+var onBookingWrite_1 = require("./studios/onBookingWrite");
+Object.defineProperty(exports, "onBookingCreated", { enumerable: true, get: function () { return onBookingWrite_1.onBookingCreated; } });
 function stringList(value) {
     if (!Array.isArray(value))
         return [];

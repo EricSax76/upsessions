@@ -414,6 +414,46 @@
       }
     }
   },
+  "roomDetailMinBookingHours": "Minimum booking: {hours}h",
+  "@roomDetailMinBookingHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "roomDetailMaxDecibels": "Max decibels: {decibels} dB",
+  "@roomDetailMaxDecibels": {
+    "placeholders": {
+      "decibels": {
+        "type": "String"
+      }
+    }
+  },
+  "roomDetailMinimumAge": "Minimum age: {age} years",
+  "@roomDetailMinimumAge": {
+    "placeholders": {
+      "age": {
+        "type": "int"
+      }
+    }
+  },
+  "roomDetailAccessibleMobility": "Accessible for reduced mobility",
+  "@roomDetailAccessibleMobility": {},
+  "roomDetailCancellationPolicyTitle": "Cancellation policy",
+  "@roomDetailCancellationPolicyTitle": {},
+  "roomDetailPaymentMethodLabel": "Payment method",
+  "@roomDetailPaymentMethodLabel": {},
+  "roomDetailVatLabel": "VAT (21%):",
+  "@roomDetailVatLabel": {},
+  "paymentMethodCard": "Card",
+  "@paymentMethodCard": {},
+  "paymentMethodTransfer": "Transfer",
+  "@paymentMethodTransfer": {},
+  "paymentMethodCash": "Cash",
+  "@paymentMethodCash": {},
+  "paymentMethodBizum": "Bizum",
+  "@paymentMethodBizum": {},
   "roomDetailTotalPriceLabel": "Total price:",
   "@roomDetailTotalPriceLabel": {},
   "roomDetailConfirmBookingForRehearsal": "Confirm booking",

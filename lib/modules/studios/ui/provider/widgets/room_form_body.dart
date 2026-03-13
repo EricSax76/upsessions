@@ -29,6 +29,14 @@ class _RoomFormBodyState extends State<RoomFormBody> {
   final _equipmentController = TextEditingController();
   final _photoPickerKey = GlobalKey<PhotoPickerSectionState>();
 
+  // Normativa
+  final _minBookingHoursController = TextEditingController();
+  final _maxDecibelsController = TextEditingController();
+  final _ageRestrictionController = TextEditingController();
+  final _cancellationPolicyController = TextEditingController();
+  bool _isAccessible = false;
+  bool _isActive = true;
+
   bool _saving = false;
 
   @override
@@ -41,6 +49,21 @@ class _RoomFormBodyState extends State<RoomFormBody> {
       _sizeController.text = room.size;
       _priceController.text = room.pricePerHour.toString();
       _equipmentController.text = room.equipment.join(', ');
+      // Normativa
+      _minBookingHoursController.text = room.minBookingHours.toString();
+      if (room.maxDecibels != null) {
+        _maxDecibelsController.text = room.maxDecibels.toString();
+      }
+      if (room.ageRestriction != null) {
+        _ageRestrictionController.text = room.ageRestriction.toString();
+      }
+      if (room.cancellationPolicy != null) {
+        _cancellationPolicyController.text = room.cancellationPolicy!;
+      }
+      _isAccessible = room.isAccessible;
+      _isActive = room.isActive;
+    } else {
+      _minBookingHoursController.text = '1';
     }
   }
 
@@ -51,6 +74,10 @@ class _RoomFormBodyState extends State<RoomFormBody> {
     _sizeController.dispose();
     _priceController.dispose();
     _equipmentController.dispose();
+    _minBookingHoursController.dispose();
+    _maxDecibelsController.dispose();
+    _ageRestrictionController.dispose();
+    _cancellationPolicyController.dispose();
     super.dispose();
   }
 
@@ -73,6 +100,10 @@ class _RoomFormBodyState extends State<RoomFormBody> {
         .where((e) => e.isNotEmpty)
         .toList();
 
+    final maxDecibelsText = _maxDecibelsController.text.trim();
+    final ageRestrictionText = _ageRestrictionController.text.trim();
+    final cancellationText = _cancellationPolicyController.text.trim();
+
     final room = RoomEntity(
       id: roomId,
       studioId: widget.studioId,
@@ -83,6 +114,19 @@ class _RoomFormBodyState extends State<RoomFormBody> {
       equipment: equipment,
       amenities: [],
       photos: photos,
+      // Normativa
+      minBookingHours:
+          int.tryParse(_minBookingHoursController.text) ?? 1,
+      maxDecibels: maxDecibelsText.isNotEmpty
+          ? double.tryParse(maxDecibelsText)
+          : null,
+      ageRestriction: ageRestrictionText.isNotEmpty
+          ? int.tryParse(ageRestrictionText)
+          : null,
+      cancellationPolicy:
+          cancellationText.isNotEmpty ? cancellationText : null,
+      isAccessible: _isAccessible,
+      isActive: _isActive,
     );
 
     if (mounted) {
@@ -109,7 +153,9 @@ class _RoomFormBodyState extends State<RoomFormBody> {
               Form(
                 key: _formKey,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // ── Datos basicos ──────────────────────────
                     TextFormField(
                       controller: _nameController,
                       decoration:
@@ -169,19 +215,92 @@ class _RoomFormBodyState extends State<RoomFormBody> {
                       key: _photoPickerKey,
                       initialPhotos: widget.room?.photos ?? [],
                     ),
+
+                    // ── Configuración de sala ─────────────────
+                    const SizedBox(height: 32),
+                    Text('Configuración de sala',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _minBookingHoursController,
+                      decoration: const InputDecoration(
+                        labelText: 'Horas mínimas por reserva',
+                        helperText: 'Contractual — mínimo de horas',
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _maxDecibelsController,
+                      decoration: const InputDecoration(
+                        labelText: 'Decibelios máximos (dB)',
+                        helperText:
+                            'Ordenanzas municipales de ruido — nivel máximo',
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _ageRestrictionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Restricción de edad mínima',
+                        helperText:
+                            'LOPDGDD Art. 7 — edad mínima para usar la sala',
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+
+                    // ── Políticas ─────────────────────────────
+                    const SizedBox(height: 32),
+                    Text('Políticas',
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _cancellationPolicyController,
+                      decoration: const InputDecoration(
+                        labelText: 'Política de cancelación',
+                        helperText:
+                            'Directiva 2011/83/UE — cancelación y devolución',
+                      ),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16),
+                    SwitchListTile(
+                      title: const Text('Accesibilidad'),
+                      subtitle: const Text(
+                          'RD 1/2013 — acceso movilidad reducida'),
+                      value: _isAccessible,
+                      onChanged: (v) =>
+                          setState(() => _isAccessible = v),
+                    ),
+                    SwitchListTile(
+                      title: const Text('Sala activa'),
+                      subtitle:
+                          const Text('Visible para reservas'),
+                      value: _isActive,
+                      onChanged: (v) =>
+                          setState(() => _isActive = v),
+                    ),
+
+                    // ── Submit ─────────────────────────────────
                     const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: isLoading ? null : _submit,
-                      child: isLoading
-                          ? CircularProgressIndicator(
-                              color:
-                                  Theme.of(context).colorScheme.onPrimary,
-                            )
-                          : Text(
-                              widget.room == null
-                                  ? 'Create Room'
-                                  : 'Save Changes',
-                            ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : _submit,
+                        child: isLoading
+                            ? CircularProgressIndicator(
+                                color:
+                                    Theme.of(context).colorScheme.onPrimary,
+                              )
+                            : Text(
+                                widget.room == null
+                                    ? 'Create Room'
+                                    : 'Save Changes',
+                              ),
+                      ),
                     ),
                   ],
                 ),

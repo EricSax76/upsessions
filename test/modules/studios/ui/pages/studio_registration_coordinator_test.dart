@@ -14,7 +14,7 @@ void main() {
   late MockMyStudioCubit myStudioCubit;
   late StudioRegistrationCoordinator coordinator;
 
-  const draft = StudioRegistrationDraft(
+  final draft = StudioRegistrationDraft(
     email: ' owner@example.com ',
     password: 'secret123',
     name: ' Sala Norte ',
@@ -23,11 +23,21 @@ void main() {
     description: ' Sala amplia ',
     address: ' Calle 1 ',
     phone: ' +34 123 456 ',
+    vatNumber: ' ES12345678A ',
+    licenseNumber: ' LIC-001 ',
+    openingHours: const {'lun': '09:00-18:00'},
+    city: ' Madrid ',
+    province: ' Madrid ',
+    postalCode: ' 28001 ',
+    maxRoomCapacity: 50,
+    accessibilityInfo: ' Acceso adaptado ',
+    noiseOrdinanceCompliant: true,
+    insuranceExpiry: DateTime(2027, 1, 1),
   );
 
   setUpAll(() {
     registerFallbackValue(
-      const StudioEntity(
+      StudioEntity(
         id: 'studio-id',
         ownerId: 'owner-id',
         name: 'name',
@@ -37,6 +47,16 @@ void main() {
         address: 'address',
         contactEmail: 'email@example.com',
         contactPhone: '000',
+        vatNumber: 'ES00000000X',
+        licenseNumber: 'LIC-000',
+        openingHours: const {},
+        city: 'Test',
+        province: 'Test',
+        postalCode: '00000',
+        maxRoomCapacity: 0,
+        accessibilityInfo: '',
+        noiseOrdinanceCompliant: false,
+        insuranceExpiry: DateTime(2027, 1, 1),
       ),
     );
   });
@@ -89,5 +109,15 @@ void main() {
     expect(captured.address, 'Calle 1');
     expect(captured.contactEmail, 'owner@example.com');
     expect(captured.contactPhone, '+34 123 456');
+    expect(captured.vatNumber, 'ES12345678A');
+    expect(captured.licenseNumber, 'LIC-001');
+    expect(captured.openingHours, {'lun': '09:00-18:00'});
+    expect(captured.city, 'Madrid');
+    expect(captured.province, 'Madrid');
+    expect(captured.postalCode, '28001');
+    expect(captured.maxRoomCapacity, 50);
+    expect(captured.accessibilityInfo, 'Acceso adaptado');
+    expect(captured.noiseOrdinanceCompliant, true);
+    expect(captured.insuranceExpiry, DateTime(2027, 1, 1));
   });
 }

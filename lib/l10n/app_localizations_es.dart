@@ -557,6 +557,45 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String roomDetailMinBookingHours(int hours) {
+    return 'Reserva mínima: ${hours}h';
+  }
+
+  @override
+  String roomDetailMaxDecibels(String decibels) {
+    return 'Máx. decibelios: ${decibels} dB';
+  }
+
+  @override
+  String roomDetailMinimumAge(int age) {
+    return 'Edad mínima: ${age} años';
+  }
+
+  @override
+  String get roomDetailAccessibleMobility => 'Accesible movilidad reducida';
+
+  @override
+  String get roomDetailCancellationPolicyTitle => 'Política de cancelación';
+
+  @override
+  String get roomDetailPaymentMethodLabel => 'Método de pago';
+
+  @override
+  String get roomDetailVatLabel => 'IVA (21%):';
+
+  @override
+  String get paymentMethodCard => 'Tarjeta';
+
+  @override
+  String get paymentMethodTransfer => 'Transferencia';
+
+  @override
+  String get paymentMethodCash => 'Efectivo';
+
+  @override
+  String get paymentMethodBizum => 'Bizum';
+
+  @override
   String get roomDetailTotalPriceLabel => 'Precio total:';
 
   @override

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../models/studio_entity.dart';
 import '../models/room_entity.dart';
 import '../models/booking_entity.dart';
@@ -28,20 +29,16 @@ class FirestoreStudiosRepository implements StudiosRepository {
       if (studio.logoUrl != null) 'logoUrl': studio.logoUrl,
       if (studio.bannerUrl != null) 'bannerUrl': studio.bannerUrl,
       // Normativa
-      if (studio.vatNumber != null) 'vatNumber': studio.vatNumber,
-      if (studio.licenseNumber != null) 'licenseNumber': studio.licenseNumber,
-      if (studio.openingHours.isNotEmpty) 'openingHours': studio.openingHours,
+      'vatNumber': studio.vatNumber,
+      'licenseNumber': studio.licenseNumber,
+      'openingHours': studio.openingHours,
       'city': studio.city,
       'province': studio.province,
-      if (studio.postalCode != null) 'postalCode': studio.postalCode,
-      if (studio.maxRoomCapacity != null)
-        'maxRoomCapacity': studio.maxRoomCapacity,
-      if (studio.accessibilityInfo != null)
-        'accessibilityInfo': studio.accessibilityInfo,
-      if (studio.noiseOrdinanceCompliant != null)
-        'noiseOrdinanceCompliant': studio.noiseOrdinanceCompliant,
-      if (studio.insuranceExpiry != null)
-        'insuranceExpiry': Timestamp.fromDate(studio.insuranceExpiry!),
+      'postalCode': studio.postalCode,
+      'maxRoomCapacity': studio.maxRoomCapacity,
+      'accessibilityInfo': studio.accessibilityInfo,
+      'noiseOrdinanceCompliant': studio.noiseOrdinanceCompliant,
+      'insuranceExpiry': Timestamp.fromDate(studio.insuranceExpiry),
       'isActive': studio.isActive,
       'updatedAt': FieldValue.serverTimestamp(),
     });
@@ -60,20 +57,16 @@ class FirestoreStudiosRepository implements StudiosRepository {
       if (studio.logoUrl != null) 'logoUrl': studio.logoUrl,
       if (studio.bannerUrl != null) 'bannerUrl': studio.bannerUrl,
       // Normativa
-      if (studio.vatNumber != null) 'vatNumber': studio.vatNumber,
-      if (studio.licenseNumber != null) 'licenseNumber': studio.licenseNumber,
-      if (studio.openingHours.isNotEmpty) 'openingHours': studio.openingHours,
+      'vatNumber': studio.vatNumber,
+      'licenseNumber': studio.licenseNumber,
+      'openingHours': studio.openingHours,
       'city': studio.city,
       'province': studio.province,
-      if (studio.postalCode != null) 'postalCode': studio.postalCode,
-      if (studio.maxRoomCapacity != null)
-        'maxRoomCapacity': studio.maxRoomCapacity,
-      if (studio.accessibilityInfo != null)
-        'accessibilityInfo': studio.accessibilityInfo,
-      if (studio.noiseOrdinanceCompliant != null)
-        'noiseOrdinanceCompliant': studio.noiseOrdinanceCompliant,
-      if (studio.insuranceExpiry != null)
-        'insuranceExpiry': Timestamp.fromDate(studio.insuranceExpiry!),
+      'postalCode': studio.postalCode,
+      'maxRoomCapacity': studio.maxRoomCapacity,
+      'accessibilityInfo': studio.accessibilityInfo,
+      'noiseOrdinanceCompliant': studio.noiseOrdinanceCompliant,
+      'insuranceExpiry': Timestamp.fromDate(studio.insuranceExpiry),
       'isActive': studio.isActive,
       'updatedAt': FieldValue.serverTimestamp(),
     });
@@ -88,10 +81,8 @@ class FirestoreStudiosRepository implements StudiosRepository {
         .get();
 
     if (querySnapshot.docs.isEmpty) return null;
-    return _mapStudio(
-      querySnapshot.docs.first.id,
-      querySnapshot.docs.first.data(),
-    );
+    final doc = querySnapshot.docs.first;
+    return _tryMapStudio(doc.id, doc.data());
   }
 
   @override
@@ -102,7 +93,7 @@ class FirestoreStudiosRepository implements StudiosRepository {
         .get();
 
     if (!docSnapshot.exists || docSnapshot.data() == null) return null;
-    return _mapStudio(docSnapshot.id, docSnapshot.data()!);
+    return _tryMapStudio(docSnapshot.id, docSnapshot.data()!);
   }
 
   @override
@@ -121,9 +112,13 @@ class FirestoreStudiosRepository implements StudiosRepository {
     final hasMore = docs.length > limit;
     final pageDocs = hasMore ? docs.take(limit).toList() : docs;
 
-    final studios = pageDocs
-        .map((doc) => _mapStudio(doc.id, doc.data()))
-        .toList();
+    final studios = <StudioEntity>[];
+    for (final doc in pageDocs) {
+      final studio = _tryMapStudio(doc.id, doc.data());
+      if (studio != null) {
+        studios.add(studio);
+      }
+    }
 
     final nextCursor = hasMore && pageDocs.isNotEmpty ? pageDocs.last.id : null;
     return StudiosPage(
@@ -303,7 +298,6 @@ class FirestoreStudiosRepository implements StudiosRepository {
 
   @override
   Future<void> createBooking(BookingEntity booking) async {
-    final now = Timestamp.fromDate(DateTime.now());
     final data = <String, dynamic>{
       'id': booking.id,
       'roomId': booking.roomId,
@@ -315,9 +309,9 @@ class FirestoreStudiosRepository implements StudiosRepository {
       'endTime': Timestamp.fromDate(booking.endTime),
       'status': booking.status.name,
       'totalPrice': booking.totalPrice,
-      // RGPD Art. 30 / contabilidad
-      'createdAt': now,
-      'updatedAt': now,
+      // RGPD Art. 30 / contabilidad — server timestamps
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
       // LIVA Art. 75 / AEAT — facturación legal
       if (booking.invoiceId != null) 'invoiceId': booking.invoiceId,
       if (booking.vatAmount != null) 'vatAmount': booking.vatAmount,
@@ -342,6 +336,7 @@ class FirestoreStudiosRepository implements StudiosRepository {
   }
 
   /// Actualiza el estado de pago de una reserva (PSD2 / contabilidad).
+  @override
   Future<void> updateBookingPayment({
     required String bookingId,
     required BookingPaymentStatus paymentStatus,
@@ -357,6 +352,7 @@ class FirestoreStudiosRepository implements StudiosRepository {
   }
 
   /// Cancela una reserva con motivo (Directiva 2011/83/UE).
+  @override
   Future<void> cancelBooking({
     required String bookingId,
     required String reason,
@@ -570,23 +566,103 @@ class FirestoreStudiosRepository implements StudiosRepository {
       logoUrl: data['logoUrl'] as String?,
       bannerUrl: data['bannerUrl'] as String?,
       // Normativa
-      vatNumber: data['vatNumber'] as String?,
-      licenseNumber: data['licenseNumber'] as String?,
-      openingHours:
-          (data['openingHours'] as Map<String, dynamic>?)?.map(
-            (k, v) => MapEntry(k, v.toString()),
-          ) ??
-          const {},
-      city: data['city'] as String? ?? '',
-      province: data['province'] as String? ?? '',
-      postalCode: data['postalCode'] as String?,
-      maxRoomCapacity: (data['maxRoomCapacity'] as num?)?.toInt(),
-      accessibilityInfo: data['accessibilityInfo'] as String?,
-      noiseOrdinanceCompliant: data['noiseOrdinanceCompliant'] as bool?,
-      insuranceExpiry: _tsToDate(data['insuranceExpiry']),
+      vatNumber: _requiredNonEmptyString(data, field: 'vatNumber'),
+      licenseNumber: _requiredNonEmptyString(data, field: 'licenseNumber'),
+      openingHours: _requiredNonEmptyStringMap(data, field: 'openingHours'),
+      city: _requiredNonEmptyString(data, field: 'city'),
+      province: _requiredNonEmptyString(data, field: 'province'),
+      postalCode: _requiredNonEmptyString(data, field: 'postalCode'),
+      maxRoomCapacity: _requiredPositiveInt(data, field: 'maxRoomCapacity'),
+      accessibilityInfo: _requiredNonEmptyString(
+        data,
+        field: 'accessibilityInfo',
+      ),
+      noiseOrdinanceCompliant: _requiredBool(
+        data,
+        field: 'noiseOrdinanceCompliant',
+      ),
+      insuranceExpiry: _requiredTimestamp(data, field: 'insuranceExpiry'),
       updatedAt: _tsToDate(data['updatedAt']),
       isActive: (data['isActive'] as bool?) ?? true,
     );
+  }
+
+  StudioEntity? _tryMapStudio(String docId, Map<String, dynamic> data) {
+    try {
+      return _mapStudio(docId, data);
+    } on FormatException catch (error) {
+      assert(() {
+        debugPrint('Skipping invalid studio "$docId": ${error.message}');
+        return true;
+      }());
+      return null;
+    }
+  }
+
+  static String _requiredNonEmptyString(
+    Map<String, dynamic> data, {
+    required String field,
+  }) {
+    final value = data[field];
+    if (value is String && value.trim().isNotEmpty) {
+      return value;
+    }
+    throw FormatException('Missing or invalid "$field"');
+  }
+
+  static int _requiredPositiveInt(
+    Map<String, dynamic> data, {
+    required String field,
+  }) {
+    final value = data[field];
+    if (value is int && value > 0) {
+      return value;
+    }
+    if (value is num && value > 0 && value == value.roundToDouble()) {
+      return value.toInt();
+    }
+    throw FormatException('Missing or invalid "$field"');
+  }
+
+  static bool _requiredBool(
+    Map<String, dynamic> data, {
+    required String field,
+  }) {
+    final value = data[field];
+    if (value is bool) return value;
+    throw FormatException('Missing or invalid "$field"');
+  }
+
+  static DateTime _requiredTimestamp(
+    Map<String, dynamic> data, {
+    required String field,
+  }) {
+    final value = data[field];
+    if (value is Timestamp) return value.toDate();
+    throw FormatException('Missing or invalid "$field"');
+  }
+
+  static Map<String, String> _requiredNonEmptyStringMap(
+    Map<String, dynamic> data, {
+    required String field,
+  }) {
+    final value = data[field];
+    if (value is! Map) {
+      throw FormatException('Missing or invalid "$field"');
+    }
+
+    final result = <String, String>{};
+    value.forEach((key, rawValue) {
+      if (key is! String || rawValue is! String || rawValue.trim().isEmpty) {
+        throw FormatException('Missing or invalid "$field"');
+      }
+      result[key] = rawValue;
+    });
+
+    if (result.isEmpty) {
+      throw FormatException('Missing or invalid "$field"');
+    }
+    return result;
   }
 
   static DateTime? _tsToDate(dynamic raw) {

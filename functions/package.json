@@ -8,6 +8,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
+    "test:studios": "npm run build && node lib/studios/__tests__/onStudioWrite.test.js && node lib/studios/__tests__/onBookingWrite.test.js",
     "serve": "npm run build && firebase emulators:start --only functions",
     "deploy": "npm run build && firebase deploy --only functions",
     "backfill:chatLastMessage": "npm run build && node lib/backfillChatThreadLastMessage.js",

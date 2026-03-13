@@ -63,6 +63,21 @@ abstract class StudiosRepository {
   Future<List<BookingEntity>> getBookingsByRoom(String roomId);
   Future<List<BookingEntity>> getBookingsByUser(String userId);
   Future<List<BookingEntity>> getBookingsByStudio(String studioId);
+
+  /// Cancela una reserva con motivo (Directiva 2011/83/UE).
+  Future<void> cancelBooking({
+    required String bookingId,
+    required String reason,
+    double? refundAmount,
+  });
+
+  /// Actualiza el estado de pago de una reserva (PSD2 / contabilidad).
+  Future<void> updateBookingPayment({
+    required String bookingId,
+    required BookingPaymentStatus paymentStatus,
+    BookingPaymentMethod? paymentMethod,
+    String? invoiceId,
+  });
 }
 
 class MockStudiosRepository implements StudiosRepository {
@@ -318,5 +333,43 @@ class MockStudiosRepository implements StudiosRepository {
     return _collectBookingsPages(
       (cursor) => getBookingsByStudioPage(studioId: studioId, cursor: cursor),
     );
+  }
+
+  @override
+  Future<void> cancelBooking({
+    required String bookingId,
+    required String reason,
+    double? refundAmount,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final index = _bookings.indexWhere((b) => b.id == bookingId);
+    if (index != -1) {
+      _bookings[index] = _bookings[index].copyWith(
+        status: BookingStatus.cancelled,
+        cancellationReason: reason,
+        refundAmount: refundAmount,
+        paymentStatus: refundAmount != null && refundAmount > 0
+            ? BookingPaymentStatus.refunded
+            : null,
+      );
+    }
+  }
+
+  @override
+  Future<void> updateBookingPayment({
+    required String bookingId,
+    required BookingPaymentStatus paymentStatus,
+    BookingPaymentMethod? paymentMethod,
+    String? invoiceId,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final index = _bookings.indexWhere((b) => b.id == bookingId);
+    if (index != -1) {
+      _bookings[index] = _bookings[index].copyWith(
+        paymentStatus: paymentStatus,
+        paymentMethod: paymentMethod,
+        invoiceId: invoiceId,
+      );
+    }
   }
 }

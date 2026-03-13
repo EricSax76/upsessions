@@ -79,6 +79,44 @@ class RoomDetailPage extends StatelessWidget {
                 Icons.square_foot,
                 loc.roomDetailSize(room.size),
               ),
+              // ── Normativa ──────────────────────────────
+              _buildInfoRow(
+                context,
+                Icons.timer,
+                loc.roomDetailMinBookingHours(room.minBookingHours),
+              ),
+              if (room.maxDecibels != null)
+                _buildInfoRow(
+                  context,
+                  Icons.volume_up,
+                  loc.roomDetailMaxDecibels(
+                    room.maxDecibels!.toStringAsFixed(1),
+                  ),
+                ),
+              if (room.ageRestriction != null)
+                _buildInfoRow(
+                  context,
+                  Icons.person,
+                  loc.roomDetailMinimumAge(room.ageRestriction!),
+                ),
+              if (room.isAccessible)
+                _buildInfoRow(
+                  context,
+                  Icons.accessible,
+                  loc.roomDetailAccessibleMobility,
+                ),
+              if (room.cancellationPolicy != null) ...[
+                const SizedBox(height: 16),
+                Text(
+                  loc.roomDetailCancellationPolicyTitle,
+                  style: theme.textTheme.titleSmall,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  room.cancellationPolicy!,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ],
               const SizedBox(height: 24),
               Text(
                 loc.roomDetailEquipmentTitle,

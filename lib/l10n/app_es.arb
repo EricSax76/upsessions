@@ -414,6 +414,46 @@
       }
     }
   },
+  "roomDetailMinBookingHours": "Reserva mínima: {hours}h",
+  "@roomDetailMinBookingHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "roomDetailMaxDecibels": "Máx. decibelios: {decibels} dB",
+  "@roomDetailMaxDecibels": {
+    "placeholders": {
+      "decibels": {
+        "type": "String"
+      }
+    }
+  },
+  "roomDetailMinimumAge": "Edad mínima: {age} años",
+  "@roomDetailMinimumAge": {
+    "placeholders": {
+      "age": {
+        "type": "int"
+      }
+    }
+  },
+  "roomDetailAccessibleMobility": "Accesible movilidad reducida",
+  "@roomDetailAccessibleMobility": {},
+  "roomDetailCancellationPolicyTitle": "Política de cancelación",
+  "@roomDetailCancellationPolicyTitle": {},
+  "roomDetailPaymentMethodLabel": "Método de pago",
+  "@roomDetailPaymentMethodLabel": {},
+  "roomDetailVatLabel": "IVA (21%):",
+  "@roomDetailVatLabel": {},
+  "paymentMethodCard": "Tarjeta",
+  "@paymentMethodCard": {},
+  "paymentMethodTransfer": "Transferencia",
+  "@paymentMethodTransfer": {},
+  "paymentMethodCash": "Efectivo",
+  "@paymentMethodCash": {},
+  "paymentMethodBizum": "Bizum",
+  "@paymentMethodBizum": {},
   "roomDetailTotalPriceLabel": "Precio total:",
   "@roomDetailTotalPriceLabel": {},
   "roomDetailConfirmBookingForRehearsal": "Confirmar reserva",

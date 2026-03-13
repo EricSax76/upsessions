@@ -39,6 +39,9 @@ void main() {
 
       when(() => user.id).thenReturn('user-1');
       when(() => authRepository.currentUser).thenReturn(user);
+      when(
+        () => rehearsalsRepository.getGroupMemberIds(any()),
+      ).thenAnswer((_) async => const []);
     });
 
     setUpAll(() {
@@ -158,6 +161,114 @@ void main() {
       ],
       verify: (_) {
         verify(() => studiosRepository.createBooking(any())).called(1);
+      },
+    );
+
+    blocTest<BookingCubit, BookingState>(
+      'paymentMethodChanged updates state',
+      build: () => BookingCubit(
+        roomPricePerHour: pricePerHour,
+        roomId: roomId,
+        roomName: roomName,
+        studioId: studioId,
+        studioName: studioName,
+        authRepository: authRepository,
+        studiosRepository: studiosRepository,
+        rehearsalsRepository: rehearsalsRepository,
+      ),
+      act: (cubit) => cubit.paymentMethodChanged(BookingPaymentMethod.bizum),
+      expect: () => [
+        isA<BookingState>().having(
+          (s) => s.paymentMethod,
+          'paymentMethod',
+          BookingPaymentMethod.bizum,
+        ),
+      ],
+    );
+
+    test('confirmBooking stores vatAmount = totalPrice * 0.21', () async {
+      when(
+        () => studiosRepository.createBooking(any()),
+      ).thenAnswer((_) async {});
+
+      final cubit = BookingCubit(
+        roomPricePerHour: pricePerHour,
+        roomId: roomId,
+        roomName: roomName,
+        studioId: studioId,
+        studioName: studioName,
+        authRepository: authRepository,
+        studiosRepository: studiosRepository,
+        rehearsalsRepository: rehearsalsRepository,
+      );
+
+      cubit.durationChanged(3);
+      await cubit.confirmBooking();
+
+      final captured =
+          verify(
+                () => studiosRepository.createBooking(captureAny()),
+              ).captured.single
+              as BookingEntity;
+      final expectedVat = captured.totalPrice * 0.21;
+      expect(captured.vatAmount, closeTo(expectedVat, 1e-9));
+      await cubit.close();
+    });
+
+    test(
+      'with rehearsalContext loads attendees and passes them in booking',
+      () async {
+        const attendees = ['uid-1', 'uid-2'];
+        when(
+          () => rehearsalsRepository.getGroupMemberIds('g1'),
+        ).thenAnswer((_) async => attendees);
+        when(
+          () => rehearsalsRepository.updateRehearsalBooking(
+            groupId: any(named: 'groupId'),
+            rehearsalId: any(named: 'rehearsalId'),
+            bookingId: any(named: 'bookingId'),
+          ),
+        ).thenAnswer((_) async {});
+        when(
+          () => studiosRepository.createBooking(any()),
+        ).thenAnswer((_) async {});
+
+        final context = RehearsalBookingContext(
+          groupId: 'g1',
+          rehearsalId: 'r1',
+          suggestedDate: DateTime(2025, 1, 1, 10),
+          suggestedEndDate: DateTime(2025, 1, 1, 12),
+        );
+
+        final cubit = BookingCubit(
+          roomPricePerHour: pricePerHour,
+          roomId: roomId,
+          roomName: roomName,
+          studioId: studioId,
+          studioName: studioName,
+          rehearsalContext: context,
+          authRepository: authRepository,
+          studiosRepository: studiosRepository,
+          rehearsalsRepository: rehearsalsRepository,
+        );
+
+        await cubit.confirmBooking();
+
+        verify(() => rehearsalsRepository.getGroupMemberIds('g1')).called(1);
+        final captured =
+            verify(
+                  () => studiosRepository.createBooking(captureAny()),
+                ).captured.single
+                as BookingEntity;
+        expect(captured.attendees, attendees);
+        verify(
+          () => rehearsalsRepository.updateRehearsalBooking(
+            groupId: 'g1',
+            rehearsalId: 'r1',
+            bookingId: captured.id,
+          ),
+        ).called(1);
+        await cubit.close();
       },
     );
 

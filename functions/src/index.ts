@@ -16,6 +16,8 @@ export {
   syncUserSession,
   updateUserComplianceProfile,
 } from './legalCompliance';
+export { onStudioCreated, onStudioUpdated } from './studios/onStudioWrite';
+export { onBookingCreated } from './studios/onBookingWrite';
 
 function stringList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];

@@ -40,6 +40,19 @@ class _StudioRegisterPageState extends State<StudioRegisterPage> {
     super.dispose();
   }
 
+  Future<void> _pickInsuranceExpiry() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate:
+          _form.insuranceExpiry ?? DateTime.now().add(const Duration(days: 365)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+    );
+    if (picked != null) {
+      setState(() => _form.insuranceExpiry = picked);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -62,6 +75,9 @@ class _StudioRegisterPageState extends State<StudioRegisterPage> {
             form: _form,
             onStepContinue: _onStepContinue,
             onStepCancel: _onStepCancel,
+            onNoiseOrdinanceChanged: (v) =>
+                setState(() => _form.noiseOrdinanceCompliant = v),
+            onInsuranceExpiryTap: _pickInsuranceExpiry,
           ),
         ),
       ),
@@ -104,26 +120,42 @@ class _StudioRegisterPageState extends State<StudioRegisterPage> {
   }
 
   void _onStepContinue() {
-    if (_isSubmitting) {
-      return;
-    }
-    if (_currentStep == 0) {
-      if (_form.validateAccountStep()) {
-        setState(() => _currentStep = 1);
-      }
-      return;
-    }
-    if (_form.validateStudioStep()) {
-      _submitRegistration();
+    if (_isSubmitting) return;
+
+    switch (_currentStep) {
+      case 0:
+        if (_form.validateAccountStep()) {
+          setState(() => _currentStep = 1);
+        }
+      case 1:
+        if (_form.validateStudioStep()) {
+          setState(() => _currentStep = 2);
+        }
+      case 2:
+        if (_form.validateLocationStep()) {
+          setState(() => _currentStep = 3);
+        }
+      case 3:
+        if (_form.validateRegulatoryStep()) {
+          setState(() => _currentStep = 4);
+        }
+      case 4:
+        if (_form.validateAccessibilityStep()) {
+          _submitRegistration();
+        } else if (_form.insuranceExpiry == null) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(const SnackBar(
+              content: Text('Selecciona la fecha de caducidad del seguro RC'),
+            ));
+        }
     }
   }
 
   void _onStepCancel() {
-    if (_isSubmitting) {
-      return;
-    }
+    if (_isSubmitting) return;
     if (_currentStep > 0) {
-      setState(() => _currentStep = 0);
+      setState(() => _currentStep = _currentStep - 1);
       return;
     }
     context.pop();
@@ -150,9 +182,7 @@ class _StudioRegisterPageState extends State<StudioRegisterPage> {
   }
 
   void _stopFlowWithError(String message) {
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
     setState(() => _flow = _RegistrationFlow.idle);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()

@@ -5,6 +5,7 @@ import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../cubits/booking_cubit.dart';
+import '../../models/booking_entity.dart';
 
 class RoomBookingDialog extends StatelessWidget {
   const RoomBookingDialog({super.key});
@@ -157,6 +158,28 @@ class RoomBookingDialog extends StatelessWidget {
                         .read<BookingCubit>()
                         .durationChanged(val.toInt()),
                   ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<BookingPaymentMethod>(
+                    initialValue: state.paymentMethod,
+                    decoration: InputDecoration(
+                      labelText: loc.roomDetailPaymentMethodLabel,
+                    ),
+                    items: BookingPaymentMethod.values
+                        .map(
+                          (m) => DropdownMenuItem(
+                            value: m,
+                            child: Text(_paymentMethodLabel(m, loc)),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (v) {
+                      if (v != null) {
+                        context
+                            .read<BookingCubit>()
+                            .paymentMethodChanged(v);
+                      }
+                    },
+                  ),
                   const Divider(),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -171,6 +194,22 @@ class RoomBookingDialog extends StatelessWidget {
                           '${state.totalPrice.toStringAsFixed(2)}€',
                           style: Theme.of(context).textTheme.headlineSmall
                               ?.copyWith(color: Theme.of(context).primaryColor),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          loc.roomDetailVatLabel,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        Text(
+                          '${(state.totalPrice * 0.21).toStringAsFixed(2)}€',
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
                     ),
@@ -202,5 +241,21 @@ class RoomBookingDialog extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  static String _paymentMethodLabel(
+    BookingPaymentMethod method,
+    AppLocalizations loc,
+  ) {
+    switch (method) {
+      case BookingPaymentMethod.card:
+        return loc.paymentMethodCard;
+      case BookingPaymentMethod.transfer:
+        return loc.paymentMethodTransfer;
+      case BookingPaymentMethod.cash:
+        return loc.paymentMethodCash;
+      case BookingPaymentMethod.bizum:
+        return loc.paymentMethodBizum;
+    }
   }
 }
