@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../features/events/models/event_entity.dart';
-import '../features/events/repositories/events_repository.dart';
-import '../features/events/ui/pages/event_detail_page.dart';
+import '../modules/events/models/event_entity.dart';
+import '../modules/events/repositories/events_repository.dart';
+import '../modules/events/ui/pages/event_detail_page.dart';
 import '../modules/messaging/models/chat_thread.dart';
 import '../modules/messaging/repositories/chat_repository.dart';
 import '../modules/messaging/ui/pages/chat_thread_detail_page.dart';

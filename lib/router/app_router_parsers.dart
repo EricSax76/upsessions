@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 
-import '../features/events/models/event_entity.dart';
+import '../modules/events/models/event_entity.dart';
 import '../modules/messaging/models/chat_thread.dart';
 import '../modules/messaging/ui/pages/messages_page.dart';
 import '../modules/announcements/models/announcement_entity.dart';

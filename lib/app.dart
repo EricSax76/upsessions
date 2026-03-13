@@ -27,7 +27,7 @@ import 'package:upsessions/features/home/repositories/user_home_repository.dart'
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/notifications/repositories/invite_notifications_repository.dart';
-import 'package:upsessions/features/events/repositories/events_repository.dart';
+import 'package:upsessions/modules/events/repositories/events_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/rehearsals/use_cases/create_rehearsal_use_case.dart';
 import 'package:upsessions/modules/announcements/repositories/announcements_repository.dart';

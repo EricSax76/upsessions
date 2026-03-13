@@ -213,8 +213,7 @@ class EventDto {
       if (ageRestriction != null) 'ageRestriction': ageRestriction,
       if (accessibilityInfo != null) 'accessibilityInfo': accessibilityInfo,
       if (cancellationPolicy != null) 'cancellationPolicy': cancellationPolicy,
-      if (publishedAt != null)
-        'publishedAt': Timestamp.fromDate(publishedAt!),
+      if (publishedAt != null) 'publishedAt': Timestamp.fromDate(publishedAt!),
     };
   }
 }

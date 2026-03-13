@@ -4,8 +4,7 @@ import 'package:image_picker/image_picker.dart';
 
 /// Servicio para gestionar la subida de imágenes a Firebase Storage
 class ImageUploadService {
-  ImageUploadService({required FirebaseStorage storage})
-      : _storage = storage;
+  ImageUploadService({required FirebaseStorage storage}) : _storage = storage;
 
   final FirebaseStorage _storage;
   final ImagePicker _picker = ImagePicker();
@@ -14,8 +13,10 @@ class ImageUploadService {
   /// Retorna la URL de descarga de la imagen o null si se cancela
   Future<String?> uploadEventBanner(String eventId) async {
     try {
-      debugPrint('🎨 [ImageUpload] Iniciando selección de imagen para evento: $eventId');
-      
+      debugPrint(
+        '🎨 [ImageUpload] Iniciando selección de imagen para evento: $eventId',
+      );
+
       // Seleccionar imagen de la galería
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,
@@ -29,13 +30,18 @@ class ImageUploadService {
         return null; // Usuario canceló la selección
       }
 
-      debugPrint('✅ [ImageUpload] Imagen seleccionada: ${image.name}, tamaño: ${await image.length()} bytes');
+      debugPrint(
+        '✅ [ImageUpload] Imagen seleccionada: ${image.name}, tamaño: ${await image.length()} bytes',
+      );
 
       // Crear referencia en Storage
-      final String fileName = 'event_${eventId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final String fileName =
+          'event_${eventId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final Reference ref = _storage.ref().child('events/banners/$fileName');
-      
-      debugPrint('📤 [ImageUpload] Iniciando subida a: events/banners/$fileName');
+
+      debugPrint(
+        '📤 [ImageUpload] Iniciando subida a: events/banners/$fileName',
+      );
 
       // Leer los bytes de la imagen (funciona en web y móvil)
       final Uint8List imageData = await image.readAsBytes();
@@ -56,8 +62,11 @@ class ImageUploadService {
 
       // Monitorear progreso
       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        final progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        debugPrint('📈 [ImageUpload] Progreso: ${progress.toStringAsFixed(1)}%');
+        final progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        debugPrint(
+          '📈 [ImageUpload] Progreso: ${progress.toStringAsFixed(1)}%',
+        );
       });
 
       // Esperar a que se complete la subida

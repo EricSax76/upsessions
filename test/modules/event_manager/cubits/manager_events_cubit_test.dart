@@ -1,8 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:upsessions/features/events/models/event_entity.dart';
-import 'package:upsessions/features/events/models/event_enums.dart';
+import 'package:upsessions/modules/events/models/event_entity.dart';
+import 'package:upsessions/modules/events/models/event_enums.dart';
 import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/event_manager/cubits/manager_events_cubit.dart';

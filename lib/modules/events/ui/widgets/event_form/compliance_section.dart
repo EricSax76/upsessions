@@ -73,8 +73,9 @@ class ComplianceSection extends StatelessWidget {
                   controller: ticketPriceController,
                   label: 'Precio entrada (€)',
                   icon: Icons.euro,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                 ),
               ),
               const HSpace(12),
@@ -83,8 +84,9 @@ class ComplianceSection extends StatelessWidget {
                   controller: vatRateController,
                   label: 'IVA (%)',
                   icon: Icons.receipt_long,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                 ),
               ),
             ],

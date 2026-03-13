@@ -15,10 +15,7 @@ class EventDetailMeta {
   final String endTime;
 }
 
-EventDetailMeta buildEventDetailMeta(
-  BuildContext context,
-  EventEntity event,
-) {
+EventDetailMeta buildEventDetailMeta(BuildContext context, EventEntity event) {
   final loc = MaterialLocalizations.of(context);
   return EventDetailMeta(
     dateLabel: loc.formatFullDate(event.start),

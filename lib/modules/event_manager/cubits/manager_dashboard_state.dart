@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../features/events/models/event_entity.dart';
+import '../../../../modules/events/models/event_entity.dart';
 
 class ManagerDashboardState extends Equatable {
   const ManagerDashboardState({
@@ -17,7 +17,7 @@ class ManagerDashboardState extends Equatable {
   final List<EventEntity> upcomingEvents;
   final int activeJamSessionsCount;
   final int pendingRequestsCount;
-  
+
   // Stats
   final int totalEvents;
   final int totalCapacity;
@@ -38,7 +38,8 @@ class ManagerDashboardState extends Equatable {
     return ManagerDashboardState(
       isLoading: isLoading ?? this.isLoading,
       upcomingEvents: upcomingEvents ?? this.upcomingEvents,
-      activeJamSessionsCount: activeJamSessionsCount ?? this.activeJamSessionsCount,
+      activeJamSessionsCount:
+          activeJamSessionsCount ?? this.activeJamSessionsCount,
       pendingRequestsCount: pendingRequestsCount ?? this.pendingRequestsCount,
       totalEvents: totalEvents ?? this.totalEvents,
       totalCapacity: totalCapacity ?? this.totalCapacity,
@@ -49,13 +50,13 @@ class ManagerDashboardState extends Equatable {
 
   @override
   List<Object?> get props => [
-        isLoading,
-        upcomingEvents,
-        activeJamSessionsCount,
-        pendingRequestsCount,
-        totalEvents,
-        totalCapacity,
-        eventsThisWeek,
-        errorMessage,
-      ];
+    isLoading,
+    upcomingEvents,
+    activeJamSessionsCount,
+    pendingRequestsCount,
+    totalEvents,
+    totalCapacity,
+    eventsThisWeek,
+    errorMessage,
+  ];
 }

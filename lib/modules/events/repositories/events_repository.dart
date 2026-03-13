@@ -79,8 +79,8 @@ class EventsRepository {
 
     final dto = EventDto.fromEntity(event.copyWith(ownerId: ownerId));
     final now = FieldValue.serverTimestamp();
-    final isPublishing = event.status == EventStatus.published &&
-        event.publishedAt == null;
+    final isPublishing =
+        event.status == EventStatus.published && event.publishedAt == null;
     final payload = {
       ...dto.toJson(),
       'updatedAt': now,

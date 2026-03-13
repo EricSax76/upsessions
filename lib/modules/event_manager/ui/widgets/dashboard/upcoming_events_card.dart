@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/constants/app_routes.dart';
 import '../../../../../core/widgets/section_card.dart';
-import '../../../../../features/events/models/event_entity.dart';
+import '../../../../../modules/events/models/event_entity.dart';
 import '../events/manager_event_card.dart';
 
 class UpcomingEventsCard extends StatelessWidget {
@@ -22,9 +22,7 @@ class UpcomingEventsCard extends StatelessWidget {
       child: events.isEmpty
           ? const Padding(
               padding: EdgeInsets.all(24.0),
-              child: Center(
-                child: Text('No tienes eventos próximos.'),
-              ),
+              child: Center(child: Text('No tienes eventos próximos.')),
             )
           : ListView.separated(
               shrinkWrap: true,

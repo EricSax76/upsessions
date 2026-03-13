@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../features/events/ui/widgets/event_form_card.dart';
+import '../../../../modules/events/ui/widgets/event_form_card.dart';
 import '../../cubits/event_manager_auth_cubit.dart';
 import '../../cubits/manager_event_form_cubit.dart';
 import '../../cubits/manager_event_form_state.dart';
@@ -25,9 +25,7 @@ class ManagerEventFormPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Crear Evento'),
-        ),
+        appBar: AppBar(title: const Text('Crear Evento')),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Center(
@@ -39,21 +37,23 @@ class ManagerEventFormPage extends StatelessWidget {
                     ignoring: state.isSaving,
                     child: Column(
                       children: [
-                        if (state.isSaving)
-                          const LinearProgressIndicator(),
+                        if (state.isSaving) const LinearProgressIndicator(),
                         if (state.errorMessage != null)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 16.0),
                             child: Text(
                               state.errorMessage!,
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.error),
+                                color: Theme.of(context).colorScheme.error,
+                              ),
                             ),
                           ),
                         EventFormCard(
                           ownerId: managerId,
                           onGenerateDraft: (event) {
-                            context.read<ManagerEventFormCubit>().saveEvent(event);
+                            context.read<ManagerEventFormCubit>().saveEvent(
+                              event,
+                            );
                           },
                         ),
                       ],

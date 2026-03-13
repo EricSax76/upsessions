@@ -30,7 +30,12 @@ class EventDetailList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.fromLTRB(horizontalPadding, 16, horizontalPadding, 24),
+      padding: EdgeInsets.fromLTRB(
+        horizontalPadding,
+        16,
+        horizontalPadding,
+        24,
+      ),
       children: [
         EventBanner(
           imageUrl: event.bannerImageUrl,

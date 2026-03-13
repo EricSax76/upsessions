@@ -1,19 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../../../features/events/models/event_dto.dart';
-import '../../../../features/events/models/event_entity.dart';
+import '../../../../modules/events/models/event_dto.dart';
+import '../../../../modules/events/models/event_entity.dart';
 import '../../auth/repositories/auth_repository.dart';
 
 class ManagerEventsRepository {
   ManagerEventsRepository({
     required FirebaseFirestore firestore,
     required AuthRepository authRepository,
-  })  : _collection = firestore.collection('events'),
-        _authRepository = authRepository;
+  }) : _collection = firestore.collection('events'),
+       _authRepository = authRepository;
 
   final CollectionReference<Map<String, dynamic>> _collection;
   final AuthRepository _authRepository;
 
-  Future<List<EventEntity>> fetchMyEvents(String managerId, {int limit = 20}) async {
+  Future<List<EventEntity>> fetchMyEvents(
+    String managerId, {
+    int limit = 20,
+  }) async {
     final snapshot = await _collection
         .where('ownerId', isEqualTo: managerId)
         .orderBy('start', descending: true)

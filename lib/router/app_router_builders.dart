@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/locator/locator.dart';
-import '../features/events/models/event_entity.dart';
-import '../features/events/ui/pages/event_detail_page.dart';
-import '../features/events/repositories/events_repository.dart';
+import '../modules/events/models/event_entity.dart';
+import '../modules/events/ui/pages/event_detail_page.dart';
+import '../modules/events/repositories/events_repository.dart';
 import '../modules/messaging/models/chat_thread.dart';
 import '../modules/messaging/ui/pages/messages_page.dart';
 import '../modules/announcements/models/announcement_entity.dart';
@@ -103,9 +103,7 @@ Widget buildEventDetailRoute(BuildContext context, GoRouterState state) {
 Widget buildGroupRoute(BuildContext context, GoRouterState state) {
   final groupId = state.pathParameters['groupId'];
   if (groupId == null) return const UnknownRouteScreen(name: 'Group');
-  return GroupPage(
-    groupId: groupId,
-  );
+  return GroupPage(groupId: groupId);
 }
 
 Widget buildGroupRehearsalsRoute(BuildContext context, GoRouterState state) {
@@ -113,9 +111,7 @@ Widget buildGroupRehearsalsRoute(BuildContext context, GoRouterState state) {
   if (groupId == null) {
     return const UnknownRouteScreen(name: 'Group Rehearsals');
   }
-  return GroupRehearsalsPage(
-    groupId: groupId,
-  );
+  return GroupRehearsalsPage(groupId: groupId);
 }
 
 Widget buildRehearsalDetailRoute(BuildContext context, GoRouterState state) {
@@ -124,10 +120,7 @@ Widget buildRehearsalDetailRoute(BuildContext context, GoRouterState state) {
   if (groupId == null || rehearsalId == null) {
     return const UnknownRouteScreen(name: 'Rehearsal Detail');
   }
-  return RehearsalDetailPage(
-    groupId: groupId,
-    rehearsalId: rehearsalId,
-  );
+  return RehearsalDetailPage(groupId: groupId, rehearsalId: rehearsalId);
 }
 
 Widget buildStudiosListRoute(BuildContext context, GoRouterState state) {
@@ -145,7 +138,10 @@ Widget buildStudiosRoomsRoute(BuildContext context, GoRouterState state) {
   }
 
   final rehearsalContext = rehearsalContextFromState(state);
-  return StudioRoomsPage(studioId: studioId, rehearsalContext: rehearsalContext);
+  return StudioRoomsPage(
+    studioId: studioId,
+    rehearsalContext: rehearsalContext,
+  );
 }
 
 Widget buildStudiosRoomDetailRoute(BuildContext context, GoRouterState state) {

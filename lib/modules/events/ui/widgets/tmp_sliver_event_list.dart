@@ -31,32 +31,26 @@ class SliverEventList extends StatelessWidget {
               mainAxisSpacing: 24,
               childAspectRatio: 1.1,
             ),
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return EventCard(
-                  event: events[index],
-                  onSelect: onSelect,
-                  onViewDetails: onViewDetails,
-                );
-              },
-              childCount: events.length,
-            ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              return EventCard(
+                event: events[index],
+                onSelect: onSelect,
+                onViewDetails: onViewDetails,
+              );
+            }, childCount: events.length),
           );
         }
         return SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: EventCard(
-                  event: events[index],
-                  onSelect: onSelect,
-                  onViewDetails: onViewDetails,
-                ),
-              );
-            },
-            childCount: events.length,
-          ),
+          delegate: SliverChildBuilderDelegate((context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: EventCard(
+                event: events[index],
+                onSelect: onSelect,
+                onViewDetails: onViewDetails,
+              ),
+            );
+          }, childCount: events.length),
         );
       },
     );

@@ -60,13 +60,11 @@ class EventDetailPage extends StatelessWidget {
               );
             case EventDetailEffect.templateCopied:
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Ficha copiada al portapapeles')),
+                const SnackBar(content: Text('Ficha copiada al portapapeles')),
               );
             case EventDetailEffect.shareComingSoon:
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Compartir: próximamente')),
+                const SnackBar(content: Text('Compartir: próximamente')),
               );
             case EventDetailEffect.bannerCancelled:
               break;

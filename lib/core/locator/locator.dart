@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:upsessions/core/services/cloud_functions_service.dart';
-import 'package:upsessions/features/events/services/image_upload_service.dart';
+import 'package:upsessions/modules/events/services/image_upload_service.dart';
 import 'package:upsessions/core/services/firebase_initializer.dart';
 import 'package:upsessions/core/services/push_notifications_service.dart';
 import 'package:upsessions/core/services/analytics_service.dart';
@@ -22,7 +22,7 @@ import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 import 'package:upsessions/features/media/repositories/media_repository.dart';
 import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
-import 'package:upsessions/features/events/repositories/events_repository.dart';
+import 'package:upsessions/modules/events/repositories/events_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/artist_image_repository.dart';

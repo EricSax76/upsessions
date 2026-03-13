@@ -5,11 +5,7 @@ import 'event_detail_components.dart';
 import 'event_detail_helpers.dart';
 
 class EventHeaderCard extends StatelessWidget {
-  const EventHeaderCard({
-    super.key,
-    required this.event,
-    required this.meta,
-  });
+  const EventHeaderCard({super.key, required this.event, required this.meta});
 
   final EventEntity event;
   final EventDetailMeta meta;

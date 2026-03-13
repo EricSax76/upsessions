@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../../features/events/models/event_entity.dart';
+import '../../../../modules/events/models/event_entity.dart';
 
 enum ManagerEventFilter { all, upcoming, past }
 

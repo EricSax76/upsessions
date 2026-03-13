@@ -1,8 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:upsessions/features/events/models/event_entity.dart';
-import 'package:upsessions/features/events/models/event_enums.dart';
+import 'package:upsessions/modules/events/models/event_entity.dart';
+import 'package:upsessions/modules/events/models/event_enums.dart';
 import 'package:upsessions/modules/event_manager/cubits/manager_event_form_cubit.dart';
 import 'package:upsessions/modules/event_manager/cubits/manager_event_form_state.dart';
 import 'package:upsessions/modules/event_manager/repositories/manager_events_repository.dart';
@@ -60,8 +60,7 @@ void main() {
     blocTest<ManagerEventFormCubit, ManagerEventFormState>(
       'saveEvent emite saving y success cuando se guarda correctamente',
       build: () {
-        when(() => repository.saveDraft(any()))
-            .thenAnswer((_) async => event);
+        when(() => repository.saveDraft(any())).thenAnswer((_) async => event);
         return buildCubit();
       },
       act: (cubit) => cubit.saveEvent(event),
@@ -78,14 +77,14 @@ void main() {
     blocTest<ManagerEventFormCubit, ManagerEventFormState>(
       'saveEvent emite error cuando falla el guardado',
       build: () {
-        when(() => repository.saveDraft(any()))
-            .thenThrow(Exception('save error'));
+        when(
+          () => repository.saveDraft(any()),
+        ).thenThrow(Exception('save error'));
         return buildCubit();
       },
       act: (cubit) => cubit.saveEvent(event),
       expect: () => [
-        isA<ManagerEventFormState>()
-            .having((s) => s.isSaving, 'saving', true),
+        isA<ManagerEventFormState>().having((s) => s.isSaving, 'saving', true),
         isA<ManagerEventFormState>()
             .having((s) => s.isSaving, 'idle', false)
             .having((s) => s.errorMessage, 'err', contains('save error')),

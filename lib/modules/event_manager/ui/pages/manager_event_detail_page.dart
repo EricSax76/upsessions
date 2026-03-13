@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../../features/events/models/event_entity.dart';
-import '../../../../features/events/ui/pages/event_detail_page.dart';
+import '../../../../modules/events/models/event_entity.dart';
+import '../../../../modules/events/ui/pages/event_detail_page.dart';
 import '../../../../core/locator/locator.dart';
-import '../../../../features/events/repositories/events_repository.dart';
+import '../../../../modules/events/repositories/events_repository.dart';
 import '../../repositories/manager_events_repository.dart';
 
 class ManagerEventDetailPage extends StatefulWidget {
@@ -12,8 +12,7 @@ class ManagerEventDetailPage extends StatefulWidget {
   final String eventId;
 
   @override
-  State<ManagerEventDetailPage> createState() =>
-      _ManagerEventDetailPageState();
+  State<ManagerEventDetailPage> createState() => _ManagerEventDetailPageState();
 }
 
 class _ManagerEventDetailPageState extends State<ManagerEventDetailPage> {

@@ -193,7 +193,9 @@ class EventBanner extends StatelessWidget {
                       ? BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: scheme.onInverseSurface.withValues(alpha: 0.4),
+                            color: scheme.onInverseSurface.withValues(
+                              alpha: 0.4,
+                            ),
                             width: 1.5,
                           ),
                         )
@@ -207,7 +209,9 @@ class EventBanner extends StatelessWidget {
                           height: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: hasImage ? scheme.onInverseSurface : scheme.primary,
+                            color: hasImage
+                                ? scheme.onInverseSurface
+                                : scheme.primary,
                           ),
                         )
                       else

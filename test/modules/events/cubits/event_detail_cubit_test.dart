@@ -1,12 +1,12 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:upsessions/features/events/cubits/event_detail_cubit.dart';
-import 'package:upsessions/features/events/cubits/event_detail_state.dart';
-import 'package:upsessions/features/events/models/event_entity.dart';
-import 'package:upsessions/features/events/models/event_enums.dart';
-import 'package:upsessions/features/events/repositories/events_repository.dart';
-import 'package:upsessions/features/events/services/image_upload_service.dart';
+import 'package:upsessions/modules/events/cubits/event_detail_cubit.dart';
+import 'package:upsessions/modules/events/cubits/event_detail_state.dart';
+import 'package:upsessions/modules/events/models/event_entity.dart';
+import 'package:upsessions/modules/events/models/event_enums.dart';
+import 'package:upsessions/modules/events/repositories/events_repository.dart';
+import 'package:upsessions/modules/events/services/image_upload_service.dart';
 
 class MockEventsRepository extends Mock implements EventsRepository {}
 
@@ -14,28 +14,30 @@ class MockImageUploadService extends Mock implements ImageUploadService {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(EventEntity(
-      id: '',
-      ownerId: '',
-      title: '',
-      city: '',
-      venue: '',
-      start: DateTime(2026),
-      end: DateTime(2026),
-      description: '',
-      organizer: '',
-      contactEmail: '',
-      contactPhone: '',
-      lineup: const [],
-      tags: const [],
-      ticketInfo: '',
-      capacity: 0,
-      resources: const [],
-      isPublic: true,
-      isFree: false,
-      updatedAt: DateTime(2026),
-      status: EventStatus.draft,
-    ));
+    registerFallbackValue(
+      EventEntity(
+        id: '',
+        ownerId: '',
+        title: '',
+        city: '',
+        venue: '',
+        start: DateTime(2026),
+        end: DateTime(2026),
+        description: '',
+        organizer: '',
+        contactEmail: '',
+        contactPhone: '',
+        lineup: const [],
+        tags: const [],
+        ticketInfo: '',
+        capacity: 0,
+        resources: const [],
+        isPublic: true,
+        isFree: false,
+        updatedAt: DateTime(2026),
+        status: EventStatus.draft,
+      ),
+    );
   });
 
   late MockEventsRepository repository;
@@ -90,42 +92,55 @@ void main() {
     blocTest<EventDetailCubit, EventDetailState>(
       'uploadBanner emits uploading then bannerUpdated on success',
       build: () {
-        when(() => imageUploadService.uploadEventBanner(any()))
-            .thenAnswer((_) async => 'https://img.com/banner.jpg');
-        when(() => repository.saveDraft(any()))
-            .thenAnswer((_) async => mockEvent.copyWith(
-                  bannerImageUrl: 'https://img.com/banner.jpg',
-                ));
+        when(
+          () => imageUploadService.uploadEventBanner(any()),
+        ).thenAnswer((_) async => 'https://img.com/banner.jpg');
+        when(() => repository.saveDraft(any())).thenAnswer(
+          (_) async =>
+              mockEvent.copyWith(bannerImageUrl: 'https://img.com/banner.jpg'),
+        );
         return buildCubit();
       },
       act: (cubit) => cubit.uploadBanner(),
       expect: () => [
-        isA<EventDetailState>()
-            .having((s) => s.isUploadingBanner, 'uploading', true),
+        isA<EventDetailState>().having(
+          (s) => s.isUploadingBanner,
+          'uploading',
+          true,
+        ),
         isA<EventDetailState>()
             .having((s) => s.isUploadingBanner, 'idle', false)
+            .having((s) => s.effect, 'effect', EventDetailEffect.bannerUpdated)
             .having(
-                (s) => s.effect, 'effect', EventDetailEffect.bannerUpdated)
-            .having((s) => s.event.bannerImageUrl, 'bannerUrl',
-                'https://img.com/banner.jpg'),
+              (s) => s.event.bannerImageUrl,
+              'bannerUrl',
+              'https://img.com/banner.jpg',
+            ),
       ],
     );
 
     blocTest<EventDetailCubit, EventDetailState>(
       'uploadBanner emits bannerCancelled when user cancels',
       build: () {
-        when(() => imageUploadService.uploadEventBanner(any()))
-            .thenAnswer((_) async => null);
+        when(
+          () => imageUploadService.uploadEventBanner(any()),
+        ).thenAnswer((_) async => null);
         return buildCubit();
       },
       act: (cubit) => cubit.uploadBanner(),
       expect: () => [
-        isA<EventDetailState>()
-            .having((s) => s.isUploadingBanner, 'uploading', true),
+        isA<EventDetailState>().having(
+          (s) => s.isUploadingBanner,
+          'uploading',
+          true,
+        ),
         isA<EventDetailState>()
             .having((s) => s.isUploadingBanner, 'idle', false)
             .having(
-                (s) => s.effect, 'effect', EventDetailEffect.bannerCancelled),
+              (s) => s.effect,
+              'effect',
+              EventDetailEffect.bannerCancelled,
+            ),
       ],
     );
 
@@ -135,7 +150,10 @@ void main() {
       act: (cubit) => cubit.shareEvent(),
       expect: () => [
         isA<EventDetailState>().having(
-            (s) => s.effect, 'effect', EventDetailEffect.shareComingSoon),
+          (s) => s.effect,
+          'effect',
+          EventDetailEffect.shareComingSoon,
+        ),
       ],
     );
 

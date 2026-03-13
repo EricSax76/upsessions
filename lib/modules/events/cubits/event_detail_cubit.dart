@@ -12,9 +12,9 @@ class EventDetailCubit extends Cubit<EventDetailState> {
     required EventEntity event,
     required EventsRepository repository,
     required ImageUploadService imageUploadService,
-  })  : _repository = repository,
-        _imageUploadService = imageUploadService,
-        super(EventDetailState(event: event));
+  }) : _repository = repository,
+       _imageUploadService = imageUploadService,
+       super(EventDetailState(event: event));
 
   final EventsRepository _repository;
   final ImageUploadService _imageUploadService;
@@ -36,17 +36,21 @@ class EventDetailCubit extends Cubit<EventDetailState> {
         final savedEvent = await _repository.saveDraft(updatedEvent);
 
         if (isClosed) return;
-        emit(state.copyWith(
-          event: savedEvent,
-          status: EventDetailStatus.idle,
-          effect: EventDetailEffect.bannerUpdated,
-        ));
+        emit(
+          state.copyWith(
+            event: savedEvent,
+            status: EventDetailStatus.idle,
+            effect: EventDetailEffect.bannerUpdated,
+          ),
+        );
       } else {
         debugPrint('⚠️ [EventDetailCubit] Usuario canceló');
-        emit(state.copyWith(
-          status: EventDetailStatus.idle,
-          effect: EventDetailEffect.bannerCancelled,
-        ));
+        emit(
+          state.copyWith(
+            status: EventDetailStatus.idle,
+            effect: EventDetailEffect.bannerCancelled,
+          ),
+        );
       }
     } catch (e, stackTrace) {
       debugPrint('❌ [EventDetailCubit] Error al subir banner: $e');
@@ -54,10 +58,12 @@ class EventDetailCubit extends Cubit<EventDetailState> {
         debugPrintStack(stackTrace: stackTrace);
       }
       if (!isClosed) {
-        emit(state.copyWith(
-          status: EventDetailStatus.idle,
-          errorMessage: e.toString(),
-        ));
+        emit(
+          state.copyWith(
+            status: EventDetailStatus.idle,
+            errorMessage: e.toString(),
+          ),
+        );
       }
     }
   }
