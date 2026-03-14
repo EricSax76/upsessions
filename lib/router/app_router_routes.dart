@@ -54,6 +54,8 @@ import '../modules/event_manager/ui/pages/manager_event_form_page.dart';
 import '../modules/jam_sessions/ui/pages/jam_sessions_page.dart';
 import '../modules/jam_sessions/ui/pages/jam_session_detail_page.dart';
 import '../modules/jam_sessions/ui/pages/jam_session_form_page.dart';
+import '../modules/jam_sessions/ui/pages/public_jam_sessions_page.dart';
+import '../modules/jam_sessions/cubits/public_jam_sessions_cubit.dart';
 import '../modules/event_manager/ui/pages/manager_agenda_page.dart';
 import '../modules/event_manager/ui/pages/hire_musicians_page.dart';
 import '../modules/event_manager/ui/pages/gig_offers_page.dart';
@@ -261,6 +263,37 @@ List<RouteBase> buildAppRoutes() {
               _noTransitionPage(state, const EventsPage()),
         ),
         GoRoute(
+          path: AppRoutes.jamSessions,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            BlocProvider(
+              create: (context) => PublicJamSessionsCubit(
+                repository: locate<JamSessionsRepository>(),
+                authRepository: locate<AuthRepository>(),
+              )..loadSessions(),
+              child: const PublicJamSessionsPage(),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.jamSessionDetailRoute,
+          pageBuilder: (context, state) {
+            final sessionId = state.pathParameters['sessionId'];
+            if (sessionId == null || sessionId.isEmpty) {
+              return _noTransitionPage(
+                state,
+                const Scaffold(
+                  body: Center(child: Text('No se pudo abrir la jam session.')),
+                ),
+              );
+            }
+            return _noTransitionPage(
+              state,
+              JamSessionDetailPage(sessionId: sessionId),
+            );
+          },
+        ),
+        GoRoute(
           path: '/events/detail',
           redirect: (context, state) {
             final eventId = state.uri.queryParameters['eventId']?.trim();
@@ -337,8 +370,7 @@ List<RouteBase> buildAppRoutes() {
         ),
         GoRoute(
           path: AppRoutes.account,
-          pageBuilder: (context, state) =>
-              _noTransitionPage(state, const AccountPage()),
+          redirect: (context, state) => AppRoutes.profile,
         ),
         GoRoute(
           path: AppRoutes.settings,
@@ -387,9 +419,13 @@ List<RouteBase> buildAppRoutes() {
               _noTransitionPage(state, const MusicianBookingsPage()),
         ),
         GoRoute(
-          path: AppRoutes.matching,
+          path: AppRoutes.affinity,
           pageBuilder: (context, state) =>
               _noTransitionPage(state, const MatchingPage()),
+        ),
+        GoRoute(
+          path: AppRoutes.matching,
+          redirect: (context, state) => AppRoutes.affinity,
         ),
       ],
     ),
@@ -446,255 +482,160 @@ List<RouteBase> buildAppRoutes() {
       path: AppRoutes.eventManagerRegister,
       builder: (context, state) => const ManagerRegisterPage(),
     ),
-    GoRoute(
-      path: AppRoutes.eventManagerDashboard,
-      pageBuilder: (context, state) => _noTransitionPage(
-        state,
-        MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => EventManagerAuthCubit(
-                authRepository: locate<AuthRepository>(),
-                managerRepository: locate<EventManagerRepository>(),
-              )..loadProfile(),
-            ),
+    ShellRoute(
+      builder: (context, state, child) => BlocProvider(
+        create: (context) => EventManagerAuthCubit(
+          authRepository: locate<AuthRepository>(),
+          managerRepository: locate<EventManagerRepository>(),
+        )..loadProfile(),
+        child: ManagerShellPage(child: child),
+      ),
+      routes: [
+        GoRoute(
+          path: AppRoutes.eventManagerDashboard,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
             BlocProvider(
               create: (context) => ManagerDashboardCubit(
                 eventsRepository: locate<ManagerEventsRepository>(),
                 authRepository: locate<AuthRepository>(),
               ),
+              child: const ManagerDashboardPage(),
             ),
-          ],
-          child: const ManagerShellPage(child: ManagerDashboardPage()),
+          ),
         ),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerEvents,
-      pageBuilder: (context, state) => _noTransitionPage(
-        state,
-        MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => EventManagerAuthCubit(
-                authRepository: locate<AuthRepository>(),
-                managerRepository: locate<EventManagerRepository>(),
-              )..loadProfile(),
-            ),
+        GoRoute(
+          path: AppRoutes.eventManagerEvents,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
             BlocProvider(
               create: (context) => ManagerEventsCubit(
                 repository: locate<ManagerEventsRepository>(),
                 authRepository: locate<AuthRepository>(),
               ),
-            ),
-          ],
-          child: const ManagerShellPage(child: ManagerEventsPage()),
-        ),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerEventForm,
-      builder: (context, state) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => EventManagerAuthCubit(
-              authRepository: locate<AuthRepository>(),
-              managerRepository: locate<EventManagerRepository>(),
-            )..loadProfile(),
-          ),
-          BlocProvider(
-            create: (context) => ManagerEventFormCubit(
-              repository: locate<ManagerEventsRepository>(),
+              child: const ManagerEventsPage(),
             ),
           ),
-        ],
-        child: const ManagerShellPage(child: ManagerEventFormPage()),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerEventDetail,
-      builder: (context, state) => BlocProvider(
-        create: (context) => EventManagerAuthCubit(
-          authRepository: locate<AuthRepository>(),
-          managerRepository: locate<EventManagerRepository>(),
-        )..loadProfile(),
-        child: ManagerShellPage(
-          child: ManagerEventDetailPage(
-            eventId: state.pathParameters['eventId']!,
-          ),
         ),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerJamSessions,
-      pageBuilder: (context, state) => _noTransitionPage(
-        state,
-        MultiBlocProvider(
-          providers: [
+        GoRoute(
+          path: AppRoutes.eventManagerEventForm,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
             BlocProvider(
-              create: (context) => EventManagerAuthCubit(
-                authRepository: locate<AuthRepository>(),
-                managerRepository: locate<EventManagerRepository>(),
-              )..loadProfile(),
+              create: (context) => ManagerEventFormCubit(
+                repository: locate<ManagerEventsRepository>(),
+              ),
+              child: const ManagerEventFormPage(),
             ),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.eventManagerEventDetail,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            ManagerEventDetailPage(eventId: state.pathParameters['eventId']!),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.eventManagerJamSessions,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
             BlocProvider(
               create: (context) => JamSessionsCubit(
                 repository: locate<JamSessionsRepository>(),
                 authRepository: locate<AuthRepository>(),
               ),
-            ),
-          ],
-          child: const ManagerShellPage(child: JamSessionsPage()),
-        ),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerJamSessionForm,
-      builder: (context, state) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => EventManagerAuthCubit(
-              authRepository: locate<AuthRepository>(),
-              managerRepository: locate<EventManagerRepository>(),
-            )..loadProfile(),
-          ),
-          BlocProvider(
-            create: (context) => JamSessionFormCubit(
-              repository: locate<JamSessionsRepository>(),
+              child: const JamSessionsPage(),
             ),
           ),
-        ],
-        child: const ManagerShellPage(child: JamSessionFormPage()),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerJamSessionDetail,
-      builder: (context, state) => BlocProvider(
-        create: (context) => EventManagerAuthCubit(
-          authRepository: locate<AuthRepository>(),
-          managerRepository: locate<EventManagerRepository>(),
-        )..loadProfile(),
-        child: ManagerShellPage(
-          child: JamSessionDetailPage(
-            sessionId: state.pathParameters['sessionId']!,
-          ),
         ),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerAgenda,
-      pageBuilder: (context, state) => _noTransitionPage(
-        state,
-        MultiBlocProvider(
-          providers: [
+        GoRoute(
+          path: AppRoutes.eventManagerJamSessionForm,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
             BlocProvider(
-              create: (context) => EventManagerAuthCubit(
-                authRepository: locate<AuthRepository>(),
-                managerRepository: locate<EventManagerRepository>(),
-              )..loadProfile(),
+              create: (context) => JamSessionFormCubit(
+                repository: locate<JamSessionsRepository>(),
+              ),
+              child: const JamSessionFormPage(),
             ),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.eventManagerJamSessionDetail,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            JamSessionDetailPage(sessionId: state.pathParameters['sessionId']!),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.eventManagerAgenda,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
             BlocProvider(
               create: (context) => ManagerAgendaCubit(
                 eventsRepository: locate<ManagerEventsRepository>(),
                 jamSessionsRepository: locate<JamSessionsRepository>(),
                 authRepository: locate<AuthRepository>(),
               ),
+              child: const ManagerAgendaPage(),
             ),
-          ],
-          child: const ManagerShellPage(child: ManagerAgendaPage()),
+          ),
         ),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerHireMusicians,
-      pageBuilder: (context, state) => _noTransitionPage(
-        state,
-        MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => EventManagerAuthCubit(
-                authRepository: locate<AuthRepository>(),
-                managerRepository: locate<EventManagerRepository>(),
-              )..loadProfile(),
+        GoRoute(
+          path: AppRoutes.eventManagerHireMusicians,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => MusicianRequestsCubit(
+                    repository: locate<MusicianRequestsRepository>(),
+                  ),
+                ),
+                BlocProvider(
+                  create: (context) => HireMusiciansCubit(
+                    repository: locate<MusiciansRepository>(),
+                  ),
+                ),
+              ],
+              child: const HireMusiciansPage(),
             ),
-            BlocProvider(
-              create: (context) => MusicianRequestsCubit(
-                repository: locate<MusicianRequestsRepository>(),
-              ),
-            ),
-            BlocProvider(
-              create: (context) =>
-                  HireMusiciansCubit(repository: locate<MusiciansRepository>()),
-            ),
-          ],
-          child: const ManagerShellPage(child: HireMusiciansPage()),
+          ),
         ),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerGigOffers,
-      pageBuilder: (context, state) => _noTransitionPage(
-        state,
-        MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => EventManagerAuthCubit(
-                authRepository: locate<AuthRepository>(),
-                managerRepository: locate<EventManagerRepository>(),
-              )..loadProfile(),
-            ),
+        GoRoute(
+          path: AppRoutes.eventManagerGigOffers,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
             BlocProvider(
               create: (context) =>
                   GigOffersCubit(repository: locate<GigOffersRepository>()),
+              child: const GigOffersPage(),
             ),
-          ],
-          child: const ManagerShellPage(child: GigOffersPage()),
-        ),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerGigOfferForm,
-      builder: (context, state) => MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => EventManagerAuthCubit(
-              authRepository: locate<AuthRepository>(),
-              managerRepository: locate<EventManagerRepository>(),
-            )..loadProfile(),
           ),
-          BlocProvider(
-            create: (context) =>
-                GigOfferFormCubit(repository: locate<GigOffersRepository>()),
+        ),
+        GoRoute(
+          path: AppRoutes.eventManagerGigOfferForm,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            BlocProvider(
+              create: (context) =>
+                  GigOfferFormCubit(repository: locate<GigOffersRepository>()),
+              child: const GigOfferForm(),
+            ),
           ),
-        ],
-        child: const ManagerShellPage(child: GigOfferForm()),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerProfile,
-      pageBuilder: (context, state) => _noTransitionPage(
-        state,
-        BlocProvider(
-          create: (context) => EventManagerAuthCubit(
-            authRepository: locate<AuthRepository>(),
-            managerRepository: locate<EventManagerRepository>(),
-          )..loadProfile(),
-          child: const ManagerShellPage(child: ManagerProfilePage()),
         ),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerSettings,
-      pageBuilder: (context, state) => _noTransitionPage(
-        state,
-        BlocProvider(
-          create: (context) => EventManagerAuthCubit(
-            authRepository: locate<AuthRepository>(),
-            managerRepository: locate<EventManagerRepository>(),
-          )..loadProfile(),
-          child: const ManagerShellPage(child: ManagerSettingsPage()),
+        GoRoute(
+          path: AppRoutes.eventManagerProfile,
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const ManagerProfilePage()),
         ),
-      ),
+        GoRoute(
+          path: AppRoutes.eventManagerSettings,
+          pageBuilder: (context, state) =>
+              _noTransitionPage(state, const ManagerSettingsPage()),
+        ),
+      ],
     ),
   ];
 }

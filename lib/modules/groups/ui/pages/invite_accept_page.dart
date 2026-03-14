@@ -6,8 +6,8 @@ import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
 import '../../../auth/cubits/auth_cubit.dart';
 import '../../../auth/repositories/auth_repository.dart';
-import '../../../../modules/notifications/repositories/invite_notifications_repository.dart';
-import '../../../groups/repositories/groups_repository.dart';
+import '../../../notifications/repositories/invite_notifications_repository.dart';
+import '../../repositories/groups_repository.dart';
 
 class InviteAcceptPage extends StatefulWidget {
   const InviteAcceptPage({

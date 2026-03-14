@@ -7,9 +7,14 @@ import '../../repositories/groups_repository.dart';
 import '../widgets/group_detail/group_page_view.dart';
 
 class GroupPage extends StatelessWidget {
-  const GroupPage({super.key, required this.groupId});
+  const GroupPage({
+    super.key,
+    required this.groupId,
+    required this.rehearsalsTab,
+  });
 
   final String groupId;
+  final Widget rehearsalsTab;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +26,7 @@ class GroupPage extends StatelessWidget {
       ),
       child: DefaultTabController(
         length: 2,
-        child: GroupPageView(groupId: groupId),
+        child: GroupPageView(groupId: groupId, rehearsalsTab: rehearsalsTab),
       ),
     );
   }

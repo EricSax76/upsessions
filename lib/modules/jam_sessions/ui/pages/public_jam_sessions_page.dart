@@ -1,0 +1,298 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/constants/app_routes.dart';
+import '../../cubits/public_jam_sessions_cubit.dart';
+import '../../cubits/public_jam_sessions_state.dart';
+import '../../models/jam_session_entity.dart';
+
+class PublicJamSessionsPage extends StatelessWidget {
+  const PublicJamSessionsPage({super.key});
+
+  Future<void> _handleJoin(
+    BuildContext context,
+    JamSessionEntity session,
+  ) async {
+    final outcome = await context.read<PublicJamSessionsCubit>().joinSession(
+      session,
+    );
+    if (!context.mounted) return;
+
+    switch (outcome.type) {
+      case JoinJamOutcomeType.success:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Te has apuntado a la jam session.')),
+        );
+        break;
+      case JoinJamOutcomeType.requiresLogin:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Necesitas iniciar sesión para apuntarte.'),
+          ),
+        );
+        context.go(AppRoutes.login);
+        break;
+      case JoinJamOutcomeType.alreadyJoined:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ya estás apuntado en esta sesión.')),
+        );
+        break;
+      case JoinJamOutcomeType.full:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('La sesión ya está completa.')),
+        );
+        break;
+      case JoinJamOutcomeType.failure:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No se pudo completar: ${outcome.message ?? ''}'),
+          ),
+        );
+        break;
+      case JoinJamOutcomeType.busy:
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<PublicJamSessionsCubit, PublicJamSessionsState>(
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Jam Sessions públicas',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Actualizar',
+                    onPressed: state.isLoading
+                        ? null
+                        : () => context
+                              .read<PublicJamSessionsCubit>()
+                              .loadSessions(),
+                    icon: const Icon(Icons.refresh),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                'Descubre sesiones abiertas y apúntate como asistente.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Expanded(child: _buildBody(context, state)),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildBody(BuildContext context, PublicJamSessionsState state) {
+    if (state.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state.errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'No pudimos cargar las jam sessions.',
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                state.errorMessage!,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () =>
+                    context.read<PublicJamSessionsCubit>().loadSessions(),
+                child: const Text('Reintentar'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (state.sessions.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            'No hay jam sessions públicas próximas.',
+            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+      itemCount: state.sessions.length,
+      separatorBuilder: (context, _) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final session = state.sessions[index];
+        return _PublicJamSessionCard(
+          session: session,
+          currentUserId: state.currentUserId,
+          isJoining: state.isJoining(session.id),
+          onJoin: () => _handleJoin(context, session),
+          onOpenDetail: () =>
+              context.push(AppRoutes.jamSessionDetailPath(session.id)),
+        );
+      },
+    );
+  }
+}
+
+class _PublicJamSessionCard extends StatelessWidget {
+  const _PublicJamSessionCard({
+    required this.session,
+    required this.currentUserId,
+    required this.isJoining,
+    required this.onJoin,
+    required this.onOpenDetail,
+  });
+
+  final JamSessionEntity session;
+  final String currentUserId;
+  final bool isJoining;
+  final VoidCallback onJoin;
+  final VoidCallback onOpenDetail;
+
+  @override
+  Widget build(BuildContext context) {
+    final isJoined =
+        currentUserId.isNotEmpty && session.attendees.contains(currentUserId);
+    final hasCapacityLimit = session.maxAttendees != null;
+    final isFull =
+        hasCapacityLimit && session.attendees.length >= session.maxAttendees!;
+    final canJoin = !isJoined && !isFull && !isJoining;
+
+    return Card(
+      child: InkWell(
+        onTap: onOpenDetail,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      session.title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  if (!session.isPublic)
+                    const Chip(
+                      avatar: Icon(Icons.lock_outline, size: 16),
+                      label: Text('Privada'),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '${session.city} • ${session.location}',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                _formatDate(session.date, session.time),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                _capacityText(session),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  OutlinedButton(
+                    onPressed: onOpenDetail,
+                    child: const Text('Ver detalles'),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton.icon(
+                    onPressed: canJoin ? onJoin : null,
+                    icon: isJoining
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Icon(
+                            isJoined
+                                ? Icons.check
+                                : isFull
+                                ? Icons.block
+                                : Icons.how_to_reg,
+                          ),
+                    label: Text(
+                      isJoined
+                          ? 'Apuntado'
+                          : isFull
+                          ? 'Completo'
+                          : 'Unirme',
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _capacityText(JamSessionEntity session) {
+    if (session.maxAttendees == null) {
+      return 'Asistentes: ${session.attendees.length}';
+    }
+    return 'Asistentes: ${session.attendees.length}/${session.maxAttendees}';
+  }
+
+  String _formatDate(DateTime? date, String time) {
+    if (date == null) return 'Fecha por definir';
+
+    final dd = date.day.toString().padLeft(2, '0');
+    final mm = date.month.toString().padLeft(2, '0');
+    final yyyy = date.year.toString();
+    final cleanTime = time.trim();
+    if (cleanTime.isEmpty) return '$dd/$mm/$yyyy';
+
+    return '$dd/$mm/$yyyy • $cleanTime';
+  }
+}

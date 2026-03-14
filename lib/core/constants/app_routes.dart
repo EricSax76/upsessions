@@ -49,7 +49,10 @@ class AppRoutes {
   static const studiosRoomCreateRoute = '/studios/:studioId/rooms/new';
   static const studiosRoomEditRoute = '/studios/:studioId/rooms/:roomId/edit';
   static const myBookings = '/my-bookings';
+  static const affinity = '/afinidad';
   static const matching = '/matching';
+  static const jamSessions = '/jam-sessions';
+  static const jamSessionDetailRoute = '/jam-sessions/:sessionId';
 
   static const eventManager = '/event-manager';
   static const eventManagerLogin = '/event-manager/login';
@@ -160,5 +163,10 @@ class AppRoutes {
   static String eventManagerJamSessionDetailPath(String sessionId) {
     final encodedId = Uri.encodeComponent(sessionId);
     return '/event-manager/jam-sessions/$encodedId';
+  }
+
+  static String jamSessionDetailPath(String sessionId) {
+    final encodedId = Uri.encodeComponent(sessionId);
+    return '/jam-sessions/$encodedId';
   }
 }

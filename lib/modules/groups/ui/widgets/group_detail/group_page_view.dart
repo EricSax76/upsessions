@@ -3,16 +3,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../../core/widgets/loading_indicator.dart';
-import '../../../../rehearsals/ui/pages/group_rehearsals_page.dart';
 import '../../../cubits/group_cubit.dart';
 import '../../../cubits/group_state.dart';
 import 'group_header.dart';
 import 'group_info_tab.dart';
 
 class GroupPageView extends StatelessWidget {
-  const GroupPageView({super.key, required this.groupId});
+  const GroupPageView({
+    super.key,
+    required this.groupId,
+    required this.rehearsalsTab,
+  });
 
   final String groupId;
+  final Widget rehearsalsTab;
 
   @override
   Widget build(BuildContext context) {
@@ -76,14 +80,7 @@ class GroupPageView extends StatelessWidget {
             },
             body: TabBarView(
               children: [
-                GroupRehearsalsView(
-                  groupId: groupId,
-                  showHeader: false,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 20,
-                  ),
-                ),
+                rehearsalsTab,
                 GroupInfoTab(group: group),
               ],
             ),

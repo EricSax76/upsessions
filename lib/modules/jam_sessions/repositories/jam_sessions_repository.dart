@@ -7,13 +7,16 @@ class JamSessionsRepository {
   JamSessionsRepository({
     required FirebaseFirestore firestore,
     required AuthRepository authRepository,
-  })  : _collection = firestore.collection('jam_sessions'),
-        _authRepository = authRepository;
+  }) : _collection = firestore.collection('jam_sessions'),
+       _authRepository = authRepository;
 
   final CollectionReference<Map<String, dynamic>> _collection;
   final AuthRepository _authRepository;
 
-  Future<List<JamSessionEntity>> fetchMySessions(String managerId, {int limit = 20}) async {
+  Future<List<JamSessionEntity>> fetchMySessions(
+    String managerId, {
+    int limit = 20,
+  }) async {
     final snapshot = await _collection
         .where('ownerId', isEqualTo: managerId)
         .orderBy('date', descending: true)
@@ -29,6 +32,18 @@ class JamSessionsRepository {
         .where('isPublic', isEqualTo: true)
         .where('date', isGreaterThanOrEqualTo: now)
         .orderBy('date')
+        .get();
+    return _toEntities(snapshot.docs);
+  }
+
+  Future<List<JamSessionEntity>> fetchPublicUpcoming({int limit = 50}) async {
+    final now = Timestamp.fromDate(DateTime.now());
+    final snapshot = await _collection
+        .where('isPublic', isEqualTo: true)
+        .where('isCanceled', isEqualTo: false)
+        .where('date', isGreaterThanOrEqualTo: now)
+        .orderBy('date')
+        .limit(limit)
         .get();
     return _toEntities(snapshot.docs);
   }

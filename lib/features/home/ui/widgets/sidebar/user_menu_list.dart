@@ -26,7 +26,7 @@ class UserMenuList extends StatelessWidget {
     _MenuItem(
       label: 'Afinidad',
       icon: Icons.hub_outlined,
-      route: AppRoutes.matching,
+      route: AppRoutes.affinity,
     ),
     _MenuItem(
       label: 'Anuncios',
@@ -37,6 +37,11 @@ class UserMenuList extends StatelessWidget {
       label: 'Eventos',
       icon: Icons.event_outlined,
       route: AppRoutes.events,
+    ),
+    _MenuItem(
+      label: 'Jam Sessions',
+      icon: Icons.music_note_outlined,
+      route: AppRoutes.jamSessions,
     ),
     _MenuItem(
       label: 'Mensajes',
@@ -67,6 +72,11 @@ class UserMenuList extends StatelessWidget {
       label: 'Salas de Ensayo',
       icon: Icons.music_note_outlined,
       route: AppRoutes.studios,
+    ),
+    _MenuItem(
+      label: 'Gestión de Sala',
+      icon: Icons.storefront_outlined,
+      route: AppRoutes.studiosDashboard,
     ),
     _MenuItem(
       label: 'Mis Reservas',
@@ -116,7 +126,8 @@ class UserMenuList extends StatelessWidget {
         for (final item in visibleItems) ...[
           Builder(
             builder: (context) {
-              final isSelected = item.route != null && _isSelectedRoute(location, item.route!);
+              final isSelected =
+                  item.route != null && _isSelectedRoute(location, item.route!);
               return Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: isCollapsed
@@ -127,7 +138,9 @@ class UserMenuList extends StatelessWidget {
                           height: 48,
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? colorScheme.primaryContainer.withValues(alpha: 0.3)
+                                ? colorScheme.primaryContainer.withValues(
+                                    alpha: 0.3,
+                                  )
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -154,8 +167,12 @@ class UserMenuList extends StatelessWidget {
                             : Text(
                                 item.label,
                                 style: TextStyle(
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: isSelected
+                                      ? colorScheme.primary
+                                      : colorScheme.onSurface,
                                 ),
                               ),
                         trailing: item.route == AppRoutes.notifications
@@ -164,15 +181,14 @@ class UserMenuList extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        selectedTileColor: colorScheme.primaryContainer.withValues(
-                          alpha: 0.3,
-                        ),
+                        selectedTileColor: colorScheme.primaryContainer
+                            .withValues(alpha: 0.3),
                         onTap: () => _handleTap(context, item),
                       ),
               );
             },
           ),
-        ]
+        ],
       ],
     );
   }
@@ -192,9 +208,11 @@ class _ContactsMenuTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final contactsTotal = context.select((LikedMusiciansCubit cubit) => cubit.state.total);
+    final contactsTotal = context.select(
+      (LikedMusiciansCubit cubit) => cubit.state.total,
+    );
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Text(
       'Contactos ($contactsTotal)',
       style: TextStyle(

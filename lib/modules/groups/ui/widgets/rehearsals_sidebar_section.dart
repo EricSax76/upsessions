@@ -5,13 +5,11 @@ import 'package:upsessions/l10n/app_localizations.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../modules/groups/cubits/my_groups_cubit.dart';
-import '../../../../modules/groups/cubits/my_groups_state.dart';
-// import '../../../../core/locator/locator.dart'; // Removed
-import '../../../groups/models/group_membership_entity.dart';
-import '../../../groups/models/create_group_draft.dart';
-// import '../../../groups/repositories/groups_repository.dart'; // Removed
-import '../../../groups/ui/dialogs/create_group_dialog.dart';
+import '../../cubits/my_groups_cubit.dart';
+import '../../cubits/my_groups_state.dart';
+import '../../models/group_membership_entity.dart';
+import '../../models/create_group_draft.dart';
+import '../dialogs/create_group_dialog.dart';
 
 class RehearsalsSidebarSection extends StatelessWidget {
   const RehearsalsSidebarSection({super.key});
@@ -24,19 +22,19 @@ class RehearsalsSidebarSection extends StatelessWidget {
         // Default values
         var groups = <GroupMembershipEntity>[];
         String? error;
-        
+
         if (state is MyGroupsLoaded) {
           groups = state.groups;
         } else if (state is MyGroupsError) {
           error = state.message;
           // Subtly we might want to show cached groups if available, but for now strict state
         }
-        
+
         final hasError = state is MyGroupsError;
 
         if (hasError) {
           if (groups.isNotEmpty) {
-             return ExpansionTile(
+            return ExpansionTile(
               title: Text(loc.navRehearsals),
               leading: const Icon(Icons.event_note_outlined),
               childrenPadding: const EdgeInsets.only(
@@ -45,11 +43,6 @@ class RehearsalsSidebarSection extends StatelessWidget {
                 bottom: 8,
               ),
               children: [
-                ListTile(
-                  leading: const Icon(Icons.list_alt_outlined),
-                  title: Text(loc.viewAll),
-                  onTap: () => _go(context, AppRoutes.rehearsals),
-                ),
                 ListTile(
                   leading: const Icon(Icons.group_add_outlined),
                   title: Text(loc.rehearsalsSidebarNewGroupLabel),
@@ -71,9 +64,7 @@ class RehearsalsSidebarSection extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                   child: Text(
-                    loc.rehearsalsSidebarErrorLoading(
-                      error.toString(),
-                    ),
+                    loc.rehearsalsSidebarErrorLoading(error.toString()),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.error,
                     ),
@@ -91,11 +82,6 @@ class RehearsalsSidebarSection extends StatelessWidget {
               bottom: 8,
             ),
             children: [
-              ListTile(
-                leading: const Icon(Icons.list_alt_outlined),
-                title: Text(loc.viewAll),
-                onTap: () => _go(context, AppRoutes.rehearsals),
-              ),
               ListTile(
                 leading: const Icon(Icons.group_add_outlined),
                 title: Text(loc.rehearsalsSidebarNewGroupLabel),
@@ -116,11 +102,6 @@ class RehearsalsSidebarSection extends StatelessWidget {
           leading: const Icon(Icons.event_note_outlined),
           childrenPadding: const EdgeInsets.only(left: 8, right: 8, bottom: 8),
           children: [
-            ListTile(
-              leading: const Icon(Icons.list_alt_outlined),
-              title: Text(loc.viewAll),
-              onTap: () => _go(context, AppRoutes.rehearsals),
-            ),
             ListTile(
               leading: const Icon(Icons.group_add_outlined),
               title: Text(loc.rehearsalsSidebarNewGroupLabel),
@@ -153,9 +134,7 @@ class RehearsalsSidebarSection extends StatelessWidget {
     );
   }
 
-  Future<void> _createGroup(
-    BuildContext context,
-  ) async {
+  Future<void> _createGroup(BuildContext context) async {
     final scaffoldState = Scaffold.maybeOf(context);
     scaffoldState?.closeDrawer();
 
@@ -167,7 +146,7 @@ class RehearsalsSidebarSection extends StatelessWidget {
       );
       if (result == null || result.name.trim().isEmpty) return;
       if (!context.mounted) return;
-      
+
       final cubit = context.read<MyGroupsCubit>();
       final groupId = await cubit.createGroup(
         name: result.name,

@@ -5,7 +5,7 @@ import 'package:upsessions/core/widgets/settings_tile.dart';
 import 'package:upsessions/features/home/ui/widgets/sidebar/language_selector.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
-import 'package:upsessions/modules/rehearsals/ui/widgets/rehearsals_sidebar_section.dart';
+import 'package:upsessions/modules/groups/ui/widgets/rehearsals_sidebar_section.dart';
 import 'user_menu_list.dart';
 import 'package:upsessions/core/ui/shell/sidebar_cubit.dart';
 

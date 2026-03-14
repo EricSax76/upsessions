@@ -19,7 +19,7 @@ import '../modules/musicians/models/musician_entity.dart';
 import '../modules/musicians/repositories/musicians_repository.dart';
 import '../modules/musicians/ui/pages/musician_detail_page.dart';
 import '../modules/rehearsals/ui/pages/group_rehearsals_page.dart';
-import '../modules/rehearsals/ui/pages/invite_accept_page.dart';
+import '../modules/groups/ui/pages/invite_accept_page.dart';
 import '../modules/rehearsals/ui/pages/rehearsal_detail_page.dart';
 import '../modules/studios/cubits/my_studio_cubit.dart';
 import '../modules/studios/ui/consumer/studios_list_page.dart';
@@ -103,7 +103,14 @@ Widget buildEventDetailRoute(BuildContext context, GoRouterState state) {
 Widget buildGroupRoute(BuildContext context, GoRouterState state) {
   final groupId = state.pathParameters['groupId'];
   if (groupId == null) return const UnknownRouteScreen(name: 'Group');
-  return GroupPage(groupId: groupId);
+  return GroupPage(
+    groupId: groupId,
+    rehearsalsTab: GroupRehearsalsView(
+      groupId: groupId,
+      showHeader: false,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+    ),
+  );
 }
 
 Widget buildGroupRehearsalsRoute(BuildContext context, GoRouterState state) {
