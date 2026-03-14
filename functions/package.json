@@ -10,11 +10,7 @@
     "build": "tsc",
     "test:studios": "npm run build && node lib/studios/__tests__/onStudioWrite.test.js && node lib/studios/__tests__/onBookingWrite.test.js",
     "serve": "npm run build && firebase emulators:start --only functions",
-    "deploy": "npm run build && firebase deploy --only functions",
-    "backfill:chatLastMessage": "npm run build && node lib/backfillChatThreadLastMessage.js",
-    "backfill:chatThreads": "npm run build && node lib/backfillChatThreadIndexes.js",
-    "backfill:inviteContacts": "npm run build && node lib/backfillInviteAcceptedContacts.js",
-    "backfill:rehearsalGroupIds": "npm run build && node lib/backfillRehearsalGroupIds.js"
+    "deploy": "npm run build && firebase deploy --only functions"
   },
   "dependencies": {
     "firebase-admin": "^12.0.0",

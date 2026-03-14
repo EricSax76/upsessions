@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/widgets/app_card.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import '../../cubits/contact_card_cubit.dart';
 import '../../cubits/contact_card_state.dart';
 import '../../models/liked_musician.dart';

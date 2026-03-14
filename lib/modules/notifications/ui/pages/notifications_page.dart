@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
 
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import '../../../../modules/auth/repositories/auth_repository.dart';
 import '../../cubits/notifications_controller.dart';
 import '../../models/invite_notification_entity.dart';

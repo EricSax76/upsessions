@@ -21,7 +21,7 @@ import '../features/home/splash/presentation/splash_page.dart';
 import '../features/home/ui/pages/user_home_page.dart';
 import '../modules/events/repositories/events_repository.dart';
 import '../modules/auth/repositories/auth_repository.dart';
-import '../modules/messaging/repositories/chat_repository.dart';
+import '../features/messaging/repositories/chat_repository.dart';
 import '../modules/notifications/repositories/invite_notifications_repository.dart';
 import '../features/media/repositories/media_repository.dart';
 import '../modules/announcements/ui/pages/announcement_form_page.dart';

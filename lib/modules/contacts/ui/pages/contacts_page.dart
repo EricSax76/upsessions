@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:upsessions/modules/contacts/ui/widgets/contacts_view.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 
 class ContactsPage extends StatelessWidget {
   const ContactsPage({

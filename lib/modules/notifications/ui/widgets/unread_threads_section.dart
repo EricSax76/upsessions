@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:upsessions/modules/messaging/models/chat_thread.dart';
+import 'package:upsessions/features/messaging/models/chat_thread.dart';
 import 'notification_badge.dart';
 
 class UnreadThreadsSection extends StatelessWidget {

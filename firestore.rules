@@ -20,6 +20,94 @@ service cloud.firestore {
         && request.auth.uid in data.participants;
     }
 
+    function userDocPath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function musicianDocPath(uid) {
+      return /databases/$(database)/documents/musicians/$(uid);
+    }
+
+    function eventManagerDocPath(uid) {
+      return /databases/$(database)/documents/event_managers/$(uid);
+    }
+
+    function chatPermissionDocPath(managerUid, musicianUid) {
+      return /databases/$(database)/documents/chat_permissions/$(managerUid + '_' + musicianUid);
+    }
+
+    function userData(uid) {
+      return get(userDocPath(uid)).data;
+    }
+
+    function eventManagerData(uid) {
+      return get(eventManagerDocPath(uid)).data;
+    }
+
+    function hasStudioRole(uid) {
+      let data = userData(uid);
+      return data != null
+        && (
+          data.role == 'studio'
+          || (data.roles is list && 'studio' in data.roles)
+        );
+    }
+
+    function isVenueProfile(managerData) {
+      return managerData != null
+        && managerData.specialties is list
+        && managerData.specialties.size() == 1
+        && (
+          managerData.specialties[0] == 'venues'
+          || managerData.specialties[0] == 'Venues'
+        );
+    }
+
+    function chatActorKind(uid) {
+      let manager = eventManagerData(uid);
+      return manager != null
+        ? (isVenueProfile(manager) ? 'venue' : 'event_manager')
+        : (
+          hasStudioRole(uid)
+            ? 'studio'
+            : (exists(musicianDocPath(uid)) ? 'musician' : 'unknown')
+        );
+    }
+
+    function hasAcceptedRecruitment(managerUid, musicianUid) {
+      return exists(chatPermissionDocPath(managerUid, musicianUid));
+    }
+
+    function canChat(uidA, uidB) {
+      let kindA = chatActorKind(uidA);
+      let kindB = chatActorKind(uidB);
+      let isManagerMusician =
+        (kindA == 'event_manager' && kindB == 'musician')
+        || (kindA == 'musician' && kindB == 'event_manager');
+      let managerUid = kindA == 'event_manager' ? uidA : uidB;
+      let musicianUid = kindA == 'musician' ? uidA : uidB;
+
+      return (kindA == 'musician' && kindB == 'musician')
+        || (kindA == 'studio' && kindB == 'musician')
+        || (kindA == 'musician' && kindB == 'studio')
+        || (kindA == 'event_manager' && kindB == 'venue')
+        || (kindA == 'venue' && kindB == 'event_manager')
+        || (isManagerMusician && hasAcceptedRecruitment(managerUid, musicianUid));
+    }
+
+    function hasValidThreadParticipants(data) {
+      return data.participants is list
+        && data.participants.size() == 2
+        && data.participants[0] is string
+        && data.participants[1] is string
+        && data.participants[0] != data.participants[1];
+    }
+
+    function canThreadParticipantsChat(data) {
+      return hasValidThreadParticipants(data)
+        && canChat(data.participants[0], data.participants[1]);
+    }
+
     function isValidAnnouncement() {
       return request.resource.data.keys().hasOnly([
         'title',
@@ -46,8 +134,7 @@ service cloud.firestore {
     function isValidThread() {
       let data = request.resource.data;
       return data.keys().hasAll(['participants', 'createdAt'])
-        && data.participants is list
-        && data.participants.size() >= 2
+        && hasValidThreadParticipants(data)
         && data.createdAt is timestamp;
     }
 
@@ -278,6 +365,11 @@ service cloud.firestore {
     }
 
     match /chat_threads/{threadId} {
+      function threadParticipantsRespectPolicy() {
+        return resource.data != null
+          && canThreadParticipantsChat(resource.data);
+      }
+
       function isOwnUnreadCountUpdateOnly() {
         let before =
           (resource.data.unreadCounts is map) ? resource.data.unreadCounts : {};
@@ -295,13 +387,9 @@ service cloud.firestore {
         // Use diff().affectedKeys() to avoid SDK-specific writeFields behavior.
         let keys = request.resource.data.diff(resource.data).affectedKeys();
         return keys.hasOnly(['lastMessage', 'lastMessageAt'])
-          || keys.hasOnly(['participants'])
-          || keys.hasOnly(['participantLabels'])
           || (keys.hasOnly(['unreadCounts']) && isOwnUnreadCountUpdateOnly())
           || (keys.hasOnly(['lastMessage', 'lastMessageAt', 'unreadCounts'])
-            && isOwnUnreadCountUpdateOnly())
-          || keys.hasOnly(['lastMessage', 'lastMessageAt', 'participantLabels'])
-          || keys.hasOnly(['lastMessage', 'lastMessageAt', 'participants']);
+            && isOwnUnreadCountUpdateOnly());
       }
 
       function isAllowedThreadRepair() {
@@ -310,6 +398,7 @@ service cloud.firestore {
           // Only allow repairing legacy/incomplete thread docs that are missing participants.
           && (!('participants' in resource.data) || !(resource.data.participants is list))
           && isValidThread()
+          && canThreadParticipantsChat(request.resource.data)
           && request.auth.uid in request.resource.data.participants
           && keys.hasOnly([
             'participants',
@@ -321,30 +410,36 @@ service cloud.firestore {
           ]);
       }
 
-      function participantsNotRemoved() {
+      function participantsUnchanged() {
         // Some clients update only nested fields (e.g. unreadCounts.<uid>), so
         // guard against missing participants in request.resource.
         return !('participants' in request.resource.data)
-          || request.resource.data.participants.hasAll(resource.data.participants);
+          || request.resource.data.participants == resource.data.participants;
       }
 
 	      // Allow fetching non-existent threads so clients can determine whether they need to
 	      // create a new one. Existing threads are still restricted to participants.
-	      allow get: if (resource != null && isThreadParticipant(resource.data))
+	      allow get: if (resource != null
+          && isThreadParticipant(resource.data)
+          && threadParticipantsRespectPolicy())
 	        || (resource == null && isSignedIn());
 	      // Allow listing threads as long as the caller is signed in (client query must filter by participant).
 	      allow list: if isSignedIn();
 	      // Allow reading a single thread only for participants.
-	      allow read: if resource != null && isThreadParticipant(resource.data);
+	      allow read: if resource != null
+          && isThreadParticipant(resource.data)
+          && threadParticipantsRespectPolicy();
 	      allow create: if isSignedIn()
 	        && isValidThread()
+          && canThreadParticipantsChat(request.resource.data)
 	        && request.auth.uid in request.resource.data.participants;
 	      allow update: if (
 	        isThreadParticipant(resource.data)
+          && threadParticipantsRespectPolicy()
           // Only allow updating last message info and participantIds
           && isAllowedThreadUpdate()
-          // Ensure participants cannot be removed (when provided).
-          && participantsNotRemoved()
+          // Ensure participants cannot be changed (when provided).
+          && participantsUnchanged()
       ) || isAllowedThreadRepair();
       // Allow deletion only by a participant and if the messages subcollection is empty.
       allow delete: if isThreadParticipant(resource.data) && !exists(/databases/$(database)/documents/chat_threads/$(threadId)/messages);
@@ -375,8 +470,12 @@ service cloud.firestore {
           return request.resource.data.senderId == request.auth.uid;
         }
 
-        allow read: if parentThreadExists() && isThreadParticipant(parentThreadData());
-        allow create: if parentThreadExists() && isThreadParticipant(parentThreadData())
+        allow read: if parentThreadExists()
+          && isThreadParticipant(parentThreadData())
+          && canThreadParticipantsChat(parentThreadData());
+        allow create: if parentThreadExists()
+          && isThreadParticipant(parentThreadData())
+          && canThreadParticipantsChat(parentThreadData())
           && senderMatchesCurrentUser()
           && isValidMessage();
         allow update, delete: if false;
@@ -641,10 +740,52 @@ service cloud.firestore {
     }
 
     match /musician_requests/{requestId} {
+      function canCreateMusicianRequest() {
+        return request.resource.data.managerId == request.auth.uid
+          && request.resource.data.musicianId is string
+          && request.resource.data.musicianId != request.auth.uid
+          && request.resource.data.status == 'pending';
+      }
+
+      function canUpdateMusicianRequest() {
+        let keys = request.resource.data.diff(resource.data).affectedKeys();
+        let oldStatus = resource.data.status;
+        let newStatus = request.resource.data.status;
+
+        return (
+          // Musician decides acceptance/rejection of a pending request.
+          request.auth.uid == resource.data.musicianId
+          && keys.hasOnly(['status', 'updatedAt'])
+          && oldStatus == 'pending'
+          && (newStatus == 'accepted' || newStatus == 'rejected')
+        ) || (
+          // Manager can cancel a pending request.
+          request.auth.uid == resource.data.managerId
+          && keys.hasOnly(['status', 'updatedAt'])
+          && oldStatus == 'pending'
+          && newStatus == 'rejected'
+        );
+      }
+
       allow read: if isSignedIn() && (resource.data.managerId == request.auth.uid || resource.data.musicianId == request.auth.uid);
-      allow create: if isSignedIn() && request.resource.data.managerId == request.auth.uid;
-      allow update: if isSignedIn() && (resource.data.managerId == request.auth.uid || resource.data.musicianId == request.auth.uid);
-      allow delete: if isSignedIn() && resource.data.managerId == request.auth.uid;
+      allow create: if isSignedIn() && canCreateMusicianRequest();
+      allow update: if isSignedIn() && canUpdateMusicianRequest();
+      allow delete: if isSignedIn()
+        && resource.data.managerId == request.auth.uid
+        && resource.data.status == 'pending';
+    }
+
+    // Server-managed permissions for event_manager <-> musician chat pairings.
+    // Created/updated by Cloud Functions from accepted musician_requests.
+    match /chat_permissions/{permissionId} {
+      function permissionIdIncludesRequester() {
+        return permissionId.matches('^' + request.auth.uid + '_.*')
+          || permissionId.matches('.*_' + request.auth.uid + '$');
+      }
+
+      allow get: if isSignedIn() && permissionIdIncludesRequester();
+      allow list: if false;
+      allow create, update, delete: if false;
     }
 
     match /gig_offers/{offerId} {

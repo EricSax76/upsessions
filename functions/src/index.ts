@@ -11,6 +11,7 @@ export {
   onAuthUserCreateBootstrap,
   onAuthUserDeleteSoftDelete,
   onEventManagerWriteSyncUserRole,
+  onStudioWriteSyncUserRole,
   purgeExpiredComplianceData,
   requestAccountDeletion,
   requestDataExport,
@@ -19,6 +20,7 @@ export {
   updatePrivacyRequestStatusBackoffice,
   updateUserComplianceProfile,
 } from './legalCompliance';
+export { onMusicianRequestWriteSyncChatPermission } from './chatPermissions';
 export { onStudioCreated, onStudioUpdated } from './studios/onStudioWrite';
 export { onBookingCreated } from './studios/onBookingWrite';
 export {

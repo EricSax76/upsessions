@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:upsessions/modules/contacts/cubits/contact_card_cubit.dart';
 import 'package:upsessions/modules/contacts/cubits/contact_card_state.dart';
 import 'package:upsessions/modules/contacts/models/liked_musician.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 
 class MockChatRepository extends Mock implements ChatRepository {}
 

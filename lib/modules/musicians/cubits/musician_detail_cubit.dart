@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../modules/messaging/repositories/chat_repository.dart';
+import '../../../features/messaging/repositories/chat_repository.dart';
 import '../../groups/repositories/groups_repository.dart';
 import '../models/musician_entity.dart';
 

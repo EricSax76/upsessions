@@ -21,7 +21,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 import 'package:upsessions/features/media/repositories/media_repository.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/events/repositories/events_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';

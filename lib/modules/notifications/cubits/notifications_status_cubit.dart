@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import '../repositories/invite_notifications_repository.dart';
 
 class NotificationsStatusCubit extends Cubit<int> {

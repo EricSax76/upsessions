@@ -6,7 +6,7 @@ import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/features/home/ui/widgets/profile/profile_link_box.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import 'package:upsessions/modules/contacts/ui/widgets/musician_like_button.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
 import 'package:upsessions/modules/musicians/repositories/artist_image_repository.dart';

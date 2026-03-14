@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:upsessions/modules/messaging/ui/pages/chat_page.dart';
+import 'package:upsessions/features/messaging/ui/pages/chat_page.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';

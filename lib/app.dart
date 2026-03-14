@@ -25,7 +25,7 @@ import 'package:upsessions/features/home/repositories/home_musicians_repository.
 import 'package:upsessions/features/home/repositories/home_rehearsals_repository.dart';
 import 'package:upsessions/features/home/repositories/user_home_repository.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/modules/events/repositories/events_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';

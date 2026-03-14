@@ -11,7 +11,7 @@ import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import 'package:upsessions/modules/groups/cubits/my_groups_cubit.dart';
 import 'package:upsessions/modules/notifications/cubits/notifications_status_cubit.dart';
 import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import '../widgets/header/sm_app_bar.dart';

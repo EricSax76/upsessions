@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
-import 'package:upsessions/modules/messaging/models/chat_thread.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/models/chat_thread.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import '../../../modules/auth/repositories/auth_repository.dart';
 import '../models/invite_notification_entity.dart';
 import '../repositories/invite_notifications_repository.dart';

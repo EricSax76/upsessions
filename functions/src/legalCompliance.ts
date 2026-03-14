@@ -17,4 +17,7 @@ export {
   syncUserSession,
   updateUserComplianceProfile,
 } from './legalCompliance/sessionHandlers';
-export { onEventManagerWriteSyncUserRole } from './legalCompliance/roleSyncTriggers';
+export {
+  onEventManagerWriteSyncUserRole,
+  onStudioWriteSyncUserRole,
+} from './legalCompliance/roleSyncTriggers';

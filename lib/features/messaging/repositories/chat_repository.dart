@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'chat_firestore_mapper.dart';
+import 'chat_contact_policy.dart';
 import 'chat_repository_base.dart';
+import '../models/chat_actor_kind.dart';
 import '../models/chat_message.dart';
 import '../models/chat_thread.dart';
 
@@ -10,9 +12,12 @@ class ChatRepository extends ChatRepositoryBase {
     required super.firestore,
     required super.authRepository,
     ChatFirestoreMapper? mapper,
-  }) : _mapper = mapper ?? const ChatFirestoreMapper();
+    ChatContactPolicy? contactPolicy,
+  }) : _mapper = mapper ?? const ChatFirestoreMapper(),
+       _contactPolicy = contactPolicy ?? const ChatContactPolicy();
 
   final ChatFirestoreMapper _mapper;
+  final ChatContactPolicy _contactPolicy;
 
   Stream<List<ChatThread>> watchThreads() async* {
     yield* authRepository.idTokenChanges.asyncExpand((user) {
@@ -184,6 +189,7 @@ class ChatRepository extends ChatRepositoryBase {
     if (user == null) {
       throw Exception('Debes iniciar sesión para enviar mensajes.');
     }
+    await _ensureCanSendInThread(threadId: threadId, senderUid: user.id);
     try {
       log('sendMessage: User ${user.id} sending "$body" to thread $threadId');
       final messagesCollection = messages(threadId);
@@ -244,6 +250,10 @@ class ChatRepository extends ChatRepositoryBase {
     if (participantId == user.id) {
       throw Exception('No puedes iniciar un chat contigo mismo.');
     }
+    await _ensureCanStartConversation(
+      initiatorUid: user.id,
+      participantUid: participantId,
+    );
 
     final participantIds = [user.id, participantId]..sort();
     final threadId = participantIds.join('_');
@@ -307,5 +317,149 @@ class ChatRepository extends ChatRepositoryBase {
       }
       rethrow;
     }
+  }
+
+  Future<void> _ensureCanSendInThread({
+    required String threadId,
+    required String senderUid,
+  }) async {
+    final snapshot = await threadDoc(threadId).get();
+    if (!snapshot.exists) {
+      throw Exception('No se encontró el chat.');
+    }
+
+    final participants = _stringList(snapshot.data()?['participants']);
+    if (!participants.contains(senderUid)) {
+      throw Exception('No tienes permisos para enviar mensajes en este chat.');
+    }
+
+    if (participants.length != 2) {
+      return;
+    }
+
+    final otherUid = participants.firstWhere(
+      (participant) => participant != senderUid,
+      orElse: () => '',
+    );
+    if (otherUid.isEmpty) {
+      return;
+    }
+
+    await _ensureCanStartConversation(
+      initiatorUid: senderUid,
+      participantUid: otherUid,
+    );
+  }
+
+  Future<void> _ensureCanStartConversation({
+    required String initiatorUid,
+    required String participantUid,
+  }) async {
+    final initiatorKind = await _resolveActorKind(initiatorUid);
+    final participantKind = await _resolveActorKind(participantUid);
+
+    var hasAcceptedRecruitment = false;
+    if (_isEventManagerMusicianPair(initiatorKind, participantKind)) {
+      final managerUid = initiatorKind == ChatActorKind.eventManager
+          ? initiatorUid
+          : participantUid;
+      final musicianUid = initiatorKind == ChatActorKind.musician
+          ? initiatorUid
+          : participantUid;
+      hasAcceptedRecruitment = await _hasAcceptedRecruitment(
+        managerUid: managerUid,
+        musicianUid: musicianUid,
+      );
+    }
+
+    final denyReason = _contactPolicy.denyReason(
+      initiator: initiatorKind,
+      participant: participantKind,
+      hasAcceptedRecruitment: hasAcceptedRecruitment,
+    );
+
+    if (denyReason != null) {
+      throw Exception(denyReason);
+    }
+  }
+
+  bool _isEventManagerMusicianPair(ChatActorKind left, ChatActorKind right) {
+    return (left == ChatActorKind.eventManager &&
+            right == ChatActorKind.musician) ||
+        (left == ChatActorKind.musician && right == ChatActorKind.eventManager);
+  }
+
+  Future<ChatActorKind> _resolveActorKind(String uid) async {
+    final normalizedUid = uid.trim();
+    if (normalizedUid.isEmpty) {
+      return ChatActorKind.unknown;
+    }
+
+    final managerProfile = await _eventManagerProfile(normalizedUid);
+    if (managerProfile != null) {
+      final specialties = _stringList(
+        managerProfile['specialties'],
+      ).map((item) => item.toLowerCase()).toSet();
+      final isVenueOnly =
+          specialties.length == 1 && specialties.contains('venues');
+      return isVenueOnly ? ChatActorKind.venue : ChatActorKind.eventManager;
+    }
+
+    final studioSnapshot = await firestore
+        .collection('studios')
+        .where('ownerId', isEqualTo: normalizedUid)
+        .limit(1)
+        .get();
+    if (studioSnapshot.docs.isNotEmpty) {
+      return ChatActorKind.studio;
+    }
+
+    final musicianSnapshot = await firestore
+        .collection('musicians')
+        .doc(normalizedUid)
+        .get();
+    if (musicianSnapshot.exists) {
+      return ChatActorKind.musician;
+    }
+
+    return ChatActorKind.unknown;
+  }
+
+  Future<Map<String, dynamic>?> _eventManagerProfile(String uid) async {
+    final byId = await firestore.collection('event_managers').doc(uid).get();
+    if (byId.exists) {
+      return byId.data();
+    }
+
+    final byOwner = await firestore
+        .collection('event_managers')
+        .where('ownerId', isEqualTo: uid)
+        .limit(1)
+        .get();
+
+    if (byOwner.docs.isEmpty) {
+      return null;
+    }
+
+    return byOwner.docs.first.data();
+  }
+
+  Future<bool> _hasAcceptedRecruitment({
+    required String managerUid,
+    required String musicianUid,
+  }) async {
+    final permissionId = '${managerUid}_$musicianUid';
+    final permissionDoc = await firestore
+        .collection('chat_permissions')
+        .doc(permissionId)
+        .get();
+    return permissionDoc.exists;
+  }
+
+  static List<String> _stringList(dynamic raw) {
+    if (raw is Iterable) {
+      return raw.map((item) => item.toString()).toList();
+    }
+    return const <String>[];
   }
 }

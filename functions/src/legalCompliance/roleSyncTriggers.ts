@@ -40,3 +40,26 @@ export const onEventManagerWriteSyncUserRole = region.firestore
 
     await Promise.all(Array.from(userIds.values()).map((uid) => syncUserRoles(uid)));
   });
+
+export const onStudioWriteSyncUserRole = region.firestore
+  .document('studios/{studioId}')
+  .onWrite(async (change, context) => {
+    const before = record(change.before.data());
+    const after = record(change.after.data());
+    const studioId = stringOrEmpty(context.params.studioId).trim();
+    const beforeOwnerId = stringOrEmpty(before.ownerId).trim();
+    const afterOwnerId = stringOrEmpty(after.ownerId).trim();
+
+    const userIds = new Set<string>();
+    if (studioId) {
+      userIds.add(studioId);
+    }
+    if (beforeOwnerId) {
+      userIds.add(beforeOwnerId);
+    }
+    if (afterOwnerId) {
+      userIds.add(afterOwnerId);
+    }
+
+    await Promise.all(Array.from(userIds.values()).map((uid) => syncUserRoles(uid)));
+  });

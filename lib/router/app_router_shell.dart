@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../features/home/ui/pages/user_shell_page.dart';
 import '../modules/contacts/cubits/liked_musicians_cubit.dart';
 import '../modules/groups/repositories/groups_repository.dart';
-import '../modules/messaging/repositories/chat_repository.dart';
+import '../features/messaging/repositories/chat_repository.dart';
 import '../modules/notifications/repositories/invite_notifications_repository.dart';
 
 Widget buildUserShell(BuildContext context, Widget child) {

@@ -6,7 +6,7 @@ import '../../cubits/liked_musicians_state.dart';
 import '../widgets/contact_card.dart';
 import 'contacts_header.dart';
 import 'empty_contacts.dart';
-import 'package:upsessions/modules/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 
 class ContactsView extends StatelessWidget {
   const ContactsView({super.key, required this.chatRepository});

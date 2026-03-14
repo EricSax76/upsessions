@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:upsessions/modules/messaging/models/chat_thread.dart';
+import 'package:upsessions/features/messaging/models/chat_thread.dart';
 import '../../models/invite_notification_entity.dart';
 
 @immutable
