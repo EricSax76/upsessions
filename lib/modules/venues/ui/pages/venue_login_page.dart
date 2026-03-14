@@ -1,0 +1,143 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:upsessions/core/constants/app_routes.dart';
+import 'package:upsessions/core/constants/app_spacing.dart';
+import 'package:upsessions/core/ui/shell/auth_shell.dart';
+import 'package:upsessions/core/widgets/app_logo.dart';
+import 'package:upsessions/core/widgets/gap.dart';
+import 'package:upsessions/core/widgets/loading_indicator.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
+import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
+import 'package:upsessions/modules/auth/ui/widgets/login_form.dart';
+import 'package:upsessions/modules/auth/ui/widgets/social_login_buttons.dart';
+
+class VenueLoginPage extends StatelessWidget {
+  const VenueLoginPage({super.key});
+
+  void _onSocialLogin(BuildContext context, String provider) {
+    final message = AppLocalizations.of(
+      context,
+    ).socialLoginPlaceholder(provider);
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<AuthCubit, AuthState>(
+      listenWhen: (previous, current) =>
+          previous.status != current.status ||
+          previous.errorMessage != current.errorMessage,
+      listener: (context, state) {
+        if (state.errorMessage != null &&
+            state.lastAction == AuthAction.login) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+        }
+
+        if (state.status == AuthStatus.authenticated) {
+          context.go(AppRoutes.venuesDashboard);
+        }
+      },
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          final isSubmitting =
+              state.isLoading && state.lastAction == AuthAction.login;
+          final localizations = AppLocalizations.of(context);
+
+          return Stack(
+            children: [
+              AuthShell(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: AppLogo(label: localizations.appBrandName),
+                    ),
+                    const VSpace(AppSpacing.lg),
+                    Text(
+                      'Acceso Venues',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const VSpace(AppSpacing.sm),
+                    Text(
+                      'Gestiona tus locales y disponibilidad.',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    const VSpace(AppSpacing.lg),
+                    const LoginForm(),
+                    const VSpace(AppSpacing.sm),
+                    TextButton(
+                      onPressed: () =>
+                          context.push(AppRoutes.venuesAuthRegister),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                      child: const Text('¿No tienes cuenta? Regístrate'),
+                    ),
+                    const VSpace(AppSpacing.sm),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            thickness: 1,
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.sm,
+                          ),
+                          child: Text(
+                            localizations.loginContinueWith,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.7),
+                                ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(
+                            thickness: 1,
+                            color: Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const VSpace(AppSpacing.sm),
+                    SocialLoginButtons(
+                      onSelected: (provider) =>
+                          _onSocialLogin(context, provider),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSubmitting)
+                Positioned.fill(
+                  child: Container(
+                    color: Theme.of(context).colorScheme.scrim,
+                    child: const Center(child: LoadingIndicator()),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}

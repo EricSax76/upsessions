@@ -41,11 +41,14 @@ import '../modules/jam_sessions/repositories/jam_sessions_repository.dart';
 import '../modules/venues/cubits/public_venues_cubit.dart';
 import '../modules/venues/ui/pages/public_venues_page.dart';
 import '../modules/venues/repositories/venues_repository.dart';
+import '../modules/venues/ui/pages/venue_login_page.dart';
+import '../modules/venues/ui/pages/venue_register_page.dart';
 import 'app_router_builders.dart';
 import 'app_router_shell.dart';
 import 'musician_routes.dart';
 import 'studio_routes.dart';
 import 'event_manager_routes.dart';
+import 'venue_routes.dart';
 
 NoTransitionPage<void> _noTransitionPage(GoRouterState state, Widget child) {
   return NoTransitionPage<void>(key: state.pageKey, child: child);
@@ -93,6 +96,14 @@ List<RouteBase> buildAppRoutes() {
       builder: (context, state) => const RegisterPage(),
     ),
     GoRoute(
+      path: AppRoutes.venuesAuthLogin,
+      builder: (context, state) => const VenueLoginPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.venuesAuthRegister,
+      builder: (context, state) => const VenueRegisterPage(),
+    ),
+    GoRoute(
       path: AppRoutes.forgotPassword,
       builder: (context, state) => const ForgotPasswordPage(),
     ),
@@ -113,6 +124,7 @@ List<RouteBase> buildAppRoutes() {
     // to avoid collisions like `/studios/:studioId/rooms/new` being captured
     // by `/studios/:studioId/rooms/:roomId`.
     ...buildStudioOuterRoutes(),
+    ...buildVenueRoutes(),
     ShellRoute(
       builder: (context, state, child) => buildUserShell(context, child),
       routes: [

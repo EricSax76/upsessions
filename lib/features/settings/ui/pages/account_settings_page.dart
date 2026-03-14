@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +11,16 @@ import 'package:upsessions/core/services/cookie_consent_service.dart';
 import 'package:upsessions/features/legal/legal_policy_registry.dart';
 import 'package:upsessions/features/settings/cubits/account_privacy_actions_cubit.dart';
 import 'package:upsessions/features/settings/cubits/account_privacy_actions_state.dart';
+import 'package:upsessions/features/settings/cubits/privacy_backoffice_cubit.dart';
+import 'package:upsessions/features/settings/cubits/privacy_backoffice_state.dart';
+import 'package:upsessions/features/settings/models/privacy_backoffice_request.dart';
 import 'package:upsessions/features/settings/ui/widgets/account_settings/account_privacy_center_card.dart';
 import 'package:upsessions/features/settings/ui/widgets/account_settings/account_settings_dialogs.dart';
 import 'package:upsessions/features/settings/ui/widgets/account_settings/owner_group_actions_section.dart';
+import 'package:upsessions/features/settings/ui/widgets/account_settings/privacy_backoffice_section.dart';
 import 'package:upsessions/features/settings/ui/widgets/account_settings/settings_section_title.dart';
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
+import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/groups/models/group_membership_entity.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import 'package:upsessions/modules/profile/models/account_settings_card.dart';
@@ -33,6 +40,19 @@ class AccountSettingsPage extends StatelessWidget {
             cloudFunctionsService: locate<CloudFunctionsService>(),
             cookieConsentService: locate<CookieConsentService>(),
           ),
+        ),
+        BlocProvider(
+          create: (context) {
+            final cubit = PrivacyBackofficeCubit(
+              cloudFunctionsService: locate<CloudFunctionsService>(),
+            );
+            final isAdmin =
+                context.read<AuthCubit>().state.user?.role == UserRole.admin;
+            if (isAdmin) {
+              unawaited(cubit.loadRequests());
+            }
+            return cubit;
+          },
         ),
       ],
       child: const _AccountSettingsPageView(),
@@ -86,6 +106,23 @@ class _AccountSettingsPageViewState extends State<_AccountSettingsPageView> {
     await actionsCubit.requestAccountDeletion();
   }
 
+  Future<void> _requestPrivacyRight(String requestType, String title) async {
+    final actionsCubit = context.read<AccountPrivacyActionsCubit>();
+    if (actionsCubit.state.requestingPrivacyRightType != null) return;
+
+    final confirmed = await showRequestPrivacyRightDialog(
+      context,
+      rightTitle: title,
+    );
+    if (!confirmed || !mounted) return;
+    if (actionsCubit.state.requestingPrivacyRightType != null) return;
+
+    await actionsCubit.requestPrivacyRight(
+      requestType: requestType,
+      reason: 'Solicitud iniciada por el usuario desde ajustes ($requestType).',
+    );
+  }
+
   Future<void> _contactDpo() async {
     final uri = Uri(
       scheme: 'mailto',
@@ -100,19 +137,63 @@ class _AccountSettingsPageViewState extends State<_AccountSettingsPageView> {
     }
   }
 
+  Future<void> _setBackofficeFilter(PrivacyRequestStatus? status) async {
+    await context.read<PrivacyBackofficeCubit>().setFilter(status);
+  }
+
+  Future<void> _refreshBackofficeRequests() async {
+    await context.read<PrivacyBackofficeCubit>().refresh();
+  }
+
+  Future<void> _updateBackofficeRequestStatus(
+    PrivacyBackofficeRequest request,
+    PrivacyRequestStatus nextStatus,
+  ) async {
+    final backofficeCubit = context.read<PrivacyBackofficeCubit>();
+    if (backofficeCubit.state.isUpdatingStatus) return;
+
+    final reason = await showUpdatePrivacyRequestStatusDialog(
+      context,
+      requestTypeLabel: request.requestTypeLabel,
+      currentStatusLabel: request.statusLabel,
+      nextStatusLabel: nextStatus.label,
+    );
+    if (!mounted || reason == null) return;
+
+    await backofficeCubit.updateRequestStatus(
+      request: request,
+      nextStatus: nextStatus,
+      statusReason: reason.isEmpty ? null : reason,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isAdmin =
+        context.read<AuthCubit>().state.user?.role == UserRole.admin;
     final titleStyle = Theme.of(
       context,
     ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold);
 
-    return BlocListener<AccountPrivacyActionsCubit, AccountPrivacyActionsState>(
-      listenWhen: (previous, current) =>
-          previous.feedbackVersion != current.feedbackVersion &&
-          current.feedbackMessage != null,
-      listener: (context, state) {
-        _showSnackBar(state.feedbackMessage!);
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AccountPrivacyActionsCubit, AccountPrivacyActionsState>(
+          listenWhen: (previous, current) =>
+              previous.feedbackVersion != current.feedbackVersion &&
+              current.feedbackMessage != null,
+          listener: (context, state) {
+            _showSnackBar(state.feedbackMessage!);
+          },
+        ),
+        BlocListener<PrivacyBackofficeCubit, PrivacyBackofficeState>(
+          listenWhen: (previous, current) =>
+              previous.feedbackVersion != current.feedbackVersion &&
+              current.feedbackMessage != null,
+          listener: (context, state) {
+            _showSnackBar(state.feedbackMessage!);
+          },
+        ),
+      ],
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -187,10 +268,34 @@ class _AccountSettingsPageViewState extends State<_AccountSettingsPageView> {
                                         .isRequestingAccountDeletion,
                                     onRequestAccountDeletion:
                                         _requestAccountDeletion,
+                                    requestingPrivacyRightType:
+                                        privacyState.requestingPrivacyRightType,
+                                    onRequestPrivacyRight: _requestPrivacyRight,
                                     onContactDpo: _contactDpo,
                                   );
                                 },
                               ),
+                              if (isAdmin) ...[
+                                const SizedBox(height: 24),
+                                const SettingsSectionTitle(
+                                  text: 'Backoffice privacidad',
+                                ),
+                                const SizedBox(height: 12),
+                                BlocBuilder<
+                                  PrivacyBackofficeCubit,
+                                  PrivacyBackofficeState
+                                >(
+                                  builder: (context, backofficeState) {
+                                    return PrivacyBackofficeSection(
+                                      state: backofficeState,
+                                      onFilterSelected: _setBackofficeFilter,
+                                      onRefresh: _refreshBackofficeRequests,
+                                      onStatusUpdateRequested:
+                                          _updateBackofficeRequestStatus,
+                                    );
+                                  },
+                                ),
+                              ],
                               const SizedBox(height: 24),
                               const SettingsSectionTitle(text: 'Acciones'),
                               const SizedBox(height: 12),

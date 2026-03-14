@@ -6,6 +6,8 @@ class AppRoutes {
   static const onboardingStoryThree = '/onboarding/story-three';
   static const login = '/auth/login';
   static const register = '/auth/register';
+  static const venuesAuthLogin = '/auth/venues/login';
+  static const venuesAuthRegister = '/auth/venues/register';
   static const forgotPassword = '/auth/forgot-password';
   static const musicianOnboarding = '/onboarding/musician';
   static const userHome = '/home';
@@ -24,6 +26,9 @@ class AppRoutes {
   static const calendar = '/calendar';
   static const events = '/events';
   static const venues = '/venues';
+  static const venuesDashboard = '/venues/dashboard';
+  static const venuesDashboardVenueForm = '/venues/dashboard/form';
+  static const venuesDashboardVenueEdit = '/venues/dashboard/:venueId/edit';
   static const eventDetailRoute = '/events/:eventId';
   static const createEvent = '/events/create';
   static const rehearsals = '/rehearsals';
@@ -172,6 +177,11 @@ class AppRoutes {
   static String eventManagerVenueEditPath(String venueId) {
     final encodedId = Uri.encodeComponent(venueId);
     return '/event-manager/venues/$encodedId/edit';
+  }
+
+  static String venuesDashboardVenueEditPath(String venueId) {
+    final encodedId = Uri.encodeComponent(venueId);
+    return '/venues/dashboard/$encodedId/edit';
   }
 
   static String jamSessionDetailPath(String sessionId) {

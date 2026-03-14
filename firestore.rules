@@ -615,7 +615,11 @@ service cloud.firestore {
     }
 
     match /venues/{venueId} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn()
+        && (
+          resource.data.isPublic == true
+          || resource.data.ownerId == request.auth.uid
+        );
       allow create: if isSignedIn()
         && isValidVenue()
         && request.resource.data.sourceType == 'native';

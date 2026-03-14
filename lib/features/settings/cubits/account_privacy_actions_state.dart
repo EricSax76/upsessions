@@ -7,6 +7,7 @@ class AccountPrivacyActionsState extends Equatable {
     this.isUpdatingMarketingConsent = false,
     this.isRequestingDataExport = false,
     this.isRequestingAccountDeletion = false,
+    this.requestingPrivacyRightType,
     this.feedbackMessage,
     this.feedbackVersion = 0,
   });
@@ -15,6 +16,7 @@ class AccountPrivacyActionsState extends Equatable {
   final bool isUpdatingMarketingConsent;
   final bool isRequestingDataExport;
   final bool isRequestingAccountDeletion;
+  final String? requestingPrivacyRightType;
   final String? feedbackMessage;
   final int feedbackVersion;
 
@@ -23,7 +25,8 @@ class AccountPrivacyActionsState extends Equatable {
     bool? isUpdatingMarketingConsent,
     bool? isRequestingDataExport,
     bool? isRequestingAccountDeletion,
-    String? feedbackMessage,
+    Object? requestingPrivacyRightType = _noChange,
+    Object? feedbackMessage = _noChange,
     int? feedbackVersion,
   }) {
     return AccountPrivacyActionsState(
@@ -34,7 +37,12 @@ class AccountPrivacyActionsState extends Equatable {
           isRequestingDataExport ?? this.isRequestingDataExport,
       isRequestingAccountDeletion:
           isRequestingAccountDeletion ?? this.isRequestingAccountDeletion,
-      feedbackMessage: feedbackMessage ?? this.feedbackMessage,
+      requestingPrivacyRightType: requestingPrivacyRightType == _noChange
+          ? this.requestingPrivacyRightType
+          : requestingPrivacyRightType as String?,
+      feedbackMessage: feedbackMessage == _noChange
+          ? this.feedbackMessage
+          : feedbackMessage as String?,
       feedbackVersion: feedbackVersion ?? this.feedbackVersion,
     );
   }
@@ -45,7 +53,10 @@ class AccountPrivacyActionsState extends Equatable {
     isUpdatingMarketingConsent,
     isRequestingDataExport,
     isRequestingAccountDeletion,
+    requestingPrivacyRightType,
     feedbackMessage,
     feedbackVersion,
   ];
 }
+
+const Object _noChange = Object();

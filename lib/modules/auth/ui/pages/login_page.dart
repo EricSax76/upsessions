@@ -222,6 +222,45 @@ class LoginPage extends StatelessWidget {
                               ],
                             ),
                           ),
+                          const VSpace(AppSpacing.sm),
+                          TextButton(
+                            onPressed: () {
+                              context.push(AppRoutes.venuesAuthLogin);
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Theme.of(
+                                context,
+                              ).colorScheme.onSurface,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '¿Gestionas un local?',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                                      ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Acceso Venues',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primaryContainer,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),

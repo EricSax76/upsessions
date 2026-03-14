@@ -83,10 +83,7 @@ class CloudFunctionsService {
     await callable.call(payload);
   }
 
-  Future<String> requestDataExport({
-    String? reason,
-    String? source,
-  }) async {
+  Future<String> requestDataExport({String? reason, String? source}) async {
     final callable = _functions.httpsCallable('requestDataExport');
     final payload = <String, Object?>{
       ...?reason == null ? null : <String, Object?>{'reason': reason},
@@ -117,4 +114,81 @@ class CloudFunctionsService {
     return '';
   }
 
+  Future<String> requestPrivacyRight({
+    required String requestType,
+    String? reason,
+    String? source,
+  }) async {
+    final callable = _functions.httpsCallable('requestPrivacyRight');
+    final payload = <String, Object?>{
+      'requestType': requestType,
+      ...?reason == null ? null : <String, Object?>{'reason': reason},
+      ...?source == null ? null : <String, Object?>{'source': source},
+    };
+    final response = await callable.call(payload);
+    final data = response.data;
+    if (data is Map && data['requestId'] is String) {
+      return data['requestId'] as String;
+    }
+    return '';
+  }
+
+  Future<List<Map<String, Object?>>> listPrivacyRequestsBackoffice({
+    String? status,
+    int limit = 50,
+  }) async {
+    final callable = _functions.httpsCallable('listPrivacyRequestsBackoffice');
+    final payload = <String, Object?>{
+      'limit': limit,
+      ...?status == null ? null : <String, Object?>{'status': status},
+    };
+    final response = await callable.call(payload);
+    final data = _asStringObjectMap(response.data);
+    final items = data['items'];
+    if (items is! List) {
+      return const <Map<String, Object?>>[];
+    }
+
+    return items
+        .map(_asStringObjectMap)
+        .where((entry) => entry.isNotEmpty)
+        .toList(growable: false);
+  }
+
+  Future<void> updatePrivacyRequestStatusBackoffice({
+    required String userId,
+    required String requestId,
+    required String nextStatus,
+    String? statusReason,
+    String? source,
+  }) async {
+    final callable = _functions.httpsCallable(
+      'updatePrivacyRequestStatusBackoffice',
+    );
+    final payload = <String, Object?>{
+      'userId': userId,
+      'requestId': requestId,
+      'nextStatus': nextStatus,
+      ...?statusReason == null
+          ? null
+          : <String, Object?>{'statusReason': statusReason},
+      ...?source == null ? null : <String, Object?>{'source': source},
+    };
+    await callable.call(payload);
+  }
+
+  Map<String, Object?> _asStringObjectMap(Object? raw) {
+    if (raw is! Map) {
+      return const <String, Object?>{};
+    }
+
+    final normalized = <String, Object?>{};
+    for (final entry in raw.entries) {
+      final key = entry.key;
+      if (key is String) {
+        normalized[key] = entry.value;
+      }
+    }
+    return normalized;
+  }
 }

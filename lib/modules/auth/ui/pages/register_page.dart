@@ -71,7 +71,8 @@ class RegisterPage extends StatelessWidget {
                     children: [
                       Expanded(
                         child: TextButton(
-                          onPressed: () => context.push(AppRoutes.studiosRegister),
+                          onPressed: () =>
+                              context.push(AppRoutes.studiosRegister),
                           child: Text(
                             'Registrar Estudio',
                             textAlign: TextAlign.center,
@@ -84,7 +85,8 @@ class RegisterPage extends StatelessWidget {
                       ),
                       Expanded(
                         child: TextButton(
-                          onPressed: () => context.push(AppRoutes.eventManagerRegister),
+                          onPressed: () =>
+                              context.push(AppRoutes.eventManagerRegister),
                           child: Text(
                             'Registrar Event Manager',
                             textAlign: TextAlign.center,
@@ -96,6 +98,18 @@ class RegisterPage extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => context.push(AppRoutes.venuesAuthRegister),
+                    child: Text(
+                      'Registrar Venue',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
                 ],
               ),

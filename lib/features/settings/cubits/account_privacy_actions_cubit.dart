@@ -22,6 +22,14 @@ class AccountPrivacyActionsCubit extends Cubit<AccountPrivacyActionsState> {
 
   final CloudFunctionsService _cloudFunctionsService;
   final CookieConsentService _cookieConsentService;
+  static const Set<String> _supportedPrivacyRightTypes = <String>{
+    'access',
+    'rectification',
+    'erasure',
+    'restriction',
+    'portability',
+    'objection',
+  };
 
   String get _source {
     if (kIsWeb) return 'web';
@@ -61,7 +69,11 @@ class AccountPrivacyActionsCubit extends Cubit<AccountPrivacyActionsState> {
   }
 
   Future<void> requestDataExport() async {
-    if (state.isRequestingDataExport) return;
+    if (state.isRequestingDataExport ||
+        state.isRequestingAccountDeletion ||
+        state.requestingPrivacyRightType != null) {
+      return;
+    }
     emit(state.copyWith(isRequestingDataExport: true));
     try {
       final requestId = await _cloudFunctionsService.requestDataExport(
@@ -83,7 +95,11 @@ class AccountPrivacyActionsCubit extends Cubit<AccountPrivacyActionsState> {
   }
 
   Future<void> requestAccountDeletion() async {
-    if (state.isRequestingAccountDeletion) return;
+    if (state.isRequestingAccountDeletion ||
+        state.isRequestingDataExport ||
+        state.requestingPrivacyRightType != null) {
+      return;
+    }
     emit(state.copyWith(isRequestingAccountDeletion: true));
     try {
       final requestId = await _cloudFunctionsService.requestAccountDeletion(
@@ -100,6 +116,43 @@ class AccountPrivacyActionsCubit extends Cubit<AccountPrivacyActionsState> {
     } finally {
       if (!isClosed) {
         emit(state.copyWith(isRequestingAccountDeletion: false));
+      }
+    }
+  }
+
+  Future<void> requestPrivacyRight({
+    required String requestType,
+    String? reason,
+  }) async {
+    final normalizedType = requestType.trim().toLowerCase();
+    if (!_supportedPrivacyRightTypes.contains(normalizedType)) {
+      _emitFeedback('Tipo de solicitud no soportado: $requestType');
+      return;
+    }
+    if (state.isRequestingDataExport ||
+        state.isRequestingAccountDeletion ||
+        state.requestingPrivacyRightType != null) {
+      return;
+    }
+
+    emit(state.copyWith(requestingPrivacyRightType: normalizedType));
+    try {
+      final requestId = await _cloudFunctionsService.requestPrivacyRight(
+        requestType: normalizedType,
+        source: _source,
+        reason: reason ?? 'Solicitud iniciada por el usuario desde ajustes.',
+      );
+      final label = _privacyRightLabel(normalizedType);
+      _emitFeedback(
+        requestId.isEmpty
+            ? 'Solicitud de $label registrada.'
+            : 'Solicitud de $label registrada: $requestId',
+      );
+    } catch (error) {
+      _emitFeedback('No pudimos registrar la solicitud: $error');
+    } finally {
+      if (!isClosed) {
+        emit(state.copyWith(requestingPrivacyRightType: null));
       }
     }
   }
@@ -136,6 +189,25 @@ class AccountPrivacyActionsCubit extends Cubit<AccountPrivacyActionsState> {
         feedbackVersion: state.feedbackVersion + 1,
       ),
     );
+  }
+
+  String _privacyRightLabel(String requestType) {
+    switch (requestType) {
+      case 'access':
+        return 'acceso';
+      case 'rectification':
+        return 'rectificación';
+      case 'erasure':
+        return 'supresión';
+      case 'restriction':
+        return 'limitación';
+      case 'portability':
+        return 'portabilidad';
+      case 'objection':
+        return 'oposición';
+      default:
+        return requestType;
+    }
   }
 
   @override

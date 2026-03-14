@@ -9,7 +9,16 @@ import '../../models/venue_entity.dart';
 import '../widgets/manager_venue_card.dart';
 
 class ManagerVenuesPage extends StatefulWidget {
-  const ManagerVenuesPage({super.key});
+  const ManagerVenuesPage({
+    super.key,
+    this.createVenueRoute = AppRoutes.eventManagerVenueForm,
+    this.editVenueRoutePathBuilder = AppRoutes.eventManagerVenueEditPath,
+    this.headingTitle = 'Mis Locales',
+  });
+
+  final String createVenueRoute;
+  final String Function(String venueId) editVenueRoutePathBuilder;
+  final String headingTitle;
 
   @override
   State<ManagerVenuesPage> createState() => _ManagerVenuesPageState();
@@ -23,14 +32,14 @@ class _ManagerVenuesPageState extends State<ManagerVenuesPage> {
   }
 
   Future<void> _openCreateVenue() async {
-    final created = await context.push(AppRoutes.eventManagerVenueForm);
+    final created = await context.push(widget.createVenueRoute);
     if (!mounted || created != true) return;
     context.read<ManagerVenuesCubit>().loadVenues(refresh: true);
   }
 
   Future<void> _openEditVenue(VenueEntity venue) async {
     final updated = await context.push(
-      AppRoutes.eventManagerVenueEditPath(venue.id),
+      widget.editVenueRoutePathBuilder(venue.id),
       extra: venue,
     );
     if (!mounted || updated != true) return;
@@ -148,7 +157,7 @@ class _ManagerVenuesPageState extends State<ManagerVenuesPage> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: Text(
-                    'Mis Locales',
+                    widget.headingTitle,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),

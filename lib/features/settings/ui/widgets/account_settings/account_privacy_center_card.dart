@@ -22,6 +22,8 @@ class AccountPrivacyCenterCard extends StatelessWidget {
     required this.onRequestDataExport,
     required this.isRequestingAccountDeletion,
     required this.onRequestAccountDeletion,
+    required this.requestingPrivacyRightType,
+    required this.onRequestPrivacyRight,
     required this.onContactDpo,
     super.key,
   });
@@ -37,6 +39,9 @@ class AccountPrivacyCenterCard extends StatelessWidget {
   final AsyncVoidCallback onRequestDataExport;
   final bool isRequestingAccountDeletion;
   final AsyncVoidCallback onRequestAccountDeletion;
+  final String? requestingPrivacyRightType;
+  final Future<void> Function(String requestType, String title)
+  onRequestPrivacyRight;
   final AsyncVoidCallback onContactDpo;
 
   @override
@@ -63,6 +68,8 @@ class AccountPrivacyCenterCard extends StatelessWidget {
             onRequestDataExport: onRequestDataExport,
             isRequestingAccountDeletion: isRequestingAccountDeletion,
             onRequestAccountDeletion: onRequestAccountDeletion,
+            requestingPrivacyRightType: requestingPrivacyRightType,
+            onRequestPrivacyRight: onRequestPrivacyRight,
             onContactDpo: onContactDpo,
           ),
         ],

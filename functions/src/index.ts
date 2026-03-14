@@ -7,13 +7,16 @@ export { resolveSpotifyArtistImages } from './spotify_artist_images';
 export {
   acceptLegalBundle,
   acceptLegalDocs,
+  listPrivacyRequestsBackoffice,
   onAuthUserCreateBootstrap,
   onAuthUserDeleteSoftDelete,
   onEventManagerWriteSyncUserRole,
   purgeExpiredComplianceData,
   requestAccountDeletion,
   requestDataExport,
+  requestPrivacyRight,
   syncUserSession,
+  updatePrivacyRequestStatusBackoffice,
   updateUserComplianceProfile,
 } from './legalCompliance';
 export { onStudioCreated, onStudioUpdated } from './studios/onStudioWrite';

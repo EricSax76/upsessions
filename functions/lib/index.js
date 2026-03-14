@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onChatThreadWrite = exports.onGroupInviteUsedCreateContacts = exports.onGroupInviteCreated = exports.ping = exports.onVenueUpdated = exports.onVenueCreated = exports.onStudioWriteSyncVenueProjection = exports.onBookingCreated = exports.onStudioUpdated = exports.onStudioCreated = exports.updateUserComplianceProfile = exports.syncUserSession = exports.requestDataExport = exports.requestAccountDeletion = exports.purgeExpiredComplianceData = exports.onEventManagerWriteSyncUserRole = exports.onAuthUserDeleteSoftDelete = exports.onAuthUserCreateBootstrap = exports.acceptLegalDocs = exports.acceptLegalBundle = exports.resolveSpotifyArtistImages = exports.seedChatThreads = void 0;
+exports.onChatThreadWrite = exports.onGroupInviteUsedCreateContacts = exports.onGroupInviteCreated = exports.ping = exports.onVenueUpdated = exports.onVenueCreated = exports.onStudioWriteSyncVenueProjection = exports.onBookingCreated = exports.onStudioUpdated = exports.onStudioCreated = exports.updateUserComplianceProfile = exports.updatePrivacyRequestStatusBackoffice = exports.syncUserSession = exports.requestPrivacyRight = exports.requestDataExport = exports.requestAccountDeletion = exports.purgeExpiredComplianceData = exports.onEventManagerWriteSyncUserRole = exports.onAuthUserDeleteSoftDelete = exports.onAuthUserCreateBootstrap = exports.listPrivacyRequestsBackoffice = exports.acceptLegalDocs = exports.acceptLegalBundle = exports.resolveSpotifyArtistImages = exports.seedChatThreads = void 0;
 const firebase_1 = require("./firebase");
 const region_1 = require("./region");
 var chatSeeder_1 = require("./chatSeeder");
@@ -10,13 +10,16 @@ Object.defineProperty(exports, "resolveSpotifyArtistImages", { enumerable: true,
 var legalCompliance_1 = require("./legalCompliance");
 Object.defineProperty(exports, "acceptLegalBundle", { enumerable: true, get: function () { return legalCompliance_1.acceptLegalBundle; } });
 Object.defineProperty(exports, "acceptLegalDocs", { enumerable: true, get: function () { return legalCompliance_1.acceptLegalDocs; } });
+Object.defineProperty(exports, "listPrivacyRequestsBackoffice", { enumerable: true, get: function () { return legalCompliance_1.listPrivacyRequestsBackoffice; } });
 Object.defineProperty(exports, "onAuthUserCreateBootstrap", { enumerable: true, get: function () { return legalCompliance_1.onAuthUserCreateBootstrap; } });
 Object.defineProperty(exports, "onAuthUserDeleteSoftDelete", { enumerable: true, get: function () { return legalCompliance_1.onAuthUserDeleteSoftDelete; } });
 Object.defineProperty(exports, "onEventManagerWriteSyncUserRole", { enumerable: true, get: function () { return legalCompliance_1.onEventManagerWriteSyncUserRole; } });
 Object.defineProperty(exports, "purgeExpiredComplianceData", { enumerable: true, get: function () { return legalCompliance_1.purgeExpiredComplianceData; } });
 Object.defineProperty(exports, "requestAccountDeletion", { enumerable: true, get: function () { return legalCompliance_1.requestAccountDeletion; } });
 Object.defineProperty(exports, "requestDataExport", { enumerable: true, get: function () { return legalCompliance_1.requestDataExport; } });
+Object.defineProperty(exports, "requestPrivacyRight", { enumerable: true, get: function () { return legalCompliance_1.requestPrivacyRight; } });
 Object.defineProperty(exports, "syncUserSession", { enumerable: true, get: function () { return legalCompliance_1.syncUserSession; } });
+Object.defineProperty(exports, "updatePrivacyRequestStatusBackoffice", { enumerable: true, get: function () { return legalCompliance_1.updatePrivacyRequestStatusBackoffice; } });
 Object.defineProperty(exports, "updateUserComplianceProfile", { enumerable: true, get: function () { return legalCompliance_1.updateUserComplianceProfile; } });
 var onStudioWrite_1 = require("./studios/onStudioWrite");
 Object.defineProperty(exports, "onStudioCreated", { enumerable: true, get: function () { return onStudioWrite_1.onStudioCreated; } });

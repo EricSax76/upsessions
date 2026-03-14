@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/locator/locator.dart';
-import '../../../event_manager/cubits/event_manager_auth_cubit.dart';
+import '../../../auth/repositories/auth_repository.dart';
 import '../../cubits/venue_form_cubit.dart';
 import '../../cubits/venue_form_state.dart';
 import '../../models/venue_entity.dart';
@@ -93,11 +93,12 @@ class _ManagerVenueFormPageState extends State<ManagerVenueFormPage> {
   void _saveVenue() {
     if (!_controller.formKey.currentState!.validate()) return;
 
-    final managerId =
-        context.read<EventManagerAuthCubit>().state.manager?.id ?? '';
+    final managerId = locate<AuthRepository>().currentUser?.id ?? '';
     if (managerId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Debes iniciar sesión como manager.')),
+        const SnackBar(
+          content: Text('Debes iniciar sesión para gestionar locales.'),
+        ),
       );
       return;
     }
