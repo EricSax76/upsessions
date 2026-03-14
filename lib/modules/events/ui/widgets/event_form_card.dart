@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/gap.dart';
 import '../../models/event_entity.dart';
-import '../../models/event_enums.dart';
 import 'event_form/compliance_section.dart';
 import 'event_form/contact_section.dart';
+import 'event_form/event_form_controllers.dart';
 import 'event_form/general_info_section.dart';
 import 'event_form/location_calendar_section.dart';
 import 'event_form/logistics_section.dart';
@@ -25,27 +25,7 @@ class EventFormCard extends StatefulWidget {
 
 class _EventFormCardState extends State<EventFormCard> {
   final _formKey = GlobalKey<FormState>();
-  final _titleController = TextEditingController(text: '');
-  final _cityController = TextEditingController(text: '');
-  final _venueController = TextEditingController(text: '');
-  final _descriptionController = TextEditingController(text: '');
-  final _organizerController = TextEditingController(text: '');
-  final _contactEmailController = TextEditingController(text: '');
-  final _contactPhoneController = TextEditingController(text: '');
-  final _lineupController = TextEditingController(text: '');
-  final _tagsController = TextEditingController(text: '');
-  final _ticketController = TextEditingController(text: '');
-  final _capacityController = TextEditingController(text: '');
-  final _resourcesController = TextEditingController(text: '');
-  final _notesController = TextEditingController(text: '');
-  final _provinceController = TextEditingController(text: '');
-  final _postalCodeController = TextEditingController(text: '');
-  final _eventLicenseNumberController = TextEditingController(text: '');
-  final _ticketPriceController = TextEditingController(text: '');
-  final _vatRateController = TextEditingController(text: '');
-  final _ageRestrictionController = TextEditingController(text: '');
-  final _accessibilityInfoController = TextEditingController(text: '');
-  final _cancellationPolicyController = TextEditingController(text: '');
+  final _controllers = EventFormControllers();
 
   DateTime? _selectedDate;
   TimeOfDay? _startTime;
@@ -55,27 +35,7 @@ class _EventFormCardState extends State<EventFormCard> {
 
   @override
   void dispose() {
-    _titleController.dispose();
-    _cityController.dispose();
-    _venueController.dispose();
-    _descriptionController.dispose();
-    _organizerController.dispose();
-    _contactEmailController.dispose();
-    _contactPhoneController.dispose();
-    _lineupController.dispose();
-    _tagsController.dispose();
-    _ticketController.dispose();
-    _capacityController.dispose();
-    _resourcesController.dispose();
-    _notesController.dispose();
-    _provinceController.dispose();
-    _postalCodeController.dispose();
-    _eventLicenseNumberController.dispose();
-    _ticketPriceController.dispose();
-    _vatRateController.dispose();
-    _ageRestrictionController.dispose();
-    _accessibilityInfoController.dispose();
-    _cancellationPolicyController.dispose();
+    _controllers.dispose();
     super.dispose();
   }
 
@@ -87,9 +47,7 @@ class _EventFormCardState extends State<EventFormCard> {
       firstDate: now,
       lastDate: now.add(const Duration(days: 365)),
     );
-    if (date != null) {
-      setState(() => _selectedDate = date);
-    }
+    if (date != null) setState(() => _selectedDate = date);
   }
 
   Future<void> _pickTime({required bool start}) async {
@@ -100,20 +58,13 @@ class _EventFormCardState extends State<EventFormCard> {
           : (_endTime ?? const TimeOfDay(hour: 22, minute: 0)),
     );
     if (picked != null) {
-      setState(() {
-        if (start) {
-          _startTime = picked;
-        } else {
-          _endTime = picked;
-        }
-      });
+      setState(() => start ? _startTime = picked : _endTime = picked);
     }
   }
 
   void _submit() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
+
     final ownerId = widget.ownerId;
     if (ownerId == null || ownerId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -124,80 +75,15 @@ class _EventFormCardState extends State<EventFormCard> {
       return;
     }
 
-    final date = _selectedDate ?? DateTime.now().add(const Duration(days: 5));
-    final startTime = _startTime ?? const TimeOfDay(hour: 19, minute: 0);
-    final endTime = _endTime ?? const TimeOfDay(hour: 22, minute: 0);
-    final startDateTime = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      startTime.hour,
-      startTime.minute,
-    );
-    final endDateTime = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      endTime.hour,
-      endTime.minute,
-    );
-    final capacity = int.tryParse(_capacityController.text.trim()) ?? 0;
-    final ticketPrice = double.tryParse(_ticketPriceController.text.trim());
-    final vatRate = double.tryParse(_vatRateController.text.trim());
-    final ageRestriction = int.tryParse(_ageRestrictionController.text.trim());
-    final now = DateTime.now();
-    final event = EventEntity(
-      id: '',
+    final event = _controllers.buildEvent(
       ownerId: ownerId,
-      title: _titleController.text.trim(),
-      city: _cityController.text.trim(),
-      venue: _venueController.text.trim(),
-      start: startDateTime,
-      end: endDateTime,
-      description: _descriptionController.text.trim(),
-      organizer: _organizerController.text.trim(),
-      contactEmail: _contactEmailController.text.trim(),
-      contactPhone: _contactPhoneController.text.trim(),
-      lineup: _splitValues(_lineupController.text),
-      tags: _splitValues(_tagsController.text),
-      ticketInfo: _ticketController.text.trim(),
-      capacity: capacity,
-      resources: _splitValues(_resourcesController.text),
-      notes: _notesController.text.trim().isEmpty
-          ? null
-          : _notesController.text.trim(),
-      province: _provinceController.text.trim().isEmpty
-          ? null
-          : _provinceController.text.trim(),
-      postalCode: _postalCodeController.text.trim().isEmpty
-          ? null
-          : _postalCodeController.text.trim(),
-      eventLicenseNumber: _eventLicenseNumberController.text.trim().isEmpty
-          ? null
-          : _eventLicenseNumberController.text.trim(),
-      ticketPrice: ticketPrice,
-      vatRate: vatRate,
+      date: _selectedDate ?? DateTime.now().add(const Duration(days: 5)),
+      startTime: _startTime ?? const TimeOfDay(hour: 19, minute: 0),
+      endTime: _endTime ?? const TimeOfDay(hour: 22, minute: 0),
       isPublic: _isPublic,
-      ageRestriction: ageRestriction,
-      accessibilityInfo: _accessibilityInfoController.text.trim().isEmpty
-          ? null
-          : _accessibilityInfoController.text.trim(),
       isFree: _isFree,
-      cancellationPolicy: _cancellationPolicyController.text.trim().isEmpty
-          ? null
-          : _cancellationPolicyController.text.trim(),
-      updatedAt: now,
-      status: EventStatus.draft,
     );
     widget.onGenerateDraft(event);
-  }
-
-  List<String> _splitValues(String input) {
-    return input
-        .split(RegExp(r'[,\n]'))
-        .map((value) => value.trim())
-        .where((value) => value.isNotEmpty)
-        .toList();
   }
 
   @override
@@ -206,24 +92,24 @@ class _EventFormCardState extends State<EventFormCard> {
     final dateLabel = _selectedDate == null
         ? 'Selecciona una fecha'
         : loc.formatMediumDate(_selectedDate!);
-    final startLabel = _startTime == null
-        ? 'Inicio'
-        : loc.formatTimeOfDay(_startTime!);
-    final endLabel = _endTime == null ? 'Fin' : loc.formatTimeOfDay(_endTime!);
+    final startLabel =
+        _startTime == null ? 'Inicio' : loc.formatTimeOfDay(_startTime!);
+    final endLabel =
+        _endTime == null ? 'Fin' : loc.formatTimeOfDay(_endTime!);
 
     return Form(
       key: _formKey,
       child: Column(
         children: [
           GeneralInfoSection(
-            titleController: _titleController,
-            descriptionController: _descriptionController,
-            tagsController: _tagsController,
+            titleController: _controllers.title,
+            descriptionController: _controllers.description,
+            tagsController: _controllers.tags,
           ),
           const VSpace(16),
           LocationCalendarSection(
-            cityController: _cityController,
-            venueController: _venueController,
+            cityController: _controllers.city,
+            venueController: _controllers.venue,
             dateLabel: dateLabel,
             startLabel: startLabel,
             endLabel: endLabel,
@@ -233,28 +119,28 @@ class _EventFormCardState extends State<EventFormCard> {
           ),
           const VSpace(16),
           LogisticsSection(
-            lineupController: _lineupController,
-            resourcesController: _resourcesController,
-            ticketController: _ticketController,
-            capacityController: _capacityController,
+            lineupController: _controllers.lineup,
+            resourcesController: _controllers.resources,
+            ticketController: _controllers.ticket,
+            capacityController: _controllers.capacity,
           ),
           const VSpace(16),
           ContactSection(
-            organizerController: _organizerController,
-            contactEmailController: _contactEmailController,
-            contactPhoneController: _contactPhoneController,
-            notesController: _notesController,
+            organizerController: _controllers.organizer,
+            contactEmailController: _controllers.contactEmail,
+            contactPhoneController: _controllers.contactPhone,
+            notesController: _controllers.notes,
           ),
           const VSpace(16),
           ComplianceSection(
-            provinceController: _provinceController,
-            postalCodeController: _postalCodeController,
-            eventLicenseNumberController: _eventLicenseNumberController,
-            ticketPriceController: _ticketPriceController,
-            vatRateController: _vatRateController,
-            ageRestrictionController: _ageRestrictionController,
-            accessibilityInfoController: _accessibilityInfoController,
-            cancellationPolicyController: _cancellationPolicyController,
+            provinceController: _controllers.province,
+            postalCodeController: _controllers.postalCode,
+            eventLicenseNumberController: _controllers.eventLicenseNumber,
+            ticketPriceController: _controllers.ticketPrice,
+            vatRateController: _controllers.vatRate,
+            ageRestrictionController: _controllers.ageRestriction,
+            accessibilityInfoController: _controllers.accessibilityInfo,
+            cancellationPolicyController: _controllers.cancellationPolicy,
             isPublic: _isPublic,
             isFree: _isFree,
             onIsPublicChanged: (v) => setState(() => _isPublic = v),

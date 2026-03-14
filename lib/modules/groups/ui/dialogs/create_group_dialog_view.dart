@@ -5,9 +5,10 @@ import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../cubits/create_group_cubit.dart';
 import '../../cubits/create_group_state.dart';
+import 'create_group_dialog_content.dart';
+import 'photo_options_sheet.dart';
 
 const _dialogMaxWidth = 520.0;
-const _avatarRadius = 22.0;
 
 class CreateGroupDialogView extends StatelessWidget {
   const CreateGroupDialogView({
@@ -54,7 +55,7 @@ class CreateGroupDialogView extends StatelessWidget {
           content: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: _dialogMaxWidth),
             child: SingleChildScrollView(
-              child: _DialogContent(
+              child: CreateGroupDialogContent(
                 state: state,
                 nameController: nameController,
                 genreController: genreController,
@@ -86,218 +87,12 @@ class CreateGroupDialogView extends StatelessWidget {
   ) {
     showModalBottomSheet<void>(
       context: context,
-      builder: (context) => _PhotoOptionsSheet(
+      builder: (context) => PhotoOptionsSheet(
         hasPhoto: state.photoBytes != null,
         onPickGallery: () => cubit.pickPhoto(ImageSource.gallery),
         onPickCamera: () => cubit.pickPhoto(ImageSource.camera),
         onRemove: cubit.clearPhoto,
       ),
-    );
-  }
-}
-
-class _DialogContent extends StatelessWidget {
-  const _DialogContent({
-    required this.state,
-    required this.nameController,
-    required this.genreController,
-    required this.link1Controller,
-    required this.link2Controller,
-    required this.descriptionController,
-    required this.cityController,
-    required this.onShowPhotoOptions,
-  });
-
-  final CreateGroupState state;
-  final TextEditingController nameController;
-  final TextEditingController genreController;
-  final TextEditingController link1Controller;
-  final TextEditingController link2Controller;
-  final TextEditingController descriptionController;
-  final TextEditingController cityController;
-  final VoidCallback onShowPhotoOptions;
-
-  @override
-  Widget build(BuildContext context) {
-    const gapSmall = SizedBox(height: 8);
-    const gapMedium = SizedBox(height: 12);
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _PhotoTile(
-          state: state,
-          onTap: state.isPickingPhoto ? null : onShowPhotoOptions,
-        ),
-        gapSmall,
-        _CreateGroupTextField(
-          controller: nameController,
-          labelText: 'Nombre',
-          hintText: 'Ej. Banda X',
-          autofocus: true,
-        ),
-        gapMedium,
-        _CreateGroupTextField(
-          controller: genreController,
-          labelText: 'Género',
-          hintText: 'Ej. Rock / Jazz',
-        ),
-        gapMedium,
-        _CreateGroupTextField(
-          controller: descriptionController,
-          labelText: 'Descripción del grupo',
-          hintText: 'Historia, estilo, trayectoria...',
-          maxLines: 3,
-        ),
-        gapMedium,
-        _CreateGroupTextField(
-          controller: cityController,
-          labelText: 'Ciudad base',
-          hintText: 'Ej. Madrid',
-        ),
-        gapMedium,
-        _CreateGroupTextField(
-          controller: link1Controller,
-          labelText: 'Enlace 1',
-          hintText: 'https://...',
-          keyboardType: TextInputType.url,
-        ),
-        gapMedium,
-        _CreateGroupTextField(
-          controller: link2Controller,
-          labelText: 'Enlace 2',
-          hintText: 'https://...',
-          keyboardType: TextInputType.url,
-        ),
-      ],
-    );
-  }
-}
-
-class _PhotoTile extends StatelessWidget {
-  const _PhotoTile({required this.state, required this.onTap});
-
-  final CreateGroupState state;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(
-        radius: _avatarRadius,
-        backgroundImage: state.photoBytes == null
-            ? null
-            : MemoryImage(state.photoBytes!),
-        child: state.photoBytes == null
-            ? const Icon(Icons.groups_outlined)
-            : null,
-      ),
-      title: const Text('Foto del grupo'),
-      subtitle: Text(state.photoBytes == null ? 'Opcional' : 'Seleccionada'),
-      trailing: state.isPickingPhoto
-          ? const SizedBox(
-              height: 18,
-              width: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : const Icon(Icons.edit_outlined),
-      onTap: onTap,
-    );
-  }
-}
-
-class _CreateGroupTextField extends StatelessWidget {
-  const _CreateGroupTextField({
-    required this.controller,
-    required this.labelText,
-    required this.hintText,
-    this.keyboardType,
-    this.maxLines,
-    this.autofocus = false,
-  });
-
-  final TextEditingController controller;
-  final String labelText;
-  final String hintText;
-  final TextInputType? keyboardType;
-  final int? maxLines;
-  final bool autofocus;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(labelText: labelText, hintText: hintText),
-      keyboardType: keyboardType,
-      maxLines: maxLines ?? 1,
-      minLines: 1,
-      autofocus: autofocus,
-    );
-  }
-}
-
-class _PhotoOptionsSheet extends StatelessWidget {
-  const _PhotoOptionsSheet({
-    required this.hasPhoto,
-    required this.onPickGallery,
-    required this.onPickCamera,
-    required this.onRemove,
-  });
-
-  final bool hasPhoto;
-  final VoidCallback onPickGallery;
-  final VoidCallback onPickCamera;
-  final VoidCallback onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _PhotoOptionTile(
-            icon: Icons.photo_library_outlined,
-            title: 'Seleccionar de la galería',
-            onTap: onPickGallery,
-          ),
-          _PhotoOptionTile(
-            icon: Icons.photo_camera_outlined,
-            title: 'Usar la cámara',
-            onTap: onPickCamera,
-          ),
-          if (hasPhoto)
-            _PhotoOptionTile(
-              icon: Icons.delete_outline,
-              title: 'Quitar foto',
-              onTap: onRemove,
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PhotoOptionTile extends StatelessWidget {
-  const _PhotoOptionTile({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      onTap: () {
-        Navigator.of(context).pop();
-        onTap();
-      },
     );
   }
 }

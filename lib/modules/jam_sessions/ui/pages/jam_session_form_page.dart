@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/widgets/app_card.dart';
 import '../../../event_manager/cubits/event_manager_auth_cubit.dart';
 import '../../../venues/cubits/venues_catalog_cubit.dart';
 import '../../../venues/cubits/venues_catalog_state.dart';
@@ -10,11 +9,7 @@ import '../../../venues/models/venue_entity.dart';
 import '../../cubits/jam_session_form_cubit.dart';
 import '../../cubits/jam_session_form_state.dart';
 import '../controllers/jam_session_form_controller.dart';
-import '../widgets/form/jam_session_compliance_section.dart';
-import '../widgets/form/jam_session_general_section.dart';
-import '../widgets/form/jam_session_location_section.dart';
-import '../widgets/form/jam_session_schedule_section.dart';
-import '../widgets/form/jam_session_venue_section.dart';
+import '../widgets/form/jam_session_form_fields.dart';
 
 class JamSessionFormPage extends StatefulWidget {
   const JamSessionFormPage({super.key});
@@ -58,23 +53,17 @@ class _JamSessionFormPageState extends State<JamSessionFormPage> {
       }
       return;
     }
-
     final selected = _findSelectedVenue(state.venues);
     if (selected != null) return;
-
     _selectedVenueId = state.venues.first.id;
     _controller.applyVenueSelection(state.venues.first);
   }
 
   VenueEntity? _findSelectedVenue(List<VenueEntity> venues) {
     final selectedId = (_selectedVenueId ?? '').trim();
-    if (selectedId.isEmpty) {
-      return null;
-    }
+    if (selectedId.isEmpty) return null;
     for (final venue in venues) {
-      if (venue.id == selectedId) {
-        return venue;
-      }
+      if (venue.id == selectedId) return venue;
     }
     return null;
   }
@@ -87,9 +76,7 @@ class _JamSessionFormPageState extends State<JamSessionFormPage> {
       firstDate: now,
       lastDate: now.add(const Duration(days: 365)),
     );
-    if (picked != null) {
-      setState(() => _selectedDate = picked);
-    }
+    if (picked != null) setState(() => _selectedDate = picked);
   }
 
   Future<void> _pickTime() async {
@@ -97,9 +84,7 @@ class _JamSessionFormPageState extends State<JamSessionFormPage> {
       context: context,
       initialTime: _selectedTime ?? const TimeOfDay(hour: 20, minute: 0),
     );
-    if (picked != null) {
-      setState(() => _selectedTime = picked);
-    }
+    if (picked != null) setState(() => _selectedTime = picked);
   }
 
   void _saveSession(List<VenueEntity> venues) {
@@ -135,9 +120,7 @@ class _JamSessionFormPageState extends State<JamSessionFormPage> {
       return;
     }
 
-    final selectedVenue = _useRegisteredVenue
-        ? _findSelectedVenue(venues)
-        : null;
+    final selectedVenue = _useRegisteredVenue ? _findSelectedVenue(venues) : null;
     if (_useRegisteredVenue && selectedVenue == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Selecciona un local registrado.')),
@@ -153,16 +136,35 @@ class _JamSessionFormPageState extends State<JamSessionFormPage> {
       _selectedTime!.minute,
     );
 
-    final session = _controller.buildSession(
-      ownerId: managerId,
-      dateTime: dateTime,
-      selectedTime: _selectedTime!,
-      isPublic: _isPublic,
-      useRegisteredVenue: _useRegisteredVenue,
-      selectedVenue: selectedVenue,
+    context.read<JamSessionFormCubit>().saveSession(
+      _controller.buildSession(
+        ownerId: managerId,
+        dateTime: dateTime,
+        selectedTime: _selectedTime!,
+        isPublic: _isPublic,
+        useRegisteredVenue: _useRegisteredVenue,
+        selectedVenue: selectedVenue,
+      ),
     );
+  }
 
-    context.read<JamSessionFormCubit>().saveSession(session);
+  void _onToggleUseRegisteredVenue(bool value, List<VenueEntity> venues) {
+    setState(() {
+      _useRegisteredVenue = value;
+      if (_useRegisteredVenue && venues.isNotEmpty) {
+        _selectedVenueId = _selectedVenueId ?? venues.first.id;
+        final selected = _findSelectedVenue(venues);
+        if (selected != null) _controller.applyVenueSelection(selected);
+      }
+    });
+  }
+
+  void _onVenueSelected(String? value, List<VenueEntity> venues) {
+    setState(() {
+      _selectedVenueId = value;
+      final selected = _findSelectedVenue(venues);
+      if (selected != null) _controller.applyVenueSelection(selected);
+    });
   }
 
   void _onVenueStateChanged(BuildContext context, VenuesCatalogState state) {
@@ -202,9 +204,9 @@ class _JamSessionFormPageState extends State<JamSessionFormPage> {
               return;
             }
             if (state.errorMessage != null) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.errorMessage!)),
+              );
             }
           },
         ),
@@ -224,138 +226,31 @@ class _JamSessionFormPageState extends State<JamSessionFormPage> {
                   return BlocBuilder<VenuesCatalogCubit, VenuesCatalogState>(
                     builder: (context, venuesState) {
                       final venues = venuesState.venues;
-                      final hasVenues = venues.isNotEmpty;
-                      final locationReadOnly = _useRegisteredVenue && hasVenues;
-
-                      return IgnorePointer(
-                        ignoring: formState.isSaving,
-                        child: AppCard(
-                          padding: const EdgeInsets.all(24),
-                          child: Form(
-                            key: _controller.formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (formState.isSaving)
-                                  const LinearProgressIndicator(),
-                                if (formState.errorMessage != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 16),
-                                    child: Text(
-                                      formState.errorMessage!,
-                                      style: TextStyle(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.error,
-                                      ),
-                                    ),
-                                  ),
-                                JamSessionGeneralSection(
-                                  titleController: _controller.titleController,
-                                  descriptionController:
-                                      _controller.descriptionController,
-                                  requirementsController:
-                                      _controller.requirementsController,
-                                  requiredValidator:
-                                      _controller.requiredValidator,
-                                  requirementsValidator:
-                                      _controller.requirementsValidator,
-                                ),
-                                const SizedBox(height: 16),
-                                JamSessionScheduleSection(
-                                  dateLabel: dateLabel,
-                                  timeLabel: timeLabel,
-                                  onPickDate: _pickDate,
-                                  onPickTime: _pickTime,
-                                ),
-                                const SizedBox(height: 16),
-                                JamSessionVenueSection(
-                                  useRegisteredVenue: _useRegisteredVenue,
-                                  isLoadingVenues: venuesState.isLoading,
-                                  venuesError: venuesState.errorMessage,
-                                  venues: venues,
-                                  selectedVenueId: _selectedVenueId,
-                                  onToggleUseRegisteredVenue: (value) {
-                                    setState(() {
-                                      _useRegisteredVenue = value;
-                                      if (_useRegisteredVenue &&
-                                          venues.isNotEmpty) {
-                                        _selectedVenueId =
-                                            _selectedVenueId ?? venues.first.id;
-                                        final selected = _findSelectedVenue(
-                                          venues,
-                                        );
-                                        if (selected != null) {
-                                          _controller.applyVenueSelection(
-                                            selected,
-                                          );
-                                        }
-                                      }
-                                    });
-                                  },
-                                  onVenueSelected: (value) {
-                                    setState(() {
-                                      _selectedVenueId = value;
-                                      final selected = _findSelectedVenue(
-                                        venues,
-                                      );
-                                      if (selected != null) {
-                                        _controller.applyVenueSelection(
-                                          selected,
-                                        );
-                                      }
-                                    });
-                                  },
-                                  onRetryLoadVenues: () {
-                                    context
-                                        .read<VenuesCatalogCubit>()
-                                        .loadSelectableVenues(refresh: true);
-                                  },
-                                ),
-                                const SizedBox(height: 16),
-                                JamSessionLocationSection(
-                                  locationController:
-                                      _controller.locationController,
-                                  cityController: _controller.cityController,
-                                  provinceController:
-                                      _controller.provinceController,
-                                  readOnly: locationReadOnly,
-                                  requiredValidator:
-                                      _controller.requiredValidator,
-                                ),
-                                const SizedBox(height: 16),
-                                JamSessionComplianceSection(
-                                  isPublic: _isPublic,
-                                  onIsPublicChanged: (value) =>
-                                      setState(() => _isPublic = value),
-                                  maxAttendeesController:
-                                      _controller.maxAttendeesController,
-                                  entryFeeController:
-                                      _controller.entryFeeController,
-                                  ageRestrictionController:
-                                      _controller.ageRestrictionController,
-                                  optionalPositiveIntValidator:
-                                      _controller.optionalPositiveIntValidator,
-                                  optionalNonNegativeNumberValidator:
-                                      _controller
-                                          .optionalNonNegativeNumberValidator,
-                                ),
-                                const SizedBox(height: 24),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: FilledButton(
-                                    onPressed: () => _saveSession(venues),
-                                    child: Text(
-                                      formState.isSaving
-                                          ? 'Guardando...'
-                                          : 'Guardar Jam Session',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                      return JamSessionFormFields(
+                        controller: _controller,
+                        isSaving: formState.isSaving,
+                        formError: formState.errorMessage,
+                        venues: venues,
+                        isLoadingVenues: venuesState.isLoading,
+                        venuesError: venuesState.errorMessage,
+                        dateLabel: dateLabel,
+                        timeLabel: timeLabel,
+                        isPublic: _isPublic,
+                        useRegisteredVenue: _useRegisteredVenue,
+                        selectedVenueId: _selectedVenueId,
+                        locationReadOnly: _useRegisteredVenue && venues.isNotEmpty,
+                        onPickDate: _pickDate,
+                        onPickTime: _pickTime,
+                        onIsPublicChanged: (v) =>
+                            setState(() => _isPublic = v),
+                        onToggleUseRegisteredVenue: (value) =>
+                            _onToggleUseRegisteredVenue(value, venues),
+                        onVenueSelected: (value) =>
+                            _onVenueSelected(value, venues),
+                        onRetryLoadVenues: () => context
+                            .read<VenuesCatalogCubit>()
+                            .loadSelectableVenues(refresh: true),
+                        onSave: () => _saveSession(venues),
                       );
                     },
                   );

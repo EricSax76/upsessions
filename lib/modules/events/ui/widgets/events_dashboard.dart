@@ -3,9 +3,8 @@ import 'package:upsessions/core/widgets/empty_state_card.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../models/event_entity.dart';
-import 'event_cards.dart';
-
 import 'events_hero_section.dart';
+import 'sliver_event_list.dart';
 
 class EventsDashboard extends StatelessWidget {
   const EventsDashboard({
