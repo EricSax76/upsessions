@@ -44,6 +44,11 @@ class UserMenuList extends StatelessWidget {
       route: AppRoutes.jamSessions,
     ),
     _MenuItem(
+      label: 'Locales',
+      icon: Icons.location_city_outlined,
+      route: AppRoutes.venues,
+    ),
+    _MenuItem(
       label: 'Mensajes',
       icon: Icons.mail_outline,
       route: AppRoutes.messages,
@@ -72,11 +77,6 @@ class UserMenuList extends StatelessWidget {
       label: 'Salas de Ensayo',
       icon: Icons.music_note_outlined,
       route: AppRoutes.studios,
-    ),
-    _MenuItem(
-      label: 'Gestión de Sala',
-      icon: Icons.storefront_outlined,
-      route: AppRoutes.studiosDashboard,
     ),
     _MenuItem(
       label: 'Mis Reservas',

@@ -563,12 +563,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String roomDetailMaxDecibels(String decibels) {
-    return 'Máx. decibelios: ${decibels} dB';
+    return 'Máx. decibelios: $decibels dB';
   }
 
   @override
   String roomDetailMinimumAge(int age) {
-    return 'Edad mínima: ${age} años';
+    return 'Edad mínima: $age años';
   }
 
   @override

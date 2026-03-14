@@ -18,6 +18,11 @@ export {
 } from './legalCompliance';
 export { onStudioCreated, onStudioUpdated } from './studios/onStudioWrite';
 export { onBookingCreated } from './studios/onBookingWrite';
+export {
+  onStudioWriteSyncVenueProjection,
+  onVenueCreated,
+  onVenueUpdated,
+} from './venues/triggers';
 
 function stringList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];

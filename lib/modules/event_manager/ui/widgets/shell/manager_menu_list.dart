@@ -45,6 +45,14 @@ class ManagerMenuList extends StatelessWidget {
           ),
           _buildItem(
             context,
+            icon: Icons.location_city_outlined,
+            activeIcon: Icons.location_city,
+            label: 'Locales',
+            route: AppRoutes.eventManagerVenues,
+            currentLocation: location,
+          ),
+          _buildItem(
+            context,
             icon: Icons.calendar_month_outlined,
             activeIcon: Icons.calendar_month,
             label: 'Agenda',
@@ -58,9 +66,9 @@ class ManagerMenuList extends StatelessWidget {
               child: Text(
                 'CONTRATACIÓN',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           _buildItem(
@@ -135,25 +143,20 @@ class ManagerMenuList extends StatelessWidget {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12.0,
+              vertical: 12.0,
+            ),
             child: Row(
-              mainAxisAlignment:
-                  isCollapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
+              mainAxisAlignment: isCollapsed
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.start,
               children: [
-                Icon(
-                  icon,
-                  color: contentColor,
-                  size: 24,
-                ),
+                Icon(icon, color: contentColor, size: 24),
                 if (!isCollapsed) ...[
                   const SizedBox(width: 16),
                   Expanded(
-                    child: Text(
-                      label,
-                      style: TextStyle(
-                        color: contentColor,
-                      ),
-                    ),
+                    child: Text(label, style: TextStyle(color: contentColor)),
                   ),
                 ],
               ],
@@ -190,14 +193,20 @@ class ManagerMenuList extends StatelessWidget {
             }
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12.0,
+              vertical: 12.0,
+            ),
             child: Row(
-              mainAxisAlignment:
-                  isCollapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
+              mainAxisAlignment: isCollapsed
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.start,
               children: [
                 Icon(
                   isActive ? activeIcon : icon,
-                  color: isActive ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
+                  color: isActive
+                      ? colorScheme.onPrimaryContainer
+                      : colorScheme.onSurfaceVariant,
                   size: 24,
                 ),
                 if (!isCollapsed) ...[
@@ -206,9 +215,12 @@ class ManagerMenuList extends StatelessWidget {
                     child: Text(
                       label,
                       style: TextStyle(
-                        color:
-                            isActive ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
-                        fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                        color: isActive
+                            ? colorScheme.onPrimaryContainer
+                            : colorScheme.onSurface,
+                        fontWeight: isActive
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                   ),

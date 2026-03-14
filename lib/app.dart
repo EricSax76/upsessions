@@ -33,6 +33,7 @@ import 'package:upsessions/modules/rehearsals/use_cases/create_rehearsal_use_cas
 import 'package:upsessions/modules/announcements/repositories/announcements_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.dart';
 import 'package:upsessions/features/media/repositories/media_repository.dart';
+import 'package:upsessions/modules/venues/repositories/venues_repository.dart';
 import 'package:upsessions/router/app_router.dart';
 
 class UpsessionsApp extends StatelessWidget {
@@ -74,6 +75,7 @@ class UpsessionsApp extends StatelessWidget {
         RepositoryProvider(create: (_) => locate<AnnouncementsRepository>()),
         RepositoryProvider(create: (_) => locate<SetlistRepository>()),
         RepositoryProvider(create: (_) => locate<MediaRepository>()),
+        RepositoryProvider(create: (_) => locate<VenuesRepository>()),
         RepositoryProvider(create: (_) => locate<AffinityOptionsRepository>()),
         RepositoryProvider(create: (_) => locate<ArtistImageRepository>()),
       ],

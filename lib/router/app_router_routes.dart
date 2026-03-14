@@ -12,7 +12,6 @@ import '../features/media/ui/pages/media_gallery_page.dart';
 import '../features/legal/ui/pages/legal_pages.dart';
 import '../modules/notifications/ui/pages/notifications_page.dart';
 import '../features/onboarding/ui/pages/app_welcome_page.dart';
-import '../features/onboarding/ui/pages/musician_onboarding_page.dart';
 import '../features/onboarding/ui/pages/book_onboarding_page.dart';
 import '../features/onboarding/ui/pages/collaborate_onboarding_page.dart';
 import '../features/onboarding/ui/pages/showcase_onboarding_page.dart';
@@ -27,61 +26,26 @@ import '../modules/notifications/repositories/invite_notifications_repository.da
 import '../features/media/repositories/media_repository.dart';
 import '../modules/announcements/ui/pages/announcement_form_page.dart';
 import '../modules/announcements/ui/pages/announcements_hub_page.dart';
-import '../modules/musicians/repositories/affinity_options_repository.dart';
-import '../modules/musicians/repositories/artist_image_repository.dart';
 import '../modules/auth/ui/pages/forgot_password_page.dart';
 import '../modules/auth/ui/pages/login_page.dart';
 import '../modules/auth/ui/pages/register_page.dart';
 import '../modules/groups/ui/pages/groups_page.dart';
-import '../modules/matching/ui/pages/matching_page.dart';
-import '../modules/musicians/ui/pages/musicians_hub_page.dart';
 import '../modules/profile/ui/pages/account_page.dart';
 import '../modules/profile/ui/pages/profile_edit_page.dart';
-import '../modules/studios/ui/pages/studio_login_page.dart';
-import '../modules/studios/ui/pages/studio_register_page.dart';
-import '../modules/studios/ui/consumer/musician_bookings_page.dart';
-import '../modules/studios/ui/provider/create_studio_page.dart';
-import '../modules/studios/ui/provider/studio_dashboard_page.dart';
-import '../modules/studios/ui/widgets/studio_shell_page.dart';
-import '../modules/studios/cubits/my_studio_cubit.dart';
-import '../modules/studios/repositories/studios_repository.dart';
-import '../modules/event_manager/ui/pages/manager_login_page.dart';
-import '../modules/event_manager/ui/pages/manager_register_page.dart';
-import '../modules/event_manager/ui/pages/manager_dashboard_page.dart';
-import '../modules/event_manager/ui/pages/manager_events_page.dart';
-import '../modules/event_manager/ui/pages/manager_event_detail_page.dart';
-import '../modules/event_manager/ui/pages/manager_event_form_page.dart';
-import '../modules/jam_sessions/ui/pages/jam_sessions_page.dart';
+import '../modules/musicians/repositories/affinity_options_repository.dart';
+import '../modules/musicians/repositories/artist_image_repository.dart';
 import '../modules/jam_sessions/ui/pages/jam_session_detail_page.dart';
-import '../modules/jam_sessions/ui/pages/jam_session_form_page.dart';
 import '../modules/jam_sessions/ui/pages/public_jam_sessions_page.dart';
 import '../modules/jam_sessions/cubits/public_jam_sessions_cubit.dart';
-import '../modules/event_manager/ui/pages/manager_agenda_page.dart';
-import '../modules/event_manager/ui/pages/hire_musicians_page.dart';
-import '../modules/event_manager/ui/pages/gig_offers_page.dart';
-import '../modules/event_manager/ui/widgets/hiring/gig_offer_form.dart';
-import '../modules/event_manager/ui/pages/manager_profile_page.dart';
-import '../modules/event_manager/ui/pages/manager_settings_page.dart';
-import '../modules/event_manager/ui/widgets/shell/manager_shell_page.dart';
-import '../modules/event_manager/cubits/event_manager_auth_cubit.dart';
-import '../modules/event_manager/repositories/event_manager_repository.dart';
-import '../modules/event_manager/cubits/manager_dashboard_cubit.dart';
-import '../modules/event_manager/cubits/manager_events_cubit.dart';
-import '../modules/event_manager/cubits/manager_event_form_cubit.dart';
-import '../modules/jam_sessions/cubits/jam_sessions_cubit.dart';
-import '../modules/jam_sessions/cubits/jam_session_form_cubit.dart';
-import '../modules/event_manager/cubits/manager_agenda_cubit.dart';
-import '../modules/event_manager/repositories/manager_events_repository.dart';
 import '../modules/jam_sessions/repositories/jam_sessions_repository.dart';
-import '../modules/event_manager/cubits/musician_requests_cubit.dart';
-import '../modules/event_manager/cubits/gig_offers_cubit.dart';
-import '../modules/event_manager/cubits/gig_offer_form_cubit.dart';
-import '../modules/event_manager/repositories/musician_requests_repository.dart';
-import '../modules/event_manager/repositories/gig_offers_repository.dart';
-import '../modules/event_manager/cubits/hire_musicians_cubit.dart';
-import '../modules/musicians/repositories/musicians_repository.dart';
+import '../modules/venues/cubits/public_venues_cubit.dart';
+import '../modules/venues/ui/pages/public_venues_page.dart';
+import '../modules/venues/repositories/venues_repository.dart';
 import 'app_router_builders.dart';
 import 'app_router_shell.dart';
+import 'musician_routes.dart';
+import 'studio_routes.dart';
+import 'event_manager_routes.dart';
 
 NoTransitionPage<void> _noTransitionPage(GoRouterState state, Widget child) {
   return NoTransitionPage<void>(key: state.pageKey, child: child);
@@ -144,15 +108,11 @@ List<RouteBase> buildAppRoutes() {
       path: AppRoutes.legalCookies,
       builder: (context, state) => const CookiesPolicyPage(),
     ),
-    GoRoute(
-      path: AppRoutes.musicianOnboarding,
-      builder: (context, state) => Scaffold(
-        body: MusicianOnboardingPage(
-          affinityOptionsRepository: context.read<AffinityOptionsRepository>(),
-          artistImageRepository: context.read<ArtistImageRepository>(),
-        ),
-      ),
-    ),
+    ...buildMusicianOuterRoutes(),
+    // Studio provider routes must be evaluated before the user shell routes
+    // to avoid collisions like `/studios/:studioId/rooms/new` being captured
+    // by `/studios/:studioId/rooms/:roomId`.
+    ...buildStudioOuterRoutes(),
     ShellRoute(
       builder: (context, state, child) => buildUserShell(context, child),
       routes: [
@@ -160,38 +120,6 @@ List<RouteBase> buildAppRoutes() {
           path: AppRoutes.userHome,
           pageBuilder: (context, state) =>
               _noTransitionPage(state, const UserHomePage()),
-        ),
-        GoRoute(
-          path: AppRoutes.musicians,
-          pageBuilder: (context, state) =>
-              _noTransitionPage(state, const MusiciansHubPage()),
-        ),
-        GoRoute(
-          path: '/musicians/detail',
-          redirect: (context, state) {
-            final musicianId = state.uri.queryParameters['musicianId']?.trim();
-            if (musicianId != null && musicianId.isNotEmpty) {
-              return AppRoutes.musicianDetailPath(
-                musicianId: musicianId,
-                musicianName: '',
-              );
-            }
-            return AppRoutes.musicians;
-          },
-        ),
-        GoRoute(
-          path: AppRoutes.musicianDetailRoute,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            buildMusicianDetailRoute(context, state),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.musicianDetailLegacyRoute,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            buildMusicianDetailRoute(context, state),
-          ),
         ),
         GoRoute(
           path: AppRoutes.announcements,
@@ -272,6 +200,18 @@ List<RouteBase> buildAppRoutes() {
                 authRepository: locate<AuthRepository>(),
               )..loadSessions(),
               child: const PublicJamSessionsPage(),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.venues,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            BlocProvider(
+              create: (context) => PublicVenuesCubit(
+                venuesRepository: locate<VenuesRepository>(),
+              ),
+              child: const PublicVenuesPage(),
             ),
           ),
         ),
@@ -382,260 +322,10 @@ List<RouteBase> buildAppRoutes() {
           pageBuilder: (context, state) =>
               _noTransitionPage(state, const HelpPage()),
         ),
-        GoRoute(
-          path: AppRoutes.studios,
-          pageBuilder: (context, state) =>
-              _noTransitionPage(state, buildStudiosListRoute(context, state)),
-        ),
-        GoRoute(
-          path: AppRoutes.studiosRoomsRoute,
-          pageBuilder: (context, state) =>
-              _noTransitionPage(state, buildStudiosRoomsRoute(context, state)),
-        ),
-        GoRoute(
-          path: AppRoutes.studiosRoomCreateRoute,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            buildStudiosRoomCreateRoute(context, state),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.studiosRoomEditRoute,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            buildStudiosRoomEditRoute(context, state),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.studiosRoomDetailRoute,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            buildStudiosRoomDetailRoute(context, state),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.myBookings,
-          pageBuilder: (context, state) =>
-              _noTransitionPage(state, const MusicianBookingsPage()),
-        ),
-        GoRoute(
-          path: AppRoutes.affinity,
-          pageBuilder: (context, state) =>
-              _noTransitionPage(state, const MatchingPage()),
-        ),
-        GoRoute(
-          path: AppRoutes.matching,
-          redirect: (context, state) => AppRoutes.affinity,
-        ),
+        ...buildMusicianShellRoutes(),
+        ...buildStudioShellRoutes(),
       ],
     ),
-    GoRoute(
-      path: AppRoutes.studiosLogin,
-      builder: (context, state) => const StudioLoginPage(),
-    ),
-    GoRoute(
-      path: AppRoutes.studiosRegister,
-      builder: (context, state) => const StudioRegisterPage(),
-    ),
-    GoRoute(
-      path: AppRoutes.studiosCreate,
-      builder: (context, state) {
-        return BlocProvider(
-          create: (context) =>
-              MyStudioCubit(repository: locate<StudiosRepository>()),
-          child: const StudioShellPage(child: CreateStudioPage()),
-        );
-      },
-    ),
-    GoRoute(
-      path: AppRoutes.studiosDashboard,
-      pageBuilder: (context, state) {
-        final authRepo = locate<AuthRepository>();
-        final userId = authRepo.currentUser?.id;
-        return _noTransitionPage(
-          state,
-          BlocProvider(
-            create: (context) {
-              final cubit = MyStudioCubit(
-                repository: locate<StudiosRepository>(),
-              );
-              if (userId != null) {
-                cubit.loadMyStudio(userId);
-              }
-              return cubit;
-            },
-            child: const StudioShellPage(child: StudioDashboardPage()),
-          ),
-        );
-      },
-    ),
-    GoRoute(
-      path: AppRoutes.studiosProfile,
-      pageBuilder: (context, state) =>
-          _noTransitionPage(state, buildStudiosProfileRoute(context, state)),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerLogin,
-      builder: (context, state) => const ManagerLoginPage(),
-    ),
-    GoRoute(
-      path: AppRoutes.eventManagerRegister,
-      builder: (context, state) => const ManagerRegisterPage(),
-    ),
-    ShellRoute(
-      builder: (context, state, child) => BlocProvider(
-        create: (context) => EventManagerAuthCubit(
-          authRepository: locate<AuthRepository>(),
-          managerRepository: locate<EventManagerRepository>(),
-        )..loadProfile(),
-        child: ManagerShellPage(child: child),
-      ),
-      routes: [
-        GoRoute(
-          path: AppRoutes.eventManagerDashboard,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            BlocProvider(
-              create: (context) => ManagerDashboardCubit(
-                eventsRepository: locate<ManagerEventsRepository>(),
-                authRepository: locate<AuthRepository>(),
-              ),
-              child: const ManagerDashboardPage(),
-            ),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerEvents,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            BlocProvider(
-              create: (context) => ManagerEventsCubit(
-                repository: locate<ManagerEventsRepository>(),
-                authRepository: locate<AuthRepository>(),
-              ),
-              child: const ManagerEventsPage(),
-            ),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerEventForm,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            BlocProvider(
-              create: (context) => ManagerEventFormCubit(
-                repository: locate<ManagerEventsRepository>(),
-              ),
-              child: const ManagerEventFormPage(),
-            ),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerEventDetail,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            ManagerEventDetailPage(eventId: state.pathParameters['eventId']!),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerJamSessions,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            BlocProvider(
-              create: (context) => JamSessionsCubit(
-                repository: locate<JamSessionsRepository>(),
-                authRepository: locate<AuthRepository>(),
-              ),
-              child: const JamSessionsPage(),
-            ),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerJamSessionForm,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            BlocProvider(
-              create: (context) => JamSessionFormCubit(
-                repository: locate<JamSessionsRepository>(),
-              ),
-              child: const JamSessionFormPage(),
-            ),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerJamSessionDetail,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            JamSessionDetailPage(sessionId: state.pathParameters['sessionId']!),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerAgenda,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            BlocProvider(
-              create: (context) => ManagerAgendaCubit(
-                eventsRepository: locate<ManagerEventsRepository>(),
-                jamSessionsRepository: locate<JamSessionsRepository>(),
-                authRepository: locate<AuthRepository>(),
-              ),
-              child: const ManagerAgendaPage(),
-            ),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerHireMusicians,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                  create: (context) => MusicianRequestsCubit(
-                    repository: locate<MusicianRequestsRepository>(),
-                  ),
-                ),
-                BlocProvider(
-                  create: (context) => HireMusiciansCubit(
-                    repository: locate<MusiciansRepository>(),
-                  ),
-                ),
-              ],
-              child: const HireMusiciansPage(),
-            ),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerGigOffers,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            BlocProvider(
-              create: (context) =>
-                  GigOffersCubit(repository: locate<GigOffersRepository>()),
-              child: const GigOffersPage(),
-            ),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerGigOfferForm,
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            BlocProvider(
-              create: (context) =>
-                  GigOfferFormCubit(repository: locate<GigOffersRepository>()),
-              child: const GigOfferForm(),
-            ),
-          ),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerProfile,
-          pageBuilder: (context, state) =>
-              _noTransitionPage(state, const ManagerProfilePage()),
-        ),
-        GoRoute(
-          path: AppRoutes.eventManagerSettings,
-          pageBuilder: (context, state) =>
-              _noTransitionPage(state, const ManagerSettingsPage()),
-        ),
-      ],
-    ),
+    ...buildEventManagerRoutes(),
   ];
 }

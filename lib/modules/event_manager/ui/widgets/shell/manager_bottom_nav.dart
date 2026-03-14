@@ -9,16 +9,18 @@ class ManagerBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
-    
+
     int currentIndex = 0;
     if (location.startsWith(AppRoutes.eventManagerJamSessions)) {
       currentIndex = 2;
+    } else if (location.startsWith(AppRoutes.eventManagerVenues)) {
+      currentIndex = 1;
     } else if (location.startsWith(AppRoutes.eventManagerEvents)) {
       currentIndex = 1;
     } else if (location.startsWith(AppRoutes.eventManagerAgenda)) {
       currentIndex = 3;
     } else if (location.startsWith(AppRoutes.eventManagerHireMusicians) ||
-               location.startsWith(AppRoutes.eventManagerGigOffers)) {
+        location.startsWith(AppRoutes.eventManagerGigOffers)) {
       currentIndex = 4;
     }
 

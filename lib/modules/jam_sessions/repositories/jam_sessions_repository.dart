@@ -29,7 +29,6 @@ class JamSessionsRepository {
     final now = Timestamp.fromDate(DateTime.now());
     final snapshot = await _collection
         .where('ownerId', isEqualTo: managerId)
-        .where('isPublic', isEqualTo: true)
         .where('date', isGreaterThanOrEqualTo: now)
         .orderBy('date')
         .get();

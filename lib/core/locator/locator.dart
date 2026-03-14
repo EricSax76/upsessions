@@ -42,6 +42,8 @@ import 'package:upsessions/modules/notifications/repositories/invite_notificatio
 import 'package:upsessions/modules/studios/repositories/firestore_studios_repository.dart';
 import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
 import 'package:upsessions/modules/studios/services/studio_image_service.dart';
+import 'package:upsessions/modules/venues/repositories/firestore_venues_repository.dart';
+import 'package:upsessions/modules/venues/repositories/venues_repository.dart';
 import 'package:upsessions/modules/matching/repositories/matching_repository.dart';
 import 'package:upsessions/modules/event_manager/repositories/event_manager_repository.dart';
 import 'package:upsessions/modules/event_manager/repositories/manager_events_repository.dart';
@@ -196,6 +198,9 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<StudiosRepository>(
       () => FirestoreStudiosRepository(firestore: getIt<FirebaseFirestore>()),
+    )
+    ..registerLazySingleton<VenuesRepository>(
+      () => FirestoreVenuesRepository(firestore: getIt<FirebaseFirestore>()),
     )
     ..registerLazySingleton<StudioImageService>(
       () => StudioImageService(storage: getIt<FirebaseStorage>()),

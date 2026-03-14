@@ -25,7 +25,12 @@ class _JamSessionsPageState extends State<JamSessionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoutes.eventManagerJamSessionForm),
+        onPressed: () async {
+          final sessionsCubit = context.read<JamSessionsCubit>();
+          await context.push(AppRoutes.eventManagerJamSessionForm);
+          if (!mounted) return;
+          sessionsCubit.loadSessions();
+        },
         icon: const Icon(Icons.add),
         label: const Text('Nueva Jam Session'),
       ),
@@ -80,8 +85,8 @@ class _JamSessionsPageState extends State<JamSessionsPage> {
                   child: Text(
                     'Mis Jam Sessions',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 );
               }
@@ -118,7 +123,10 @@ class _JamSessionCard extends StatelessWidget {
               : null,
         ),
         child: session.coverImageUrl == null
-            ? Icon(Icons.music_note, color: Theme.of(context).colorScheme.onTertiaryContainer)
+            ? Icon(
+                Icons.music_note,
+                color: Theme.of(context).colorScheme.onTertiaryContainer,
+              )
             : null,
       ),
       title: Text(
@@ -133,7 +141,8 @@ class _JamSessionCard extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       trailing: const Icon(Icons.chevron_right),
-      onTap: () => context.push(AppRoutes.eventManagerJamSessionDetailPath(session.id)),
+      onTap: () =>
+          context.push(AppRoutes.eventManagerJamSessionDetailPath(session.id)),
     );
   }
 

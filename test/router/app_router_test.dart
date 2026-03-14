@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/router/app_router.dart';
+import 'package:upsessions/router/app_router_routes.dart';
 
 void main() {
   group('AppRouter', () {
@@ -54,6 +55,7 @@ void main() {
         AppRoutes.media,
         AppRoutes.messages,
         AppRoutes.events,
+        AppRoutes.venues,
         '/events/detail',
         AppRoutes.eventDetailRoute,
         AppRoutes.profile,
@@ -83,6 +85,19 @@ void main() {
         }
       }
       expect(duplicates, isEmpty);
+    });
+
+    test('registers studio session routes before user shell', () {
+      final routes = buildAppRoutes();
+      final firstShellIndex = routes.indexWhere((route) => route is ShellRoute);
+      final studioCreateIndex = routes.indexWhere(
+        (route) =>
+            route is GoRoute && route.path == AppRoutes.studiosRoomCreateRoute,
+      );
+
+      expect(firstShellIndex, isNonNegative);
+      expect(studioCreateIndex, isNonNegative);
+      expect(studioCreateIndex, lessThan(firstShellIndex));
     });
   });
 }
