@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:cloud_functions/cloud_functions.dart';
 
 import '../models/artist_image_info.dart';
+import '../models/musician_string_utils.dart';
 
 class ArtistImageRepository {
   ArtistImageRepository({required FirebaseFunctions functions})

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
+import 'package:upsessions/modules/musicians/models/musician_string_utils.dart';
 
 import 'package:upsessions/modules/musicians/ui/widgets/artist_influence_tile.dart';
 

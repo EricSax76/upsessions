@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../../features/home/repositories/home_metadata_repository.dart';
@@ -17,6 +19,26 @@ class MusicianSearchCubit extends Cubit<MusicianSearchState> {
 
   final MusiciansRepository _repository;
   final HomeMetadataRepository _metadataRepository;
+  static const Duration _queryDebounceDuration = Duration(milliseconds: 500);
+  Timer? _queryDebounce;
+
+  void onQueryChanged(String query) {
+    final normalizedQuery = query.trim();
+    if (normalizedQuery == state.query) {
+      return;
+    }
+
+    emit(state.copyWith(query: normalizedQuery, errorMessage: null));
+    _queryDebounce?.cancel();
+    _queryDebounce = Timer(_queryDebounceDuration, () {
+      search(query: normalizedQuery);
+    });
+  }
+
+  Future<void> searchNow({String? query}) async {
+    _queryDebounce?.cancel();
+    await search(query: query?.trim());
+  }
 
   Future<void> loadFilters() async {
     if (state.areFiltersLoading || state.provinces.isNotEmpty) return;
@@ -80,9 +102,11 @@ class MusicianSearchCubit extends Cubit<MusicianSearchState> {
     emit(state.copyWith(gender: gender));
   }
 
-  void clearFilters() {
+  Future<void> clearFilters() async {
+    _queryDebounce?.cancel();
     emit(
       state.copyWith(
+        query: '',
         instrument: '',
         style: '',
         province: '',
@@ -92,11 +116,11 @@ class MusicianSearchCubit extends Cubit<MusicianSearchState> {
         cities: const [],
       ),
     );
-    search(query: '');
+    await search(query: '');
   }
 
   Future<void> search({String? query}) async {
-    final effectiveQuery = query ?? state.query;
+    final effectiveQuery = (query ?? state.query).trim();
 
     emit(
       state.copyWith(
@@ -125,5 +149,11 @@ class MusicianSearchCubit extends Cubit<MusicianSearchState> {
         ),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    _queryDebounce?.cancel();
+    return super.close();
   }
 }

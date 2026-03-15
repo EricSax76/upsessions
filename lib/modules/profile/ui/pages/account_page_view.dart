@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
+import 'package:upsessions/modules/musicians/models/musician_string_utils.dart';
 import 'package:upsessions/modules/musicians/repositories/artist_image_repository.dart';
 
 import '../../../../core/constants/app_routes.dart';

@@ -1,6 +1,8 @@
 part of 'musician_search_cubit.dart';
 
 class MusicianSearchState extends Equatable {
+  static const Object _errorMessageUnchanged = Object();
+
   const MusicianSearchState({
     this.results = const [],
     this.isLoading = false,
@@ -37,7 +39,7 @@ class MusicianSearchState extends Equatable {
     List<MusicianEntity>? results,
     bool? isLoading,
     String? query,
-    String? errorMessage,
+    Object? errorMessage = _errorMessageUnchanged,
     String? instrument,
     String? style,
     String? province,
@@ -52,7 +54,9 @@ class MusicianSearchState extends Equatable {
       results: results ?? this.results,
       isLoading: isLoading ?? this.isLoading,
       query: query ?? this.query,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: identical(errorMessage, _errorMessageUnchanged)
+          ? this.errorMessage
+          : errorMessage as String?,
       instrument: instrument ?? this.instrument,
       style: style ?? this.style,
       province: province ?? this.province,
@@ -67,18 +71,18 @@ class MusicianSearchState extends Equatable {
 
   @override
   List<Object?> get props => [
-        results,
-        isLoading,
-        query,
-        errorMessage,
-        instrument,
-        style,
-        province,
-        city,
-        profileType,
-        gender,
-        provinces,
-        cities,
-        areFiltersLoading,
-      ];
+    results,
+    isLoading,
+    query,
+    errorMessage,
+    instrument,
+    style,
+    province,
+    city,
+    profileType,
+    gender,
+    provinces,
+    cities,
+    areFiltersLoading,
+  ];
 }

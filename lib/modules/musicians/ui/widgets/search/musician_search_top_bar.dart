@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../../core/widgets/forms/search_field.dart';
@@ -8,29 +9,11 @@ class MusicianSearchTopBar extends StatelessWidget {
   const MusicianSearchTopBar({
     super.key,
     required this.controller,
-    required this.onSubmitted,
-    required this.onPressed,
-    this.state,
-    this.onClearFilters,
-    this.onInstrumentChanged,
-    this.onStyleChanged,
-    this.onProfileTypeChanged,
-    this.onGenderChanged,
-    this.onProvinceChanged,
-    this.onCityChanged,
+    required this.onFiltersPressed,
   });
 
   final TextEditingController controller;
-  final ValueChanged<String> onSubmitted;
-  final VoidCallback onPressed;
-  final MusicianSearchState? state;
-  final VoidCallback? onClearFilters;
-  final ValueChanged<String>? onInstrumentChanged;
-  final ValueChanged<String>? onStyleChanged;
-  final ValueChanged<String>? onProfileTypeChanged;
-  final ValueChanged<String>? onGenderChanged;
-  final ValueChanged<String>? onProvinceChanged;
-  final ValueChanged<String>? onCityChanged;
+  final VoidCallback onFiltersPressed;
 
   int _activeFilterCount(MusicianSearchState state) {
     var count = 0;
@@ -48,9 +31,16 @@ class MusicianSearchTopBar extends StatelessWidget {
     final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
-    final activeFilters = state != null ? _activeFilterCount(state!) : 0;
+    final state = context.watch<MusicianSearchCubit>().state;
+    final activeFilters = _activeFilterCount(state);
     final hasFilters = activeFilters > 0;
+    final cubit = context.read<MusicianSearchCubit>();
+    if (controller.text != state.query) {
+      controller.value = TextEditingValue(
+        text: state.query,
+        selection: TextSelection.collapsed(offset: state.query.length),
+      );
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -72,49 +62,44 @@ class MusicianSearchTopBar extends StatelessWidget {
               child: SearchField(
                 controller: controller,
                 hintText: loc.searchTopBarHint,
-                onSubmitted: onSubmitted,
-                onChanged:
-                    (
-                      _,
-                    ) {}, // The live search will be handled in the controller listener
+                onSubmitted: (value) => cubit.searchNow(query: value),
+                onChanged: cubit.onQueryChanged,
                 decoration: const InputDecoration(border: InputBorder.none),
               ),
             ),
           ),
-          if (state != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.tune_rounded),
-                    color: hasFilters
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant,
-                    onPressed:
-                        onPressed, // In mobile, this will open the bottom sheet
-                    tooltip: 'Filtros avanzados',
-                  ),
-                  if (hasFilters)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: colorScheme.error,
-                          shape: BoxShape.circle,
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 8,
-                          minHeight: 8,
-                        ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.tune_rounded),
+                  color: hasFilters
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
+                  onPressed: onFiltersPressed,
+                  tooltip: 'Filtros avanzados',
+                ),
+                if (hasFilters)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: colorScheme.error,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 8,
+                        minHeight: 8,
                       ),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
+          ),
         ],
       ),
     );

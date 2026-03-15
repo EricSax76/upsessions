@@ -1,7 +1,3 @@
-String normalizeArtistName(String value) {
-  return value.trim().toLowerCase();
-}
-
 class ArtistImageInfo {
   const ArtistImageInfo({this.imageUrl, this.spotifyUrl});
 

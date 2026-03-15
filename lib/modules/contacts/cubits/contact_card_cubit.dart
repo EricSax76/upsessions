@@ -2,7 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
+import '../../../modules/musicians/models/musician_compliance_info.dart';
 import '../../../modules/musicians/models/musician_entity.dart';
+import '../../../modules/musicians/models/musician_professional_info.dart';
 import '../models/liked_musician.dart';
 import 'contact_card_state.dart';
 
@@ -54,7 +56,8 @@ class ContactCardCubit extends Cubit<ContactCardState> {
       experienceYears: musician.experienceYears,
       photoUrl: musician.photoUrl,
       rating: musician.rating,
-      updatedAt: DateTime.now(),
+      compliance: MusicianComplianceInfo(updatedAt: DateTime.now()),
+      professional: const MusicianProfessionalInfo(),
     );
   }
 }

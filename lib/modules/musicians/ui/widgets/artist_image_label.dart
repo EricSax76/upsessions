@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:upsessions/modules/musicians/ui/utils/spotify_launcher.dart';
 
 class ArtistImageLabel extends StatelessWidget {
   const ArtistImageLabel({
@@ -153,40 +153,7 @@ class _SpotifyLinkButton extends StatelessWidget {
       message: 'Abrir en Spotify',
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: () async {
-          try {
-            final openedExternally = await launchUrl(
-              uri,
-              mode: LaunchMode.externalApplication,
-            );
-            if (openedExternally) {
-              return;
-            }
-
-            final openedWithDefault = await launchUrl(
-              uri,
-              mode: LaunchMode.platformDefault,
-            );
-            if (openedWithDefault || !context.mounted) {
-              return;
-            }
-
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('No se pudo abrir el enlace de Spotify.'),
-              ),
-            );
-          } catch (_) {
-            if (!context.mounted) {
-              return;
-            }
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('No se pudo abrir el enlace de Spotify.'),
-              ),
-            );
-          }
-        },
+        onTap: () => SpotifyLauncher.launch(context, uri.toString()),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           decoration: BoxDecoration(

@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upsessions/core/utils/age_gate_utils.dart';
 import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
+import 'package:upsessions/modules/musicians/models/musician_string_utils.dart';
 import 'package:upsessions/modules/musicians/application/affinity_flow.dart';
 
 import 'package:upsessions/modules/auth/models/profile_entity.dart';

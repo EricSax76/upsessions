@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:upsessions/core/constants/music_styles.dart';
 import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/musicians/application/affinity_flow.dart';
-import 'package:upsessions/modules/musicians/models/artist_image_info.dart';
+
+import 'package:upsessions/modules/musicians/models/musician_string_utils.dart';
 import 'package:upsessions/modules/musicians/ui/widgets/artist_image_label.dart';
 import 'package:upsessions/modules/profile/cubit/profile_form_cubit.dart';
 

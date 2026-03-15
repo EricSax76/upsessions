@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:upsessions/modules/matching/repositories/matching_repository.dart';
 import 'package:upsessions/modules/matching/ui/widgets/matched_musician_card.dart';
+import 'package:upsessions/modules/musicians/models/musician_compliance_info.dart';
 import 'package:upsessions/modules/musicians/models/musician_entity.dart';
+import 'package:upsessions/modules/musicians/models/musician_professional_info.dart';
 
 void main() {
   MatchingResult buildMatch({required String? photoUrl}) {
@@ -14,8 +16,9 @@ void main() {
       city: 'Madrid',
       styles: const ['Rock'],
       experienceYears: 4,
-      updatedAt: DateTime(2026, 1, 1),
       photoUrl: photoUrl,
+      compliance: MusicianComplianceInfo(updatedAt: DateTime(2026, 1, 1)),
+      professional: const MusicianProfessionalInfo(),
     );
 
     return MatchingResult(

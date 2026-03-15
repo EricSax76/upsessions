@@ -1,19 +1,16 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/features/home/repositories/home_metadata_repository.dart';
 
 import '../../cubits/musician_search_cubit.dart';
 import '../../repositories/musicians_repository.dart';
-
 import '../widgets/search/musician_search_filter_panel.dart';
 import '../widgets/search/musician_search_layout.dart';
 import '../widgets/search/musician_search_results_list.dart';
 import '../widgets/search/musician_search_top_bar.dart';
-import '../../../../core/constants/app_routes.dart';
 
 class MusicianSearchPage extends StatefulWidget {
   const MusicianSearchPage({super.key, this.showAppBar = true});
@@ -26,40 +23,11 @@ class MusicianSearchPage extends StatefulWidget {
 
 class _MusicianSearchPageState extends State<MusicianSearchPage> {
   final _searchController = TextEditingController();
-  Timer? _debounce;
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(_onSearchChanged);
-  }
-
-  void _onSearchChanged() {
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      if (mounted) {
-        _search(context);
-      }
-    });
-  }
 
   @override
   void dispose() {
-    _debounce?.cancel();
-    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
-  }
-
-  void _search(BuildContext context) {
-    context.read<MusicianSearchCubit>().search(
-      query: _searchController.text.trim(),
-    );
-  }
-
-  void _clearFilters(BuildContext context) {
-    _searchController.clear();
-    context.read<MusicianSearchCubit>().clearFilters();
   }
 
   @override
@@ -72,20 +40,9 @@ class _MusicianSearchPageState extends State<MusicianSearchPage> {
             )
             ..loadFilters()
             ..search(),
-      child: Builder(
-        builder: (context) {
-          return BlocBuilder<MusicianSearchCubit, MusicianSearchState>(
-            builder: (context, state) {
-              return MusicianSearchView(
-                showAppBar: widget.showAppBar,
-                searchController: _searchController,
-                state: state,
-                onSearch: () => _search(context),
-                onClearFilters: () => _clearFilters(context),
-              );
-            },
-          );
-        },
+      child: MusicianSearchView(
+        showAppBar: widget.showAppBar,
+        searchController: _searchController,
       ),
     );
   }
@@ -96,18 +53,13 @@ class MusicianSearchView extends StatelessWidget {
     super.key,
     this.showAppBar = true,
     required this.searchController,
-    required this.state,
-    required this.onSearch,
-    required this.onClearFilters,
   });
 
   final bool showAppBar;
   final TextEditingController searchController;
-  final MusicianSearchState state;
-  final VoidCallback onSearch;
-  final VoidCallback onClearFilters;
+
   bool _isWide(BuildContext context) {
-    return MediaQuery.of(context).size.width >= 1024; // Align with AdaptiveSearchLayout Breakpoints.desktop
+    return MediaQuery.of(context).size.width >= 1024;
   }
 
   void _showBottomFilters(BuildContext context) {
@@ -119,90 +71,68 @@ class MusicianSearchView extends StatelessWidget {
       builder: (bottomSheetContext) {
         return BlocProvider.value(
           value: cubit,
-          child: Builder(
-            builder: (context) {
-              return BlocBuilder<MusicianSearchCubit, MusicianSearchState>(
-                builder: (context, sheetState) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom,
-                    ),
-                    child: DraggableScrollableSheet(
-                      initialChildSize: 0.9,
-                      minChildSize: 0.5,
-                      maxChildSize: 0.9,
-                      expand: false,
-                      builder: (context, scrollController) {
-                        return Container(
-                          color: Theme.of(context).colorScheme.surface,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Filtros Avanzados',
-                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.close),
-                                      onPressed: () => Navigator.pop(context),
-                                    ),
-                                  ],
-                                ),
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
+            ),
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.9,
+              minChildSize: 0.5,
+              maxChildSize: 0.9,
+              expand: false,
+              builder: (context, scrollController) {
+                return Container(
+                  color: Theme.of(context).colorScheme.surface,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Filtros Avanzados',
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
-                              const Divider(height: 1),
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  controller: scrollController,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: MusicianSearchFilterPanel(
-                                      state: sheetState,
-                                      isWide: true, // Force the column rendering
-                                      onSearch: () {
-                                        Navigator.pop(context);
-                                        onSearch();
-                                      },
-                                      onClear: () {
-                                        onClearFilters();
-                                        Navigator.pop(context);
-                                      },
-                                      onInstrumentChanged: cubit.setInstrument,
-                                      onStyleChanged: cubit.setStyle,
-                                      onProfileTypeChanged: cubit.setProfileType,
-                                      onGenderChanged: cubit.setGender,
-                                      onProvinceChanged: cubit.setProvince,
-                                      onCityChanged: cubit.setCity,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: FilledButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    onSearch();
-                                  },
-                                  child: const Text('Aplicar Filtros'),
-                                ),
-                              ),
-                            ],
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: MusicianSearchFilterPanel(
+                              isWide: true,
+                              onApplied: () => Navigator.pop(context),
+                              onCleared: () => Navigator.pop(context),
+                            ),
                           ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              );
-            },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: FilledButton(
+                          onPressed: () {
+                            cubit.searchNow();
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Aplicar Filtros'),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         );
       },
@@ -216,38 +146,19 @@ class MusicianSearchView extends StatelessWidget {
     final body = MusicianSearchLayout(
       topBar: MusicianSearchTopBar(
         controller: searchController,
-        onSubmitted: (_) {}, // The debounce handles it 
-        onPressed: () {
+        onFiltersPressed: () {
           if (_isWide(context)) {
-             onSearch();
-          } else {
-             _showBottomFilters(context);
+            cubit.searchNow(query: searchController.text);
+            return;
           }
+          _showBottomFilters(context);
         },
-        state: state,
-        onClearFilters: onClearFilters,
-        onInstrumentChanged: cubit.setInstrument,
-        onStyleChanged: cubit.setStyle,
-        onProfileTypeChanged: cubit.setProfileType,
-        onGenderChanged: cubit.setGender,
-        onProvinceChanged: cubit.setProvince,
-        onCityChanged: cubit.setCity,
       ),
       filterPanelBuilder: (context, isWide) {
-        if (!isWide) return const SizedBox.shrink();
-        
-        return MusicianSearchFilterPanel(
-          state: state,
-          isWide: true,
-          onSearch: onSearch,
-          onClear: onClearFilters,
-          onInstrumentChanged: cubit.setInstrument,
-          onStyleChanged: cubit.setStyle,
-          onProfileTypeChanged: cubit.setProfileType,
-          onGenderChanged: cubit.setGender,
-          onProvinceChanged: cubit.setProvince,
-          onCityChanged: cubit.setCity,
-        );
+        if (!isWide) {
+          return const SizedBox.shrink();
+        }
+        return const MusicianSearchFilterPanel(isWide: true);
       },
       results: MusicianSearchResultsList(
         onTapMusician: (musician) => context.push(

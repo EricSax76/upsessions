@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:upsessions/modules/event_manager/cubits/hire_musicians_cubit.dart';
 import 'package:upsessions/modules/event_manager/cubits/hire_musicians_state.dart';
+import 'package:upsessions/modules/musicians/models/musician_compliance_info.dart';
 import 'package:upsessions/modules/musicians/models/musician_entity.dart';
+import 'package:upsessions/modules/musicians/models/musician_professional_info.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
 
 class _MockMusiciansRepository extends Mock implements MusiciansRepository {}
@@ -21,7 +23,8 @@ void main() {
       styles: ['Rock', 'Blues'],
       experienceYears: 5,
       availableForHire: true,
-      updatedAt: DateTime.now(),
+      compliance: MusicianComplianceInfo(updatedAt: DateTime.now()),
+      professional: const MusicianProfessionalInfo(),
     ),
     MusicianEntity(
       id: 'm2',
@@ -32,7 +35,8 @@ void main() {
       styles: ['Jazz', 'Funk'],
       experienceYears: 8,
       availableForHire: true,
-      updatedAt: DateTime.now(),
+      compliance: MusicianComplianceInfo(updatedAt: DateTime.now()),
+      professional: const MusicianProfessionalInfo(),
     ),
   ];
 

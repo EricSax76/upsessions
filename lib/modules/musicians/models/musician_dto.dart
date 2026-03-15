@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'musician_compliance_info.dart';
+import 'musician_dto_parsers.dart';
 import 'musician_entity.dart';
+import 'musician_professional_info.dart';
 
 /// DTO para serialización/deserialización de [MusicianEntity] desde Firestore.
 ///
@@ -55,7 +58,7 @@ class MusicianDto {
           ? List<String>.from(stylesDynamic)
           : const <String>[],
       experienceYears: (data['experienceYears'] as num?)?.toInt() ?? 0,
-      photoUrl: _firstNonEmptyString([
+      photoUrl: firstNonEmptyString([
         data['photoUrl'],
         data['photoURL'],
         data['imageUrl'],
@@ -81,19 +84,19 @@ class MusicianDto {
           const {},
       availableForHire: (data['availableForHire'] as bool?) ?? false,
       // ── Normativa ─────────────────────────────────────────────────────────
-      updatedAt: _toDateTime(data['updatedAt']) ?? DateTime.now(),
-      deletedAt: _toDateTime(data['deletedAt']),
+      updatedAt: toDateTime(data['updatedAt']) ?? DateTime.now(),
+      deletedAt: toDateTime(data['deletedAt']),
       isVerifiedArtist: (data['isVerifiedArtist'] as bool?) ?? false,
-      languages: _stringList(data['languages']),
+      languages: toStringList(data['languages']),
       workRadius: (data['workRadius'] as num?)?.toInt(),
       minimumFee: (data['minimumFee'] as num?)?.toDouble(),
       hasPublicLiabilityInsurance:
           (data['hasPublicLiabilityInsurance'] as bool?) ?? false,
       unionMembership: data['unionMembership'] as String?,
-      birthDate: _toDateTime(data['birthDate']),
+      birthDate: toDateTime(data['birthDate']),
       legalGuardianEmail: data['legalGuardianEmail'] as String?,
       legalGuardianConsent: (data['legalGuardianConsent'] as bool?) ?? false,
-      legalGuardianConsentAt: _toDateTime(data['legalGuardianConsentAt']),
+      legalGuardianConsentAt: toDateTime(data['legalGuardianConsentAt']),
       ageConsent: data['ageConsent'] as bool?,
     );
   }
@@ -185,43 +188,24 @@ class MusicianDto {
       links: links,
       influences: influences,
       availableForHire: availableForHire,
-      updatedAt: updatedAt,
-      deletedAt: deletedAt,
-      isVerifiedArtist: isVerifiedArtist,
-      languages: languages,
-      workRadius: workRadius,
-      minimumFee: minimumFee,
-      hasPublicLiabilityInsurance: hasPublicLiabilityInsurance,
-      unionMembership: unionMembership,
-      birthDate: birthDate,
-      legalGuardianEmail: legalGuardianEmail,
-      legalGuardianConsent: legalGuardianConsent,
-      legalGuardianConsentAt: legalGuardianConsentAt,
-      ageConsent: ageConsent,
+      compliance: MusicianComplianceInfo(
+        updatedAt: updatedAt,
+        deletedAt: deletedAt,
+        isVerifiedArtist: isVerifiedArtist,
+        birthDate: birthDate,
+        legalGuardianEmail: legalGuardianEmail,
+        legalGuardianConsent: legalGuardianConsent,
+        legalGuardianConsentAt: legalGuardianConsentAt,
+        ageConsent: ageConsent,
+      ),
+      professional: MusicianProfessionalInfo(
+        languages: languages,
+        workRadius: workRadius,
+        minimumFee: minimumFee,
+        hasPublicLiabilityInsurance: hasPublicLiabilityInsurance,
+        unionMembership: unionMembership,
+      ),
     );
   }
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
-  static DateTime? _toDateTime(dynamic raw) {
-    if (raw is Timestamp) return raw.toDate();
-    if (raw is String) return DateTime.tryParse(raw);
-    return null;
-  }
-
-  static List<String> _stringList(dynamic raw) {
-    if (raw is Iterable) return raw.map((e) => e.toString()).toList();
-    return const [];
-  }
-
-  static String? _firstNonEmptyString(List<dynamic> candidates) {
-    for (final candidate in candidates) {
-      if (candidate is String) {
-        final trimmed = candidate.trim();
-        if (trimmed.isNotEmpty) {
-          return trimmed;
-        }
-      }
-    }
-    return null;
-  }
 }

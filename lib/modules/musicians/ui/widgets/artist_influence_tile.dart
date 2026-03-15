@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:upsessions/modules/musicians/ui/widgets/artist_image_label.dart';
+import 'package:upsessions/modules/musicians/ui/utils/spotify_launcher.dart';
 
 class ArtistInfluenceTile extends StatelessWidget {
   const ArtistInfluenceTile({
@@ -35,10 +35,7 @@ class ArtistInfluenceTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          ArtistImageThumbnail(
-            imageUrl: imageUrl,
-            size: 32,
-          ),
+          ArtistImageThumbnail(imageUrl: imageUrl, size: 32),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -55,7 +52,7 @@ class ArtistInfluenceTile extends StatelessWidget {
             _ActionButton(
               icon: Icons.open_in_new,
               label: 'Spotify',
-              onTap: () => _launchSpotify(context),
+              onTap: () => SpotifyLauncher.launch(context, spotifyUrl),
             ),
           ],
           if (onDelete != null) ...[
@@ -73,35 +70,6 @@ class ArtistInfluenceTile extends StatelessWidget {
           ],
         ],
       ),
-    );
-  }
-
-  Future<void> _launchSpotify(BuildContext context) async {
-    final uri = Uri.tryParse(spotifyUrl?.trim() ?? '');
-    if (uri == null) return;
-
-    try {
-      final openedExternally = await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (openedExternally) return;
-
-      final openedWithDefault = await launchUrl(
-        uri,
-        mode: LaunchMode.platformDefault,
-      );
-      if (openedWithDefault || !context.mounted) return;
-
-      _showError(context);
-    } catch (_) {
-      if (context.mounted) _showError(context);
-    }
-  }
-
-  void _showError(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('No se pudo abrir el enlace de Spotify.')),
     );
   }
 }
