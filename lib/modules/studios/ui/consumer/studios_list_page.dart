@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
@@ -19,6 +20,7 @@ class StudiosListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return BlocProvider(
       create: (context) =>
           StudiosListCubit(repository: locate<StudiosRepository>())
@@ -30,8 +32,8 @@ class StudiosListPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
             child: Text(
               rehearsalContext != null
-                  ? 'Reservar Sala para Ensayo'
-                  : 'Rehearsal Rooms',
+                  ? loc.studiosListTitleForRehearsal
+                  : loc.studios,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
@@ -43,7 +45,7 @@ class StudiosListPage extends StatelessWidget {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (state.studios.isEmpty) {
-                  return const Center(child: Text('No studios available.'));
+                  return Center(child: Text(loc.studiosListEmpty));
                 }
 
                 return Center(
@@ -143,6 +145,7 @@ class _LoadMoreStudiosFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     if (state.isLoadingStudiosMore) {
       return const Padding(
         padding: EdgeInsets.only(bottom: 16),
@@ -157,7 +160,7 @@ class _LoadMoreStudiosFooter extends StatelessWidget {
       child: OutlinedButton.icon(
         onPressed: () => context.read<StudiosListCubit>().loadAllStudios(),
         icon: const Icon(Icons.expand_more),
-        label: const Text('Cargar mas estudios'),
+        label: Text(loc.studiosListLoadMore),
       ),
     );
   }

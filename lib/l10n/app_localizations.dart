@@ -1412,6 +1412,510 @@ abstract class AppLocalizations {
   /// **'Registrar Sala'**
   String get studiosRegister;
 
+  /// No description provided for @studiosCreateTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrar estudio'**
+  String get studiosCreateTitle;
+
+  /// No description provided for @studiosCreateSectionStudioData.
+  ///
+  /// In es, this message translates to:
+  /// **'Datos del estudio'**
+  String get studiosCreateSectionStudioData;
+
+  /// No description provided for @studiosCreateSectionLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Ubicación'**
+  String get studiosCreateSectionLocation;
+
+  /// No description provided for @studiosCreateSectionFiscal.
+  ///
+  /// In es, this message translates to:
+  /// **'Normativa fiscal y administrativa'**
+  String get studiosCreateSectionFiscal;
+
+  /// No description provided for @studiosCreateSectionAccessibility.
+  ///
+  /// In es, this message translates to:
+  /// **'Accesibilidad y seguro'**
+  String get studiosCreateSectionAccessibility;
+
+  /// No description provided for @studiosCreateAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear estudio'**
+  String get studiosCreateAction;
+
+  /// No description provided for @studiosCreateSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Estudio creado correctamente.'**
+  String get studiosCreateSuccess;
+
+  /// No description provided for @studiosCreateAuthRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Debes iniciar sesión para crear un estudio.'**
+  String get studiosCreateAuthRequired;
+
+  /// No description provided for @studiosCreateInsuranceDateRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona la fecha de caducidad del seguro RC.'**
+  String get studiosCreateInsuranceDateRequired;
+
+  /// No description provided for @studiosCreateMaxCapacityInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Aforo máximo inválido (debe ser > 0).'**
+  String get studiosCreateMaxCapacityInvalid;
+
+  /// No description provided for @studioProfileUpdateSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil actualizado correctamente.'**
+  String get studioProfileUpdateSuccess;
+
+  /// No description provided for @studioProfileUpdateError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron guardar los cambios.'**
+  String get studioProfileUpdateError;
+
+  /// No description provided for @studioProfileImagesUpdateError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron actualizar las imágenes.'**
+  String get studioProfileImagesUpdateError;
+
+  /// No description provided for @studioProfileNotFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontró el estudio.'**
+  String get studioProfileNotFound;
+
+  /// No description provided for @studioDashboardTabRooms.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis salas'**
+  String get studioDashboardTabRooms;
+
+  /// No description provided for @studioDashboardTabBookings.
+  ///
+  /// In es, this message translates to:
+  /// **'Reservas'**
+  String get studioDashboardTabBookings;
+
+  /// No description provided for @studioDashboardRoomsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis salas'**
+  String get studioDashboardRoomsTitle;
+
+  /// No description provided for @studioDashboardAddRoom.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir sala'**
+  String get studioDashboardAddRoom;
+
+  /// No description provided for @studioDashboardLoadMoreBookings.
+  ///
+  /// In es, this message translates to:
+  /// **'Cargar más reservas'**
+  String get studioDashboardLoadMoreBookings;
+
+  /// No description provided for @studioDashboardBookingTotal.
+  ///
+  /// In es, this message translates to:
+  /// **'Total: {total}€'**
+  String studioDashboardBookingTotal(String total);
+
+  /// No description provided for @studioDashboardRoomSummary.
+  ///
+  /// In es, this message translates to:
+  /// **'{capacity} personas • {price}€/hora'**
+  String studioDashboardRoomSummary(String capacity, String price);
+
+  /// No description provided for @studioSidebarManagementTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'GESTIÓN DE ESTUDIO'**
+  String get studioSidebarManagementTitle;
+
+  /// No description provided for @studioSidebarFallbackName.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi estudio'**
+  String get studioSidebarFallbackName;
+
+  /// No description provided for @studioSidebarSessionLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Sesión de estudio'**
+  String get studioSidebarSessionLabel;
+
+  /// No description provided for @studioSidebarMenuDashboard.
+  ///
+  /// In es, this message translates to:
+  /// **'Panel'**
+  String get studioSidebarMenuDashboard;
+
+  /// No description provided for @studioSidebarMenuBookings.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis reservas'**
+  String get studioSidebarMenuBookings;
+
+  /// No description provided for @studioSidebarMenuRooms.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis salas'**
+  String get studioSidebarMenuRooms;
+
+  /// No description provided for @studioSidebarMenuProfile.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil del estudio'**
+  String get studioSidebarMenuProfile;
+
+  /// No description provided for @studioSidebarLogout.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar sesión'**
+  String get studioSidebarLogout;
+
+  /// No description provided for @studioSidebarThemeLight.
+  ///
+  /// In es, this message translates to:
+  /// **'Modo claro'**
+  String get studioSidebarThemeLight;
+
+  /// No description provided for @studioSidebarThemeDark.
+  ///
+  /// In es, this message translates to:
+  /// **'Modo oscuro'**
+  String get studioSidebarThemeDark;
+
+  /// No description provided for @studioEmptyNoStudioTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no has registrado tu estudio'**
+  String get studioEmptyNoStudioTitle;
+
+  /// No description provided for @studioEmptyNoStudioSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea tu perfil de estudio para empezar a recibir reservas'**
+  String get studioEmptyNoStudioSubtitle;
+
+  /// No description provided for @studioEmptyNoStudioAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrar estudio'**
+  String get studioEmptyNoStudioAction;
+
+  /// No description provided for @studioEmptyNoRoomsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes salas registradas'**
+  String get studioEmptyNoRoomsTitle;
+
+  /// No description provided for @studioEmptyNoRoomsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Añade tu primera sala para comenzar a recibir reservas'**
+  String get studioEmptyNoRoomsSubtitle;
+
+  /// No description provided for @studioEmptyNoBookingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin reservas pendientes'**
+  String get studioEmptyNoBookingsTitle;
+
+  /// No description provided for @studioEmptyNoBookingsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuando recibas reservas aparecerán aquí'**
+  String get studioEmptyNoBookingsSubtitle;
+
+  /// No description provided for @roomFormAddTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir sala'**
+  String get roomFormAddTitle;
+
+  /// No description provided for @roomFormEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar sala'**
+  String get roomFormEditTitle;
+
+  /// No description provided for @roomFormNameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre de sala'**
+  String get roomFormNameLabel;
+
+  /// No description provided for @roomFormCapacityLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Capacidad (personas)'**
+  String get roomFormCapacityLabel;
+
+  /// No description provided for @roomFormSizeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tamaño (ej. 4x5m)'**
+  String get roomFormSizeLabel;
+
+  /// No description provided for @roomFormPricePerHourLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio por hora (€)'**
+  String get roomFormPricePerHourLabel;
+
+  /// No description provided for @roomFormEquipmentLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipamiento (separado por comas)'**
+  String get roomFormEquipmentLabel;
+
+  /// No description provided for @roomFormRequiredField.
+  ///
+  /// In es, this message translates to:
+  /// **'Campo obligatorio'**
+  String get roomFormRequiredField;
+
+  /// No description provided for @roomFormSectionConfig.
+  ///
+  /// In es, this message translates to:
+  /// **'Configuración de sala'**
+  String get roomFormSectionConfig;
+
+  /// No description provided for @roomFormMinBookingHoursLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Horas mínimas por reserva'**
+  String get roomFormMinBookingHoursLabel;
+
+  /// No description provided for @roomFormMinBookingHoursHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Contractual — mínimo de horas'**
+  String get roomFormMinBookingHoursHelp;
+
+  /// No description provided for @roomFormMaxDecibelsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Decibelios máximos (dB)'**
+  String get roomFormMaxDecibelsLabel;
+
+  /// No description provided for @roomFormMaxDecibelsHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Ordenanzas municipales de ruido — nivel máximo'**
+  String get roomFormMaxDecibelsHelp;
+
+  /// No description provided for @roomFormAgeRestrictionLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Restricción de edad mínima'**
+  String get roomFormAgeRestrictionLabel;
+
+  /// No description provided for @roomFormAgeRestrictionHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'LOPDGDD Art. 7 — edad mínima para usar la sala'**
+  String get roomFormAgeRestrictionHelp;
+
+  /// No description provided for @roomFormSectionPolicies.
+  ///
+  /// In es, this message translates to:
+  /// **'Políticas'**
+  String get roomFormSectionPolicies;
+
+  /// No description provided for @roomFormCancellationPolicyLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Política de cancelación'**
+  String get roomFormCancellationPolicyLabel;
+
+  /// No description provided for @roomFormCancellationPolicyHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Directiva 2011/83/UE — cancelación y devolución'**
+  String get roomFormCancellationPolicyHelp;
+
+  /// No description provided for @roomFormAccessibleTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Accesibilidad'**
+  String get roomFormAccessibleTitle;
+
+  /// No description provided for @roomFormAccessibleSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'RD 1/2013 — acceso movilidad reducida'**
+  String get roomFormAccessibleSubtitle;
+
+  /// No description provided for @roomFormActiveTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sala activa'**
+  String get roomFormActiveTitle;
+
+  /// No description provided for @roomFormActiveSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Visible para reservas'**
+  String get roomFormActiveSubtitle;
+
+  /// No description provided for @roomFormCreateAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear sala'**
+  String get roomFormCreateAction;
+
+  /// No description provided for @roomFormSaveError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al guardar la sala.'**
+  String get roomFormSaveError;
+
+  /// No description provided for @roomFormPhotosTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Fotos'**
+  String get roomFormPhotosTitle;
+
+  /// No description provided for @roomFormAttachPhotos.
+  ///
+  /// In es, this message translates to:
+  /// **'Adjuntar fotos'**
+  String get roomFormAttachPhotos;
+
+  /// No description provided for @studiosListTitleForRehearsal.
+  ///
+  /// In es, this message translates to:
+  /// **'Reservar sala para ensayo'**
+  String get studiosListTitleForRehearsal;
+
+  /// No description provided for @studiosListEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay estudios disponibles.'**
+  String get studiosListEmpty;
+
+  /// No description provided for @studiosListLoadMore.
+  ///
+  /// In es, this message translates to:
+  /// **'Cargar más estudios'**
+  String get studiosListLoadMore;
+
+  /// No description provided for @studioRoomsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Salas del estudio'**
+  String get studioRoomsTitle;
+
+  /// No description provided for @studioRoomsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay salas disponibles en este estudio.'**
+  String get studioRoomsEmpty;
+
+  /// No description provided for @musicianBookingsLoginRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicia sesión para ver tus reservas.'**
+  String get musicianBookingsLoginRequired;
+
+  /// No description provided for @musicianBookingsLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron cargar las reservas.'**
+  String get musicianBookingsLoadError;
+
+  /// No description provided for @musicianBookingsRetry.
+  ///
+  /// In es, this message translates to:
+  /// **'Reintentar'**
+  String get musicianBookingsRetry;
+
+  /// No description provided for @musicianBookingsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontraron reservas.'**
+  String get musicianBookingsEmpty;
+
+  /// No description provided for @musicianBookingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'MIS RESERVAS'**
+  String get musicianBookingsTitle;
+
+  /// No description provided for @musicianBookingsUpcoming.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximas reservas'**
+  String get musicianBookingsUpcoming;
+
+  /// No description provided for @musicianBookingsHistory.
+  ///
+  /// In es, this message translates to:
+  /// **'Historial'**
+  String get musicianBookingsHistory;
+
+  /// No description provided for @musicianBookingsLoadMore.
+  ///
+  /// In es, this message translates to:
+  /// **'Cargar más reservas'**
+  String get musicianBookingsLoadMore;
+
+  /// No description provided for @bookingStatusConfirmed.
+  ///
+  /// In es, this message translates to:
+  /// **'confirmada'**
+  String get bookingStatusConfirmed;
+
+  /// No description provided for @bookingStatusCancelled.
+  ///
+  /// In es, this message translates to:
+  /// **'cancelada'**
+  String get bookingStatusCancelled;
+
+  /// No description provided for @bookingStatusRefunded.
+  ///
+  /// In es, this message translates to:
+  /// **'reembolsada'**
+  String get bookingStatusRefunded;
+
+  /// No description provided for @bookingStatusPending.
+  ///
+  /// In es, this message translates to:
+  /// **'pendiente'**
+  String get bookingStatusPending;
+
+  /// No description provided for @roomCardPricePerHour.
+  ///
+  /// In es, this message translates to:
+  /// **'{price}€ /h'**
+  String roomCardPricePerHour(String price);
+
+  /// No description provided for @roomCardCapacity.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{# persona} other{# personas}}'**
+  String roomCardCapacity(int count);
+
+  /// No description provided for @studioCardViewRooms.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver salas'**
+  String get studioCardViewRooms;
+
   /// No description provided for @eventsNewEventButton.
   ///
   /// In es, this message translates to:

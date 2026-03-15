@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 import '../../../services/studio_image_service.dart';
 import '../../../../../core/locator/locator.dart';
 import 'photo_thumb.dart';
@@ -59,12 +60,16 @@ class PhotoPickerSectionState extends State<PhotoPickerSection> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final hasPhotos = _existingPhotos.isNotEmpty || _pendingPhotos.isNotEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Photos', style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          loc.roomFormPhotosTitle,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         const SizedBox(height: 8),
         if (hasPhotos)
           SizedBox(
@@ -91,7 +96,7 @@ class PhotoPickerSectionState extends State<PhotoPickerSection> {
         OutlinedButton.icon(
           onPressed: _pick,
           icon: const Icon(Icons.add_photo_alternate_outlined),
-          label: const Text('Adjuntar fotos'),
+          label: Text(loc.roomFormAttachPhotos),
         ),
       ],
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../cubits/bookings_cubit.dart';
 import '../../cubits/musician_bookings_state.dart';
@@ -40,9 +41,10 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final userId = _userId;
     if (userId == null) {
-      return const Center(child: Text('Please login to view bookings'));
+      return Center(child: Text(loc.musicianBookingsLoginRequired));
     }
 
     return BlocProvider.value(
@@ -59,13 +61,13 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('No se pudieron cargar las reservas.'),
+                  Text(loc.musicianBookingsLoadError),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: () =>
                         context.read<BookingsCubit>().loadMyBookings(userId),
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Reintentar'),
+                    label: Text(loc.musicianBookingsRetry),
                   ),
                 ],
               ),
@@ -74,7 +76,7 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
           if (state.myBookings.isEmpty &&
               !state.isLoadingMyBookingsMore &&
               !state.hasMoreMyBookings) {
-            return const Center(child: Text('No bookings found.'));
+            return Center(child: Text(loc.musicianBookingsEmpty));
           }
           final upcoming = state.upcomingMyBookings;
           final past = state.pastMyBookings;
@@ -86,14 +88,14 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
                 padding: const EdgeInsets.all(16),
                 children: [
                   Text(
-                    'MY BOOKINGS',
+                    loc.musicianBookingsTitle,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 16),
                   if (upcoming.isNotEmpty) ...[
-                    _buildSectionTitle(context, 'Próximas Reservas'),
+                    _buildSectionTitle(context, loc.musicianBookingsUpcoming),
                     const SizedBox(height: 12),
                     ...upcoming.map(
                       (booking) => Padding(
@@ -104,7 +106,7 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
                     const SizedBox(height: 24),
                   ],
                   if (past.isNotEmpty) ...[
-                    _buildSectionTitle(context, 'Historial'),
+                    _buildSectionTitle(context, loc.musicianBookingsHistory),
                     const SizedBox(height: 12),
                     ...past.map(
                       (booking) => Padding(
@@ -131,7 +133,7 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
                             .read<BookingsCubit>()
                             .loadMoreMyBookings(userId),
                         icon: const Icon(Icons.expand_more),
-                        label: const Text('Cargar más reservas'),
+                        label: Text(loc.musicianBookingsLoadMore),
                       ),
                     ),
                 ],

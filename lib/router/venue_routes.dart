@@ -17,6 +17,14 @@ NoTransitionPage<void> _noTransitionPage(GoRouterState state, Widget child) {
   return NoTransitionPage<void>(key: state.pageKey, child: child);
 }
 
+String? _requireVenueAuthRedirect() {
+  final userId = locate<AuthRepository>().currentUser?.id.trim();
+  if (userId == null || userId.isEmpty) {
+    return AppRoutes.venuesAuthLogin;
+  }
+  return null;
+}
+
 List<RouteBase> buildVenueRoutes() {
   return [
     ShellRoute(
@@ -24,6 +32,7 @@ List<RouteBase> buildVenueRoutes() {
       routes: [
         GoRoute(
           path: AppRoutes.venuesDashboard,
+          redirect: (context, state) => _requireVenueAuthRedirect(),
           pageBuilder: (context, state) => _noTransitionPage(
             state,
             BlocProvider(
@@ -37,6 +46,7 @@ List<RouteBase> buildVenueRoutes() {
         ),
         GoRoute(
           path: AppRoutes.venuesDashboardVenueForm,
+          redirect: (context, state) => _requireVenueAuthRedirect(),
           pageBuilder: (context, state) => _noTransitionPage(
             state,
             BlocProvider(
@@ -48,6 +58,7 @@ List<RouteBase> buildVenueRoutes() {
         ),
         GoRoute(
           path: AppRoutes.venuesDashboardVenueEdit,
+          redirect: (context, state) => _requireVenueAuthRedirect(),
           pageBuilder: (context, state) {
             final venueId = state.pathParameters['venueId'] ?? '';
             final extra = state.extra;

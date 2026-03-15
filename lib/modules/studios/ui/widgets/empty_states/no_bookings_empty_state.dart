@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class NoBookingsEmptyState extends StatelessWidget {
   const NoBookingsEmptyState({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -19,12 +21,12 @@ class NoBookingsEmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Sin reservas pendientes',
+            loc.studioEmptyNoBookingsTitle,
             style: theme.textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Cuando recibas reservas aparecerán aquí',
+            loc.studioEmptyNoBookingsSubtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),

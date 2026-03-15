@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../cubits/my_studio_cubit.dart';
 import '../../cubits/studio_media_cubit.dart';
@@ -14,8 +15,15 @@ import '../../services/studio_image_service.dart';
 import '../widgets/studio_profile_form.dart';
 import '../widgets/studio_profile_header.dart';
 
-class StudioProfilePage extends StatelessWidget {
+class StudioProfilePage extends StatefulWidget {
   const StudioProfilePage({super.key});
+
+  @override
+  State<StudioProfilePage> createState() => _StudioProfilePageState();
+}
+
+class _StudioProfilePageState extends State<StudioProfilePage> {
+  bool _savePending = false;
 
   void _handleExit(BuildContext context) {
     final navigator = Navigator.of(context);
@@ -27,10 +35,28 @@ class StudioProfilePage extends StatelessWidget {
   }
 
   void _save(BuildContext context, StudioEntity updatedStudio) {
+    if (_savePending) return;
+    setState(() => _savePending = true);
     context.read<MyStudioCubit>().updateMyStudio(updatedStudio);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile updated successfully')),
-    );
+  }
+
+  void _handleSaveResult(BuildContext context, StudiosState state) {
+    final loc = AppLocalizations.of(context);
+    if (!_savePending) return;
+
+    if (state.status == StudiosStatus.success) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(loc.studioProfileUpdateSuccess)));
+    } else if (state.status == StudiosStatus.failure) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.errorMessage ?? loc.studioProfileUpdateError),
+        ),
+      );
+    }
+
+    setState(() => _savePending = false);
   }
 
   @override
@@ -40,29 +66,48 @@ class StudioProfilePage extends StatelessWidget {
         repository: locate<StudiosRepository>(),
         imageService: locate<StudioImageService>(),
       ),
-      child: BlocListener<StudioMediaCubit, StudiosState>(
-        listener: (context, state) {
-          final updatedStudio = state.myStudio;
-          if (state.status == StudiosStatus.success && updatedStudio != null) {
-            context.read<MyStudioCubit>().replaceMyStudio(updatedStudio);
-            return;
-          }
-          if (state.status == StudiosStatus.failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  state.errorMessage ??
-                      'No se pudieron actualizar las imagenes.',
-                ),
-              ),
-            );
-          }
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<StudioMediaCubit, StudiosState>(
+            listener: (context, state) {
+              final loc = AppLocalizations.of(context);
+              final updatedStudio = state.myStudio;
+              if (state.status == StudiosStatus.success &&
+                  updatedStudio != null) {
+                context.read<MyStudioCubit>().replaceMyStudio(updatedStudio);
+                return;
+              }
+              if (state.status == StudiosStatus.failure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      state.errorMessage ?? loc.studioProfileImagesUpdateError,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+          BlocListener<MyStudioCubit, StudiosState>(
+            listenWhen: (previous, current) {
+              if (!_savePending) return false;
+              final successTransition =
+                  previous.status != StudiosStatus.success &&
+                  current.status == StudiosStatus.success;
+              final failureTransition =
+                  previous.status != StudiosStatus.failure &&
+                  current.status == StudiosStatus.failure;
+              return successTransition || failureTransition;
+            },
+            listener: _handleSaveResult,
+          ),
+        ],
         child: BlocBuilder<MyStudioCubit, StudiosState>(
           builder: (context, state) {
+            final loc = AppLocalizations.of(context);
             final studio = state.myStudio;
             if (studio == null) {
-              return const Center(child: Text('No studio found'));
+              return Center(child: Text(loc.studioProfileNotFound));
             }
 
             return CustomScrollView(

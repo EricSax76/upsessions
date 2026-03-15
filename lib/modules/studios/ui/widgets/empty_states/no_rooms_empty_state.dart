@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class NoRoomsEmptyState extends StatelessWidget {
   const NoRoomsEmptyState({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -20,12 +22,12 @@ class NoRoomsEmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'No tienes salas registradas',
+              loc.studioEmptyNoRoomsTitle,
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              'Añade tu primera sala para comenzar a recibir reservas',
+              loc.studioEmptyNoRoomsSubtitle,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),

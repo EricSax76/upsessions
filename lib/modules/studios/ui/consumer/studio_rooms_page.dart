@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/locator/locator.dart';
@@ -24,6 +25,7 @@ class StudioRoomsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return BlocProvider(
       create: (context) =>
           StudiosListCubit(repository: locate<StudiosRepository>())
@@ -34,7 +36,7 @@ class StudioRoomsPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
             child: Text(
-              'Salas del estudio',
+              loc.studioRoomsTitle,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
@@ -48,13 +50,11 @@ class StudioRoomsPage extends StatelessWidget {
                 final rooms = state.selectedStudioRooms;
                 final studioName = (state.selectedStudio?.name ?? '').trim();
                 final resolvedStudioName = studioName.isEmpty
-                    ? 'Salas del estudio'
+                    ? loc.studioRoomsTitle
                     : studioName;
 
                 if (rooms.isEmpty) {
-                  return const Center(
-                    child: Text('No rooms available in this studio.'),
-                  );
+                  return Center(child: Text(loc.studioRoomsEmpty));
                 }
 
                 return Center(

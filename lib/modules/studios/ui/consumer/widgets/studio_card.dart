@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 import '../../../../../core/widgets/app_card.dart';
 import '../../../../../core/widgets/sm_avatar.dart';
 import '../../../models/studio_entity.dart';
@@ -11,6 +12,7 @@ class StudioCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final hasBanner = studio.bannerUrl != null && studio.bannerUrl!.isNotEmpty;
@@ -85,7 +87,10 @@ class StudioCard extends StatelessWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: scheme.onInverseSurface, width: 2),
+                        border: Border.all(
+                          color: scheme.onInverseSurface,
+                          width: 2,
+                        ),
                       ),
                       child: SmAvatar(
                         radius: 24,
@@ -178,7 +183,7 @@ class StudioCard extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      'View Rooms',
+                      loc.studioCardViewRooms,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: scheme.primary,
                         fontWeight: FontWeight.bold,

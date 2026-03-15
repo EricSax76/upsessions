@@ -31,11 +31,19 @@ List<RouteBase> buildStudioOuterRoutes() {
     ),
     GoRoute(
       path: AppRoutes.studiosCreate,
+      redirect: (context, state) {
+        final userId = locate<AuthRepository>().currentUser?.id.trim();
+        if (userId == null || userId.isEmpty) {
+          return AppRoutes.studiosLogin;
+        }
+        return null;
+      },
       builder: (context, state) {
+        final ownerId = locate<AuthRepository>().currentUser?.id ?? '';
         return BlocProvider(
           create: (context) =>
               MyStudioCubit(repository: locate<StudiosRepository>()),
-          child: const StudioShellPage(child: CreateStudioPage()),
+          child: StudioShellPage(child: CreateStudioPage(ownerId: ownerId)),
         );
       },
     ),
@@ -68,17 +76,13 @@ List<RouteBase> buildStudioOuterRoutes() {
     ),
     GoRoute(
       path: AppRoutes.studiosRoomCreateRoute,
-      pageBuilder: (context, state) => _noTransitionPage(
-        state,
-        buildStudiosRoomCreateRoute(context, state),
-      ),
+      pageBuilder: (context, state) =>
+          _noTransitionPage(state, buildStudiosRoomCreateRoute(context, state)),
     ),
     GoRoute(
       path: AppRoutes.studiosRoomEditRoute,
-      pageBuilder: (context, state) => _noTransitionPage(
-        state,
-        buildStudiosRoomEditRoute(context, state),
-      ),
+      pageBuilder: (context, state) =>
+          _noTransitionPage(state, buildStudiosRoomEditRoute(context, state)),
     ),
   ];
 }
@@ -97,10 +101,8 @@ List<RouteBase> buildStudioShellRoutes() {
     ),
     GoRoute(
       path: AppRoutes.studiosRoomDetailRoute,
-      pageBuilder: (context, state) => _noTransitionPage(
-        state,
-        buildStudiosRoomDetailRoute(context, state),
-      ),
+      pageBuilder: (context, state) =>
+          _noTransitionPage(state, buildStudiosRoomDetailRoute(context, state)),
     ),
     GoRoute(
       path: AppRoutes.myBookings,

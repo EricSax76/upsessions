@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 import '../../cubits/my_studio_cubit.dart';
 import '../../cubits/studios_state.dart';
 import '../../cubits/studios_status.dart';
@@ -43,12 +44,13 @@ class _EditRoomPageState extends State<EditRoomPage> {
       value: _cubit,
       child: BlocListener<MyStudioCubit, StudiosState>(
         listener: (context, state) {
+          final loc = AppLocalizations.of(context);
           if (state.status == StudiosStatus.success) {
             Navigator.of(context).pop();
           } else if (state.status == StudiosStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage ?? 'Error saving room'),
+                content: Text(state.errorMessage ?? loc.roomFormSaveError),
               ),
             );
           }

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/locator/locator.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/studios/cubits/my_studio_cubit.dart';
@@ -70,7 +71,11 @@ void main() {
       when(() => authRepository.currentUser).thenReturn(null);
 
       await tester.pumpWidget(
-        MaterialApp.router(routerConfig: routerForTest()),
+        MaterialApp.router(
+          routerConfig: routerForTest(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
       );
       await tester.pump();
       await tester.pump();
@@ -91,7 +96,13 @@ void main() {
       ),
     );
 
-    await tester.pumpWidget(MaterialApp.router(routerConfig: routerForTest()));
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: routerForTest(),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
     await tester.pump();
 
     expect(find.byType(NoStudioEmptyState), findsOneWidget);

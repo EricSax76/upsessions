@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:upsessions/core/locator/locator.dart';
-
-import '../../../auth/repositories/auth_repository.dart';
 import '../../cubits/my_studio_cubit.dart';
 import '../../cubits/studios_state.dart';
 import '../../cubits/studios_status.dart';
@@ -14,7 +12,9 @@ import '../forms/studio_form_sections.dart';
 import '../forms/studio_form_validator.dart';
 
 class CreateStudioPage extends StatefulWidget {
-  const CreateStudioPage({super.key});
+  const CreateStudioPage({super.key, required this.ownerId});
+
+  final String ownerId;
 
   @override
   State<CreateStudioPage> createState() => _CreateStudioPageState();
@@ -53,29 +53,32 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
   }
 
   void _submit() {
+    final loc = AppLocalizations.of(context);
     if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
 
     if (_draft.insuranceExpiry == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Selecciona la fecha de caducidad del seguro RC'),
-        ),
+        SnackBar(content: Text(loc.studiosCreateInsuranceDateRequired)),
       );
       return;
     }
 
     if (_draft.parseMaxRoomCapacity() == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Aforo maximo invalido (debe ser > 0)')),
+        SnackBar(content: Text(loc.studiosCreateMaxCapacityInvalid)),
       );
       return;
     }
 
-    final authRepo = locate<AuthRepository>();
-    final currentUser = authRepo.currentUser;
-    final ownerId = currentUser?.id ?? 'mock_user_id';
+    final ownerId = widget.ownerId.trim();
+    if (ownerId.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(loc.studiosCreateAuthRequired)));
+      return;
+    }
 
     final studio = _draft.toStudioEntity(
       id: const Uuid().v4(),
@@ -87,12 +90,13 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return BlocConsumer<MyStudioCubit, StudiosState>(
       listener: (context, state) {
         if (state.status == StudiosStatus.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Studio created successfully!')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(loc.studiosCreateSuccess)));
           context.pop();
         }
       },
@@ -106,7 +110,7 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Register Studio',
+                loc.studiosCreateTitle,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 24),
@@ -116,7 +120,7 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Datos del estudio',
+                      loc.studiosCreateSectionStudioData,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 16),
@@ -169,7 +173,7 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
                     ),
                     const SizedBox(height: 32),
                     Text(
-                      'Ubicacion',
+                      loc.studiosCreateSectionLocation,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 16),
@@ -213,7 +217,7 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
                     ),
                     const SizedBox(height: 32),
                     Text(
-                      'Normativa fiscal y administrativa',
+                      loc.studiosCreateSectionFiscal,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 16),
@@ -227,7 +231,7 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
                     ),
                     const SizedBox(height: 32),
                     Text(
-                      'Accesibilidad y seguro',
+                      loc.studiosCreateSectionAccessibility,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 16),
@@ -242,7 +246,7 @@ class _CreateStudioPageState extends State<CreateStudioPage> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _submit,
-                        child: const Text('Create Studio'),
+                        child: Text(loc.studiosCreateAction),
                       ),
                     ),
                   ],

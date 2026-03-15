@@ -738,6 +738,284 @@ class AppLocalizationsEs extends AppLocalizations {
   String get studiosRegister => 'Registrar Sala';
 
   @override
+  String get studiosCreateTitle => 'Registrar estudio';
+
+  @override
+  String get studiosCreateSectionStudioData => 'Datos del estudio';
+
+  @override
+  String get studiosCreateSectionLocation => 'Ubicación';
+
+  @override
+  String get studiosCreateSectionFiscal => 'Normativa fiscal y administrativa';
+
+  @override
+  String get studiosCreateSectionAccessibility => 'Accesibilidad y seguro';
+
+  @override
+  String get studiosCreateAction => 'Crear estudio';
+
+  @override
+  String get studiosCreateSuccess => 'Estudio creado correctamente.';
+
+  @override
+  String get studiosCreateAuthRequired =>
+      'Debes iniciar sesión para crear un estudio.';
+
+  @override
+  String get studiosCreateInsuranceDateRequired =>
+      'Selecciona la fecha de caducidad del seguro RC.';
+
+  @override
+  String get studiosCreateMaxCapacityInvalid =>
+      'Aforo máximo inválido (debe ser > 0).';
+
+  @override
+  String get studioProfileUpdateSuccess => 'Perfil actualizado correctamente.';
+
+  @override
+  String get studioProfileUpdateError => 'No se pudieron guardar los cambios.';
+
+  @override
+  String get studioProfileImagesUpdateError =>
+      'No se pudieron actualizar las imágenes.';
+
+  @override
+  String get studioProfileNotFound => 'No se encontró el estudio.';
+
+  @override
+  String get studioDashboardTabRooms => 'Mis salas';
+
+  @override
+  String get studioDashboardTabBookings => 'Reservas';
+
+  @override
+  String get studioDashboardRoomsTitle => 'Mis salas';
+
+  @override
+  String get studioDashboardAddRoom => 'Añadir sala';
+
+  @override
+  String get studioDashboardLoadMoreBookings => 'Cargar más reservas';
+
+  @override
+  String studioDashboardBookingTotal(String total) {
+    return 'Total: $total€';
+  }
+
+  @override
+  String studioDashboardRoomSummary(String capacity, String price) {
+    return '$capacity personas • $price€/hora';
+  }
+
+  @override
+  String get studioSidebarManagementTitle => 'GESTIÓN DE ESTUDIO';
+
+  @override
+  String get studioSidebarFallbackName => 'Mi estudio';
+
+  @override
+  String get studioSidebarSessionLabel => 'Sesión de estudio';
+
+  @override
+  String get studioSidebarMenuDashboard => 'Panel';
+
+  @override
+  String get studioSidebarMenuBookings => 'Mis reservas';
+
+  @override
+  String get studioSidebarMenuRooms => 'Mis salas';
+
+  @override
+  String get studioSidebarMenuProfile => 'Perfil del estudio';
+
+  @override
+  String get studioSidebarLogout => 'Cerrar sesión';
+
+  @override
+  String get studioSidebarThemeLight => 'Modo claro';
+
+  @override
+  String get studioSidebarThemeDark => 'Modo oscuro';
+
+  @override
+  String get studioEmptyNoStudioTitle => 'Aún no has registrado tu estudio';
+
+  @override
+  String get studioEmptyNoStudioSubtitle =>
+      'Crea tu perfil de estudio para empezar a recibir reservas';
+
+  @override
+  String get studioEmptyNoStudioAction => 'Registrar estudio';
+
+  @override
+  String get studioEmptyNoRoomsTitle => 'No tienes salas registradas';
+
+  @override
+  String get studioEmptyNoRoomsSubtitle =>
+      'Añade tu primera sala para comenzar a recibir reservas';
+
+  @override
+  String get studioEmptyNoBookingsTitle => 'Sin reservas pendientes';
+
+  @override
+  String get studioEmptyNoBookingsSubtitle =>
+      'Cuando recibas reservas aparecerán aquí';
+
+  @override
+  String get roomFormAddTitle => 'Añadir sala';
+
+  @override
+  String get roomFormEditTitle => 'Editar sala';
+
+  @override
+  String get roomFormNameLabel => 'Nombre de sala';
+
+  @override
+  String get roomFormCapacityLabel => 'Capacidad (personas)';
+
+  @override
+  String get roomFormSizeLabel => 'Tamaño (ej. 4x5m)';
+
+  @override
+  String get roomFormPricePerHourLabel => 'Precio por hora (€)';
+
+  @override
+  String get roomFormEquipmentLabel => 'Equipamiento (separado por comas)';
+
+  @override
+  String get roomFormRequiredField => 'Campo obligatorio';
+
+  @override
+  String get roomFormSectionConfig => 'Configuración de sala';
+
+  @override
+  String get roomFormMinBookingHoursLabel => 'Horas mínimas por reserva';
+
+  @override
+  String get roomFormMinBookingHoursHelp => 'Contractual — mínimo de horas';
+
+  @override
+  String get roomFormMaxDecibelsLabel => 'Decibelios máximos (dB)';
+
+  @override
+  String get roomFormMaxDecibelsHelp =>
+      'Ordenanzas municipales de ruido — nivel máximo';
+
+  @override
+  String get roomFormAgeRestrictionLabel => 'Restricción de edad mínima';
+
+  @override
+  String get roomFormAgeRestrictionHelp =>
+      'LOPDGDD Art. 7 — edad mínima para usar la sala';
+
+  @override
+  String get roomFormSectionPolicies => 'Políticas';
+
+  @override
+  String get roomFormCancellationPolicyLabel => 'Política de cancelación';
+
+  @override
+  String get roomFormCancellationPolicyHelp =>
+      'Directiva 2011/83/UE — cancelación y devolución';
+
+  @override
+  String get roomFormAccessibleTitle => 'Accesibilidad';
+
+  @override
+  String get roomFormAccessibleSubtitle =>
+      'RD 1/2013 — acceso movilidad reducida';
+
+  @override
+  String get roomFormActiveTitle => 'Sala activa';
+
+  @override
+  String get roomFormActiveSubtitle => 'Visible para reservas';
+
+  @override
+  String get roomFormCreateAction => 'Crear sala';
+
+  @override
+  String get roomFormSaveError => 'Error al guardar la sala.';
+
+  @override
+  String get roomFormPhotosTitle => 'Fotos';
+
+  @override
+  String get roomFormAttachPhotos => 'Adjuntar fotos';
+
+  @override
+  String get studiosListTitleForRehearsal => 'Reservar sala para ensayo';
+
+  @override
+  String get studiosListEmpty => 'No hay estudios disponibles.';
+
+  @override
+  String get studiosListLoadMore => 'Cargar más estudios';
+
+  @override
+  String get studioRoomsTitle => 'Salas del estudio';
+
+  @override
+  String get studioRoomsEmpty => 'No hay salas disponibles en este estudio.';
+
+  @override
+  String get musicianBookingsLoginRequired =>
+      'Inicia sesión para ver tus reservas.';
+
+  @override
+  String get musicianBookingsLoadError => 'No se pudieron cargar las reservas.';
+
+  @override
+  String get musicianBookingsRetry => 'Reintentar';
+
+  @override
+  String get musicianBookingsEmpty => 'No se encontraron reservas.';
+
+  @override
+  String get musicianBookingsTitle => 'MIS RESERVAS';
+
+  @override
+  String get musicianBookingsUpcoming => 'Próximas reservas';
+
+  @override
+  String get musicianBookingsHistory => 'Historial';
+
+  @override
+  String get musicianBookingsLoadMore => 'Cargar más reservas';
+
+  @override
+  String get bookingStatusConfirmed => 'confirmada';
+
+  @override
+  String get bookingStatusCancelled => 'cancelada';
+
+  @override
+  String get bookingStatusRefunded => 'reembolsada';
+
+  @override
+  String get bookingStatusPending => 'pendiente';
+
+  @override
+  String roomCardPricePerHour(String price) {
+    return '$price€ /h';
+  }
+
+  @override
+  String roomCardCapacity(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# personas',
+      one: '# persona',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get studioCardViewRooms => 'Ver salas';
+
+  @override
   String get eventsNewEventButton => 'Nuevo evento';
 
   @override

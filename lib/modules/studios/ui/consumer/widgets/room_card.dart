@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../../core/widgets/app_card.dart';
 import '../../../models/room_entity.dart';
@@ -17,6 +18,7 @@ class RoomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
@@ -85,7 +87,7 @@ class RoomCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                       color: scheme.scrim.withValues(alpha: 0.6),
+                      color: scheme.scrim.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: scheme.onInverseSurface.withValues(alpha: 0.2),
@@ -145,7 +147,9 @@ class RoomCard extends StatelessWidget {
                           ],
                         ),
                         child: Text(
-                          '${room.pricePerHour.toStringAsFixed(0)}€ /h',
+                          loc.roomCardPricePerHour(
+                            room.pricePerHour.toStringAsFixed(0),
+                          ),
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: scheme.onPrimary,
                             fontWeight: FontWeight.bold,
@@ -171,7 +175,7 @@ class RoomCard extends StatelessWidget {
                     _buildDetailItem(
                       context,
                       Icons.people_outline,
-                      '${room.capacity} personas',
+                      loc.roomCardCapacity(room.capacity),
                     ),
                     _buildDetailItem(context, Icons.square_foot, room.size),
                   ],
@@ -183,7 +187,8 @@ class RoomCard extends StatelessWidget {
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: room.amenities.length,
-                      separatorBuilder: (context, index) => const SizedBox(width: 8),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 8),
                       // Show all amenities scrolling horizontally
                       itemBuilder: (context, index) {
                         final amenity = room.amenities[index];

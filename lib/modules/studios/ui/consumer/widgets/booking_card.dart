@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 import '../../../models/booking_entity.dart';
 
 class BookingCard extends StatelessWidget {
@@ -10,6 +11,7 @@ class BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final isConfirmed = booking.status == BookingStatus.confirmed;
@@ -25,22 +27,22 @@ class BookingCard extends StatelessWidget {
       case BookingStatus.confirmed:
         statusColor = scheme.primaryContainer;
         statusOnColor = scheme.onPrimaryContainer;
-        statusText = 'CONFIRMADA';
+        statusText = loc.bookingStatusConfirmed.toUpperCase();
         break;
       case BookingStatus.cancelled:
         statusColor = scheme.errorContainer;
         statusOnColor = scheme.onErrorContainer;
-        statusText = 'CANCELADA';
+        statusText = loc.bookingStatusCancelled.toUpperCase();
         break;
       case BookingStatus.refunded:
         statusColor = scheme.tertiaryContainer;
         statusOnColor = scheme.onTertiaryContainer;
-        statusText = 'REEMBOLSADA';
+        statusText = loc.bookingStatusRefunded.toUpperCase();
         break;
       case BookingStatus.pending:
         statusColor = scheme.surfaceContainerHighest;
         statusOnColor = scheme.onSurfaceVariant;
-        statusText = 'PENDIENTE';
+        statusText = loc.bookingStatusPending.toUpperCase();
         break;
     }
 
