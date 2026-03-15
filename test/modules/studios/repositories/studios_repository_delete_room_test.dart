@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:upsessions/modules/studios/models/booking_entity.dart';
 import 'package:upsessions/modules/studios/models/room_entity.dart';
-import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
+import '../../../support/studios/mock_studios_repository.dart';
 
 void main() {
   group('MockStudiosRepository.deleteRoom', () {
