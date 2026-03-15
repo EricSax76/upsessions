@@ -9,13 +9,10 @@ class ContinuousCarousel extends StatefulWidget {
     this.scrollSpeed = 30.0, // pixels per second
   });
 
-  /// The list of widgets to display in the carousel
   final List<Widget> children;
 
-  /// Space between elements
   final double spacing;
 
-  /// Scroll speed in pixels per second. Default is 30.
   final double scrollSpeed;
 
   @override

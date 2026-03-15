@@ -6,6 +6,7 @@ import 'package:upsessions/core/constants/app_spacing.dart';
 import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/core/ui/shell/auth_shell.dart';
 import 'package:upsessions/core/widgets/gap.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/event_manager/repositories/event_manager_repository.dart';
 import 'package:upsessions/modules/venues/cubits/venue_register_cubit.dart';
@@ -60,6 +61,7 @@ class _VenueRegisterViewState extends State<_VenueRegisterView> {
         }
       },
       builder: (context, state) {
+        final localizations = AppLocalizations.of(context);
         final cubit = context.read<VenueRegisterCubit>();
         final draft = cubit.draft;
         final isSubmitting = state.status == VenueRegisterStatus.submitting;
@@ -68,7 +70,7 @@ class _VenueRegisterViewState extends State<_VenueRegisterView> {
           children: [
             AuthShell(
               showAppBar: true,
-              title: 'Registro Venues',
+              title: localizations.venueRegisterTitle,
               onBackPressed: () => context.pop(),
               child: Form(
                 key: _formKey,
@@ -76,7 +78,7 @@ class _VenueRegisterViewState extends State<_VenueRegisterView> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Crea tu cuenta para gestionar locales y disponibilidad.',
+                      localizations.venueRegisterSubtitle,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -84,30 +86,37 @@ class _VenueRegisterViewState extends State<_VenueRegisterView> {
                     const VSpace(AppSpacing.lg),
                     TextFormField(
                       controller: draft.venueNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre del local o empresa',
-                        hintText: 'Ej. Sala Horizonte',
+                      decoration: InputDecoration(
+                        labelText: localizations.venueRegisterVenueNameLabel,
+                        hintText: localizations.venueRegisterVenueNameHint,
                       ),
-                      validator: (value) =>
-                          VenueRegisterValidator.required(value),
+                      validator: (value) => VenueRegisterValidator.required(
+                        value,
+                        message: localizations.venueValidationRequired,
+                      ),
                     ),
                     const VSpace(AppSpacing.md),
                     TextFormField(
                       controller: draft.emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Correo electrónico',
-                        hintText: 'correo@ejemplo.com',
+                      decoration: InputDecoration(
+                        labelText: localizations.venueRegisterEmailLabel,
+                        hintText: localizations.venueRegisterEmailHint,
                       ),
-                      validator: (value) => VenueRegisterValidator.email(value),
+                      validator: (value) => VenueRegisterValidator.email(
+                        value,
+                        requiredMessage: localizations.venueValidationRequired,
+                        invalidMessage:
+                            localizations.venueValidationEmailInvalid,
+                      ),
                     ),
                     const VSpace(AppSpacing.md),
                     TextFormField(
                       controller: draft.passwordController,
                       obscureText: state.obscurePassword,
                       decoration: InputDecoration(
-                        labelText: 'Contraseña',
-                        hintText: 'Mínimo 6 caracteres',
+                        labelText: localizations.venueRegisterPasswordLabel,
+                        hintText: localizations.venueRegisterPasswordHint,
                         suffixIcon: IconButton(
                           onPressed: cubit.togglePasswordVisibility,
                           icon: Icon(
@@ -117,37 +126,43 @@ class _VenueRegisterViewState extends State<_VenueRegisterView> {
                           ),
                         ),
                       ),
-                      validator: (value) =>
-                          VenueRegisterValidator.password(value),
+                      validator: (value) => VenueRegisterValidator.password(
+                        value,
+                        message: localizations.venueRegisterPasswordHint,
+                      ),
                     ),
                     const VSpace(AppSpacing.md),
                     TextFormField(
                       controller: draft.contactPhoneController,
                       keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
-                        labelText: 'Teléfono de contacto',
-                        hintText: '+34 600 000 000',
+                      decoration: InputDecoration(
+                        labelText: localizations.venueRegisterPhoneLabel,
+                        hintText: localizations.venueRegisterPhoneHint,
                       ),
-                      validator: (value) =>
-                          VenueRegisterValidator.required(value),
+                      validator: (value) => VenueRegisterValidator.required(
+                        value,
+                        message: localizations.venueValidationRequired,
+                      ),
                     ),
                     const VSpace(AppSpacing.md),
                     TextFormField(
                       controller: draft.cityController,
-                      decoration: const InputDecoration(
-                        labelText: 'Ciudad',
-                        hintText: 'Ej. Madrid',
+                      decoration: InputDecoration(
+                        labelText: localizations.venueFieldCity,
+                        hintText: localizations.venueRegisterCityHint,
                       ),
-                      validator: (value) =>
-                          VenueRegisterValidator.required(value),
+                      validator: (value) => VenueRegisterValidator.required(
+                        value,
+                        message: localizations.venueValidationRequired,
+                      ),
                     ),
                     const VSpace(AppSpacing.md),
                     TextFormField(
                       controller: draft.websiteController,
                       keyboardType: TextInputType.url,
-                      decoration: const InputDecoration(
-                        labelText: 'Web (opcional)',
-                        hintText: 'https://...',
+                      decoration: InputDecoration(
+                        labelText: localizations.venueRegisterWebsiteLabel,
+                        hintText: localizations.venueRegisterWebsiteHint,
                       ),
                     ),
                     const VSpace(AppSpacing.xl),
@@ -156,14 +171,16 @@ class _VenueRegisterViewState extends State<_VenueRegisterView> {
                       child: Padding(
                         padding: const EdgeInsets.all(AppSpacing.md),
                         child: Text(
-                          isSubmitting ? 'Registrando...' : 'Crear cuenta',
+                          isSubmitting
+                              ? localizations.venueRegisterSubmitting
+                              : localizations.venueRegisterCreateAccount,
                         ),
                       ),
                     ),
                     const VSpace(AppSpacing.md),
                     TextButton(
                       onPressed: () => context.go(AppRoutes.venuesAuthLogin),
-                      child: const Text('¿Ya tienes cuenta? Inicia sesión'),
+                      child: Text(localizations.venueRegisterLoginPrompt),
                     ),
                   ],
                 ),

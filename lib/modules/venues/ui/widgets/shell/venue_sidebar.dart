@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../../core/ui/shell/sidebar_cubit.dart';
 import 'venue_menu_list.dart';
@@ -9,6 +10,7 @@ class VenueSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return BlocBuilder<SidebarCubit, bool>(
       builder: (context, isCollapsed) {
         return Container(
@@ -28,7 +30,7 @@ class VenueSidebar extends StatelessWidget {
                     if (!isCollapsed)
                       Expanded(
                         child: Text(
-                          'UpSessions Venues',
+                          localizations.venueShellBrandName,
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,

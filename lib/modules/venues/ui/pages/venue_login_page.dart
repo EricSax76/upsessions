@@ -61,7 +61,7 @@ class VenueLoginPage extends StatelessWidget {
                     ),
                     const VSpace(AppSpacing.lg),
                     Text(
-                      'Acceso Venues',
+                      localizations.venueLoginTitle,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Theme.of(context).colorScheme.onPrimary,
@@ -70,7 +70,7 @@ class VenueLoginPage extends StatelessWidget {
                     ),
                     const VSpace(AppSpacing.sm),
                     Text(
-                      'Gestiona tus locales y disponibilidad.',
+                      localizations.venueLoginSubtitle,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(
@@ -87,7 +87,7 @@ class VenueLoginPage extends StatelessWidget {
                       style: TextButton.styleFrom(
                         foregroundColor: Theme.of(context).colorScheme.primary,
                       ),
-                      child: const Text('¿No tienes cuenta? Regístrate'),
+                      child: Text(localizations.venueLoginRegisterPrompt),
                     ),
                     const VSpace(AppSpacing.sm),
                     Row(

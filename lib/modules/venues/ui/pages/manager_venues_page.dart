@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../core/constants/app_routes.dart';
 import '../../cubits/manager_venues_cubit.dart';
@@ -15,12 +16,12 @@ class ManagerVenuesPage extends StatefulWidget {
     super.key,
     this.createVenueRoute = AppRoutes.eventManagerVenueForm,
     this.editVenueRoutePathBuilder = AppRoutes.eventManagerVenueEditPath,
-    this.headingTitle = 'Mis Locales',
+    this.headingTitle,
   });
 
   final String createVenueRoute;
   final String Function(String venueId) editVenueRoutePathBuilder;
-  final String headingTitle;
+  final String? headingTitle;
 
   @override
   State<ManagerVenuesPage> createState() => _ManagerVenuesPageState();
@@ -49,20 +50,23 @@ class _ManagerVenuesPageState extends State<ManagerVenuesPage> {
   }
 
   Future<void> _confirmDeactivate(VenueEntity venue) async {
+    final localizations = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Desactivar local'),
-          content: Text('¿Quieres desactivar "${venue.name}"?'),
+          title: Text(localizations.venueManagerDeactivateTitle),
+          content: Text(
+            localizations.venueManagerDeactivateMessage(venue.name),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancelar'),
+              child: Text(localizations.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Desactivar'),
+              child: Text(localizations.venueManagerDeactivateAction),
             ),
           ],
         );
@@ -75,11 +79,14 @@ class _ManagerVenuesPageState extends State<ManagerVenuesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    final headingTitle =
+        widget.headingTitle ?? localizations.venueManagerHeadingTitle;
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openCreateVenue,
         icon: const Icon(Icons.add_business),
-        label: const Text('Nuevo Local'),
+        label: Text(localizations.venueManagerNewVenue),
       ),
       body: BlocConsumer<ManagerVenuesCubit, ManagerVenuesState>(
         listenWhen: (previous, current) =>
@@ -111,7 +118,7 @@ class _ManagerVenuesPageState extends State<ManagerVenuesPage> {
           }
 
           return ManagerVenuesList(
-            headingTitle: widget.headingTitle,
+            headingTitle: headingTitle,
             venues: state.venues,
             hasMore: state.hasMore,
             isLoadingMore: state.isLoadingMore,

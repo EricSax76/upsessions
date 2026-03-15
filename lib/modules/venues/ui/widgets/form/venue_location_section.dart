@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class VenueLocationSection extends StatelessWidget {
   const VenueLocationSection({
@@ -18,11 +19,12 @@ class VenueLocationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Ubicación',
+          localizations.venueFormSectionLocation,
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -30,7 +32,9 @@ class VenueLocationSection extends StatelessWidget {
         const SizedBox(height: 12),
         TextFormField(
           controller: addressController,
-          decoration: const InputDecoration(labelText: 'Dirección'),
+          decoration: InputDecoration(
+            labelText: localizations.venueFormFieldAddress,
+          ),
           validator: requiredValidator,
         ),
         const SizedBox(height: 12),
@@ -39,7 +43,9 @@ class VenueLocationSection extends StatelessWidget {
             Expanded(
               child: TextFormField(
                 controller: cityController,
-                decoration: const InputDecoration(labelText: 'Ciudad'),
+                decoration: InputDecoration(
+                  labelText: localizations.venueFieldCity,
+                ),
                 validator: requiredValidator,
               ),
             ),
@@ -47,7 +53,9 @@ class VenueLocationSection extends StatelessWidget {
             Expanded(
               child: TextFormField(
                 controller: provinceController,
-                decoration: const InputDecoration(labelText: 'Provincia'),
+                decoration: InputDecoration(
+                  labelText: localizations.venueFieldProvince,
+                ),
                 validator: requiredValidator,
               ),
             ),
@@ -56,8 +64,8 @@ class VenueLocationSection extends StatelessWidget {
         const SizedBox(height: 12),
         TextFormField(
           controller: postalCodeController,
-          decoration: const InputDecoration(
-            labelText: 'Código postal (opcional)',
+          decoration: InputDecoration(
+            labelText: localizations.venueFormFieldPostalCodeOptional,
           ),
         ),
       ],

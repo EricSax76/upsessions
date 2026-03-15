@@ -18,8 +18,7 @@ class AuthShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
-    final isCompact =
-        media.size.width < 400 || media.size.height < 720;
+    final isCompact = media.size.width < 400 || media.size.height < 720;
     final outerPadding = isCompact
         ? const EdgeInsets.symmetric(horizontal: 16, vertical: 16)
         : const EdgeInsets.all(24);
@@ -55,11 +54,9 @@ class AuthShell extends StatelessWidget {
               );
             },
           ),
-          // Opacity Overlay
-          Container(
-            color: Colors.black.withValues(alpha: 0.7), // Adjust opacity as needed
-          ),
-          // Centered Card Content
+
+          Container(color: Colors.black.withValues(alpha: 0.7)),
+
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -71,21 +68,22 @@ class AuthShell extends StatelessWidget {
                   child: Container(
                     padding: cardPadding,
                     decoration: BoxDecoration(
-                      // Transparent background for the card as requested
-                      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surface.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                         color: Colors.white.withValues(alpha: 0.2),
-                         width: 1,
-                       ),
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
                     ),
-                    // Ensure text color contrasts with dark background
+
                     child: Theme(
                       data: Theme.of(context).copyWith(
-                         brightness: Brightness.dark, 
-                         colorScheme: Theme.of(context).colorScheme.copyWith(
-                            brightness: Brightness.dark,
-                         ),
+                        brightness: Brightness.dark,
+                        colorScheme: Theme.of(
+                          context,
+                        ).colorScheme.copyWith(brightness: Brightness.dark),
                       ),
                       child: child,
                     ),

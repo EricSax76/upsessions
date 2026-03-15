@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class VenueBasicsSection extends StatelessWidget {
   const VenueBasicsSection({
@@ -14,11 +15,12 @@ class VenueBasicsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Información del local',
+          localizations.venueFormSectionBasics,
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -26,13 +28,17 @@ class VenueBasicsSection extends StatelessWidget {
         const SizedBox(height: 12),
         TextFormField(
           controller: nameController,
-          decoration: const InputDecoration(labelText: 'Nombre del local'),
+          decoration: InputDecoration(
+            labelText: localizations.venueFormFieldVenueName,
+          ),
           validator: requiredValidator,
         ),
         const SizedBox(height: 12),
         TextFormField(
           controller: descriptionController,
-          decoration: const InputDecoration(labelText: 'Descripción'),
+          decoration: InputDecoration(
+            labelText: localizations.venueFormFieldDescription,
+          ),
           maxLines: 3,
           validator: requiredValidator,
         ),

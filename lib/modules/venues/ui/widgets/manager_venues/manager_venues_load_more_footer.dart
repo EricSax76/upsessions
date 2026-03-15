@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class ManagerVenuesLoadMoreFooter extends StatelessWidget {
   const ManagerVenuesLoadMoreFooter({
@@ -14,6 +15,7 @@ class ManagerVenuesLoadMoreFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     if (!hasMore) return const SizedBox.shrink();
 
     return Padding(
@@ -29,7 +31,7 @@ class ManagerVenuesLoadMoreFooter extends StatelessWidget {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Icon(Icons.expand_more),
-          label: const Text('Cargar más'),
+          label: Text(localizations.venueLoadMore),
         ),
       ),
     );

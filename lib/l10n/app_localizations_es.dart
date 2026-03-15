@@ -1191,4 +1191,218 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get homeGreetingSubtitle => 'Aquí está tu resumen de hoy';
+
+  @override
+  String get venueShellBrandName => 'UpSessions Venues';
+
+  @override
+  String get venueMenuDashboard => 'Dashboard';
+
+  @override
+  String get venueMenuNewVenue => 'Nuevo local';
+
+  @override
+  String get venueMenuExploreVenues => 'Explorar venues';
+
+  @override
+  String get venueMenuLogout => 'Cerrar sesión';
+
+  @override
+  String get venueBottomNavPanel => 'Mi panel';
+
+  @override
+  String get venueBottomNavExplore => 'Explorar';
+
+  @override
+  String get venuePublicListTitle => 'Locales de espectáculos';
+
+  @override
+  String get venueFiltersApply => 'Filtrar';
+
+  @override
+  String get venueFieldCity => 'Ciudad';
+
+  @override
+  String get venueFieldProvince => 'Provincia';
+
+  @override
+  String get venueLoadMore => 'Cargar más';
+
+  @override
+  String get venueRetry => 'Reintentar';
+
+  @override
+  String get venuePublicEmpty =>
+      'No hay locales disponibles con los filtros aplicados.';
+
+  @override
+  String get venueManagerEmpty => 'No tienes locales activos.';
+
+  @override
+  String get venueManagerDeactivateTitle => 'Desactivar local';
+
+  @override
+  String venueManagerDeactivateMessage(String venueName) {
+    return '¿Quieres desactivar \"$venueName\"?';
+  }
+
+  @override
+  String get venueManagerDeactivateAction => 'Desactivar';
+
+  @override
+  String get venueManagerNewVenue => 'Nuevo local';
+
+  @override
+  String get venueManagerHeadingTitle => 'Mis locales';
+
+  @override
+  String venueCardCapacityLabel(int capacity) {
+    return 'Aforo $capacity';
+  }
+
+  @override
+  String get venueCardPublic => 'Público';
+
+  @override
+  String get venueCardPrivate => 'Privado';
+
+  @override
+  String get venueCardSourceStudioSync => 'Studio sync';
+
+  @override
+  String get venueCardSourceNative => 'Nativo';
+
+  @override
+  String get venueCardEdit => 'Editar';
+
+  @override
+  String get venueCardDeactivate => 'Desactivar';
+
+  @override
+  String get venueLoginTitle => 'Acceso Venues';
+
+  @override
+  String get venueLoginSubtitle => 'Gestiona tus locales y disponibilidad.';
+
+  @override
+  String get venueLoginRegisterPrompt => '¿No tienes cuenta? Regístrate';
+
+  @override
+  String get venueRegisterTitle => 'Registro Venues';
+
+  @override
+  String get venueRegisterSubtitle =>
+      'Crea tu cuenta para gestionar locales y disponibilidad.';
+
+  @override
+  String get venueRegisterVenueNameLabel => 'Nombre del local o empresa';
+
+  @override
+  String get venueRegisterVenueNameHint => 'Ej. Sala Horizonte';
+
+  @override
+  String get venueRegisterEmailLabel => 'Correo electrónico';
+
+  @override
+  String get venueRegisterEmailHint => 'correo@ejemplo.com';
+
+  @override
+  String get venueRegisterPasswordLabel => 'Contraseña';
+
+  @override
+  String get venueRegisterPasswordHint => 'Mínimo 6 caracteres';
+
+  @override
+  String get venueRegisterPhoneLabel => 'Teléfono de contacto';
+
+  @override
+  String get venueRegisterPhoneHint => '+34 600 000 000';
+
+  @override
+  String get venueRegisterCityHint => 'Ej. Madrid';
+
+  @override
+  String get venueRegisterWebsiteLabel => 'Web (opcional)';
+
+  @override
+  String get venueRegisterWebsiteHint => 'https://...';
+
+  @override
+  String get venueRegisterSubmitting => 'Registrando...';
+
+  @override
+  String get venueRegisterCreateAccount => 'Crear cuenta';
+
+  @override
+  String get venueRegisterLoginPrompt => '¿Ya tienes cuenta? Inicia sesión';
+
+  @override
+  String get venueFormSavedSuccess => 'Local guardado correctamente.';
+
+  @override
+  String get venueFormEditTitle => 'Editar local';
+
+  @override
+  String get venueFormNewTitle => 'Nuevo local';
+
+  @override
+  String get venueFormSaving => 'Guardando...';
+
+  @override
+  String get venueFormSave => 'Guardar local';
+
+  @override
+  String get venueFormSectionBasics => 'Información del local';
+
+  @override
+  String get venueFormSectionLocation => 'Ubicación';
+
+  @override
+  String get venueFormSectionContact => 'Contacto y licencia';
+
+  @override
+  String get venueFormSectionCompliance => 'Capacidad y visibilidad';
+
+  @override
+  String get venueFormFieldVenueName => 'Nombre del local';
+
+  @override
+  String get venueFormFieldDescription => 'Descripción';
+
+  @override
+  String get venueFormFieldAddress => 'Dirección';
+
+  @override
+  String get venueFormFieldPostalCodeOptional => 'Código postal (opcional)';
+
+  @override
+  String get venueFormFieldContactEmail => 'Email de contacto';
+
+  @override
+  String get venueFormFieldContactPhone => 'Teléfono de contacto';
+
+  @override
+  String get venueFormFieldLicenseNumber => 'Nº de licencia';
+
+  @override
+  String get venueFormFieldMaxCapacity => 'Aforo máximo';
+
+  @override
+  String get venueFormFieldAccessibility => 'Información de accesibilidad';
+
+  @override
+  String get venueFormVisibleToMusicians => 'Visible para músicos';
+
+  @override
+  String get venueFormVisibleToMusiciansHint =>
+      'Si está desactivado, solo lo verá tu equipo.';
+
+  @override
+  String get venueValidationRequired => 'Requerido';
+
+  @override
+  String get venueValidationEmailInvalid => 'Email no válido';
+
+  @override
+  String get venueValidationPositiveInt => 'Debe ser un entero > 0';
 }

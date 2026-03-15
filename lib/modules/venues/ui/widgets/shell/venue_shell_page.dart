@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:upsessions/features/home/ui/widgets/legal/legal_compliance_gate.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../../core/constants/app_routes.dart';
 import '../../../../../core/ui/shell/core_shell.dart';
@@ -33,6 +34,7 @@ class VenueShellPage extends StatelessWidget {
       },
       child: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
+          final localizations = AppLocalizations.of(context);
           final user = state.user;
           final name = user?.displayName ?? '';
           final initials = name.trim().isEmpty ? '' : name.trim()[0];
@@ -46,7 +48,7 @@ class VenueShellPage extends StatelessWidget {
                   ? AppBar(
                       centerTitle: true,
                       title: AppLogo(
-                        label: 'UpSessions Venues',
+                        label: localizations.venueShellBrandName,
                         textStyle: Theme.of(context).textTheme.titleLarge
                             ?.copyWith(fontWeight: FontWeight.bold),
                         iconSize: 22,

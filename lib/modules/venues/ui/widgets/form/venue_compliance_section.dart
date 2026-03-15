@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class VenueComplianceSection extends StatelessWidget {
   const VenueComplianceSection({
@@ -20,11 +21,12 @@ class VenueComplianceSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Capacidad y visibilidad',
+          localizations.venueFormSectionCompliance,
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -32,15 +34,17 @@ class VenueComplianceSection extends StatelessWidget {
         const SizedBox(height: 12),
         TextFormField(
           controller: maxCapacityController,
-          decoration: const InputDecoration(labelText: 'Aforo máximo'),
+          decoration: InputDecoration(
+            labelText: localizations.venueFormFieldMaxCapacity,
+          ),
           validator: positiveIntValidator,
           keyboardType: TextInputType.number,
         ),
         const SizedBox(height: 12),
         TextFormField(
           controller: accessibilityInfoController,
-          decoration: const InputDecoration(
-            labelText: 'Información de accesibilidad',
+          decoration: InputDecoration(
+            labelText: localizations.venueFormFieldAccessibility,
           ),
           validator: requiredValidator,
           maxLines: 2,
@@ -50,8 +54,8 @@ class VenueComplianceSection extends StatelessWidget {
           value: isPublic,
           contentPadding: EdgeInsets.zero,
           onChanged: onIsPublicChanged,
-          title: const Text('Visible para músicos'),
-          subtitle: const Text('Si está desactivado, solo lo verá tu equipo.'),
+          title: Text(localizations.venueFormVisibleToMusicians),
+          subtitle: Text(localizations.venueFormVisibleToMusiciansHint),
         ),
       ],
     );

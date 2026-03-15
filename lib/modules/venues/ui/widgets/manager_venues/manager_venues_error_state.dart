@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class ManagerVenuesErrorState extends StatelessWidget {
   const ManagerVenuesErrorState({
@@ -12,6 +13,7 @@ class ManagerVenuesErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -24,7 +26,10 @@ class ManagerVenuesErrorState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
-            FilledButton(onPressed: onRetry, child: const Text('Reintentar')),
+            FilledButton(
+              onPressed: onRetry,
+              child: Text(localizations.venueRetry),
+            ),
           ],
         ),
       ),

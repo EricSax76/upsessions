@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class VenueContactSection extends StatelessWidget {
   const VenueContactSection({
@@ -18,11 +19,12 @@ class VenueContactSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Contacto y licencia',
+          localizations.venueFormSectionContact,
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -30,21 +32,27 @@ class VenueContactSection extends StatelessWidget {
         const SizedBox(height: 12),
         TextFormField(
           controller: contactEmailController,
-          decoration: const InputDecoration(labelText: 'Email de contacto'),
+          decoration: InputDecoration(
+            labelText: localizations.venueFormFieldContactEmail,
+          ),
           validator: emailValidator,
           keyboardType: TextInputType.emailAddress,
         ),
         const SizedBox(height: 12),
         TextFormField(
           controller: contactPhoneController,
-          decoration: const InputDecoration(labelText: 'Teléfono de contacto'),
+          decoration: InputDecoration(
+            labelText: localizations.venueFormFieldContactPhone,
+          ),
           validator: requiredValidator,
           keyboardType: TextInputType.phone,
         ),
         const SizedBox(height: 12),
         TextFormField(
           controller: licenseNumberController,
-          decoration: const InputDecoration(labelText: 'Nº de licencia'),
+          decoration: InputDecoration(
+            labelText: localizations.venueFormFieldLicenseNumber,
+          ),
           validator: requiredValidator,
         ),
       ],

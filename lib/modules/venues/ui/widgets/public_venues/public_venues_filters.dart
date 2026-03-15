@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 class PublicVenuesFilters extends StatelessWidget {
   const PublicVenuesFilters({
@@ -16,10 +17,11 @@ class PublicVenuesFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     final filterAction = FilledButton.icon(
       onPressed: isLoading ? null : onApply,
       icon: const Icon(Icons.search),
-      label: const Text('Filtrar'),
+      label: Text(localizations.venueFiltersApply),
     );
 
     return Padding(
@@ -32,12 +34,16 @@ class PublicVenuesFilters extends StatelessWidget {
               children: [
                 TextField(
                   controller: cityController,
-                  decoration: const InputDecoration(labelText: 'Ciudad'),
+                  decoration: InputDecoration(
+                    labelText: localizations.venueFieldCity,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: provinceController,
-                  decoration: const InputDecoration(labelText: 'Provincia'),
+                  decoration: InputDecoration(
+                    labelText: localizations.venueFieldProvince,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 filterAction,
@@ -50,14 +56,18 @@ class PublicVenuesFilters extends StatelessWidget {
               Expanded(
                 child: TextField(
                   controller: cityController,
-                  decoration: const InputDecoration(labelText: 'Ciudad'),
+                  decoration: InputDecoration(
+                    labelText: localizations.venueFieldCity,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: TextField(
                   controller: provinceController,
-                  decoration: const InputDecoration(labelText: 'Provincia'),
+                  decoration: InputDecoration(
+                    labelText: localizations.venueFieldProvince,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),

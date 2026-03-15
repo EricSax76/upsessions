@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../models/venue_entity.dart';
 
@@ -9,6 +10,7 @@ class PublicVenueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -35,7 +37,11 @@ class PublicVenueCard extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                Chip(label: Text('Aforo ${venue.maxCapacity}')),
+                Chip(
+                  label: Text(
+                    localizations.venueCardCapacityLabel(venue.maxCapacity),
+                  ),
+                ),
                 if (venue.accessibilityInfo.trim().isNotEmpty)
                   Chip(label: Text(venue.accessibilityInfo.trim())),
               ],

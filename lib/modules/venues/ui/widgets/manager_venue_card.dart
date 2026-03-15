@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../models/venue_entity.dart';
 
@@ -18,6 +19,7 @@ class ManagerVenueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     final canEdit = !venue.isStudioBacked;
 
     return Card(
@@ -47,10 +49,24 @@ class ManagerVenueCard extends StatelessWidget {
               spacing: 6,
               runSpacing: 6,
               children: [
-                Chip(label: Text('Aforo ${venue.maxCapacity}')),
-                Chip(label: Text(venue.isPublic ? 'Público' : 'Privado')),
                 Chip(
-                  label: Text(venue.isStudioBacked ? 'Studio sync' : 'Nativo'),
+                  label: Text(
+                    localizations.venueCardCapacityLabel(venue.maxCapacity),
+                  ),
+                ),
+                Chip(
+                  label: Text(
+                    venue.isPublic
+                        ? localizations.venueCardPublic
+                        : localizations.venueCardPrivate,
+                  ),
+                ),
+                Chip(
+                  label: Text(
+                    venue.isStudioBacked
+                        ? localizations.venueCardSourceStudioSync
+                        : localizations.venueCardSourceNative,
+                  ),
                 ),
               ],
             ),
@@ -66,12 +82,12 @@ class ManagerVenueCard extends StatelessWidget {
               PopupMenuItem<_VenueAction>(
                 value: _VenueAction.edit,
                 enabled: canEdit,
-                child: const Text('Editar'),
+                child: Text(localizations.venueCardEdit),
               ),
               PopupMenuItem<_VenueAction>(
                 value: _VenueAction.deactivate,
                 enabled: canEdit,
-                child: const Text('Desactivar'),
+                child: Text(localizations.venueCardDeactivate),
               ),
             ];
           },

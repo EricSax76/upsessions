@@ -6,7 +6,6 @@ import '../forms/search_field.dart';
 import '../loading_indicator.dart';
 import 'animated_list_item.dart';
 
-/// Página genérica con búsqueda, filtros y lista de resultados.
 class SearchableListPage<T> extends StatefulWidget {
   const SearchableListPage({
     super.key,

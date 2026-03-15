@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../../core/constants/app_routes.dart';
 import '../../../../auth/cubits/auth_cubit.dart';
@@ -12,43 +13,57 @@ class VenueMenuList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     final location = GoRouterState.of(context).uri.path;
+    final menuItems = <_VenueMenuRouteItem>[
+      _VenueMenuRouteItem(
+        icon: Icons.storefront_outlined,
+        activeIcon: Icons.storefront,
+        label: localizations.venueMenuDashboard,
+        route: AppRoutes.venuesDashboard,
+      ),
+      _VenueMenuRouteItem(
+        icon: Icons.add_business_outlined,
+        activeIcon: Icons.add_business,
+        label: localizations.venueMenuNewVenue,
+        route: AppRoutes.venuesDashboardVenueForm,
+      ),
+      _VenueMenuRouteItem(
+        icon: Icons.travel_explore_outlined,
+        activeIcon: Icons.travel_explore,
+        label: localizations.venueMenuExploreVenues,
+        route: AppRoutes.venues,
+      ),
+    ];
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildItem(
-            context,
-            icon: Icons.storefront_outlined,
-            activeIcon: Icons.storefront,
-            label: 'Dashboard',
-            route: AppRoutes.venuesDashboard,
-            currentLocation: location,
-          ),
-          _buildItem(
-            context,
-            icon: Icons.add_business_outlined,
-            activeIcon: Icons.add_business,
-            label: 'Nuevo local',
-            route: AppRoutes.venuesDashboardVenueForm,
-            currentLocation: location,
-          ),
+          for (final item in menuItems.take(2))
+            _buildItem(
+              context,
+              icon: item.icon,
+              activeIcon: item.activeIcon,
+              label: item.label,
+              route: item.route,
+              currentLocation: location,
+            ),
           const Divider(height: 32),
           _buildItem(
             context,
-            icon: Icons.travel_explore_outlined,
-            activeIcon: Icons.travel_explore,
-            label: 'Explorar venues',
-            route: AppRoutes.venues,
+            icon: menuItems[2].icon,
+            activeIcon: menuItems[2].activeIcon,
+            label: menuItems[2].label,
+            route: menuItems[2].route,
             currentLocation: location,
           ),
           const Divider(height: 32),
           _buildActionItem(
             context,
             icon: Icons.logout,
-            label: 'Cerrar sesión',
+            label: localizations.venueMenuLogout,
             onTap: () {
               context.read<AuthCubit>().signOut();
             },
@@ -168,9 +183,31 @@ class VenueMenuList extends StatelessWidget {
   }
 
   bool _isActiveRoute(String currentLocation, String route) {
+    if (route == AppRoutes.venuesDashboard) {
+      return currentLocation == AppRoutes.venuesDashboard;
+    }
+    if (route == AppRoutes.venuesDashboardVenueForm) {
+      return currentLocation == AppRoutes.venuesDashboardVenueForm ||
+          (currentLocation.startsWith('${AppRoutes.venuesDashboard}/') &&
+              currentLocation.endsWith('/edit'));
+    }
     if (route == AppRoutes.venues) {
       return currentLocation == AppRoutes.venues;
     }
     return currentLocation.startsWith(route);
   }
+}
+
+class _VenueMenuRouteItem {
+  const _VenueMenuRouteItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    required this.route,
+  });
+
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final String route;
 }
