@@ -210,6 +210,310 @@ class AppLocalizationsEs extends AppLocalizations {
   String get rehearsalsFilterAll => 'Todos';
 
   @override
+  String rehearsalsErrorWithMessage(String message) {
+    return 'Error: $message';
+  }
+
+  @override
+  String get rehearsalsGroupFallbackName => 'Grupo';
+
+  @override
+  String rehearsalsCreateError(String error) {
+    return 'No se pudo crear el ensayo: $error';
+  }
+
+  @override
+  String get rehearsalsEmptyTitle => 'Todavía no hay ensayos';
+
+  @override
+  String get rehearsalsEmptySubtitle =>
+      'Crea el primero para empezar a armar el setlist.';
+
+  @override
+  String get rehearsalsFilterEmptyTitle => 'Sin resultados';
+
+  @override
+  String get rehearsalsFilterEmptyUpcoming => 'No hay ensayos próximos.';
+
+  @override
+  String get rehearsalsFilterEmptyPast => 'Todavía no hay ensayos pasados.';
+
+  @override
+  String get rehearsalsFilterEmptyAll => 'No hay ensayos para mostrar.';
+
+  @override
+  String get deleteAction => 'Eliminar';
+
+  @override
+  String get saveAction => 'Guardar';
+
+  @override
+  String get closeAction => 'Cerrar';
+
+  @override
+  String get doneAction => 'Listo';
+
+  @override
+  String get removeAction => 'Quitar';
+
+  @override
+  String get rehearsalsDeleteTitle => 'Eliminar ensayo';
+
+  @override
+  String get rehearsalsDeleteMessage =>
+      'Se eliminará el ensayo y su setlist. ¿Continuar?';
+
+  @override
+  String get rehearsalsDeleteSuccess => 'Ensayo eliminado.';
+
+  @override
+  String rehearsalsDeleteError(String error) {
+    return 'No se pudo eliminar el ensayo: $error';
+  }
+
+  @override
+  String get rehearsalsEditTitle => 'Editar ensayo';
+
+  @override
+  String get rehearsalsUpdateSuccess => 'Ensayo actualizado.';
+
+  @override
+  String rehearsalsUpdateError(String error) {
+    return 'No se pudo actualizar el ensayo: $error';
+  }
+
+  @override
+  String setlistAddError(String error) {
+    return 'No se pudo agregar: $error';
+  }
+
+  @override
+  String get setlistEditSongTitle => 'Editar canción';
+
+  @override
+  String setlistUpdateError(String error) {
+    return 'No se pudo actualizar: $error';
+  }
+
+  @override
+  String get setlistDeleteItemTitle => 'Eliminar item';
+
+  @override
+  String setlistDeleteItemMessage(String itemTitle) {
+    return 'Eliminar \"$itemTitle\" del setlist?';
+  }
+
+  @override
+  String setlistDeleteError(String error) {
+    return 'No se pudo eliminar: $error';
+  }
+
+  @override
+  String get setlistCopyNoPrevious => 'No hay ensayos previos para copiar.';
+
+  @override
+  String get setlistCopyDialogTitle => 'Copiar setlist';
+
+  @override
+  String setlistCopyDialogMessage(String dateLabel) {
+    return 'Copiar el setlist del ensayo $dateLabel a este ensayo?';
+  }
+
+  @override
+  String get setlistCopyAppendAction => 'Agregar al final';
+
+  @override
+  String get setlistCopyReplaceAction => 'Reemplazar';
+
+  @override
+  String get setlistCopySuccess => 'Setlist copiado.';
+
+  @override
+  String setlistCopyError(String error) {
+    return 'No se pudo copiar el setlist: $error';
+  }
+
+  @override
+  String setlistReorderError(String error) {
+    return 'No se pudo reordenar el setlist: $error';
+  }
+
+  @override
+  String get rehearsalDetailTitle => 'Ensayo';
+
+  @override
+  String get rehearsalDetailDeleteTooltip => 'Eliminar ensayo';
+
+  @override
+  String get rehearsalDetailSetlistEmpty => 'No hay canciones en el setlist';
+
+  @override
+  String rehearsalDetailSetlistTitle(int count) {
+    return 'Setlist ($count)';
+  }
+
+  @override
+  String get rehearsalDetailCopyPreviousAction => 'Copiar del anterior';
+
+  @override
+  String get rehearsalDetailAddSongAction => 'Agregar canción';
+
+  @override
+  String get rehearsalDetailInfoTitle => 'Detalles';
+
+  @override
+  String get rehearsalDetailStartLabel => 'Inicio';
+
+  @override
+  String get rehearsalDetailEndLabel => 'Fin';
+
+  @override
+  String get rehearsalDetailLocationLabel => 'Ubicación';
+
+  @override
+  String get rehearsalDetailRoomTitle => 'Sala de Ensayo';
+
+  @override
+  String get rehearsalDetailBookRoomAction => 'Reservar';
+
+  @override
+  String get rehearsalDetailNoRoomBooked => 'No hay sala reservada';
+
+  @override
+  String get rehearsalDetailRoomConfirmed => 'Confirmada';
+
+  @override
+  String get rehearsalDetailNotesTitle => 'Notas';
+
+  @override
+  String get setlistTableHeaderTitle => 'Título';
+
+  @override
+  String get setlistTableHeaderKey => 'Tonalidad';
+
+  @override
+  String get setlistTableHeaderBpm => 'BPM';
+
+  @override
+  String get setlistTableHeaderNotes => 'Notas';
+
+  @override
+  String get setlistTableUntitledSong => 'Sin título';
+
+  @override
+  String get setlistTableDeleteTooltip => 'Quitar del setlist';
+
+  @override
+  String get setlistTableBpmUnit => 'BPM';
+
+  @override
+  String get setlistItemAddSongTitle => 'Agregar canción';
+
+  @override
+  String get setlistItemAddAction => 'Agregar';
+
+  @override
+  String get setlistItemSongLabel => 'Canción';
+
+  @override
+  String get setlistItemSongHint => 'Ej. Autumn Leaves';
+
+  @override
+  String get setlistItemKeyLabel => 'Tono';
+
+  @override
+  String get setlistItemTempoLabel => 'Tempo (bpm)';
+
+  @override
+  String get setlistItemOrderLabel => 'Orden';
+
+  @override
+  String get setlistItemNotesLabel => 'Notas';
+
+  @override
+  String get setlistItemLinkLabel => 'Enlace (YouTube, etc.)';
+
+  @override
+  String get setlistItemLinkHint => 'https://…';
+
+  @override
+  String get setlistItemSheetSelected => 'Partitura seleccionada';
+
+  @override
+  String get setlistItemUploadSheet => 'Subir partitura';
+
+  @override
+  String get rehearsalDialogPickDateTime => 'Elegir fecha/hora';
+
+  @override
+  String get rehearsalDialogOptional => 'Opcional';
+
+  @override
+  String get rehearsalDialogNewTitle => 'Nuevo ensayo';
+
+  @override
+  String get rehearsalDialogStartLabel => 'Inicio';
+
+  @override
+  String get rehearsalDialogEndLabel => 'Fin';
+
+  @override
+  String get rehearsalDialogRemoveEndTooltip => 'Quitar fin';
+
+  @override
+  String get rehearsalDialogLocationLabel => 'Lugar';
+
+  @override
+  String get rehearsalDialogLocationHint => 'Ej. Sala 2 / Estudio';
+
+  @override
+  String get rehearsalDialogNotesLabel => 'Notas';
+
+  @override
+  String get rehearsalDialogNotesHint => 'Ej. Traer metrónomo';
+
+  @override
+  String get rehearsalDialogCreateAction => 'Crear';
+
+  @override
+  String get rehearsalDialogEndBeforeStartError =>
+      'El fin no puede ser antes del inicio.';
+
+  @override
+  String get inviteDialogTitle => 'Agregar músico';
+
+  @override
+  String get inviteSearchLabel => 'Buscar por nombre';
+
+  @override
+  String get inviteSearchHint => 'Ej. ana';
+
+  @override
+  String get inviteTypeAtLeastOneCharacter => 'Escribe al menos 1 carácter.';
+
+  @override
+  String get inviteNoResults => 'Sin resultados.';
+
+  @override
+  String get inviteCreatedTitle => 'Invitación creada';
+
+  @override
+  String inviteCreatedFor(String name) {
+    return 'Para: $name';
+  }
+
+  @override
+  String get inviteCopyLinkAction => 'Copiar link';
+
+  @override
+  String get inviteLinkCopied => 'Link copiado.';
+
+  @override
+  String inviteCreateError(String error) {
+    return 'No se pudo crear la invitación: $error';
+  }
+
+  @override
   String get musicianContactTitle => '¿Te interesa colaborar?';
 
   @override

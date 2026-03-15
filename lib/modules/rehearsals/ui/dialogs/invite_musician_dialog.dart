@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 import '../../../musicians/models/musician_entity.dart';
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/locator/locator.dart';
@@ -11,10 +12,7 @@ import '../../../musicians/repositories/musicians_repository.dart';
 import '../widgets/invite_musician_dialog_widgets.dart';
 
 class InviteMusicianDialog extends StatelessWidget {
-  const InviteMusicianDialog({
-    super.key,
-    required this.groupId,
-  });
+  const InviteMusicianDialog({super.key, required this.groupId});
 
   final String groupId;
 
@@ -35,7 +33,8 @@ class _InviteMusicianDialogBody extends StatefulWidget {
   const _InviteMusicianDialogBody();
 
   @override
-  State<_InviteMusicianDialogBody> createState() => _InviteMusicianDialogBodyState();
+  State<_InviteMusicianDialogBody> createState() =>
+      _InviteMusicianDialogBodyState();
 }
 
 class _InviteMusicianDialogBodyState extends State<_InviteMusicianDialogBody> {
@@ -62,11 +61,14 @@ class _InviteMusicianDialogBodyState extends State<_InviteMusicianDialogBody> {
     );
   }
 
-  Future<void> _handleInviteTap(BuildContext context, MusicianEntity target) async {
+  Future<void> _handleInviteTap(
+    BuildContext context,
+    MusicianEntity target,
+  ) async {
     try {
-      final link = await context
-          .read<InviteMusicianCubit>()
-          .invite(target.ownerId);
+      final link = await context.read<InviteMusicianCubit>().invite(
+        target.ownerId,
+      );
 
       if (!context.mounted) return;
 
@@ -79,10 +81,8 @@ class _InviteMusicianDialogBodyState extends State<_InviteMusicianDialogBody> {
       Navigator.of(context).pop();
     } catch (error) {
       if (!context.mounted) return;
-      DialogService.showError(
-        context,
-        'No se pudo crear la invitación: $error',
-      );
+      final loc = AppLocalizations.of(context);
+      DialogService.showError(context, loc.inviteCreateError(error.toString()));
     }
   }
 }

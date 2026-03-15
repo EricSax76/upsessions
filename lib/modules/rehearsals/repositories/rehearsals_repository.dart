@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../models/rehearsal_entity.dart';
 import 'rehearsals_repository_base.dart';
@@ -7,7 +8,10 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
   RehearsalsRepository({
     required super.firestore,
     required super.authRepository,
-  });
+    FirebaseStorage? storage,
+  }) : _storage = storage ?? FirebaseStorage.instance;
+
+  final FirebaseStorage _storage;
 
   Future<List<RehearsalEntity>> getMyRehearsals() async {
     final uid = await requireMusicianUid();
@@ -123,6 +127,8 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
     final batch = firestore.batch();
     final setlistSnap = await setlist(groupId, rehearsalId).get();
     for (final doc in setlistSnap.docs) {
+      final sheetPath = (doc.data()['sheetPath'] as String?)?.trim() ?? '';
+      await _deleteSetlistSheetObjectIfNeeded(sheetPath);
       batch.delete(doc.reference);
     }
     batch.delete(rehearsals(groupId).doc(rehearsalId));
@@ -323,5 +329,24 @@ class RehearsalsRepository extends RehearsalsRepositoryBase {
       cancellationReason: data['cancellationReason'] as String?,
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
     );
+  }
+
+  Future<void> _deleteSetlistSheetObjectIfNeeded(String sheetPath) async {
+    final path = sheetPath.trim();
+    if (path.isEmpty) {
+      return;
+    }
+
+    try {
+      await logFuture(
+        'deleteRehearsal delete sheet path=$path',
+        _storage.ref(path).delete(),
+      );
+    } on FirebaseException catch (error) {
+      if (error.code == 'object-not-found') {
+        return;
+      }
+      rethrow;
+    }
   }
 }

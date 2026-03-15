@@ -155,14 +155,15 @@ class _EmptyFilterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final label = switch (filter) {
-      RehearsalFilter.upcoming => 'No hay ensayos próximos.',
-      RehearsalFilter.past => 'Todavía no hay ensayos pasados.',
-      RehearsalFilter.all => 'No hay ensayos para mostrar.',
+      RehearsalFilter.upcoming => loc.rehearsalsFilterEmptyUpcoming,
+      RehearsalFilter.past => loc.rehearsalsFilterEmptyPast,
+      RehearsalFilter.all => loc.rehearsalsFilterEmptyAll,
     };
     return EmptyStateCard(
       icon: Icons.filter_alt_outlined,
-      title: 'Sin resultados',
+      title: loc.rehearsalsFilterEmptyTitle,
       subtitle: label,
     );
   }

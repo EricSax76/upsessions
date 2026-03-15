@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/dialog_header.dart';
@@ -22,13 +23,14 @@ class InviteMusicianDialogView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
     return AlertDialog(
-      title: const DialogHeader(
+      title: DialogHeader(
         icon: Icons.person_add_alt_1_outlined,
-        title: 'Agregar músico',
+        title: loc.inviteDialogTitle,
       ),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520),
@@ -37,10 +39,10 @@ class InviteMusicianDialogView extends StatelessWidget {
           children: [
             TextField(
               controller: searchController,
-              decoration: const InputDecoration(
-                labelText: 'Buscar por nombre',
-                hintText: 'Ej. ana',
-                prefixIcon: Icon(Icons.search),
+              decoration: InputDecoration(
+                labelText: loc.inviteSearchLabel,
+                hintText: loc.inviteSearchHint,
+                prefixIcon: const Icon(Icons.search),
               ),
               onChanged: onQueryChanged,
             ),
@@ -57,14 +59,12 @@ class InviteMusicianDialogView extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cerrar'),
+          child: Text(loc.closeAction),
         ),
       ],
     );
   }
 }
-
-
 
 class InviteSearchBody extends StatelessWidget {
   const InviteSearchBody({
@@ -82,6 +82,7 @@ class InviteSearchBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     if (state.isLoading) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 12),
@@ -91,7 +92,7 @@ class InviteSearchBody extends StatelessWidget {
 
     if (!state.hasQuery) {
       return Text(
-        'Escribe al menos 1 carácter.',
+        loc.inviteTypeAtLeastOneCharacter,
         style: theme.textTheme.bodySmall?.copyWith(
           color: scheme.onSurfaceVariant,
         ),
@@ -100,7 +101,7 @@ class InviteSearchBody extends StatelessWidget {
 
     if (!state.hasResults) {
       return Text(
-        'Sin resultados.',
+        loc.inviteNoResults,
         style: theme.textTheme.bodySmall?.copyWith(
           color: scheme.onSurfaceVariant,
         ),
@@ -186,13 +187,18 @@ class InviteResultTile extends StatelessWidget {
 }
 
 class InviteCreatedDialog extends StatelessWidget {
-  const InviteCreatedDialog({super.key, required this.link, required this.target});
+  const InviteCreatedDialog({
+    super.key,
+    required this.link,
+    required this.target,
+  });
 
   final String link;
   final MusicianEntity target;
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
 
     return AlertDialog(
@@ -200,36 +206,37 @@ class InviteCreatedDialog extends StatelessWidget {
         children: [
           Icon(Icons.check_circle_outline, color: scheme.tertiary),
           const SizedBox(width: 8),
-          const Text('Invitación creada'),
+          Text(loc.inviteCreatedTitle),
         ],
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Para: ${target.name}'),
+          Text(loc.inviteCreatedFor(target.name)),
           const SizedBox(height: 12),
           SelectableText(link),
           const SizedBox(height: 12),
           FilledButton.icon(
             onPressed: () => _copyLink(context),
             icon: const Icon(Icons.copy),
-            label: const Text('Copiar link'),
+            label: Text(loc.inviteCopyLinkAction),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Listo'),
+          child: Text(loc.doneAction),
         ),
       ],
     );
   }
 
   Future<void> _copyLink(BuildContext context) async {
+    final loc = AppLocalizations.of(context);
     await Clipboard.setData(ClipboardData(text: link));
     if (!context.mounted) return;
-    DialogService.showSuccess(context, 'Link copiado.');
+    DialogService.showSuccess(context, loc.inviteLinkCopied);
   }
 }

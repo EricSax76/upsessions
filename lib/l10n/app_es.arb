@@ -140,6 +140,272 @@
   "@rehearsalsFilterPast": {},
   "rehearsalsFilterAll": "Todos",
   "@rehearsalsFilterAll": {},
+  "rehearsalsErrorWithMessage": "Error: {message}",
+  "@rehearsalsErrorWithMessage": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "rehearsalsGroupFallbackName": "Grupo",
+  "@rehearsalsGroupFallbackName": {},
+  "rehearsalsCreateError": "No se pudo crear el ensayo: {error}",
+  "@rehearsalsCreateError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rehearsalsEmptyTitle": "Todavía no hay ensayos",
+  "@rehearsalsEmptyTitle": {},
+  "rehearsalsEmptySubtitle": "Crea el primero para empezar a armar el setlist.",
+  "@rehearsalsEmptySubtitle": {},
+  "rehearsalsFilterEmptyTitle": "Sin resultados",
+  "@rehearsalsFilterEmptyTitle": {},
+  "rehearsalsFilterEmptyUpcoming": "No hay ensayos próximos.",
+  "@rehearsalsFilterEmptyUpcoming": {},
+  "rehearsalsFilterEmptyPast": "Todavía no hay ensayos pasados.",
+  "@rehearsalsFilterEmptyPast": {},
+  "rehearsalsFilterEmptyAll": "No hay ensayos para mostrar.",
+  "@rehearsalsFilterEmptyAll": {},
+  "deleteAction": "Eliminar",
+  "@deleteAction": {},
+  "saveAction": "Guardar",
+  "@saveAction": {},
+  "closeAction": "Cerrar",
+  "@closeAction": {},
+  "doneAction": "Listo",
+  "@doneAction": {},
+  "removeAction": "Quitar",
+  "@removeAction": {},
+  "rehearsalsDeleteTitle": "Eliminar ensayo",
+  "@rehearsalsDeleteTitle": {},
+  "rehearsalsDeleteMessage": "Se eliminará el ensayo y su setlist. ¿Continuar?",
+  "@rehearsalsDeleteMessage": {},
+  "rehearsalsDeleteSuccess": "Ensayo eliminado.",
+  "@rehearsalsDeleteSuccess": {},
+  "rehearsalsDeleteError": "No se pudo eliminar el ensayo: {error}",
+  "@rehearsalsDeleteError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rehearsalsEditTitle": "Editar ensayo",
+  "@rehearsalsEditTitle": {},
+  "rehearsalsUpdateSuccess": "Ensayo actualizado.",
+  "@rehearsalsUpdateSuccess": {},
+  "rehearsalsUpdateError": "No se pudo actualizar el ensayo: {error}",
+  "@rehearsalsUpdateError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistAddError": "No se pudo agregar: {error}",
+  "@setlistAddError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistEditSongTitle": "Editar canción",
+  "@setlistEditSongTitle": {},
+  "setlistUpdateError": "No se pudo actualizar: {error}",
+  "@setlistUpdateError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistDeleteItemTitle": "Eliminar item",
+  "@setlistDeleteItemTitle": {},
+  "setlistDeleteItemMessage": "Eliminar \"{itemTitle}\" del setlist?",
+  "@setlistDeleteItemMessage": {
+    "placeholders": {
+      "itemTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistDeleteError": "No se pudo eliminar: {error}",
+  "@setlistDeleteError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistCopyNoPrevious": "No hay ensayos previos para copiar.",
+  "@setlistCopyNoPrevious": {},
+  "setlistCopyDialogTitle": "Copiar setlist",
+  "@setlistCopyDialogTitle": {},
+  "setlistCopyDialogMessage": "Copiar el setlist del ensayo {dateLabel} a este ensayo?",
+  "@setlistCopyDialogMessage": {
+    "placeholders": {
+      "dateLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistCopyAppendAction": "Agregar al final",
+  "@setlistCopyAppendAction": {},
+  "setlistCopyReplaceAction": "Reemplazar",
+  "@setlistCopyReplaceAction": {},
+  "setlistCopySuccess": "Setlist copiado.",
+  "@setlistCopySuccess": {},
+  "setlistCopyError": "No se pudo copiar el setlist: {error}",
+  "@setlistCopyError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistReorderError": "No se pudo reordenar el setlist: {error}",
+  "@setlistReorderError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rehearsalDetailTitle": "Ensayo",
+  "@rehearsalDetailTitle": {},
+  "rehearsalDetailDeleteTooltip": "Eliminar ensayo",
+  "@rehearsalDetailDeleteTooltip": {},
+  "rehearsalDetailSetlistEmpty": "No hay canciones en el setlist",
+  "@rehearsalDetailSetlistEmpty": {},
+  "rehearsalDetailSetlistTitle": "Setlist ({count})",
+  "@rehearsalDetailSetlistTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rehearsalDetailCopyPreviousAction": "Copiar del anterior",
+  "@rehearsalDetailCopyPreviousAction": {},
+  "rehearsalDetailAddSongAction": "Agregar canción",
+  "@rehearsalDetailAddSongAction": {},
+  "rehearsalDetailInfoTitle": "Detalles",
+  "@rehearsalDetailInfoTitle": {},
+  "rehearsalDetailStartLabel": "Inicio",
+  "@rehearsalDetailStartLabel": {},
+  "rehearsalDetailEndLabel": "Fin",
+  "@rehearsalDetailEndLabel": {},
+  "rehearsalDetailLocationLabel": "Ubicación",
+  "@rehearsalDetailLocationLabel": {},
+  "rehearsalDetailRoomTitle": "Sala de Ensayo",
+  "@rehearsalDetailRoomTitle": {},
+  "rehearsalDetailBookRoomAction": "Reservar",
+  "@rehearsalDetailBookRoomAction": {},
+  "rehearsalDetailNoRoomBooked": "No hay sala reservada",
+  "@rehearsalDetailNoRoomBooked": {},
+  "rehearsalDetailRoomConfirmed": "Confirmada",
+  "@rehearsalDetailRoomConfirmed": {},
+  "rehearsalDetailNotesTitle": "Notas",
+  "@rehearsalDetailNotesTitle": {},
+  "setlistTableHeaderTitle": "Título",
+  "@setlistTableHeaderTitle": {},
+  "setlistTableHeaderKey": "Tonalidad",
+  "@setlistTableHeaderKey": {},
+  "setlistTableHeaderBpm": "BPM",
+  "@setlistTableHeaderBpm": {},
+  "setlistTableHeaderNotes": "Notas",
+  "@setlistTableHeaderNotes": {},
+  "setlistTableUntitledSong": "Sin título",
+  "@setlistTableUntitledSong": {},
+  "setlistTableDeleteTooltip": "Quitar del setlist",
+  "@setlistTableDeleteTooltip": {},
+  "setlistTableBpmUnit": "BPM",
+  "@setlistTableBpmUnit": {},
+  "setlistItemAddSongTitle": "Agregar canción",
+  "@setlistItemAddSongTitle": {},
+  "setlistItemAddAction": "Agregar",
+  "@setlistItemAddAction": {},
+  "setlistItemSongLabel": "Canción",
+  "@setlistItemSongLabel": {},
+  "setlistItemSongHint": "Ej. Autumn Leaves",
+  "@setlistItemSongHint": {},
+  "setlistItemKeyLabel": "Tono",
+  "@setlistItemKeyLabel": {},
+  "setlistItemTempoLabel": "Tempo (bpm)",
+  "@setlistItemTempoLabel": {},
+  "setlistItemOrderLabel": "Orden",
+  "@setlistItemOrderLabel": {},
+  "setlistItemNotesLabel": "Notas",
+  "@setlistItemNotesLabel": {},
+  "setlistItemLinkLabel": "Enlace (YouTube, etc.)",
+  "@setlistItemLinkLabel": {},
+  "setlistItemLinkHint": "https://…",
+  "@setlistItemLinkHint": {},
+  "setlistItemSheetSelected": "Partitura seleccionada",
+  "@setlistItemSheetSelected": {},
+  "setlistItemUploadSheet": "Subir partitura",
+  "@setlistItemUploadSheet": {},
+  "rehearsalDialogPickDateTime": "Elegir fecha/hora",
+  "@rehearsalDialogPickDateTime": {},
+  "rehearsalDialogOptional": "Opcional",
+  "@rehearsalDialogOptional": {},
+  "rehearsalDialogNewTitle": "Nuevo ensayo",
+  "@rehearsalDialogNewTitle": {},
+  "rehearsalDialogStartLabel": "Inicio",
+  "@rehearsalDialogStartLabel": {},
+  "rehearsalDialogEndLabel": "Fin",
+  "@rehearsalDialogEndLabel": {},
+  "rehearsalDialogRemoveEndTooltip": "Quitar fin",
+  "@rehearsalDialogRemoveEndTooltip": {},
+  "rehearsalDialogLocationLabel": "Lugar",
+  "@rehearsalDialogLocationLabel": {},
+  "rehearsalDialogLocationHint": "Ej. Sala 2 / Estudio",
+  "@rehearsalDialogLocationHint": {},
+  "rehearsalDialogNotesLabel": "Notas",
+  "@rehearsalDialogNotesLabel": {},
+  "rehearsalDialogNotesHint": "Ej. Traer metrónomo",
+  "@rehearsalDialogNotesHint": {},
+  "rehearsalDialogCreateAction": "Crear",
+  "@rehearsalDialogCreateAction": {},
+  "rehearsalDialogEndBeforeStartError": "El fin no puede ser antes del inicio.",
+  "@rehearsalDialogEndBeforeStartError": {},
+  "inviteDialogTitle": "Agregar músico",
+  "@inviteDialogTitle": {},
+  "inviteSearchLabel": "Buscar por nombre",
+  "@inviteSearchLabel": {},
+  "inviteSearchHint": "Ej. ana",
+  "@inviteSearchHint": {},
+  "inviteTypeAtLeastOneCharacter": "Escribe al menos 1 carácter.",
+  "@inviteTypeAtLeastOneCharacter": {},
+  "inviteNoResults": "Sin resultados.",
+  "@inviteNoResults": {},
+  "inviteCreatedTitle": "Invitación creada",
+  "@inviteCreatedTitle": {},
+  "inviteCreatedFor": "Para: {name}",
+  "@inviteCreatedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteCopyLinkAction": "Copiar link",
+  "@inviteCopyLinkAction": {},
+  "inviteLinkCopied": "Link copiado.",
+  "@inviteLinkCopied": {},
+  "inviteCreateError": "No se pudo crear la invitación: {error}",
+  "@inviteCreateError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "musicianContactTitle": "¿Te interesa colaborar?",
   "@musicianContactTitle": {},
   "musicianContactDescription": "Conecta por chat para coordinar detalles y disponibilidad.",

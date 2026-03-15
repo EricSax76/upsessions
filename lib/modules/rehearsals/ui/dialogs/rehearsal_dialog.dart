@@ -61,12 +61,14 @@ class _RehearsalDialogState extends State<RehearsalDialog> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
     final startsLabel = _startsAt == null
-        ? 'Elegir fecha/hora'
+        ? loc.rehearsalDialogPickDateTime
         : formatDateTime(_startsAt!);
-    final endsLabel = _endsAt == null ? 'Opcional' : formatDateTime(_endsAt!);
+    final endsLabel = _endsAt == null
+        ? loc.rehearsalDialogOptional
+        : formatDateTime(_endsAt!);
 
     return AlertDialog(
-      title: Text(widget.title ?? 'Nuevo ensayo'),
+      title: Text(widget.title ?? loc.rehearsalDialogNewTitle),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 520),
         child: Column(
@@ -75,37 +77,37 @@ class _RehearsalDialogState extends State<RehearsalDialog> {
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.schedule_outlined),
-              title: const Text('Inicio'),
+              title: Text(loc.rehearsalDialogStartLabel),
               subtitle: Text(startsLabel),
               onTap: () => _pickStartsAt(context),
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.schedule),
-              title: const Text('Fin'),
+              title: Text(loc.rehearsalDialogEndLabel),
               subtitle: Text(endsLabel),
               onTap: () => _pickEndsAt(context),
               trailing: _endsAt == null
                   ? null
                   : IconButton(
-                      tooltip: 'Quitar fin',
+                      tooltip: loc.rehearsalDialogRemoveEndTooltip,
                       onPressed: () => setState(() => _endsAt = null),
                       icon: const Icon(Icons.clear),
                     ),
             ),
             TextField(
               controller: _location,
-              decoration: const InputDecoration(
-                labelText: 'Lugar',
-                hintText: 'Ej. Sala 2 / Estudio',
+              decoration: InputDecoration(
+                labelText: loc.rehearsalDialogLocationLabel,
+                hintText: loc.rehearsalDialogLocationHint,
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _notes,
-              decoration: const InputDecoration(
-                labelText: 'Notas',
-                hintText: 'Ej. Traer metrónomo',
+              decoration: InputDecoration(
+                labelText: loc.rehearsalDialogNotesLabel,
+                hintText: loc.rehearsalDialogNotesHint,
               ),
               minLines: 2,
               maxLines: 4,
@@ -129,7 +131,7 @@ class _RehearsalDialogState extends State<RehearsalDialog> {
                     notes: _notes.text,
                   ),
                 ),
-          child: Text(widget.submitLabel ?? 'Crear'),
+          child: Text(widget.submitLabel ?? loc.rehearsalDialogCreateAction),
         ),
       ],
     );
@@ -187,7 +189,7 @@ class _RehearsalDialogState extends State<RehearsalDialog> {
     if (_startsAt != null && selected.isBefore(_startsAt!)) {
       DialogService.showError(
         context,
-        'El fin no puede ser antes del inicio.',
+        AppLocalizations.of(context).rehearsalDialogEndBeforeStartError,
       );
       return;
     }

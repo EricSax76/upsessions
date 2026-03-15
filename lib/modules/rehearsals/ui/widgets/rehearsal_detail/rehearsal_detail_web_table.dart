@@ -1,7 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../models/setlist_item_entity.dart';
 
 export 'rehearsal_detail_web_widgets.dart';
+
+typedef ReorderSetlistCallback =
+    Future<void> Function(List<String> itemIdsInOrder);
 
 class SetlistWebTable extends StatefulWidget {
   const SetlistWebTable({
@@ -15,7 +21,7 @@ class SetlistWebTable extends StatefulWidget {
   final List<SetlistItemEntity> setlist;
   final ValueChanged<SetlistItemEntity> onEditSong;
   final ValueChanged<SetlistItemEntity> onDeleteSong;
-  final ValueChanged<List<String>> onReorderSetlist;
+  final ReorderSetlistCallback onReorderSetlist;
 
   @override
   State<SetlistWebTable> createState() => _SetlistWebTableState();
@@ -23,25 +29,34 @@ class SetlistWebTable extends StatefulWidget {
 
 class _SetlistWebTableState extends State<SetlistWebTable> {
   late List<SetlistItemEntity> _items;
+  bool _isPersistingReorder = false;
 
   @override
   void initState() {
     super.initState();
-    _items = [...widget.setlist]..sort((a, b) => a.order.compareTo(b.order));
+    _items = _sorted(widget.setlist);
   }
 
   @override
   void didUpdateWidget(covariant SetlistWebTable oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_isSameOrder(oldWidget.setlist, widget.setlist)) return;
-    _items = [...widget.setlist]..sort((a, b) => a.order.compareTo(b.order));
+    if (_isSameItems(oldWidget.setlist, widget.setlist)) return;
+    _items = _sorted(widget.setlist);
+    _isPersistingReorder = false;
   }
 
-  bool _isSameOrder(List<SetlistItemEntity> a, List<SetlistItemEntity> b) {
+  List<SetlistItemEntity> _sorted(List<SetlistItemEntity> items) {
+    return [...items]..sort((a, b) => a.order.compareTo(b.order));
+  }
+
+  bool _isSameItems(List<SetlistItemEntity> a, List<SetlistItemEntity> b) {
+    final left = _sorted(a);
+    final right = _sorted(b);
+
     if (identical(a, b)) return true;
-    if (a.length != b.length) return false;
-    for (var i = 0; i < a.length; i++) {
-      if (a[i].id != b[i].id || a[i].order != b[i].order) return false;
+    if (left.length != right.length) return false;
+    for (var i = 0; i < left.length; i++) {
+      if (left[i] != right[i]) return false;
     }
     return true;
   }
@@ -64,8 +79,51 @@ class _SetlistWebTableState extends State<SetlistWebTable> {
     ];
   }
 
+  void _handleReorder(int oldIndex, int newIndex) {
+    final previousItems = List<SetlistItemEntity>.from(_items);
+    setState(() {
+      if (newIndex > oldIndex) newIndex -= 1;
+      final item = _items.removeAt(oldIndex);
+      _items.insert(newIndex, item);
+      _items = _withLocalOrders(_items);
+      _isPersistingReorder = true;
+    });
+
+    final itemIdsInOrder = _items.map((e) => e.id).toList(growable: false);
+    unawaited(
+      _persistReorder(
+        previousItems: previousItems,
+        itemIdsInOrder: itemIdsInOrder,
+      ),
+    );
+  }
+
+  Future<void> _persistReorder({
+    required List<SetlistItemEntity> previousItems,
+    required List<String> itemIdsInOrder,
+  }) async {
+    var failed = false;
+    try {
+      await widget.onReorderSetlist(itemIdsInOrder);
+    } catch (_) {
+      failed = true;
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      if (failed) {
+        _items = previousItems;
+      }
+      _isPersistingReorder = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
@@ -88,25 +146,39 @@ class _SetlistWebTableState extends State<SetlistWebTable> {
                   ),
                   Expanded(
                     flex: 4,
-                    child: Text('Título', style: _headerStyle(theme)),
+                    child: Text(
+                      loc.setlistTableHeaderTitle,
+                      style: _headerStyle(theme),
+                    ),
                   ),
                   Expanded(
                     flex: 2,
-                    child: Text('Tonalidad', style: _headerStyle(theme)),
+                    child: Text(
+                      loc.setlistTableHeaderKey,
+                      style: _headerStyle(theme),
+                    ),
                   ),
                   Expanded(
                     flex: 2,
-                    child: Text('BPM', style: _headerStyle(theme)),
+                    child: Text(
+                      loc.setlistTableHeaderBpm,
+                      style: _headerStyle(theme),
+                    ),
                   ),
                   Expanded(
                     flex: 4,
-                    child: Text('Notas', style: _headerStyle(theme)),
+                    child: Text(
+                      loc.setlistTableHeaderNotes,
+                      style: _headerStyle(theme),
+                    ),
                   ),
                   const SizedBox(width: 48),
                 ],
               ),
             ),
             const Divider(height: 1),
+            if (_isPersistingReorder)
+              const LinearProgressIndicator(minHeight: 2),
             if (useShrinkWrapFallback)
               _buildReorderableList(
                 theme: theme,
@@ -161,13 +233,8 @@ class _SetlistWebTableState extends State<SetlistWebTable> {
       buildDefaultDragHandles: false,
       itemCount: _items.length,
       onReorder: (oldIndex, newIndex) {
-        setState(() {
-          if (newIndex > oldIndex) newIndex -= 1;
-          final item = _items.removeAt(oldIndex);
-          _items.insert(newIndex, item);
-          _items = _withLocalOrders(_items);
-        });
-        widget.onReorderSetlist(_items.map((e) => e.id).toList());
+        if (_isPersistingReorder) return;
+        _handleReorder(oldIndex, newIndex);
       },
       itemBuilder: (context, index) {
         final item = _items[index];
@@ -221,6 +288,7 @@ class _SetlistWebRowState extends State<_SetlistWebRow> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return MouseRegion(
       onEnter: (_) {
         if (!mounted || _isHovering) return;
@@ -259,7 +327,7 @@ class _SetlistWebRowState extends State<_SetlistWebRow> {
                 Expanded(
                   flex: 4,
                   child: Text(
-                    widget.item.songTitle ?? 'Sin título',
+                    widget.item.songTitle ?? loc.setlistTableUntitledSong,
                     style: widget.theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -294,7 +362,7 @@ class _SetlistWebRowState extends State<_SetlistWebRow> {
                   flex: 2,
                   child: Text(
                     widget.item.tempoBpm != null
-                        ? '${widget.item.tempoBpm} BPM'
+                        ? '${widget.item.tempoBpm} ${loc.setlistTableBpmUnit}'
                         : '-',
                     style: widget.theme.textTheme.bodyMedium,
                   ),
@@ -317,7 +385,7 @@ class _SetlistWebRowState extends State<_SetlistWebRow> {
                           icon: const Icon(Icons.delete_outline, size: 20),
                           color: widget.scheme.error,
                           onPressed: widget.onDelete,
-                          tooltip: 'Quitar del setlist',
+                          tooltip: loc.setlistTableDeleteTooltip,
                         )
                       : null,
                 ),

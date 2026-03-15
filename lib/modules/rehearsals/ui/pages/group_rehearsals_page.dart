@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/services/dialog_service.dart';
 import '../../../../core/widgets/loading_indicator.dart';
+import '../../../../l10n/app_localizations.dart';
 
 import '../../../auth/repositories/auth_repository.dart';
 import '../../models/rehearsal_filter.dart';
@@ -94,16 +95,20 @@ class _GroupRehearsalsBodyState extends State<_GroupRehearsalsBody> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return BlocBuilder<GroupRehearsalsCubit, GroupRehearsalsState>(
       builder: (context, state) {
         if (state is GroupRehearsalsLoading) {
           return const LoadingIndicator();
         }
         if (state is GroupRehearsalsError) {
-          return Center(child: Text('Error: ${state.message}'));
+          return Center(
+            child: Text(loc.rehearsalsErrorWithMessage(state.message)),
+          );
         }
         if (state is GroupRehearsalsLoaded) {
           return _buildContent(
+            context: context,
             group: state.group,
             role: state.role,
             rehearsals: state.rehearsals,
@@ -115,10 +120,12 @@ class _GroupRehearsalsBodyState extends State<_GroupRehearsalsBody> {
   }
 
   Widget _buildContent({
+    required BuildContext context,
     required GroupDoc? group,
     required String role,
     required List<RehearsalEntity> rehearsals,
   }) {
+    final loc = AppLocalizations.of(context);
     final now = DateTime.now();
     final canManageMembers = role == 'owner' || role == 'admin';
     final filtered = applyRehearsalFilter(rehearsals, _filter, now: now);
@@ -131,7 +138,7 @@ class _GroupRehearsalsBodyState extends State<_GroupRehearsalsBody> {
           padding: widget.padding,
           header: widget.showHeader
               ? RehearsalsHeroSection(
-                  groupName: group?.name ?? 'Grupo',
+                  groupName: group?.name ?? loc.rehearsalsGroupFallbackName,
                   groupPhotoUrl: group?.photoUrl,
                   totalRehearsals: rehearsals.length,
                   canManageMembers: canManageMembers,
@@ -164,6 +171,7 @@ class _GroupRehearsalsBodyState extends State<_GroupRehearsalsBody> {
   }
 
   Future<void> _handleCreateRehearsal() async {
+    final loc = AppLocalizations.of(context);
     final draft = await showDialog<RehearsalDraft?>(
       context: context,
       builder: (context) => const RehearsalDialog(),
@@ -188,7 +196,10 @@ class _GroupRehearsalsBodyState extends State<_GroupRehearsalsBody> {
       );
     } catch (error) {
       if (!mounted) return;
-      DialogService.showError(context, 'No se pudo crear el ensayo: $error');
+      DialogService.showError(
+        context,
+        loc.rehearsalsCreateError(error.toString()),
+      );
     }
   }
 

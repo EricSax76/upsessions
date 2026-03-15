@@ -73,6 +73,8 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     if (snapshot.docs.isEmpty) return;
     final batch = firestore.batch();
     for (final doc in snapshot.docs) {
+      final sheetPath = (doc.data()['sheetPath'] as String?)?.trim() ?? '';
+      await _deleteSheetObjectIfNeeded(sheetPath);
       batch.delete(doc.reference);
     }
     await logFuture('clearSetlist commit', batch.commit());
@@ -223,14 +225,7 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     );
     final path = sheetPath.trim();
     if (path.isNotEmpty) {
-      try {
-        await logFuture(
-          'clearSetlistSheet delete',
-          _storage.ref().child(path).delete(),
-        );
-      } catch (_) {
-        // Ignore missing file or permission mismatch; we still clear the doc.
-      }
+      await _deleteSheetObjectIfNeeded(path);
     }
     await logFuture(
       'clearSetlistSheet merge clear fields',
@@ -250,10 +245,14 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     logFirestore(
       'deleteSetlistItem groupId=$groupId rehearsalId=$rehearsalId itemId=$itemId',
     );
-    await logFuture(
-      'deleteSetlistItem delete',
-      setlist(groupId, rehearsalId).doc(itemId).delete(),
-    );
+    final docRef = setlist(groupId, rehearsalId).doc(itemId);
+    final snapshot = await logFuture('deleteSetlistItem get', docRef.get());
+    if (snapshot.exists) {
+      final sheetPath =
+          (snapshot.data()?['sheetPath'] as String?)?.trim() ?? '';
+      await _deleteSheetObjectIfNeeded(sheetPath);
+    }
+    await logFuture('deleteSetlistItem delete', docRef.delete());
   }
 
   SetlistItemEntity _mapSetlistItem(
@@ -281,5 +280,24 @@ class SetlistRepository extends RehearsalsRepositoryBase {
     if (ext == 'png') return 'png';
     if (ext == 'webp') return 'webp';
     return 'jpg';
+  }
+
+  Future<void> _deleteSheetObjectIfNeeded(String sheetPath) async {
+    final path = sheetPath.trim();
+    if (path.isEmpty) {
+      return;
+    }
+
+    try {
+      await logFuture(
+        'delete setlist sheet path=$path',
+        _storage.ref(path).delete(),
+      );
+    } on FirebaseException catch (error) {
+      if (error.code == 'object-not-found') {
+        return;
+      }
+      rethrow;
+    }
   }
 }

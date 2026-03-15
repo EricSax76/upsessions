@@ -464,6 +464,552 @@ abstract class AppLocalizations {
   /// **'Todos'**
   String get rehearsalsFilterAll;
 
+  /// No description provided for @rehearsalsErrorWithMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Error: {message}'**
+  String rehearsalsErrorWithMessage(String message);
+
+  /// No description provided for @rehearsalsGroupFallbackName.
+  ///
+  /// In es, this message translates to:
+  /// **'Grupo'**
+  String get rehearsalsGroupFallbackName;
+
+  /// No description provided for @rehearsalsCreateError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo crear el ensayo: {error}'**
+  String rehearsalsCreateError(String error);
+
+  /// No description provided for @rehearsalsEmptyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay ensayos'**
+  String get rehearsalsEmptyTitle;
+
+  /// No description provided for @rehearsalsEmptySubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea el primero para empezar a armar el setlist.'**
+  String get rehearsalsEmptySubtitle;
+
+  /// No description provided for @rehearsalsFilterEmptyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin resultados'**
+  String get rehearsalsFilterEmptyTitle;
+
+  /// No description provided for @rehearsalsFilterEmptyUpcoming.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay ensayos próximos.'**
+  String get rehearsalsFilterEmptyUpcoming;
+
+  /// No description provided for @rehearsalsFilterEmptyPast.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay ensayos pasados.'**
+  String get rehearsalsFilterEmptyPast;
+
+  /// No description provided for @rehearsalsFilterEmptyAll.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay ensayos para mostrar.'**
+  String get rehearsalsFilterEmptyAll;
+
+  /// No description provided for @deleteAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar'**
+  String get deleteAction;
+
+  /// No description provided for @saveAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get saveAction;
+
+  /// No description provided for @closeAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar'**
+  String get closeAction;
+
+  /// No description provided for @doneAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Listo'**
+  String get doneAction;
+
+  /// No description provided for @removeAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar'**
+  String get removeAction;
+
+  /// No description provided for @rehearsalsDeleteTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar ensayo'**
+  String get rehearsalsDeleteTitle;
+
+  /// No description provided for @rehearsalsDeleteMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Se eliminará el ensayo y su setlist. ¿Continuar?'**
+  String get rehearsalsDeleteMessage;
+
+  /// No description provided for @rehearsalsDeleteSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Ensayo eliminado.'**
+  String get rehearsalsDeleteSuccess;
+
+  /// No description provided for @rehearsalsDeleteError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo eliminar el ensayo: {error}'**
+  String rehearsalsDeleteError(String error);
+
+  /// No description provided for @rehearsalsEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar ensayo'**
+  String get rehearsalsEditTitle;
+
+  /// No description provided for @rehearsalsUpdateSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Ensayo actualizado.'**
+  String get rehearsalsUpdateSuccess;
+
+  /// No description provided for @rehearsalsUpdateError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo actualizar el ensayo: {error}'**
+  String rehearsalsUpdateError(String error);
+
+  /// No description provided for @setlistAddError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo agregar: {error}'**
+  String setlistAddError(String error);
+
+  /// No description provided for @setlistEditSongTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar canción'**
+  String get setlistEditSongTitle;
+
+  /// No description provided for @setlistUpdateError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo actualizar: {error}'**
+  String setlistUpdateError(String error);
+
+  /// No description provided for @setlistDeleteItemTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar item'**
+  String get setlistDeleteItemTitle;
+
+  /// No description provided for @setlistDeleteItemMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar \"{itemTitle}\" del setlist?'**
+  String setlistDeleteItemMessage(String itemTitle);
+
+  /// No description provided for @setlistDeleteError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo eliminar: {error}'**
+  String setlistDeleteError(String error);
+
+  /// No description provided for @setlistCopyNoPrevious.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay ensayos previos para copiar.'**
+  String get setlistCopyNoPrevious;
+
+  /// No description provided for @setlistCopyDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiar setlist'**
+  String get setlistCopyDialogTitle;
+
+  /// No description provided for @setlistCopyDialogMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiar el setlist del ensayo {dateLabel} a este ensayo?'**
+  String setlistCopyDialogMessage(String dateLabel);
+
+  /// No description provided for @setlistCopyAppendAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar al final'**
+  String get setlistCopyAppendAction;
+
+  /// No description provided for @setlistCopyReplaceAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Reemplazar'**
+  String get setlistCopyReplaceAction;
+
+  /// No description provided for @setlistCopySuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Setlist copiado.'**
+  String get setlistCopySuccess;
+
+  /// No description provided for @setlistCopyError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo copiar el setlist: {error}'**
+  String setlistCopyError(String error);
+
+  /// No description provided for @setlistReorderError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo reordenar el setlist: {error}'**
+  String setlistReorderError(String error);
+
+  /// No description provided for @rehearsalDetailTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ensayo'**
+  String get rehearsalDetailTitle;
+
+  /// No description provided for @rehearsalDetailDeleteTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar ensayo'**
+  String get rehearsalDetailDeleteTooltip;
+
+  /// No description provided for @rehearsalDetailSetlistEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay canciones en el setlist'**
+  String get rehearsalDetailSetlistEmpty;
+
+  /// No description provided for @rehearsalDetailSetlistTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Setlist ({count})'**
+  String rehearsalDetailSetlistTitle(int count);
+
+  /// No description provided for @rehearsalDetailCopyPreviousAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiar del anterior'**
+  String get rehearsalDetailCopyPreviousAction;
+
+  /// No description provided for @rehearsalDetailAddSongAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar canción'**
+  String get rehearsalDetailAddSongAction;
+
+  /// No description provided for @rehearsalDetailInfoTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalles'**
+  String get rehearsalDetailInfoTitle;
+
+  /// No description provided for @rehearsalDetailStartLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicio'**
+  String get rehearsalDetailStartLabel;
+
+  /// No description provided for @rehearsalDetailEndLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fin'**
+  String get rehearsalDetailEndLabel;
+
+  /// No description provided for @rehearsalDetailLocationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Ubicación'**
+  String get rehearsalDetailLocationLabel;
+
+  /// No description provided for @rehearsalDetailRoomTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sala de Ensayo'**
+  String get rehearsalDetailRoomTitle;
+
+  /// No description provided for @rehearsalDetailBookRoomAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Reservar'**
+  String get rehearsalDetailBookRoomAction;
+
+  /// No description provided for @rehearsalDetailNoRoomBooked.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay sala reservada'**
+  String get rehearsalDetailNoRoomBooked;
+
+  /// No description provided for @rehearsalDetailRoomConfirmed.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmada'**
+  String get rehearsalDetailRoomConfirmed;
+
+  /// No description provided for @rehearsalDetailNotesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Notas'**
+  String get rehearsalDetailNotesTitle;
+
+  /// No description provided for @setlistTableHeaderTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Título'**
+  String get setlistTableHeaderTitle;
+
+  /// No description provided for @setlistTableHeaderKey.
+  ///
+  /// In es, this message translates to:
+  /// **'Tonalidad'**
+  String get setlistTableHeaderKey;
+
+  /// No description provided for @setlistTableHeaderBpm.
+  ///
+  /// In es, this message translates to:
+  /// **'BPM'**
+  String get setlistTableHeaderBpm;
+
+  /// No description provided for @setlistTableHeaderNotes.
+  ///
+  /// In es, this message translates to:
+  /// **'Notas'**
+  String get setlistTableHeaderNotes;
+
+  /// No description provided for @setlistTableUntitledSong.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin título'**
+  String get setlistTableUntitledSong;
+
+  /// No description provided for @setlistTableDeleteTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar del setlist'**
+  String get setlistTableDeleteTooltip;
+
+  /// No description provided for @setlistTableBpmUnit.
+  ///
+  /// In es, this message translates to:
+  /// **'BPM'**
+  String get setlistTableBpmUnit;
+
+  /// No description provided for @setlistItemAddSongTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar canción'**
+  String get setlistItemAddSongTitle;
+
+  /// No description provided for @setlistItemAddAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar'**
+  String get setlistItemAddAction;
+
+  /// No description provided for @setlistItemSongLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Canción'**
+  String get setlistItemSongLabel;
+
+  /// No description provided for @setlistItemSongHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej. Autumn Leaves'**
+  String get setlistItemSongHint;
+
+  /// No description provided for @setlistItemKeyLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tono'**
+  String get setlistItemKeyLabel;
+
+  /// No description provided for @setlistItemTempoLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tempo (bpm)'**
+  String get setlistItemTempoLabel;
+
+  /// No description provided for @setlistItemOrderLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Orden'**
+  String get setlistItemOrderLabel;
+
+  /// No description provided for @setlistItemNotesLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Notas'**
+  String get setlistItemNotesLabel;
+
+  /// No description provided for @setlistItemLinkLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Enlace (YouTube, etc.)'**
+  String get setlistItemLinkLabel;
+
+  /// No description provided for @setlistItemLinkHint.
+  ///
+  /// In es, this message translates to:
+  /// **'https://…'**
+  String get setlistItemLinkHint;
+
+  /// No description provided for @setlistItemSheetSelected.
+  ///
+  /// In es, this message translates to:
+  /// **'Partitura seleccionada'**
+  String get setlistItemSheetSelected;
+
+  /// No description provided for @setlistItemUploadSheet.
+  ///
+  /// In es, this message translates to:
+  /// **'Subir partitura'**
+  String get setlistItemUploadSheet;
+
+  /// No description provided for @rehearsalDialogPickDateTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Elegir fecha/hora'**
+  String get rehearsalDialogPickDateTime;
+
+  /// No description provided for @rehearsalDialogOptional.
+  ///
+  /// In es, this message translates to:
+  /// **'Opcional'**
+  String get rehearsalDialogOptional;
+
+  /// No description provided for @rehearsalDialogNewTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo ensayo'**
+  String get rehearsalDialogNewTitle;
+
+  /// No description provided for @rehearsalDialogStartLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicio'**
+  String get rehearsalDialogStartLabel;
+
+  /// No description provided for @rehearsalDialogEndLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fin'**
+  String get rehearsalDialogEndLabel;
+
+  /// No description provided for @rehearsalDialogRemoveEndTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar fin'**
+  String get rehearsalDialogRemoveEndTooltip;
+
+  /// No description provided for @rehearsalDialogLocationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Lugar'**
+  String get rehearsalDialogLocationLabel;
+
+  /// No description provided for @rehearsalDialogLocationHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej. Sala 2 / Estudio'**
+  String get rehearsalDialogLocationHint;
+
+  /// No description provided for @rehearsalDialogNotesLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Notas'**
+  String get rehearsalDialogNotesLabel;
+
+  /// No description provided for @rehearsalDialogNotesHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej. Traer metrónomo'**
+  String get rehearsalDialogNotesHint;
+
+  /// No description provided for @rehearsalDialogCreateAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear'**
+  String get rehearsalDialogCreateAction;
+
+  /// No description provided for @rehearsalDialogEndBeforeStartError.
+  ///
+  /// In es, this message translates to:
+  /// **'El fin no puede ser antes del inicio.'**
+  String get rehearsalDialogEndBeforeStartError;
+
+  /// No description provided for @inviteDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar músico'**
+  String get inviteDialogTitle;
+
+  /// No description provided for @inviteSearchLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar por nombre'**
+  String get inviteSearchLabel;
+
+  /// No description provided for @inviteSearchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej. ana'**
+  String get inviteSearchHint;
+
+  /// No description provided for @inviteTypeAtLeastOneCharacter.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe al menos 1 carácter.'**
+  String get inviteTypeAtLeastOneCharacter;
+
+  /// No description provided for @inviteNoResults.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin resultados.'**
+  String get inviteNoResults;
+
+  /// No description provided for @inviteCreatedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitación creada'**
+  String get inviteCreatedTitle;
+
+  /// No description provided for @inviteCreatedFor.
+  ///
+  /// In es, this message translates to:
+  /// **'Para: {name}'**
+  String inviteCreatedFor(String name);
+
+  /// No description provided for @inviteCopyLinkAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiar link'**
+  String get inviteCopyLinkAction;
+
+  /// No description provided for @inviteLinkCopied.
+  ///
+  /// In es, this message translates to:
+  /// **'Link copiado.'**
+  String get inviteLinkCopied;
+
+  /// No description provided for @inviteCreateError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo crear la invitación: {error}'**
+  String inviteCreateError(String error);
+
   /// No description provided for @musicianContactTitle.
   ///
   /// In es, this message translates to:

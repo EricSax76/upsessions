@@ -140,6 +140,272 @@
   "@rehearsalsFilterPast": {},
   "rehearsalsFilterAll": "All",
   "@rehearsalsFilterAll": {},
+  "rehearsalsErrorWithMessage": "Error: {message}",
+  "@rehearsalsErrorWithMessage": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "rehearsalsGroupFallbackName": "Group",
+  "@rehearsalsGroupFallbackName": {},
+  "rehearsalsCreateError": "Could not create rehearsal: {error}",
+  "@rehearsalsCreateError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rehearsalsEmptyTitle": "No rehearsals yet",
+  "@rehearsalsEmptyTitle": {},
+  "rehearsalsEmptySubtitle": "Create the first one to start building your setlist.",
+  "@rehearsalsEmptySubtitle": {},
+  "rehearsalsFilterEmptyTitle": "No results",
+  "@rehearsalsFilterEmptyTitle": {},
+  "rehearsalsFilterEmptyUpcoming": "No upcoming rehearsals.",
+  "@rehearsalsFilterEmptyUpcoming": {},
+  "rehearsalsFilterEmptyPast": "No past rehearsals yet.",
+  "@rehearsalsFilterEmptyPast": {},
+  "rehearsalsFilterEmptyAll": "No rehearsals to show.",
+  "@rehearsalsFilterEmptyAll": {},
+  "deleteAction": "Delete",
+  "@deleteAction": {},
+  "saveAction": "Save",
+  "@saveAction": {},
+  "closeAction": "Close",
+  "@closeAction": {},
+  "doneAction": "Done",
+  "@doneAction": {},
+  "removeAction": "Remove",
+  "@removeAction": {},
+  "rehearsalsDeleteTitle": "Delete rehearsal",
+  "@rehearsalsDeleteTitle": {},
+  "rehearsalsDeleteMessage": "The rehearsal and its setlist will be deleted. Continue?",
+  "@rehearsalsDeleteMessage": {},
+  "rehearsalsDeleteSuccess": "Rehearsal deleted.",
+  "@rehearsalsDeleteSuccess": {},
+  "rehearsalsDeleteError": "Could not delete rehearsal: {error}",
+  "@rehearsalsDeleteError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rehearsalsEditTitle": "Edit rehearsal",
+  "@rehearsalsEditTitle": {},
+  "rehearsalsUpdateSuccess": "Rehearsal updated.",
+  "@rehearsalsUpdateSuccess": {},
+  "rehearsalsUpdateError": "Could not update rehearsal: {error}",
+  "@rehearsalsUpdateError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistAddError": "Could not add item: {error}",
+  "@setlistAddError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistEditSongTitle": "Edit song",
+  "@setlistEditSongTitle": {},
+  "setlistUpdateError": "Could not update item: {error}",
+  "@setlistUpdateError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistDeleteItemTitle": "Delete item",
+  "@setlistDeleteItemTitle": {},
+  "setlistDeleteItemMessage": "Delete \"{itemTitle}\" from the setlist?",
+  "@setlistDeleteItemMessage": {
+    "placeholders": {
+      "itemTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistDeleteError": "Could not delete item: {error}",
+  "@setlistDeleteError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistCopyNoPrevious": "There are no previous rehearsals to copy from.",
+  "@setlistCopyNoPrevious": {},
+  "setlistCopyDialogTitle": "Copy setlist",
+  "@setlistCopyDialogTitle": {},
+  "setlistCopyDialogMessage": "Copy the setlist from rehearsal {dateLabel} to this rehearsal?",
+  "@setlistCopyDialogMessage": {
+    "placeholders": {
+      "dateLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistCopyAppendAction": "Append at end",
+  "@setlistCopyAppendAction": {},
+  "setlistCopyReplaceAction": "Replace",
+  "@setlistCopyReplaceAction": {},
+  "setlistCopySuccess": "Setlist copied.",
+  "@setlistCopySuccess": {},
+  "setlistCopyError": "Could not copy setlist: {error}",
+  "@setlistCopyError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "setlistReorderError": "Could not reorder setlist: {error}",
+  "@setlistReorderError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rehearsalDetailTitle": "Rehearsal",
+  "@rehearsalDetailTitle": {},
+  "rehearsalDetailDeleteTooltip": "Delete rehearsal",
+  "@rehearsalDetailDeleteTooltip": {},
+  "rehearsalDetailSetlistEmpty": "No songs in this setlist",
+  "@rehearsalDetailSetlistEmpty": {},
+  "rehearsalDetailSetlistTitle": "Setlist ({count})",
+  "@rehearsalDetailSetlistTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rehearsalDetailCopyPreviousAction": "Copy from previous",
+  "@rehearsalDetailCopyPreviousAction": {},
+  "rehearsalDetailAddSongAction": "Add song",
+  "@rehearsalDetailAddSongAction": {},
+  "rehearsalDetailInfoTitle": "Details",
+  "@rehearsalDetailInfoTitle": {},
+  "rehearsalDetailStartLabel": "Start",
+  "@rehearsalDetailStartLabel": {},
+  "rehearsalDetailEndLabel": "End",
+  "@rehearsalDetailEndLabel": {},
+  "rehearsalDetailLocationLabel": "Location",
+  "@rehearsalDetailLocationLabel": {},
+  "rehearsalDetailRoomTitle": "Rehearsal Room",
+  "@rehearsalDetailRoomTitle": {},
+  "rehearsalDetailBookRoomAction": "Book",
+  "@rehearsalDetailBookRoomAction": {},
+  "rehearsalDetailNoRoomBooked": "No room booked",
+  "@rehearsalDetailNoRoomBooked": {},
+  "rehearsalDetailRoomConfirmed": "Confirmed",
+  "@rehearsalDetailRoomConfirmed": {},
+  "rehearsalDetailNotesTitle": "Notes",
+  "@rehearsalDetailNotesTitle": {},
+  "setlistTableHeaderTitle": "Title",
+  "@setlistTableHeaderTitle": {},
+  "setlistTableHeaderKey": "Key",
+  "@setlistTableHeaderKey": {},
+  "setlistTableHeaderBpm": "BPM",
+  "@setlistTableHeaderBpm": {},
+  "setlistTableHeaderNotes": "Notes",
+  "@setlistTableHeaderNotes": {},
+  "setlistTableUntitledSong": "Untitled",
+  "@setlistTableUntitledSong": {},
+  "setlistTableDeleteTooltip": "Remove from setlist",
+  "@setlistTableDeleteTooltip": {},
+  "setlistTableBpmUnit": "BPM",
+  "@setlistTableBpmUnit": {},
+  "setlistItemAddSongTitle": "Add song",
+  "@setlistItemAddSongTitle": {},
+  "setlistItemAddAction": "Add",
+  "@setlistItemAddAction": {},
+  "setlistItemSongLabel": "Song",
+  "@setlistItemSongLabel": {},
+  "setlistItemSongHint": "e.g. Autumn Leaves",
+  "@setlistItemSongHint": {},
+  "setlistItemKeyLabel": "Key",
+  "@setlistItemKeyLabel": {},
+  "setlistItemTempoLabel": "Tempo (bpm)",
+  "@setlistItemTempoLabel": {},
+  "setlistItemOrderLabel": "Order",
+  "@setlistItemOrderLabel": {},
+  "setlistItemNotesLabel": "Notes",
+  "@setlistItemNotesLabel": {},
+  "setlistItemLinkLabel": "Link (YouTube, etc.)",
+  "@setlistItemLinkLabel": {},
+  "setlistItemLinkHint": "https://...",
+  "@setlistItemLinkHint": {},
+  "setlistItemSheetSelected": "Sheet selected",
+  "@setlistItemSheetSelected": {},
+  "setlistItemUploadSheet": "Upload sheet",
+  "@setlistItemUploadSheet": {},
+  "rehearsalDialogPickDateTime": "Pick date/time",
+  "@rehearsalDialogPickDateTime": {},
+  "rehearsalDialogOptional": "Optional",
+  "@rehearsalDialogOptional": {},
+  "rehearsalDialogNewTitle": "New rehearsal",
+  "@rehearsalDialogNewTitle": {},
+  "rehearsalDialogStartLabel": "Start",
+  "@rehearsalDialogStartLabel": {},
+  "rehearsalDialogEndLabel": "End",
+  "@rehearsalDialogEndLabel": {},
+  "rehearsalDialogRemoveEndTooltip": "Clear end",
+  "@rehearsalDialogRemoveEndTooltip": {},
+  "rehearsalDialogLocationLabel": "Location",
+  "@rehearsalDialogLocationLabel": {},
+  "rehearsalDialogLocationHint": "e.g. Room 2 / Studio",
+  "@rehearsalDialogLocationHint": {},
+  "rehearsalDialogNotesLabel": "Notes",
+  "@rehearsalDialogNotesLabel": {},
+  "rehearsalDialogNotesHint": "e.g. Bring metronome",
+  "@rehearsalDialogNotesHint": {},
+  "rehearsalDialogCreateAction": "Create",
+  "@rehearsalDialogCreateAction": {},
+  "rehearsalDialogEndBeforeStartError": "End time cannot be before start time.",
+  "@rehearsalDialogEndBeforeStartError": {},
+  "inviteDialogTitle": "Add musician",
+  "@inviteDialogTitle": {},
+  "inviteSearchLabel": "Search by name",
+  "@inviteSearchLabel": {},
+  "inviteSearchHint": "e.g. ana",
+  "@inviteSearchHint": {},
+  "inviteTypeAtLeastOneCharacter": "Type at least 1 character.",
+  "@inviteTypeAtLeastOneCharacter": {},
+  "inviteNoResults": "No results.",
+  "@inviteNoResults": {},
+  "inviteCreatedTitle": "Invitation created",
+  "@inviteCreatedTitle": {},
+  "inviteCreatedFor": "For: {name}",
+  "@inviteCreatedFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "inviteCopyLinkAction": "Copy link",
+  "@inviteCopyLinkAction": {},
+  "inviteLinkCopied": "Link copied.",
+  "@inviteLinkCopied": {},
+  "inviteCreateError": "Could not create invitation: {error}",
+  "@inviteCreateError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "musicianContactTitle": "Interested in collaborating?",
   "@musicianContactTitle": {},
   "musicianContactDescription": "Connect by chat to coordinate details and availability.",

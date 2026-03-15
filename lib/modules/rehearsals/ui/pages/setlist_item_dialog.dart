@@ -32,8 +32,8 @@ class SetlistItemDialog extends StatefulWidget {
   const SetlistItemDialog({
     super.key,
     required this.initialOrder,
-    this.dialogTitle = 'Agregar canción',
-    this.submitLabel = 'Agregar',
+    this.dialogTitle,
+    this.submitLabel,
     this.initialTitle = '',
     this.initialKeySignature = '',
     this.initialTempoBpm,
@@ -43,8 +43,8 @@ class SetlistItemDialog extends StatefulWidget {
   });
 
   final int initialOrder;
-  final String dialogTitle;
-  final String submitLabel;
+  final String? dialogTitle;
+  final String? submitLabel;
   final String initialTitle;
   final String initialKeySignature;
   final int? initialTempoBpm;
@@ -107,7 +107,7 @@ class _SetlistItemDialogState extends State<SetlistItemDialog> {
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: 8),
-          Text(widget.dialogTitle),
+          Text(widget.dialogTitle ?? loc.setlistItemAddSongTitle),
         ],
       ),
       scrollable: true,
@@ -118,9 +118,9 @@ class _SetlistItemDialogState extends State<SetlistItemDialog> {
           children: [
             TextField(
               controller: _title,
-              decoration: const InputDecoration(
-                labelText: 'Canción',
-                hintText: 'Ej. Autumn Leaves',
+              decoration: InputDecoration(
+                labelText: loc.setlistItemSongLabel,
+                hintText: loc.setlistItemSongHint,
               ),
               autofocus: true,
             ),
@@ -130,7 +130,9 @@ class _SetlistItemDialogState extends State<SetlistItemDialog> {
                 Expanded(
                   child: TextField(
                     controller: _key,
-                    decoration: const InputDecoration(labelText: 'Tono'),
+                    decoration: InputDecoration(
+                      labelText: loc.setlistItemKeyLabel,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -138,7 +140,9 @@ class _SetlistItemDialogState extends State<SetlistItemDialog> {
                   child: TextField(
                     controller: _tempo,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Tempo (bpm)'),
+                    decoration: InputDecoration(
+                      labelText: loc.setlistItemTempoLabel,
+                    ),
                   ),
                 ),
               ],
@@ -147,12 +151,12 @@ class _SetlistItemDialogState extends State<SetlistItemDialog> {
             TextField(
               controller: _order,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Orden'),
+              decoration: InputDecoration(labelText: loc.setlistItemOrderLabel),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _notes,
-              decoration: const InputDecoration(labelText: 'Notas'),
+              decoration: InputDecoration(labelText: loc.setlistItemNotesLabel),
               minLines: 2,
               maxLines: 4,
             ),
@@ -160,14 +164,17 @@ class _SetlistItemDialogState extends State<SetlistItemDialog> {
             TextField(
               controller: _link,
               keyboardType: TextInputType.url,
-              decoration: const InputDecoration(
-                labelText: 'Enlace (YouTube, etc.)',
-                hintText: 'https://…',
+              decoration: InputDecoration(
+                labelText: loc.setlistItemLinkLabel,
+                hintText: loc.setlistItemLinkHint,
               ),
             ),
             const SizedBox(height: 12),
             _SheetPickerRow(
               hasSelection: hasSelection,
+              selectedLabel: loc.setlistItemSheetSelected,
+              uploadLabel: loc.setlistItemUploadSheet,
+              removeTooltip: loc.removeAction,
               onPick: () => _pickSheetImage(context),
               onClear: () => setState(() {
                 _sheetBytes = null;
@@ -201,7 +208,7 @@ class _SetlistItemDialogState extends State<SetlistItemDialog> {
               ),
             );
           },
-          child: Text(widget.submitLabel),
+          child: Text(widget.submitLabel ?? loc.setlistItemAddAction),
         ),
       ],
     );
@@ -227,11 +234,17 @@ class _SetlistItemDialogState extends State<SetlistItemDialog> {
 class _SheetPickerRow extends StatelessWidget {
   const _SheetPickerRow({
     required this.hasSelection,
+    required this.selectedLabel,
+    required this.uploadLabel,
+    required this.removeTooltip,
     required this.onPick,
     required this.onClear,
   });
 
   final bool hasSelection;
+  final String selectedLabel;
+  final String uploadLabel;
+  final String removeTooltip;
   final VoidCallback onPick;
   final VoidCallback onClear;
 
@@ -243,15 +256,13 @@ class _SheetPickerRow extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: onPick,
             icon: const Icon(Icons.upload_file_outlined),
-            label: Text(
-              hasSelection ? 'Partitura seleccionada' : 'Subir partitura',
-            ),
+            label: Text(hasSelection ? selectedLabel : uploadLabel),
           ),
         ),
         if (hasSelection) ...[
           const SizedBox(width: 8),
           IconButton(
-            tooltip: 'Quitar',
+            tooltip: removeTooltip,
             onPressed: onClear,
             icon: const Icon(Icons.close),
           ),

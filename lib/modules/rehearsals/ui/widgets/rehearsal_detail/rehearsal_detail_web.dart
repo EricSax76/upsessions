@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../utils/rehearsal_date_utils.dart';
 import '../../../models/rehearsal_entity.dart';
 import '../../../models/setlist_item_entity.dart';
@@ -33,7 +34,7 @@ class RehearsalDetailWebLayout extends StatelessWidget {
   final VoidCallback onAddSong;
   final ValueChanged<SetlistItemEntity> onEditSong;
   final ValueChanged<SetlistItemEntity> onDeleteSong;
-  final ValueChanged<List<String>> onReorderSetlist;
+  final ReorderSetlistCallback onReorderSetlist;
   final VoidCallback? onBookRoom;
   final String? bookingRoomName;
   final String? bookingAddress;
@@ -114,10 +115,14 @@ class RehearsalDetailWebLayout extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final hasPhoto = groupPhotoUrl != null && groupPhotoUrl!.isNotEmpty;
-    final initials = (groupName ?? 'E')
+    final fallbackInitial = loc.rehearsalDetailTitle.isNotEmpty
+        ? loc.rehearsalDetailTitle[0]
+        : 'R';
+    final initials = (groupName ?? fallbackInitial)
         .trim()
         .split(' ')
         .take(2)
@@ -126,88 +131,95 @@ class RehearsalDetailWebLayout extends StatelessWidget {
         .toUpperCase();
 
     return Column(
-      children: [
-        // Top row: actions (top-right)
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            OutlinedButton.icon(
-              onPressed: onEditRehearsal,
-              icon: const Icon(Icons.edit_outlined, size: 16),
-              label: const Text('Editar'),
-              style: OutlinedButton.styleFrom(
-                visualDensity: VisualDensity.compact,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                side: BorderSide(color: scheme.outlineVariant),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            if (onDeleteRehearsal != null) ...[
-              const SizedBox(width: 8),
-              IconButton(
-                onPressed: onDeleteRehearsal,
-                icon: Icon(Icons.delete_outline, size: 20, color: scheme.error),
-                tooltip: 'Eliminar ensayo',
-                visualDensity: VisualDensity.compact,
-                style: IconButton.styleFrom(
-                  padding: const EdgeInsets.all(8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(
-                      color: scheme.error.withValues(alpha: 0.3),
+            // Top row: actions (top-right)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: onEditRehearsal,
+                  icon: const Icon(Icons.edit_outlined, size: 16),
+                  label: Text(loc.rehearsalsEditTitle),
+                  style: OutlinedButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 0,
+                    ),
+                    side: BorderSide(color: scheme.outlineVariant),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                ),
+                if (onDeleteRehearsal != null) ...[
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: onDeleteRehearsal,
+                    icon: Icon(
+                      Icons.delete_outline,
+                      size: 20,
+                      color: scheme.error,
+                    ),
+                    tooltip: loc.rehearsalDetailDeleteTooltip,
+                    visualDensity: VisualDensity.compact,
+                    style: IconButton.styleFrom(
+                      padding: const EdgeInsets.all(8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(
+                          color: scheme.error.withValues(alpha: 0.3),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Centered group photo
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: scheme.primaryContainer.withValues(alpha: 0.3),
+              backgroundImage: hasPhoto ? NetworkImage(groupPhotoUrl!) : null,
+              child: hasPhoto
+                  ? null
+                  : Text(
+                      initials,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: scheme.onPrimaryContainer,
+                      ),
+                    ),
+            ),
+            const SizedBox(height: 8),
+            // Title & date centered below the photo
+            Text(
+              loc.rehearsalDetailTitle,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: scheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              formatDateTime(rehearsal.startsAt),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+            if (groupName != null && groupName!.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              Text(
+                groupName!,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: scheme.primary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ],
-        ),
-        const SizedBox(height: 8),
-        // Centered group photo
-        CircleAvatar(
-          radius: 28,
-          backgroundColor: scheme.primaryContainer.withValues(alpha: 0.3),
-          backgroundImage: hasPhoto ? NetworkImage(groupPhotoUrl!) : null,
-          child: hasPhoto
-              ? null
-              : Text(
-                  initials,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: scheme.onPrimaryContainer,
-                  ),
-                ),
-        ),
-        const SizedBox(height: 8),
-        // Title & date centered below the photo
-        Text(
-          'Ensayo',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: scheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          formatDateTime(rehearsal.startsAt),
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: scheme.onSurfaceVariant,
-          ),
-        ),
-        if (groupName != null && groupName!.isNotEmpty) ...[
-          const SizedBox(height: 2),
-          Text(
-            groupName!,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: scheme.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ],
-    )
+        )
         .animate()
         .fade(duration: 400.ms, curve: Curves.easeOut)
         .slideY(
@@ -219,6 +231,7 @@ class RehearsalDetailWebLayout extends StatelessWidget {
   }
 
   Widget _buildSetlistSection(BuildContext context, {bool expands = true}) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final setlistBody = setlist.isEmpty
@@ -235,7 +248,7 @@ class RehearsalDetailWebLayout extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No hay canciones en el setlist',
+                    loc.rehearsalDetailSetlistEmpty,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),
@@ -273,6 +286,7 @@ class RehearsalDetailWebLayout extends StatelessWidget {
   }
 
   Widget _buildSetlistToolbar(BuildContext context, ThemeData theme) {
+    final loc = AppLocalizations.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         final useShortLabels = constraints.maxWidth < 500;
@@ -283,7 +297,7 @@ class RehearsalDetailWebLayout extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Setlist (${setlist.length})',
+                loc.rehearsalDetailSetlistTitle(setlist.length),
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -297,14 +311,16 @@ class RehearsalDetailWebLayout extends StatelessWidget {
                     TextButton.icon(
                       onPressed: onCopyFromLast,
                       icon: const Icon(Icons.copy_all, size: 18),
-                      label: Text(
-                        useShortLabels ? 'Copiar' : 'Copiar del anterior',
-                      ),
+                      label: Text(loc.rehearsalDetailCopyPreviousAction),
                     ),
                   FilledButton.icon(
                     onPressed: onAddSong,
                     icon: const Icon(Icons.add, size: 18),
-                    label: Text(useShortLabels ? 'Agregar' : 'Agregar canción'),
+                    label: Text(
+                      useShortLabels
+                          ? loc.setlistItemAddAction
+                          : loc.rehearsalDetailAddSongAction,
+                    ),
                   ),
                 ],
               ),
@@ -315,7 +331,7 @@ class RehearsalDetailWebLayout extends StatelessWidget {
         return Row(
           children: [
             Text(
-              'Setlist (${setlist.length})',
+              loc.rehearsalDetailSetlistTitle(setlist.length),
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -325,13 +341,17 @@ class RehearsalDetailWebLayout extends StatelessWidget {
               TextButton.icon(
                 onPressed: onCopyFromLast,
                 icon: const Icon(Icons.copy_all, size: 18),
-                label: Text(useShortLabels ? 'Copiar' : 'Copiar del anterior'),
+                label: Text(loc.rehearsalDetailCopyPreviousAction),
               ),
             const SizedBox(width: 8),
             FilledButton.icon(
               onPressed: onAddSong,
               icon: const Icon(Icons.add, size: 18),
-              label: Text(useShortLabels ? 'Agregar' : 'Agregar canción'),
+              label: Text(
+                useShortLabels
+                    ? loc.setlistItemAddAction
+                    : loc.rehearsalDetailAddSongAction,
+              ),
             ),
           ],
         );
@@ -340,24 +360,25 @@ class RehearsalDetailWebLayout extends StatelessWidget {
   }
 
   Widget _buildLogisticsCard(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return InfoSection(
-      title: 'Detalles',
+      title: loc.rehearsalDetailInfoTitle,
       icon: Icons.info_outline,
       children: [
         InfoRow(
-          label: 'Inicio',
+          label: loc.rehearsalDetailStartLabel,
           value: formatDateTime(rehearsal.startsAt),
           icon: Icons.calendar_today,
         ),
         if (rehearsal.endsAt != null)
           InfoRow(
-            label: 'Fin',
+            label: loc.rehearsalDetailEndLabel,
             value: formatDateTime(rehearsal.endsAt!),
             icon: Icons.event_busy,
           ),
         if (rehearsal.location.isNotEmpty)
           InfoRow(
-            label: 'Ubicación',
+            label: loc.rehearsalDetailLocationLabel,
             value: rehearsal.location,
             icon: Icons.place,
           ),
@@ -366,20 +387,24 @@ class RehearsalDetailWebLayout extends StatelessWidget {
   }
 
   Widget _buildBookingCard(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final hasBooking = rehearsal.bookingId != null;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
     return InfoSection(
-      title: 'Sala de Ensayo',
+      title: loc.rehearsalDetailRoomTitle,
       icon: hasBooking ? Icons.meeting_room : Icons.meeting_room_outlined,
       action: !hasBooking && onBookRoom != null
-          ? TextButton(onPressed: onBookRoom, child: const Text('Reservar'))
+          ? TextButton(
+              onPressed: onBookRoom,
+              child: Text(loc.rehearsalDetailBookRoomAction),
+            )
           : null,
       children: [
         if (!hasBooking)
           Text(
-            'No hay sala reservada',
+            loc.rehearsalDetailNoRoomBooked,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: scheme.onSurfaceVariant,
               fontStyle: FontStyle.italic,
@@ -409,7 +434,7 @@ class RehearsalDetailWebLayout extends StatelessWidget {
                 ),
               const SizedBox(height: 8),
               Chip(
-                label: const Text('Confirmada'),
+                label: Text(loc.rehearsalDetailRoomConfirmed),
                 backgroundColor: scheme.primaryContainer,
                 labelStyle: TextStyle(
                   color: scheme.onPrimaryContainer,
@@ -426,10 +451,11 @@ class RehearsalDetailWebLayout extends StatelessWidget {
   }
 
   Widget _buildNotesCard(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     return InfoSection(
-      title: 'Notas',
+      title: loc.rehearsalDetailNotesTitle,
       icon: Icons.notes,
       children: [
         Text(

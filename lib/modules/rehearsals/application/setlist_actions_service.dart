@@ -20,6 +20,7 @@ class SetlistActionsService {
     required String rehearsalId,
     required List<SetlistItemEntity> current,
   }) async {
+    final loc = AppLocalizations.of(context);
     final nextOrder = _domainService.nextOrder(current);
     final draft = await showDialog<SetlistDraft>(
       context: context,
@@ -34,7 +35,7 @@ class SetlistActionsService {
       );
     } catch (error) {
       if (!context.mounted) return;
-      DialogService.showError(context, 'No se pudo agregar: $error');
+      DialogService.showError(context, loc.setlistAddError(error.toString()));
     }
   }
 
@@ -44,12 +45,13 @@ class SetlistActionsService {
     required String rehearsalId,
     required SetlistItemEntity item,
   }) async {
+    final loc = AppLocalizations.of(context);
     final draft = await showDialog<SetlistDraft>(
       context: context,
       builder: (context) => SetlistItemDialog(
         initialOrder: item.order,
-        dialogTitle: 'Editar canción',
-        submitLabel: 'Guardar',
+        dialogTitle: loc.setlistEditSongTitle,
+        submitLabel: loc.saveAction,
         initialTitle: item.songTitle ?? '',
         initialKeySignature: item.keySignature,
         initialTempoBpm: item.tempoBpm,
@@ -68,7 +70,10 @@ class SetlistActionsService {
       );
     } catch (error) {
       if (!context.mounted) return;
-      DialogService.showError(context, 'No se pudo actualizar: $error');
+      DialogService.showError(
+        context,
+        loc.setlistUpdateError(error.toString()),
+      );
     }
   }
 
@@ -81,9 +86,9 @@ class SetlistActionsService {
     final loc = AppLocalizations.of(context);
     final ok = await DialogService.showConfirmation(
       context: context,
-      title: 'Eliminar item',
-      message: 'Eliminar "${item.displayTitle}" del setlist?',
-      confirmText: 'Eliminar',
+      title: loc.setlistDeleteItemTitle,
+      message: loc.setlistDeleteItemMessage(item.displayTitle),
+      confirmText: loc.deleteAction,
       cancelText: loc.cancel,
       isDangerous: true,
     );
@@ -96,7 +101,10 @@ class SetlistActionsService {
       );
     } catch (error) {
       if (!context.mounted) return;
-      DialogService.showError(context, 'No se pudo eliminar: $error');
+      DialogService.showError(
+        context,
+        loc.setlistDeleteError(error.toString()),
+      );
     }
   }
 
@@ -114,7 +122,7 @@ class SetlistActionsService {
       );
       if (!context.mounted) return;
       if (source == null) {
-        DialogService.showError(context, 'No hay ensayos previos para copiar.');
+        DialogService.showError(context, loc.setlistCopyNoPrevious);
         return;
       }
 
@@ -123,9 +131,9 @@ class SetlistActionsService {
         final selected = await showDialog<SetlistCopyMode>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Copiar setlist'),
+            title: Text(loc.setlistCopyDialogTitle),
             content: Text(
-              'Copiar el setlist del ensayo ${formatDateTime(source.startsAt)} a este ensayo?',
+              loc.setlistCopyDialogMessage(formatDateTime(source.startsAt)),
             ),
             actions: [
               TextButton(
@@ -135,12 +143,12 @@ class SetlistActionsService {
               TextButton(
                 onPressed: () =>
                     Navigator.of(context).pop(SetlistCopyMode.append),
-                child: const Text('Agregar al final'),
+                child: Text(loc.setlistCopyAppendAction),
               ),
               FilledButton(
                 onPressed: () =>
                     Navigator.of(context).pop(SetlistCopyMode.replace),
-                child: const Text('Reemplazar'),
+                child: Text(loc.setlistCopyReplaceAction),
               ),
             ],
           ),
@@ -157,10 +165,10 @@ class SetlistActionsService {
       );
 
       if (!context.mounted) return;
-      DialogService.showSuccess(context, 'Setlist copiado.');
+      DialogService.showSuccess(context, loc.setlistCopySuccess);
     } catch (error) {
       if (!context.mounted) return;
-      DialogService.showError(context, 'No se pudo copiar el setlist: $error');
+      DialogService.showError(context, loc.setlistCopyError(error.toString()));
     }
   }
 

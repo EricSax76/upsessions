@@ -6,6 +6,7 @@ import 'package:upsessions/modules/rehearsals/repositories/setlist_repository.da
 
 import '../../../../core/constants/app_routes.dart';
 import '../../../../core/widgets/loading_indicator.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/cubits/auth_cubit.dart';
 import '../../../groups/repositories/groups_repository.dart';
 import '../../../studios/ui/consumer/studios_list_page.dart';
@@ -13,7 +14,7 @@ import '../../../studios/repositories/studios_repository.dart';
 import '../../cubits/rehearsal_detail_cubit.dart';
 import '../../cubits/rehearsal_detail_state.dart';
 import '../../application/rehearsal_actions_service.dart';
-import '../widgets/rehearsal_detail/rehearsal_detail_widgets.dart';
+import '../widgets/rehearsal_detail/rehearsal_detail_content.dart';
 import '../../application/setlist_domain_service.dart';
 import '../../application/setlist_actions_service.dart';
 import '../../../../core/services/dialog_service.dart';
@@ -85,6 +86,7 @@ class _RehearsalDetailViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return BlocBuilder<RehearsalDetailCubit, RehearsalDetailState>(
       builder: (context, state) {
         if (state is RehearsalDetailLoading) {
@@ -92,7 +94,9 @@ class _RehearsalDetailViewBody extends StatelessWidget {
         }
 
         if (state is RehearsalDetailError) {
-          return Center(child: Text('Error: ${state.message}'));
+          return Center(
+            child: Text(loc.rehearsalsErrorWithMessage(state.message)),
+          );
         }
 
         if (state is RehearsalDetailNotFound) {
@@ -161,8 +165,9 @@ class _RehearsalDetailViewBody extends StatelessWidget {
                 if (!context.mounted) return;
                 DialogService.showError(
                   context,
-                  'No se pudo reordenar el setlist: $error',
+                  loc.setlistReorderError(error.toString()),
                 );
+                rethrow;
               }
             },
             onBookRoom: state.rehearsal.bookingId == null

@@ -10,7 +10,7 @@ import '../ui/dialogs/rehearsal_dialog.dart';
 
 class RehearsalActionsService {
   RehearsalActionsService({required RehearsalsRepository repository})
-      : _repository = repository;
+    : _repository = repository;
 
   final RehearsalsRepository _repository;
 
@@ -22,9 +22,9 @@ class RehearsalActionsService {
     final loc = AppLocalizations.of(context);
     final confirmed = await DialogService.showConfirmation(
       context: context,
-      title: 'Eliminar ensayo',
-      message: 'Se eliminará el ensayo y su setlist. ¿Continuar?',
-      confirmText: 'Eliminar',
+      title: loc.rehearsalsDeleteTitle,
+      message: loc.rehearsalsDeleteMessage,
+      confirmText: loc.deleteAction,
       cancelText: loc.cancel,
       isDangerous: true,
     );
@@ -37,13 +37,13 @@ class RehearsalActionsService {
         rehearsalId: rehearsalId,
       );
       if (!context.mounted) return;
-      DialogService.showSuccess(context, 'Ensayo eliminado.');
+      DialogService.showSuccess(context, loc.rehearsalsDeleteSuccess);
       context.go(AppRoutes.rehearsalsGroupRehearsals(groupId));
     } catch (error) {
       if (!context.mounted) return;
       DialogService.showError(
         context,
-        'No se pudo eliminar el ensayo: $error',
+        loc.rehearsalsDeleteError(error.toString()),
       );
     }
   }
@@ -53,6 +53,7 @@ class RehearsalActionsService {
     required String groupId,
     required RehearsalEntity rehearsal,
   }) async {
+    final loc = AppLocalizations.of(context);
     final draft = await showDialog<RehearsalDraft?>(
       context: context,
       builder: (context) => RehearsalDialog(
@@ -62,8 +63,8 @@ class RehearsalActionsService {
           location: rehearsal.location,
           notes: rehearsal.notes,
         ),
-        title: 'Editar ensayo',
-        submitLabel: 'Guardar',
+        title: loc.rehearsalsEditTitle,
+        submitLabel: loc.saveAction,
       ),
     );
     if (draft == null) return;
@@ -78,12 +79,12 @@ class RehearsalActionsService {
         notes: draft.notes,
       );
       if (!context.mounted) return;
-      DialogService.showSuccess(context, 'Ensayo actualizado.');
+      DialogService.showSuccess(context, loc.rehearsalsUpdateSuccess);
     } catch (error) {
       if (!context.mounted) return;
       DialogService.showError(
         context,
-        'No se pudo actualizar el ensayo: $error',
+        loc.rehearsalsUpdateError(error.toString()),
       );
     }
   }

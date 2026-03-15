@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'rehearsal_entity.dart';
-import 'setlist_item_entity.dart';
-
-import '../ui/widgets/rehearsal_detail/rehearsal_detail_web.dart';
+import '../../../models/rehearsal_entity.dart';
+import '../../../models/setlist_item_entity.dart';
+import 'rehearsal_detail_web.dart';
 
 class RehearsalDetailContent extends StatelessWidget {
   const RehearsalDetailContent({
@@ -32,7 +31,7 @@ class RehearsalDetailContent extends StatelessWidget {
   final VoidCallback onAddSong;
   final ValueChanged<SetlistItemEntity> onEditSong;
   final ValueChanged<SetlistItemEntity> onDeleteSong;
-  final ValueChanged<List<String>> onReorderSetlist;
+  final Future<void> Function(List<String>) onReorderSetlist;
   final VoidCallback? onBookRoom;
   final String? bookingRoomName;
   final String? bookingAddress;
