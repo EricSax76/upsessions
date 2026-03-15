@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onChatThreadWrite = exports.onGroupInviteUsedCreateContacts = exports.onGroupInviteCreated = exports.ping = exports.onVenueUpdated = exports.onVenueCreated = exports.onStudioWriteSyncVenueProjection = exports.onBookingCreated = exports.onStudioUpdated = exports.onStudioCreated = exports.onMusicianRequestWriteSyncChatPermission = exports.updateUserComplianceProfile = exports.updatePrivacyRequestStatusBackoffice = exports.syncUserSession = exports.requestPrivacyRight = exports.requestDataExport = exports.requestAccountDeletion = exports.purgeExpiredComplianceData = exports.onStudioWriteSyncUserRole = exports.onEventManagerWriteSyncUserRole = exports.onAuthUserDeleteSoftDelete = exports.onAuthUserCreateBootstrap = exports.listPrivacyRequestsBackoffice = exports.acceptLegalDocs = exports.acceptLegalBundle = exports.resolveSpotifyArtistImages = exports.seedChatThreads = void 0;
+exports.onChatThreadWrite = exports.onGroupInviteUsedCreateContacts = exports.onGroupInviteCreated = exports.ping = exports.onMusicianRequestStatusChanged = exports.onVenueUpdated = exports.onVenueCreated = exports.onJamSessionCreated = exports.onStudioWriteSyncVenueProjection = exports.onBookingCreated = exports.onStudioUpdated = exports.onStudioCreated = exports.onMusicianRequestWriteSyncChatPermission = exports.updateUserComplianceProfile = exports.updatePrivacyRequestStatusBackoffice = exports.syncUserSession = exports.requestPrivacyRight = exports.requestDataExport = exports.requestAccountDeletion = exports.purgeExpiredComplianceData = exports.onStudioWriteSyncUserRole = exports.onEventManagerWriteSyncUserRole = exports.onAuthUserDeleteSoftDelete = exports.onAuthUserCreateBootstrap = exports.listPrivacyRequestsBackoffice = exports.acceptLegalDocs = exports.acceptLegalBundle = exports.resolveSpotifyArtistImages = exports.seedChatThreads = void 0;
 const firebase_1 = require("./firebase");
+const scenarioKeys_1 = require("./notifications/scenarioKeys");
+const sendPush_1 = require("./notifications/sendPush");
 const region_1 = require("./region");
 var chatSeeder_1 = require("./chatSeeder");
 Object.defineProperty(exports, "seedChatThreads", { enumerable: true, get: function () { return chatSeeder_1.seedChatThreads; } });
@@ -31,8 +33,11 @@ var onBookingWrite_1 = require("./studios/onBookingWrite");
 Object.defineProperty(exports, "onBookingCreated", { enumerable: true, get: function () { return onBookingWrite_1.onBookingCreated; } });
 var triggers_1 = require("./venues/triggers");
 Object.defineProperty(exports, "onStudioWriteSyncVenueProjection", { enumerable: true, get: function () { return triggers_1.onStudioWriteSyncVenueProjection; } });
+Object.defineProperty(exports, "onJamSessionCreated", { enumerable: true, get: function () { return triggers_1.onJamSessionCreated; } });
 Object.defineProperty(exports, "onVenueCreated", { enumerable: true, get: function () { return triggers_1.onVenueCreated; } });
 Object.defineProperty(exports, "onVenueUpdated", { enumerable: true, get: function () { return triggers_1.onVenueUpdated; } });
+var requestTriggers_1 = require("./notifications/requestTriggers");
+Object.defineProperty(exports, "onMusicianRequestStatusChanged", { enumerable: true, get: function () { return requestTriggers_1.onMusicianRequestStatusChanged; } });
 function stringList(value) {
     if (!Array.isArray(value))
         return [];
@@ -58,34 +63,6 @@ function record(value) {
     if (Array.isArray(value))
         return {};
     return value;
-}
-async function fetchUserPushTokens(db, uid) {
-    const [usersTokensSnap, legacyMusicianTokensSnap] = await Promise.all([
-        db.collection('users').doc(uid).collection('fcmTokens').get(),
-        db.collection('musicians').doc(uid).collection('fcmTokens').get(),
-    ]);
-    const tokenSet = new Set();
-    for (const doc of usersTokensSnap.docs) {
-        const token = String(doc.id || '').trim();
-        if (token)
-            tokenSet.add(token);
-    }
-    for (const doc of legacyMusicianTokensSnap.docs) {
-        const token = String(doc.id || '').trim();
-        if (token)
-            tokenSet.add(token);
-    }
-    return Array.from(tokenSet);
-}
-async function deleteInvalidUserPushTokens(db, uid, invalidTokens) {
-    if (!invalidTokens.length)
-        return;
-    await Promise.all(invalidTokens.flatMap((token) => {
-        return [
-            db.collection('users').doc(uid).collection('fcmTokens').doc(token).delete().catch(() => null),
-            db.collection('musicians').doc(uid).collection('fcmTokens').doc(token).delete().catch(() => null),
-        ];
-    }));
 }
 function contactPayloadFromMusician(contactId, musicianData) {
     const styles = stringList(musicianData.styles);
@@ -140,34 +117,19 @@ exports.onGroupInviteCreated = region_1.region.firestore
         createdAt: firebase_1.admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase_1.admin.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
-    const tokens = await fetchUserPushTokens(db, targetUid);
-    if (!tokens.length) {
-        return;
-    }
-    const payload = {
-        tokens,
-        notification: {
-            title: 'Invitación a grupo',
-            body: `Te invitaron a ${groupName}`,
-        },
+    await (0, sendPush_1.sendPushToUser)({
+        db,
+        uid: targetUid,
+        eventId: inviteId,
+        scenarioKey: scenarioKeys_1.SCENARIO_KEYS.musicianGroupInvite,
+        title: 'Invitación a grupo',
+        body: `Te invitaron a ${groupName}`,
         data: {
             type: 'group_invite',
             groupId,
             inviteId,
         },
-    };
-    const response = await firebase_1.admin.messaging().sendEachForMulticast(payload);
-    const invalidTokens = [];
-    response.responses.forEach((res, idx) => {
-        if (!res.success) {
-            const code = res.error?.code ?? '';
-            if (code === 'messaging/invalid-registration-token'
-                || code === 'messaging/registration-token-not-registered') {
-                invalidTokens.push(tokens[idx]);
-            }
-        }
     });
-    await deleteInvalidUserPushTokens(db, targetUid, invalidTokens);
 });
 exports.onGroupInviteUsedCreateContacts = region_1.region.firestore
     .document('groups/{groupId}/invites/{inviteId}')

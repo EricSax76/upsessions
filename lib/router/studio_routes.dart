@@ -6,11 +6,12 @@ import '../core/constants/app_routes.dart';
 import '../core/locator/locator.dart';
 import '../modules/auth/repositories/auth_repository.dart';
 import '../modules/studios/cubits/my_studio_cubit.dart';
+import '../modules/notifications/models/notification_scenario.dart';
+import '../modules/notifications/ui/pages/notification_center_page.dart';
 import '../modules/studios/repositories/studios_repository.dart';
 import '../modules/studios/repositories/studio_notifications_repository.dart';
 import '../modules/studios/ui/consumer/musician_bookings_page.dart';
 import '../modules/studios/ui/pages/studio_login_page.dart';
-import '../modules/studios/ui/pages/studio_notifications_page.dart';
 import '../modules/studios/ui/pages/studio_register_page.dart';
 import '../modules/studios/ui/provider/create_studio_page.dart';
 import '../modules/studios/ui/provider/studio_dashboard_page.dart';
@@ -96,8 +97,10 @@ List<RouteBase> buildStudioOuterRoutes() {
       pageBuilder: (context, state) => _noTransitionPage(
         state,
         StudioShellPage(
-          child: StudioNotificationsPage(
-            repository: locate<StudioNotificationsRepository>(),
+          child: NotificationCenterPage(
+            audience: NotificationAudience.studio,
+            studioNotificationsRepository:
+                locate<StudioNotificationsRepository>(),
           ),
         ),
       ),

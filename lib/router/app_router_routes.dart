@@ -10,7 +10,6 @@ import '../modules/events/ui/pages/create_event_page.dart';
 import '../modules/events/ui/pages/events_page.dart';
 import '../features/media/ui/pages/media_gallery_page.dart';
 import '../features/legal/ui/pages/legal_pages.dart';
-import '../modules/musicians/ui/pages/musician_notifications_page.dart';
 import '../features/onboarding/ui/pages/app_welcome_page.dart';
 import '../features/onboarding/ui/pages/book_onboarding_page.dart';
 import '../features/onboarding/ui/pages/collaborate_onboarding_page.dart';
@@ -38,6 +37,8 @@ import '../modules/jam_sessions/ui/pages/jam_session_detail_page.dart';
 import '../modules/jam_sessions/ui/pages/public_jam_sessions_page.dart';
 import '../modules/jam_sessions/cubits/public_jam_sessions_cubit.dart';
 import '../modules/jam_sessions/repositories/jam_sessions_repository.dart';
+import '../modules/notifications/models/notification_scenario.dart';
+import '../modules/notifications/ui/pages/notification_center_page.dart';
 import '../modules/venues/cubits/public_venues_cubit.dart';
 import '../modules/venues/ui/pages/public_venues_page.dart';
 import '../modules/venues/repositories/venues_repository.dart';
@@ -266,8 +267,10 @@ List<RouteBase> buildAppRoutes() {
           path: AppRoutes.notifications,
           pageBuilder: (context, state) => _noTransitionPage(
             state,
-            MusicianNotificationsPage(
-              repository: context.read<MusicianNotificationsRepository>(),
+            NotificationCenterPage(
+              audience: NotificationAudience.musician,
+              musicianNotificationsRepository: context
+                  .read<MusicianNotificationsRepository>(),
             ),
           ),
         ),

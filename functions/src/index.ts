@@ -1,6 +1,8 @@
 import * as functions from 'firebase-functions';
 
 import { admin } from './firebase';
+import { SCENARIO_KEYS } from './notifications/scenarioKeys';
+import { sendPushToUser } from './notifications/sendPush';
 import { region } from './region';
 export { seedChatThreads } from './chatSeeder';
 export { resolveSpotifyArtistImages } from './spotify_artist_images';
@@ -25,9 +27,11 @@ export { onStudioCreated, onStudioUpdated } from './studios/onStudioWrite';
 export { onBookingCreated } from './studios/onBookingWrite';
 export {
   onStudioWriteSyncVenueProjection,
+  onJamSessionCreated,
   onVenueCreated,
   onVenueUpdated,
 } from './venues/triggers';
+export { onMusicianRequestStatusChanged } from './notifications/requestTriggers';
 
 function stringList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
@@ -53,44 +57,6 @@ function record(value: unknown): Record<string, unknown> {
   if (typeof value !== 'object') return {};
   if (Array.isArray(value)) return {};
   return value as Record<string, unknown>;
-}
-
-async function fetchUserPushTokens(
-  db: FirebaseFirestore.Firestore,
-  uid: string,
-): Promise<string[]> {
-  const [usersTokensSnap, legacyMusicianTokensSnap] = await Promise.all([
-    db.collection('users').doc(uid).collection('fcmTokens').get(),
-    db.collection('musicians').doc(uid).collection('fcmTokens').get(),
-  ]);
-
-  const tokenSet = new Set<string>();
-  for (const doc of usersTokensSnap.docs) {
-    const token = String(doc.id || '').trim();
-    if (token) tokenSet.add(token);
-  }
-  for (const doc of legacyMusicianTokensSnap.docs) {
-    const token = String(doc.id || '').trim();
-    if (token) tokenSet.add(token);
-  }
-  return Array.from(tokenSet);
-}
-
-async function deleteInvalidUserPushTokens(
-  db: FirebaseFirestore.Firestore,
-  uid: string,
-  invalidTokens: string[],
-): Promise<void> {
-  if (!invalidTokens.length) return;
-
-  await Promise.all(
-    invalidTokens.flatMap((token) => {
-      return [
-        db.collection('users').doc(uid).collection('fcmTokens').doc(token).delete().catch(() => null),
-        db.collection('musicians').doc(uid).collection('fcmTokens').doc(token).delete().catch(() => null),
-      ];
-    }),
-  );
 }
 
 function contactPayloadFromMusician(
@@ -163,39 +129,19 @@ export const onGroupInviteCreated = region.firestore
       { merge: true },
     );
 
-    const tokens = await fetchUserPushTokens(db, targetUid);
-    if (!tokens.length) {
-      return;
-    }
-
-    const payload: admin.messaging.MulticastMessage = {
-      tokens,
-      notification: {
-        title: 'Invitación a grupo',
-        body: `Te invitaron a ${groupName}`,
-      },
+    await sendPushToUser({
+      db,
+      uid: targetUid,
+      eventId: inviteId,
+      scenarioKey: SCENARIO_KEYS.musicianGroupInvite,
+      title: 'Invitación a grupo',
+      body: `Te invitaron a ${groupName}`,
       data: {
         type: 'group_invite',
         groupId,
         inviteId,
       },
-    };
-
-    const response = await admin.messaging().sendEachForMulticast(payload);
-    const invalidTokens: string[] = [];
-    response.responses.forEach((res, idx) => {
-      if (!res.success) {
-        const code = res.error?.code ?? '';
-        if (
-          code === 'messaging/invalid-registration-token'
-          || code === 'messaging/registration-token-not-registered'
-        ) {
-          invalidTokens.push(tokens[idx]);
-        }
-      }
     });
-
-    await deleteInvalidUserPushTokens(db, targetUid, invalidTokens);
   });
 
 export const onGroupInviteUsedCreateContacts = region.firestore

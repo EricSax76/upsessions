@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:upsessions/core/constants/app_routes.dart';
 
 import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
-import 'package:upsessions/modules/notifications/cubits/notifications_status_cubit.dart';
+import 'package:upsessions/modules/notifications/cubits/notification_center_cubit.dart';
 
 class UserMenuList extends StatelessWidget {
   const UserMenuList({super.key, this.isCollapsed = false});
@@ -228,7 +228,7 @@ class _NotificationsMenuBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NotificationsStatusCubit, int>(
+    return BlocBuilder<NotificationCenterCubit, int>(
       builder: (context, unreadTotal) {
         if (unreadTotal <= 0) return const SizedBox.shrink();
         final label = unreadTotal > 99 ? '99+' : unreadTotal.toString();

@@ -108,6 +108,86 @@ service cloud.firestore {
         && canChat(data.participants[0], data.participants[1]);
     }
 
+    // -----------------------------------------------------------------------
+    // notificationPreferences validation
+    // -----------------------------------------------------------------------
+
+    // Wire-stable scenario keys — must match SCENARIO_KEYS in
+    // functions/src/notifications/scenarioKeys.ts and
+    // NotificationScenario.wireKey in Dart.
+    function isAllowedScenarioKey(key) {
+      return key in [
+        'musician_group_invite',
+        'musician_unread_message',
+        'studio_booking_pending',
+        'studio_booking_confirmed',
+        'studio_booking_cancelled',
+        'manager_request_pending',
+        'manager_request_accepted',
+        'manager_request_rejected',
+        'venue_jam_session_scheduled',
+        'venue_jam_session_cancelled',
+        'venue_jam_session_private',
+      ];
+    }
+
+    function isValidChannelMap(ch) {
+      return ch is map
+        && ch.keys().hasOnly(['inApp', 'push', 'email'])
+        && (!('inApp'  in ch) || ch.inApp  is bool)
+        && (!('push'   in ch) || ch.push   is bool)
+        && (!('email'  in ch) || ch.email  is bool);
+    }
+
+    function isValidScenariosMap(scenarios) {
+      // Firestore rules cannot iterate map values, so we validate:
+      //   1. All keys are from the allowed set.
+      //   2. Each present scenario entry must be a valid channel map.
+      // Individual channel-value booleans are further guarded by isValidChannelMap
+      // for all current scenario keys written by the client.
+      return scenarios is map
+        && scenarios.keys().hasOnly([
+          'musician_group_invite',
+          'musician_unread_message',
+          'studio_booking_pending',
+          'studio_booking_confirmed',
+          'studio_booking_cancelled',
+          'manager_request_pending',
+          'manager_request_accepted',
+          'manager_request_rejected',
+          'venue_jam_session_scheduled',
+          'venue_jam_session_cancelled',
+          'venue_jam_session_private',
+        ])
+        && (!('musician_group_invite'       in scenarios) || isValidChannelMap(scenarios.musician_group_invite))
+        && (!('musician_unread_message'     in scenarios) || isValidChannelMap(scenarios.musician_unread_message))
+        && (!('studio_booking_pending'      in scenarios) || isValidChannelMap(scenarios.studio_booking_pending))
+        && (!('studio_booking_confirmed'    in scenarios) || isValidChannelMap(scenarios.studio_booking_confirmed))
+        && (!('studio_booking_cancelled'    in scenarios) || isValidChannelMap(scenarios.studio_booking_cancelled))
+        && (!('manager_request_pending'     in scenarios) || isValidChannelMap(scenarios.manager_request_pending))
+        && (!('manager_request_accepted'    in scenarios) || isValidChannelMap(scenarios.manager_request_accepted))
+        && (!('manager_request_rejected'    in scenarios) || isValidChannelMap(scenarios.manager_request_rejected))
+        && (!('venue_jam_session_scheduled' in scenarios) || isValidChannelMap(scenarios.venue_jam_session_scheduled))
+        && (!('venue_jam_session_cancelled' in scenarios) || isValidChannelMap(scenarios.venue_jam_session_cancelled))
+        && (!('venue_jam_session_private'   in scenarios) || isValidChannelMap(scenarios.venue_jam_session_private));
+    }
+
+    function isValidQuietHours(qh) {
+      return qh is map
+        && qh.keys().hasOnly(['enabled', 'startHour', 'endHour', 'timezone'])
+        && qh.enabled   is bool
+        && qh.startHour is int && qh.startHour >= 0 && qh.startHour <= 23
+        && qh.endHour   is int && qh.endHour   >= 0 && qh.endHour   <= 23
+        && qh.timezone  is string && qh.timezone.size() > 0;
+    }
+
+    function isValidNotificationPreferences(data) {
+      return data.keys().hasOnly(['scenarios', 'quietHours', 'updatedAt'])
+        && data.updatedAt is timestamp
+        && (!('scenarios'  in data) || isValidScenariosMap(data.scenarios))
+        && (!('quietHours' in data) || isValidQuietHours(data.quietHours));
+    }
+
     function isValidAnnouncement() {
       return request.resource.data.keys().hasOnly([
         'title',
@@ -818,6 +898,16 @@ service cloud.firestore {
       match /privacy_requests/{requestId} {
         allow read: if isOwner(uid);
         allow create, update, delete: if false;
+      }
+
+      // Client-managed notification preferences.
+      // Single document with fixed id "prefs"; server validates shape/ranges.
+      match /notificationPreferences/{docId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && docId == 'prefs'
+          && isValidNotificationPreferences(request.resource.data);
+        allow delete: if false;
       }
     }
 

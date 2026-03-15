@@ -1,6 +1,8 @@
 import * as functions from 'firebase-functions';
 
 import { admin } from '../firebase';
+import { SCENARIO_KEYS } from '../notifications/scenarioKeys';
+import { sendPushToUser } from '../notifications/sendPush';
 import { region } from '../region';
 import {
   shouldSyncStudioProjection,
@@ -8,6 +10,22 @@ import {
   venuePayloadFromStudio,
 } from './projections';
 import { validateVenueData } from './validators';
+
+function stringOrEmpty(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function scenarioKeyForJamSession(
+  jamSession: Record<string, unknown>,
+): typeof SCENARIO_KEYS[keyof typeof SCENARIO_KEYS] {
+  if (jamSession.isCanceled === true) {
+    return SCENARIO_KEYS.venueJamSessionCancelled;
+  }
+  if (jamSession.isPublic === false) {
+    return SCENARIO_KEYS.venueJamSessionPrivate;
+  }
+  return SCENARIO_KEYS.venueJamSessionScheduled;
+}
 
 async function ensureUpdatedAt(
   ref: admin.firestore.DocumentReference,
@@ -99,4 +117,39 @@ export const onStudioWriteSyncVenueProjection = region.firestore
     };
 
     await venueRef.set(setPayload, { merge: true });
+  });
+
+export const onJamSessionCreated = region.firestore
+  .document('jam_sessions/{sessionId}')
+  .onCreate(async (snapshot, context) => {
+    const data = snapshot.data() as Record<string, unknown> | undefined;
+    if (!data) return;
+
+    const venueId = stringOrEmpty(data.venueId);
+    if (!venueId) return;
+
+    const db = admin.firestore();
+    const venueSnap = await db.collection('venues').doc(venueId).get();
+    const ownerId = stringOrEmpty(venueSnap.get('ownerId'));
+    if (!ownerId) return;
+
+    const sessionId = stringOrEmpty(context.params.sessionId);
+    if (!sessionId) return;
+
+    const title = stringOrEmpty(data.title) || 'Jam session';
+    const scenarioKey = scenarioKeyForJamSession(data);
+
+    await sendPushToUser({
+      db,
+      uid: ownerId,
+      eventId: sessionId,
+      scenarioKey,
+      title: 'Actividad en tu venue',
+      body: `Nueva jam session: ${title}`,
+      data: {
+        type: 'jam_session',
+        sessionId,
+        venueId,
+      },
+    });
   });

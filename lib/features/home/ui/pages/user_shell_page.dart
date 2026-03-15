@@ -7,12 +7,16 @@ import 'package:upsessions/core/constants/app_routes.dart';
 import 'package:upsessions/core/ui/shell/core_shell.dart';
 
 import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
+import 'package:upsessions/modules/auth/models/user_entity.dart';
 
 import 'package:upsessions/modules/groups/cubits/my_groups_cubit.dart';
-import 'package:upsessions/modules/notifications/cubits/notifications_status_cubit.dart';
+import 'package:upsessions/modules/notifications/cubits/notification_center_cubit.dart';
 import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
+import 'package:upsessions/modules/event_manager/repositories/manager_notifications_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musician_notifications_repository.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
+import 'package:upsessions/modules/studios/repositories/studio_notifications_repository.dart';
+import 'package:upsessions/modules/venues/repositories/venue_notifications_repository.dart';
 import '../widgets/header/sm_app_bar.dart';
 import '../widgets/legal/legal_compliance_gate.dart';
 import '../widgets/profile/profile_quick_actions_fab.dart';
@@ -26,12 +30,18 @@ class UserShellPage extends StatelessWidget {
     required this.child,
     required this.groupsRepository,
     required this.musicianNotificationsRepository,
+    required this.studioNotificationsRepository,
+    required this.managerNotificationsRepository,
+    required this.venueNotificationsRepository,
     required this.likedMusiciansCubit,
   });
 
   final Widget child;
   final GroupsRepository groupsRepository;
   final MusicianNotificationsRepository musicianNotificationsRepository;
+  final StudioNotificationsRepository studioNotificationsRepository;
+  final ManagerNotificationsRepository managerNotificationsRepository;
+  final VenueNotificationsRepository venueNotificationsRepository;
   final LikedMusiciansCubit likedMusiciansCubit;
 
   @override
@@ -45,6 +55,8 @@ class UserShellPage extends StatelessWidget {
     final showTopAppBar = kIsWeb || !isWideLayout;
     final isHomeRoute = location == AppRoutes.userHome;
     final showQuickActionsFab = !isWideLayout && isHomeRoute;
+    final role =
+        context.read<AuthCubit>().state.user?.role ?? UserRole.musician;
 
     return MultiBlocProvider(
       providers: [
@@ -52,8 +64,12 @@ class UserShellPage extends StatelessWidget {
           create: (_) => MyGroupsCubit(groupsRepository: groupsRepository),
         ),
         BlocProvider(
-          create: (_) => NotificationsStatusCubit(
+          create: (_) => NotificationCenterCubit(
+            role: role,
             musicianNotificationsRepository: musicianNotificationsRepository,
+            studioNotificationsRepository: studioNotificationsRepository,
+            managerNotificationsRepository: managerNotificationsRepository,
+            venueNotificationsRepository: venueNotificationsRepository,
           ),
         ),
         BlocProvider(create: (_) => SidebarCubit()),

@@ -23,6 +23,10 @@ import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/groups/models/group_membership_entity.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
+import 'package:upsessions/modules/notifications/cubits/notification_preferences_cubit.dart';
+import 'package:upsessions/modules/notifications/models/notification_scenario.dart';
+import 'package:upsessions/modules/notifications/repositories/notification_preferences_repository.dart';
+import 'package:upsessions/modules/notifications/ui/widgets/notification_preferences_section.dart';
 import 'package:upsessions/modules/profile/models/account_settings_card.dart';
 
 import '../../cubits/account_preferences_cubit.dart';
@@ -35,6 +39,11 @@ class AccountSettingsPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => AccountPreferencesCubit()),
+        BlocProvider(
+          create: (_) => NotificationPreferencesCubit(
+            repository: locate<NotificationPreferencesRepository>(),
+          ),
+        ),
         BlocProvider(
           create: (_) => AccountPrivacyActionsCubit(
             cloudFunctionsService: locate<CloudFunctionsService>(),
@@ -167,10 +176,25 @@ class _AccountSettingsPageViewState extends State<_AccountSettingsPageView> {
     );
   }
 
+  NotificationAudience? _notificationAudienceForRole(UserRole? role) {
+    switch (role) {
+      case UserRole.musician:
+        return NotificationAudience.musician;
+      case UserRole.studio:
+        return NotificationAudience.studio;
+      case UserRole.manager:
+        return NotificationAudience.eventManager;
+      case UserRole.admin:
+      case null:
+        return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isAdmin =
-        context.read<AuthCubit>().state.user?.role == UserRole.admin;
+    final userRole = context.read<AuthCubit>().state.user?.role;
+    final isAdmin = userRole == UserRole.admin;
+    final notificationsAudience = _notificationAudienceForRole(userRole);
     final titleStyle = Theme.of(
       context,
     ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold);
@@ -227,6 +251,14 @@ class _AccountSettingsPageViewState extends State<_AccountSettingsPageView> {
                                 onNewsletterChanged: context
                                     .read<AccountPreferencesCubit>()
                                     .toggleNewsletter,
+                              ),
+                              const SizedBox(height: 24),
+                              const SettingsSectionTitle(
+                                text: 'Notificaciones',
+                              ),
+                              const SizedBox(height: 12),
+                              NotificationPreferencesSection(
+                                audience: notificationsAudience,
                               ),
                               const SizedBox(height: 24),
                               const SettingsSectionTitle(

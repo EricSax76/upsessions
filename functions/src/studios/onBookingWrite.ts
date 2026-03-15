@@ -1,4 +1,6 @@
 import { admin } from '../firebase';
+import { SCENARIO_KEYS } from '../notifications/scenarioKeys';
+import { sendPushToUser } from '../notifications/sendPush';
 import { region } from '../region';
 
 const VAT_RATE = 0.21;
@@ -7,6 +9,10 @@ const VAT_TOLERANCE = 0.01;
 function numberOrNull(value: unknown): number | null {
   if (typeof value !== 'number' || !Number.isFinite(value)) return null;
   return value;
+}
+
+function stringOrEmpty(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
 }
 
 export function isVatValid(totalPrice: number, vatAmount: number): boolean {
@@ -87,5 +93,31 @@ export const onBookingCreated = region.firestore
         },
         { merge: true },
       );
+    });
+
+    const studioId = stringOrEmpty(data.studioId);
+    if (!studioId) return;
+
+    const studioSnap = await db.collection('studios').doc(studioId).get();
+    const studioOwnerId = stringOrEmpty(studioSnap.get('ownerId'));
+    if (!studioOwnerId) return;
+
+    const roomName = stringOrEmpty(data.roomName);
+    const status = stringOrEmpty(data.status) || 'pending';
+
+    await sendPushToUser({
+      db,
+      uid: studioOwnerId,
+      eventId: snapshot.id,
+      scenarioKey: SCENARIO_KEYS.studioBookingPending,
+      title: 'Nueva reserva en tu estudio',
+      body: roomName
+        ? `Has recibido una nueva reserva para ${roomName}.`
+        : 'Has recibido una nueva reserva.',
+      data: {
+        type: 'studio_booking',
+        bookingId: snapshot.id,
+        status,
+      },
     });
   });

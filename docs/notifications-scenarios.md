@@ -75,6 +75,10 @@
   - Action: optional.
 
 ## Pending backlog (recommended)
+- Phase 1 scope (explicit):
+  - Unified read center + role-aware badge + persisted user preferences.
+  - Does not include immutable append-only inbox yet.
+  - Delivery telemetry and delayed quiet-hours dispatch remain post-phase.
 - Add migration clean-up job for legacy tokens still stored in
   `musicians/{uid}/fcmTokens` once all active clients are updated.
 - Introduce user-scoped notification inbox collections for immutable

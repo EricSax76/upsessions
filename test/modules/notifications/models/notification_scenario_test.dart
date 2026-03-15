@@ -35,5 +35,19 @@ void main() {
       expect(metadata.audience, NotificationAudience.venue);
       expect(metadata.severity, NotificationSeverity.warning);
     });
+
+    test('all scenarios expose unique wire keys', () {
+      final keys = NotificationScenario.values.map((s) => s.wireKey).toList();
+      expect(keys, everyElement(matches(r'^[a-z0-9_]+$')));
+      expect(keys.toSet().length, NotificationScenario.values.length);
+    });
+
+    test('wire key round-trip parses back to the same scenario', () {
+      for (final scenario in NotificationScenario.values) {
+        final parsed = notificationScenarioFromWireKey(scenario.wireKey);
+        expect(parsed, scenario, reason: 'wireKey=${scenario.wireKey}');
+      }
+      expect(notificationScenarioFromWireKey('unknown_future_key'), isNull);
+    });
   });
 }

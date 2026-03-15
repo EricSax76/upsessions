@@ -9,6 +9,8 @@
   "scripts": {
     "build": "tsc",
     "test:studios": "npm run build && node lib/studios/__tests__/onStudioWrite.test.js && node lib/studios/__tests__/onBookingWrite.test.js",
+    "test:notifications": "npm run build && node lib/notifications/__tests__/scenarioKeys.test.js && node lib/notifications/__tests__/quietHours.test.js && node lib/notifications/__tests__/dispatchGuard.test.js && node lib/notifications/__tests__/sendPush.test.js",
+    "test": "npm run test:studios && npm run test:notifications",
     "serve": "npm run build && firebase emulators:start --only functions",
     "deploy": "npm run build && firebase deploy --only functions"
   },

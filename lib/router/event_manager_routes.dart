@@ -21,7 +21,6 @@ import '../modules/event_manager/repositories/musician_requests_repository.dart'
 import '../modules/event_manager/repositories/manager_notifications_repository.dart';
 import '../modules/event_manager/ui/pages/gig_offers_page.dart';
 import '../modules/event_manager/ui/pages/hire_musicians_page.dart';
-import '../modules/event_manager/ui/pages/manager_notifications_page.dart';
 import '../modules/event_manager/ui/pages/manager_agenda_page.dart';
 import '../modules/event_manager/ui/pages/manager_dashboard_page.dart';
 import '../modules/event_manager/ui/pages/manager_event_detail_page.dart';
@@ -40,6 +39,8 @@ import '../modules/jam_sessions/ui/pages/jam_session_detail_page.dart';
 import '../modules/jam_sessions/ui/pages/jam_session_form_page.dart';
 import '../modules/jam_sessions/ui/pages/jam_sessions_page.dart';
 import '../modules/musicians/repositories/musicians_repository.dart';
+import '../modules/notifications/models/notification_scenario.dart';
+import '../modules/notifications/ui/pages/notification_center_page.dart';
 import '../modules/venues/cubits/venues_catalog_cubit.dart';
 import '../modules/venues/cubits/manager_venues_cubit.dart';
 import '../modules/venues/cubits/manager_venue_form_cubit.dart';
@@ -273,8 +274,10 @@ List<RouteBase> buildEventManagerRoutes() {
           path: AppRoutes.eventManagerNotifications,
           pageBuilder: (context, state) => _noTransitionPage(
             state,
-            ManagerNotificationsPage(
-              repository: locate<ManagerNotificationsRepository>(),
+            NotificationCenterPage(
+              audience: NotificationAudience.eventManager,
+              managerNotificationsRepository:
+                  locate<ManagerNotificationsRepository>(),
             ),
           ),
         ),
