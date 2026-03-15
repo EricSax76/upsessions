@@ -6,7 +6,9 @@ import '../../../../core/constants/app_routes.dart';
 import '../../cubits/manager_venues_cubit.dart';
 import '../../cubits/manager_venues_state.dart';
 import '../../models/venue_entity.dart';
-import '../widgets/manager_venue_card.dart';
+import '../widgets/manager_venues/manager_venues_empty_state.dart';
+import '../widgets/manager_venues/manager_venues_error_state.dart';
+import '../widgets/manager_venues/manager_venues_list.dart';
 
 class ManagerVenuesPage extends StatefulWidget {
   const ManagerVenuesPage({
@@ -97,105 +99,25 @@ class _ManagerVenuesPageState extends State<ManagerVenuesPage> {
           }
 
           if (state.errorMessage != null && state.venues.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      state.errorMessage!,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 12),
-                    FilledButton(
-                      onPressed: () => context
-                          .read<ManagerVenuesCubit>()
-                          .loadVenues(refresh: true),
-                      child: const Text('Reintentar'),
-                    ),
-                  ],
-                ),
-              ),
+            return ManagerVenuesErrorState(
+              message: state.errorMessage!,
+              onRetry: () =>
+                  context.read<ManagerVenuesCubit>().loadVenues(refresh: true),
             );
           }
 
           if (state.venues.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.place_outlined,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No tienes locales activos.',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ],
-              ),
-            );
+            return const ManagerVenuesEmptyState();
           }
 
-          return ListView.separated(
-            padding: const EdgeInsets.all(24),
-            itemCount: state.venues.length + 2,
-            separatorBuilder: (context, index) {
-              if (index == 0 || index == state.venues.length + 1) {
-                return const SizedBox.shrink();
-              }
-              return const SizedBox(height: 10);
-            },
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    widget.headingTitle,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                );
-              }
-
-              if (index == state.venues.length + 1) {
-                if (!state.hasMore) return const SizedBox.shrink();
-                return Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: OutlinedButton.icon(
-                      onPressed: state.isLoadingMore
-                          ? null
-                          : () => context.read<ManagerVenuesCubit>().loadMore(),
-                      icon: state.isLoadingMore
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.expand_more),
-                      label: const Text('Cargar más'),
-                    ),
-                  ),
-                );
-              }
-
-              final venue = state.venues[index - 1];
-              return ManagerVenueCard(
-                venue: venue,
-                onTap: () => _openEditVenue(venue),
-                onEdit: () => _openEditVenue(venue),
-                onDeactivate: () => _confirmDeactivate(venue),
-              );
-            },
+          return ManagerVenuesList(
+            headingTitle: widget.headingTitle,
+            venues: state.venues,
+            hasMore: state.hasMore,
+            isLoadingMore: state.isLoadingMore,
+            onLoadMore: () => context.read<ManagerVenuesCubit>().loadMore(),
+            onEdit: _openEditVenue,
+            onDeactivate: _confirmDeactivate,
           );
         },
       ),

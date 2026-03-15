@@ -2,164 +2,78 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/locator/locator.dart';
-import '../../../auth/repositories/auth_repository.dart';
-import '../../cubits/venue_form_cubit.dart';
-import '../../cubits/venue_form_state.dart';
-import '../../models/venue_entity.dart';
-import '../../repositories/venues_repository.dart';
-import '../controllers/manager_venue_form_controller.dart';
+import '../../cubits/manager_venue_form_cubit.dart';
+import '../../cubits/manager_venue_form_state.dart';
+import '../forms/venue_form_draft.dart';
 import '../widgets/form/venue_basics_section.dart';
 import '../widgets/form/venue_compliance_section.dart';
 import '../widgets/form/venue_contact_section.dart';
 import '../widgets/form/venue_location_section.dart';
+import '../forms/venue_form_validator.dart';
 
 class ManagerVenueFormPage extends StatefulWidget {
-  const ManagerVenueFormPage({super.key, this.venueId, this.initialVenue});
-
-  final String? venueId;
-  final VenueEntity? initialVenue;
+  const ManagerVenueFormPage({super.key});
 
   @override
   State<ManagerVenueFormPage> createState() => _ManagerVenueFormPageState();
 }
 
 class _ManagerVenueFormPageState extends State<ManagerVenueFormPage> {
-  final _controller = ManagerVenueFormController();
-
-  VenueEntity? _editingVenue;
-  bool _isPublic = true;
-  bool _isLoading = false;
-  String? _loadingError;
-
-  bool get _isEditing => _editingVenue != null;
-
-  @override
-  void initState() {
-    super.initState();
-    final initialVenue = widget.initialVenue;
-    if (initialVenue != null) {
-      _setEditingVenue(initialVenue);
-      return;
-    }
-
-    final venueId = (widget.venueId ?? '').trim();
-    if (venueId.isNotEmpty) {
-      _loadVenue(venueId);
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _setEditingVenue(VenueEntity venue) {
-    _editingVenue = venue;
-    _isPublic = venue.isPublic;
-    _controller.hydrateFromVenue(venue);
-  }
-
-  Future<void> _loadVenue(String venueId) async {
-    setState(() {
-      _isLoading = true;
-      _loadingError = null;
-    });
-
-    try {
-      final venue = await locate<VenuesRepository>().getVenueById(venueId);
-      if (venue == null) {
-        throw Exception('Local no encontrado');
-      }
-      if (!mounted) return;
-      setState(() {
-        _setEditingVenue(venue);
-      });
-    } catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _loadingError = 'No se pudo cargar el local: $error';
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
+  final _formKey = GlobalKey<FormState>();
 
   void _saveVenue() {
-    if (!_controller.formKey.currentState!.validate()) return;
-
-    final managerId = locate<AuthRepository>().currentUser?.id ?? '';
-    if (managerId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Debes iniciar sesión para gestionar locales.'),
-        ),
-      );
-      return;
-    }
-
-    if (_editingVenue?.isStudioBacked ?? false) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Este local viene de studios y no se edita desde aquí.',
-          ),
-        ),
-      );
-      return;
-    }
-
-    final venue = _controller.buildVenue(
-      ownerId: managerId,
-      isPublic: _isPublic,
-      initialVenue: _editingVenue,
-    );
-
-    context.read<VenueFormCubit>().saveVenue(venue);
+    if (!_formKey.currentState!.validate()) return;
+    context.read<ManagerVenueFormCubit>().saveVenue();
   }
 
   @override
   Widget build(BuildContext context) {
-    final title = _isEditing ? 'Editar Local' : 'Nuevo Local';
-
-    return BlocListener<VenueFormCubit, VenueFormState>(
+    return BlocConsumer<ManagerVenueFormCubit, ManagerVenueFormState>(
       listenWhen: (previous, current) =>
-          previous.success != current.success ||
-          previous.errorMessage != current.errorMessage,
+          previous.saveSuccess != current.saveSuccess ||
+          previous.feedbackMessage != current.feedbackMessage,
       listener: (context, state) {
-        if (state.success) {
+        if (state.saveSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Local guardado correctamente.')),
           );
+          context.read<ManagerVenueFormCubit>().clearTransientFeedback();
           context.pop(true);
           return;
         }
 
-        final message = state.errorMessage;
+        final message = state.feedbackMessage;
         if (message != null) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(message)));
+          context.read<ManagerVenueFormCubit>().clearTransientFeedback();
         }
       },
-      child: Scaffold(
-        appBar: AppBar(title: Text(title)),
-        body: _buildBody(),
-      ),
+      builder: (context, state) {
+        final cubit = context.read<ManagerVenueFormCubit>();
+        final draft = cubit.draft;
+        final title = state.isEditing ? 'Editar Local' : 'Nuevo Local';
+
+        return Scaffold(
+          appBar: AppBar(title: Text(title)),
+          body: _buildBody(context, state, cubit, draft),
+        );
+      },
     );
   }
 
-  Widget _buildBody() {
-    if (_isLoading) {
+  Widget _buildBody(
+    BuildContext context,
+    ManagerVenueFormState state,
+    ManagerVenueFormCubit cubit,
+    VenueFormDraft draft,
+  ) {
+    if (state.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_loadingError != null) {
+    if (state.loadingError != null) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -167,17 +81,13 @@ class _ManagerVenueFormPageState extends State<ManagerVenueFormPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                _loadingError!,
+                state.loadingError!,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
               const SizedBox(height: 12),
               OutlinedButton(
-                onPressed: () {
-                  final venueId = (widget.venueId ?? '').trim();
-                  if (venueId.isEmpty) return;
-                  _loadVenue(venueId);
-                },
+                onPressed: cubit.retryLoad,
                 child: const Text('Reintentar'),
               ),
             ],
@@ -191,69 +101,63 @@ class _ManagerVenueFormPageState extends State<ManagerVenueFormPage> {
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 860),
-          child: BlocBuilder<VenueFormCubit, VenueFormState>(
-            builder: (context, state) {
-              return IgnorePointer(
-                ignoring: state.isSaving,
-                child: Form(
-                  key: _controller.formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (state.isSaving) const LinearProgressIndicator(),
-                      VenueBasicsSection(
-                        nameController: _controller.nameController,
-                        descriptionController:
-                            _controller.descriptionController,
-                        requiredValidator: _controller.requiredValidator,
-                      ),
-                      const SizedBox(height: 16),
-                      VenueLocationSection(
-                        addressController: _controller.addressController,
-                        cityController: _controller.cityController,
-                        provinceController: _controller.provinceController,
-                        postalCodeController: _controller.postalCodeController,
-                        requiredValidator: _controller.requiredValidator,
-                      ),
-                      const SizedBox(height: 16),
-                      VenueContactSection(
-                        contactEmailController:
-                            _controller.contactEmailController,
-                        contactPhoneController:
-                            _controller.contactPhoneController,
-                        licenseNumberController:
-                            _controller.licenseNumberController,
-                        requiredValidator: _controller.requiredValidator,
-                        emailValidator: _controller.emailValidator,
-                      ),
-                      const SizedBox(height: 16),
-                      VenueComplianceSection(
-                        maxCapacityController:
-                            _controller.maxCapacityController,
-                        accessibilityInfoController:
-                            _controller.accessibilityInfoController,
-                        isPublic: _isPublic,
-                        onIsPublicChanged: (value) {
-                          setState(() => _isPublic = value);
-                        },
-                        requiredValidator: _controller.requiredValidator,
-                        positiveIntValidator: _controller.positiveIntValidator,
-                      ),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton(
-                          onPressed: _saveVenue,
-                          child: Text(
-                            state.isSaving ? 'Guardando...' : 'Guardar Local',
-                          ),
-                        ),
-                      ),
-                    ],
+          child: IgnorePointer(
+            ignoring: state.isSaving,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (state.isSaving) const LinearProgressIndicator(),
+                  VenueBasicsSection(
+                    nameController: draft.nameController,
+                    descriptionController: draft.descriptionController,
+                    requiredValidator: (value) =>
+                        VenueFormValidator.required(value),
                   ),
-                ),
-              );
-            },
+                  const SizedBox(height: 16),
+                  VenueLocationSection(
+                    addressController: draft.addressController,
+                    cityController: draft.cityController,
+                    provinceController: draft.provinceController,
+                    postalCodeController: draft.postalCodeController,
+                    requiredValidator: (value) =>
+                        VenueFormValidator.required(value),
+                  ),
+                  const SizedBox(height: 16),
+                  VenueContactSection(
+                    contactEmailController: draft.contactEmailController,
+                    contactPhoneController: draft.contactPhoneController,
+                    licenseNumberController: draft.licenseNumberController,
+                    requiredValidator: (value) =>
+                        VenueFormValidator.required(value),
+                    emailValidator: (value) => VenueFormValidator.email(value),
+                  ),
+                  const SizedBox(height: 16),
+                  VenueComplianceSection(
+                    maxCapacityController: draft.maxCapacityController,
+                    accessibilityInfoController:
+                        draft.accessibilityInfoController,
+                    isPublic: state.isPublic,
+                    onIsPublicChanged: cubit.setIsPublic,
+                    requiredValidator: (value) =>
+                        VenueFormValidator.required(value),
+                    positiveIntValidator: (value) =>
+                        VenueFormValidator.positiveInt(value),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: _saveVenue,
+                      child: Text(
+                        state.isSaving ? 'Guardando...' : 'Guardar Local',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

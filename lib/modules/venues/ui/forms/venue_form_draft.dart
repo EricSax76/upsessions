@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../models/venue_entity.dart';
+import 'venue_form_validator.dart';
 
-class ManagerVenueFormController {
-  final formKey = GlobalKey<FormState>();
+class VenueFormDraft {
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
   final addressController = TextEditingController();
@@ -16,21 +16,7 @@ class ManagerVenueFormController {
   final maxCapacityController = TextEditingController();
   final accessibilityInfoController = TextEditingController();
 
-  void dispose() {
-    nameController.dispose();
-    descriptionController.dispose();
-    addressController.dispose();
-    cityController.dispose();
-    provinceController.dispose();
-    postalCodeController.dispose();
-    contactEmailController.dispose();
-    contactPhoneController.dispose();
-    licenseNumberController.dispose();
-    maxCapacityController.dispose();
-    accessibilityInfoController.dispose();
-  }
-
-  void hydrateFromVenue(VenueEntity venue) {
+  void fillFromVenue(VenueEntity venue) {
     nameController.text = venue.name;
     descriptionController.text = venue.description;
     addressController.text = venue.address;
@@ -46,38 +32,13 @@ class ManagerVenueFormController {
     accessibilityInfoController.text = venue.accessibilityInfo;
   }
 
-  String? requiredValidator(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Requerido';
-    }
-    return null;
-  }
-
-  String? emailValidator(String? value) {
-    final text = (value ?? '').trim();
-    if (text.isEmpty) return 'Requerido';
-    if (!text.contains('@') || text.startsWith('@') || text.endsWith('@')) {
-      return 'Email no válido';
-    }
-    return null;
-  }
-
-  String? positiveIntValidator(String? value) {
-    final text = (value ?? '').trim();
-    if (text.isEmpty) return 'Requerido';
-    final parsed = int.tryParse(text);
-    if (parsed == null || parsed <= 0) {
-      return 'Debe ser un entero > 0';
-    }
-    return null;
-  }
-
-  VenueEntity buildVenue({
+  VenueEntity toVenueEntity({
     required String ownerId,
     required bool isPublic,
     required VenueEntity? initialVenue,
   }) {
-    final capacity = int.tryParse(maxCapacityController.text.trim()) ?? 0;
+    final capacity =
+        VenueFormValidator.parsePositiveInt(maxCapacityController.text) ?? 0;
 
     return VenueEntity(
       id: initialVenue?.id ?? '',
@@ -100,6 +61,20 @@ class ManagerVenueFormController {
       createdAt: initialVenue?.createdAt,
       updatedAt: initialVenue?.updatedAt,
     );
+  }
+
+  void dispose() {
+    nameController.dispose();
+    descriptionController.dispose();
+    addressController.dispose();
+    cityController.dispose();
+    provinceController.dispose();
+    postalCodeController.dispose();
+    contactEmailController.dispose();
+    contactPhoneController.dispose();
+    licenseNumberController.dispose();
+    maxCapacityController.dispose();
+    accessibilityInfoController.dispose();
   }
 
   String? _trimToNull(String raw) {

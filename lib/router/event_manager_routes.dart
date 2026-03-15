@@ -40,7 +40,7 @@ import '../modules/jam_sessions/ui/pages/jam_sessions_page.dart';
 import '../modules/musicians/repositories/musicians_repository.dart';
 import '../modules/venues/cubits/venues_catalog_cubit.dart';
 import '../modules/venues/cubits/manager_venues_cubit.dart';
-import '../modules/venues/cubits/venue_form_cubit.dart';
+import '../modules/venues/cubits/manager_venue_form_cubit.dart';
 import '../modules/venues/models/venue_entity.dart';
 import '../modules/venues/repositories/venues_repository.dart';
 import '../modules/venues/ui/pages/manager_venue_form_page.dart';
@@ -174,8 +174,10 @@ List<RouteBase> buildEventManagerRoutes() {
           pageBuilder: (context, state) => _noTransitionPage(
             state,
             BlocProvider(
-              create: (context) =>
-                  VenueFormCubit(venuesRepository: locate<VenuesRepository>()),
+              create: (context) => ManagerVenueFormCubit(
+                venuesRepository: locate<VenuesRepository>(),
+                authRepository: locate<AuthRepository>(),
+              )..initialize(),
               child: const ManagerVenueFormPage(),
             ),
           ),
@@ -189,13 +191,11 @@ List<RouteBase> buildEventManagerRoutes() {
             return _noTransitionPage(
               state,
               BlocProvider(
-                create: (context) => VenueFormCubit(
+                create: (context) => ManagerVenueFormCubit(
                   venuesRepository: locate<VenuesRepository>(),
-                ),
-                child: ManagerVenueFormPage(
-                  venueId: venueId,
-                  initialVenue: initialVenue,
-                ),
+                  authRepository: locate<AuthRepository>(),
+                )..initialize(venueId: venueId, initialVenue: initialVenue),
+                child: const ManagerVenueFormPage(),
               ),
             );
           },

@@ -7,9 +7,10 @@ import 'package:upsessions/core/locator/locator.dart';
 import 'package:upsessions/core/ui/shell/auth_shell.dart';
 import 'package:upsessions/core/widgets/gap.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
-import 'package:upsessions/modules/event_manager/cubits/event_manager_auth_cubit.dart';
-import 'package:upsessions/modules/event_manager/cubits/event_manager_auth_state.dart';
 import 'package:upsessions/modules/event_manager/repositories/event_manager_repository.dart';
+import 'package:upsessions/modules/venues/cubits/venue_register_cubit.dart';
+import 'package:upsessions/modules/venues/cubits/venue_register_state.dart';
+import 'package:upsessions/modules/venues/ui/forms/venue_register_validator.dart';
 
 class VenueRegisterPage extends StatelessWidget {
   const VenueRegisterPage({super.key});
@@ -17,7 +18,7 @@ class VenueRegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => EventManagerAuthCubit(
+      create: (context) => VenueRegisterCubit(
         authRepository: locate<AuthRepository>(),
         managerRepository: locate<EventManagerRepository>(),
       ),
@@ -35,45 +36,15 @@ class _VenueRegisterView extends StatefulWidget {
 
 class _VenueRegisterViewState extends State<_VenueRegisterView> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _venueNameController = TextEditingController();
-  final _contactPhoneController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _websiteController = TextEditingController();
-
-  bool _obscurePassword = true;
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _venueNameController.dispose();
-    _contactPhoneController.dispose();
-    _cityController.dispose();
-    _websiteController.dispose();
-    super.dispose();
-  }
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    context.read<EventManagerAuthCubit>().register(
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-      managerName: _venueNameController.text.trim(),
-      contactEmail: _emailController.text.trim(),
-      contactPhone: _contactPhoneController.text.trim(),
-      city: _cityController.text.trim(),
-      website: _websiteController.text.trim().isEmpty
-          ? null
-          : _websiteController.text.trim(),
-      specialties: const ['venues'],
-    );
+    context.read<VenueRegisterCubit>().register();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<EventManagerAuthCubit, EventManagerAuthState>(
+    return BlocConsumer<VenueRegisterCubit, VenueRegisterState>(
       listenWhen: (previous, current) =>
           previous.status != current.status ||
           previous.errorMessage != current.errorMessage,
@@ -82,13 +53,16 @@ class _VenueRegisterViewState extends State<_VenueRegisterView> {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+          context.read<VenueRegisterCubit>().clearError();
         }
-        if (state.status == EventManagerAuthStatus.authenticated) {
+        if (state.status == VenueRegisterStatus.success) {
           context.go(AppRoutes.venuesDashboard);
         }
       },
       builder: (context, state) {
-        final isSubmitting = state.status == EventManagerAuthStatus.loading;
+        final cubit = context.read<VenueRegisterCubit>();
+        final draft = cubit.draft;
+        final isSubmitting = state.status == VenueRegisterStatus.submitting;
 
         return Stack(
           children: [
@@ -109,84 +83,67 @@ class _VenueRegisterViewState extends State<_VenueRegisterView> {
                     ),
                     const VSpace(AppSpacing.lg),
                     TextFormField(
-                      controller: _venueNameController,
+                      controller: draft.venueNameController,
                       decoration: const InputDecoration(
                         labelText: 'Nombre del local o empresa',
                         hintText: 'Ej. Sala Horizonte',
                       ),
                       validator: (value) =>
-                          (value == null || value.trim().isEmpty)
-                          ? 'Requerido'
-                          : null,
+                          VenueRegisterValidator.required(value),
                     ),
                     const VSpace(AppSpacing.md),
                     TextFormField(
-                      controller: _emailController,
+                      controller: draft.emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
                         labelText: 'Correo electrónico',
                         hintText: 'correo@ejemplo.com',
                       ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Requerido';
-                        }
-                        if (!value.contains('@')) {
-                          return 'Correo inválido';
-                        }
-                        return null;
-                      },
+                      validator: (value) => VenueRegisterValidator.email(value),
                     ),
                     const VSpace(AppSpacing.md),
                     TextFormField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
+                      controller: draft.passwordController,
+                      obscureText: state.obscurePassword,
                       decoration: InputDecoration(
                         labelText: 'Contraseña',
                         hintText: 'Mínimo 6 caracteres',
                         suffixIcon: IconButton(
-                          onPressed: () => setState(
-                            () => _obscurePassword = !_obscurePassword,
-                          ),
+                          onPressed: cubit.togglePasswordVisibility,
                           icon: Icon(
-                            _obscurePassword
+                            state.obscurePassword
                                 ? Icons.visibility_outlined
                                 : Icons.visibility_off_outlined,
                           ),
                         ),
                       ),
-                      validator: (value) => (value == null || value.length < 6)
-                          ? 'Mínimo 6 caracteres'
-                          : null,
+                      validator: (value) =>
+                          VenueRegisterValidator.password(value),
                     ),
                     const VSpace(AppSpacing.md),
                     TextFormField(
-                      controller: _contactPhoneController,
+                      controller: draft.contactPhoneController,
                       keyboardType: TextInputType.phone,
                       decoration: const InputDecoration(
                         labelText: 'Teléfono de contacto',
                         hintText: '+34 600 000 000',
                       ),
                       validator: (value) =>
-                          (value == null || value.trim().isEmpty)
-                          ? 'Requerido'
-                          : null,
+                          VenueRegisterValidator.required(value),
                     ),
                     const VSpace(AppSpacing.md),
                     TextFormField(
-                      controller: _cityController,
+                      controller: draft.cityController,
                       decoration: const InputDecoration(
                         labelText: 'Ciudad',
                         hintText: 'Ej. Madrid',
                       ),
                       validator: (value) =>
-                          (value == null || value.trim().isEmpty)
-                          ? 'Requerido'
-                          : null,
+                          VenueRegisterValidator.required(value),
                     ),
                     const VSpace(AppSpacing.md),
                     TextFormField(
-                      controller: _websiteController,
+                      controller: draft.websiteController,
                       keyboardType: TextInputType.url,
                       decoration: const InputDecoration(
                         labelText: 'Web (opcional)',
