@@ -34,6 +34,7 @@ void main() {
       final metadata = NotificationScenario.venueJamSessionCancelled.metadata;
       expect(metadata.audience, NotificationAudience.venue);
       expect(metadata.severity, NotificationSeverity.warning);
+      expect(metadata.channels, contains(NotificationChannel.push));
     });
 
     test('all scenarios expose unique wire keys', () {

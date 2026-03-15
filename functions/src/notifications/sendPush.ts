@@ -1,7 +1,10 @@
 import { admin } from '../firebase';
 import { claimDispatch } from './dispatchGuard';
 import { isQuiet, parseQuietHours } from './quietHours';
-import type { ScenarioKey } from './scenarioKeys';
+import {
+  PUSH_CAPABLE_SCENARIO_KEYS,
+  type ScenarioKey,
+} from './scenarioKeys';
 
 function asRecord(value: unknown): Record<string, unknown> {
   if (value == null || typeof value !== 'object' || Array.isArray(value)) {
@@ -66,6 +69,10 @@ export function isScenarioPushEnabled(
   preferences: Record<string, unknown>,
   scenarioKey: ScenarioKey,
 ): boolean {
+  if (!PUSH_CAPABLE_SCENARIO_KEYS.has(scenarioKey)) {
+    return false;
+  }
+
   const scenarios = asRecord(preferences.scenarios);
   const scenario = asRecord(scenarios[scenarioKey]);
   const push = scenario.push;
@@ -123,6 +130,7 @@ export async function sendPushToUser(
   const uid = stringOrEmpty(args.uid);
   const eventId = stringOrEmpty(args.eventId);
   if (!uid || !eventId) return 'disabled';
+  if (!PUSH_CAPABLE_SCENARIO_KEYS.has(args.scenarioKey)) return 'disabled';
 
   const prefsSnap = await args.db
     .collection('users')

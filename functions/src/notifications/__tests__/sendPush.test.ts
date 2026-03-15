@@ -14,6 +14,11 @@ void (() => {
   );
 
   assert(
+    !isScenarioPushEnabled({}, SCENARIO_KEYS.studioBookingConfirmed),
+    'Scenarios without push channel must never dispatch push',
+  );
+
+  assert(
     !isScenarioPushEnabled(
       {
         scenarios: {
@@ -23,6 +28,11 @@ void (() => {
       SCENARIO_KEYS.studioBookingPending,
     ),
     'Scenario push=false must disable dispatch',
+  );
+
+  assert(
+    isScenarioPushEnabled({}, SCENARIO_KEYS.venueJamSessionScheduled),
+    'Venue jam scenarios should allow push by default',
   );
 
   const payload = toFcmData(SCENARIO_KEYS.managerRequestAccepted, {

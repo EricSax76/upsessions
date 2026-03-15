@@ -81,6 +81,7 @@ class _AccountSettingsPageViewState extends State<_AccountSettingsPageView> {
   late final GroupsRepository _groupsRepository;
   late final Stream<List<GroupMembershipEntity>> _myGroupsStream;
   Stream<DocumentSnapshot<Map<String, dynamic>>>? _userComplianceStream;
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? _eventManagerProfileStream;
   final Set<String> _deletingGroupIds = <String>{};
 
   @override
@@ -93,6 +94,10 @@ class _AccountSettingsPageViewState extends State<_AccountSettingsPageView> {
     if (uid != null && uid.isNotEmpty && Firebase.apps.isNotEmpty) {
       _userComplianceStream = FirebaseFirestore.instance
           .collection('users')
+          .doc(uid)
+          .snapshots();
+      _eventManagerProfileStream = FirebaseFirestore.instance
+          .collection('event_managers')
           .doc(uid)
           .snapshots();
     }
@@ -176,7 +181,34 @@ class _AccountSettingsPageViewState extends State<_AccountSettingsPageView> {
     );
   }
 
-  NotificationAudience? _notificationAudienceForRole(UserRole? role) {
+  bool _isVenueManagerProfile(Map<String, dynamic>? managerData) {
+    if (managerData == null || managerData.isEmpty) return false;
+    final rawSpecialties = managerData['specialties'];
+    if (rawSpecialties is! List) return false;
+
+    final specialties = rawSpecialties
+        .whereType<String>()
+        .map((entry) => entry.trim().toLowerCase())
+        .where((entry) => entry.isNotEmpty)
+        .toList();
+
+    return specialties.length == 1 && specialties.first == 'venues';
+  }
+
+  NotificationAudience? _notificationAudienceForSession({
+    required UserRole? role,
+    Map<String, dynamic>? managerData,
+  }) {
+    if (_isVenueManagerProfile(managerData)) {
+      return NotificationAudience.venue;
+    }
+
+    // If the manager profile exists (legacy role mapping included),
+    // resolve as event-manager audience.
+    if (managerData != null && managerData.isNotEmpty) {
+      return NotificationAudience.eventManager;
+    }
+
     switch (role) {
       case UserRole.musician:
         return NotificationAudience.musician;
@@ -194,7 +226,6 @@ class _AccountSettingsPageViewState extends State<_AccountSettingsPageView> {
   Widget build(BuildContext context) {
     final userRole = context.read<AuthCubit>().state.user?.role;
     final isAdmin = userRole == UserRole.admin;
-    final notificationsAudience = _notificationAudienceForRole(userRole);
     final titleStyle = Theme.of(
       context,
     ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold);
@@ -257,8 +288,19 @@ class _AccountSettingsPageViewState extends State<_AccountSettingsPageView> {
                                 text: 'Notificaciones',
                               ),
                               const SizedBox(height: 12),
-                              NotificationPreferencesSection(
-                                audience: notificationsAudience,
+                              StreamBuilder<
+                                DocumentSnapshot<Map<String, dynamic>>
+                              >(
+                                stream: _eventManagerProfileStream,
+                                builder: (context, snapshot) {
+                                  final managerData = snapshot.data?.data();
+                                  return NotificationPreferencesSection(
+                                    audience: _notificationAudienceForSession(
+                                      role: userRole,
+                                      managerData: managerData,
+                                    ),
+                                  );
+                                },
                               ),
                               const SizedBox(height: 24),
                               const SettingsSectionTitle(

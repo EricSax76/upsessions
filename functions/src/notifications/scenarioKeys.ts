@@ -25,3 +25,20 @@ export type ScenarioKey = typeof SCENARIO_KEYS[keyof typeof SCENARIO_KEYS];
 
 export const ALL_SCENARIO_KEYS: ReadonlyArray<ScenarioKey> =
   Object.values(SCENARIO_KEYS);
+
+/**
+ * Scenarios that support push delivery.
+ *
+ * Must stay in sync with NotificationScenario.metadata.channels in Dart.
+ * If a scenario is missing here, sendPushToUser will refuse dispatch.
+ */
+export const PUSH_CAPABLE_SCENARIO_KEYS: ReadonlySet<ScenarioKey> = new Set([
+  SCENARIO_KEYS.musicianGroupInvite,
+  SCENARIO_KEYS.musicianUnreadMessage,
+  SCENARIO_KEYS.studioBookingPending,
+  SCENARIO_KEYS.managerRequestAccepted,
+  SCENARIO_KEYS.managerRequestRejected,
+  SCENARIO_KEYS.venueJamSessionScheduled,
+  SCENARIO_KEYS.venueJamSessionCancelled,
+  SCENARIO_KEYS.venueJamSessionPrivate,
+]);

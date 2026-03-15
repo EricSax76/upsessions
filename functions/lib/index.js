@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onChatThreadWrite = exports.onGroupInviteUsedCreateContacts = exports.onGroupInviteCreated = exports.ping = exports.onMusicianRequestStatusChanged = exports.onVenueUpdated = exports.onVenueCreated = exports.onJamSessionCreated = exports.onStudioWriteSyncVenueProjection = exports.onBookingCreated = exports.onStudioUpdated = exports.onStudioCreated = exports.onMusicianRequestWriteSyncChatPermission = exports.updateUserComplianceProfile = exports.updatePrivacyRequestStatusBackoffice = exports.syncUserSession = exports.requestPrivacyRight = exports.requestDataExport = exports.requestAccountDeletion = exports.purgeExpiredComplianceData = exports.onStudioWriteSyncUserRole = exports.onEventManagerWriteSyncUserRole = exports.onAuthUserDeleteSoftDelete = exports.onAuthUserCreateBootstrap = exports.listPrivacyRequestsBackoffice = exports.acceptLegalDocs = exports.acceptLegalBundle = exports.resolveSpotifyArtistImages = exports.seedChatThreads = void 0;
+exports.onChatMessageCreated = exports.onChatThreadWrite = exports.onGroupInviteUsedCreateContacts = exports.onGroupInviteCreated = exports.ping = exports.onMusicianRequestStatusChanged = exports.onVenueUpdated = exports.onVenueCreated = exports.onJamSessionCreated = exports.onStudioWriteSyncVenueProjection = exports.onBookingCreated = exports.onStudioUpdated = exports.onStudioCreated = exports.onMusicianRequestWriteSyncChatPermission = exports.updateUserComplianceProfile = exports.updatePrivacyRequestStatusBackoffice = exports.syncUserSession = exports.requestPrivacyRight = exports.requestDataExport = exports.requestAccountDeletion = exports.purgeExpiredComplianceData = exports.onStudioWriteSyncUserRole = exports.onEventManagerWriteSyncUserRole = exports.onAuthUserDeleteSoftDelete = exports.onAuthUserCreateBootstrap = exports.listPrivacyRequestsBackoffice = exports.acceptLegalDocs = exports.acceptLegalBundle = exports.resolveSpotifyArtistImages = exports.seedChatThreads = void 0;
 const firebase_1 = require("./firebase");
 const scenarioKeys_1 = require("./notifications/scenarioKeys");
 const sendPush_1 = require("./notifications/sendPush");
@@ -63,6 +63,25 @@ function record(value) {
     if (Array.isArray(value))
         return {};
     return value;
+}
+function normalizedRole(value) {
+    return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+function hasRole(data, role) {
+    if (normalizedRole(data.role) === role) {
+        return true;
+    }
+    if (!Array.isArray(data.roles)) {
+        return false;
+    }
+    return data.roles.some((entry) => normalizedRole(entry) === role);
+}
+function isMusicianAudienceUser(data) {
+    // Backward-compat: legacy accounts without role fields were musicians.
+    if (!('role' in data) && !('roles' in data)) {
+        return true;
+    }
+    return hasRole(data, 'musician');
 }
 function contactPayloadFromMusician(contactId, musicianData) {
     const styles = stringList(musicianData.styles);
@@ -213,5 +232,64 @@ exports.onChatThreadWrite = region_1.region.firestore
         .collection('threads')
         .doc(threadId)
         .set(payload, { merge: true })));
+});
+exports.onChatMessageCreated = region_1.region.firestore
+    .document('chat_threads/{threadId}/messages/{messageId}')
+    .onCreate(async (snapshot, context) => {
+    const message = snapshot.data();
+    if (!message)
+        return;
+    const threadId = stringOrEmpty(context.params.threadId);
+    const messageId = stringOrEmpty(context.params.messageId);
+    const senderId = stringOrEmpty(message.senderId);
+    if (!threadId || !messageId || !senderId) {
+        return;
+    }
+    const db = firebase_1.admin.firestore();
+    const threadSnap = await db.collection('chat_threads').doc(threadId).get();
+    if (!threadSnap.exists) {
+        return;
+    }
+    const participants = stringList(threadSnap.get('participants'));
+    if (!participants.length) {
+        return;
+    }
+    const recipients = participants.filter((uid) => uid && uid !== senderId);
+    if (!recipients.length) {
+        return;
+    }
+    const recipientUserSnaps = await Promise.all(recipients.map((uid) => db.collection('users').doc(uid).get()));
+    const musicianRecipients = recipients.filter((uid, index) => {
+        const userSnap = recipientUserSnaps[index];
+        if (!userSnap.exists) {
+            // Legacy fallback: keep behavior permissive when no profile doc exists.
+            return true;
+        }
+        return isMusicianAudienceUser(record(userSnap.data()));
+    });
+    if (!musicianRecipients.length) {
+        return;
+    }
+    const senderName = stringOrEmpty(message.sender);
+    const messageBody = stringOrEmpty(message.body);
+    const title = senderName
+        ? `Nuevo mensaje de ${senderName}`
+        : 'Tienes un nuevo mensaje';
+    const body = messageBody || 'Abre el chat para leer el mensaje.';
+    const eventId = `${threadId}:${messageId}`;
+    await Promise.all(musicianRecipients.map((uid) => (0, sendPush_1.sendPushToUser)({
+        db,
+        uid,
+        eventId,
+        scenarioKey: scenarioKeys_1.SCENARIO_KEYS.musicianUnreadMessage,
+        title,
+        body,
+        data: {
+            type: 'chat_message',
+            threadId,
+            messageId,
+            senderId,
+        },
+    })));
 });
 //# sourceMappingURL=index.js.map

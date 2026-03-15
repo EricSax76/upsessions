@@ -110,7 +110,7 @@ NotificationScenarioMetadata scenarioMetadata(NotificationScenario scenario) {
         audience: NotificationAudience.venue,
         severity: NotificationSeverity.info,
         actionable: false,
-        channels: [NotificationChannel.inApp],
+        channels: [NotificationChannel.inApp, NotificationChannel.push],
       ),
     NotificationScenario.venueJamSessionCancelled =>
       const NotificationScenarioMetadata(
@@ -118,7 +118,11 @@ NotificationScenarioMetadata scenarioMetadata(NotificationScenario scenario) {
         audience: NotificationAudience.venue,
         severity: NotificationSeverity.warning,
         actionable: false,
-        channels: [NotificationChannel.inApp, NotificationChannel.email],
+        channels: [
+          NotificationChannel.inApp,
+          NotificationChannel.push,
+          NotificationChannel.email,
+        ],
       ),
     NotificationScenario.venueJamSessionPrivate =>
       const NotificationScenarioMetadata(
@@ -126,7 +130,7 @@ NotificationScenarioMetadata scenarioMetadata(NotificationScenario scenario) {
         audience: NotificationAudience.venue,
         severity: NotificationSeverity.info,
         actionable: false,
-        channels: [NotificationChannel.inApp],
+        channels: [NotificationChannel.inApp, NotificationChannel.push],
       ),
   };
 }
@@ -161,6 +165,7 @@ extension NotificationScenarioX on NotificationScenario {
   /// Wire-stable key persisted in Firestore and FCM payloads.
   /// Never rename — change UI labels instead.
   /// Must stay in sync with SCENARIO_KEYS in functions/src/notifications/scenarioKeys.ts.
+  /// Push-enabled scenarios must also match PUSH_CAPABLE_SCENARIO_KEYS.
   String get wireKey => switch (this) {
     NotificationScenario.musicianGroupInvite => 'musician_group_invite',
     NotificationScenario.musicianUnreadMessage => 'musician_unread_message',
@@ -194,6 +199,7 @@ NotificationScenario? notificationScenarioFromWireKey(String key) =>
         NotificationScenario.venueJamSessionScheduled,
       'venue_jam_session_cancelled' =>
         NotificationScenario.venueJamSessionCancelled,
-      'venue_jam_session_private' => NotificationScenario.venueJamSessionPrivate,
+      'venue_jam_session_private' =>
+        NotificationScenario.venueJamSessionPrivate,
       _ => null,
     };

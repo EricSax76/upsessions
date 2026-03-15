@@ -59,6 +59,28 @@ function record(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
+function normalizedRole(value: unknown): string {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function hasRole(data: Record<string, unknown>, role: string): boolean {
+  if (normalizedRole(data.role) === role) {
+    return true;
+  }
+  if (!Array.isArray(data.roles)) {
+    return false;
+  }
+  return data.roles.some((entry) => normalizedRole(entry) === role);
+}
+
+function isMusicianAudienceUser(data: Record<string, unknown>): boolean {
+  // Backward-compat: legacy accounts without role fields were musicians.
+  if (!('role' in data) && !('roles' in data)) {
+    return true;
+  }
+  return hasRole(data, 'musician');
+}
+
 function contactPayloadFromMusician(
   contactId: string,
   musicianData: Record<string, unknown>,
@@ -254,6 +276,80 @@ export const onChatThreadWrite = region.firestore
           .collection('threads')
           .doc(threadId)
           .set(payload, { merge: true }),
+      ),
+    );
+  });
+
+export const onChatMessageCreated = region.firestore
+  .document('chat_threads/{threadId}/messages/{messageId}')
+  .onCreate(async (snapshot, context) => {
+    const message = snapshot.data() as Record<string, unknown> | undefined;
+    if (!message) return;
+
+    const threadId = stringOrEmpty(context.params.threadId);
+    const messageId = stringOrEmpty(context.params.messageId);
+    const senderId = stringOrEmpty(message.senderId);
+    if (!threadId || !messageId || !senderId) {
+      return;
+    }
+
+    const db = admin.firestore();
+    const threadSnap = await db.collection('chat_threads').doc(threadId).get();
+    if (!threadSnap.exists) {
+      return;
+    }
+
+    const participants = stringList(threadSnap.get('participants'));
+    if (!participants.length) {
+      return;
+    }
+
+    const recipients = participants.filter((uid) => uid && uid !== senderId);
+    if (!recipients.length) {
+      return;
+    }
+
+    const recipientUserSnaps = await Promise.all(
+      recipients.map((uid) => db.collection('users').doc(uid).get()),
+    );
+
+    const musicianRecipients = recipients.filter((uid, index) => {
+      const userSnap = recipientUserSnaps[index];
+      if (!userSnap.exists) {
+        // Legacy fallback: keep behavior permissive when no profile doc exists.
+        return true;
+      }
+      return isMusicianAudienceUser(record(userSnap.data()));
+    });
+
+    if (!musicianRecipients.length) {
+      return;
+    }
+
+    const senderName = stringOrEmpty(message.sender);
+    const messageBody = stringOrEmpty(message.body);
+    const title = senderName
+      ? `Nuevo mensaje de ${senderName}`
+      : 'Tienes un nuevo mensaje';
+    const body = messageBody || 'Abre el chat para leer el mensaje.';
+    const eventId = `${threadId}:${messageId}`;
+
+    await Promise.all(
+      musicianRecipients.map((uid) =>
+        sendPushToUser({
+          db,
+          uid,
+          eventId,
+          scenarioKey: SCENARIO_KEYS.musicianUnreadMessage,
+          title,
+          body,
+          data: {
+            type: 'chat_message',
+            threadId,
+            messageId,
+            senderId,
+          },
+        }),
       ),
     );
   });
