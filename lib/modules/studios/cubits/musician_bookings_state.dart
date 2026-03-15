@@ -1,17 +1,19 @@
 import 'package:equatable/equatable.dart';
 
 import '../models/booking_entity.dart';
-import '../models/room_entity.dart';
-import '../models/studio_entity.dart';
 import 'studios_status.dart';
 
-class StudiosState extends Equatable {
+class MusicianBookingsState extends Equatable {
   static const Object _unset = Object();
 
-  const StudiosState({
+  const MusicianBookingsState({
     this.status = StudiosStatus.initial,
-    this.myStudio,
-    this.myRooms = const [],
+    this.myBookings = const [],
+    this.hasMoreMyBookings = false,
+    this.isLoadingMyBookingsMore = false,
+    this.myBookingsCursor,
+    this.upcomingMyBookings = const [],
+    this.pastMyBookings = const [],
     this.studioBookings = const [],
     this.hasMoreStudioBookings = false,
     this.isLoadingStudioBookingsMore = false,
@@ -20,30 +22,43 @@ class StudiosState extends Equatable {
   });
 
   final StudiosStatus status;
-  final StudioEntity? myStudio;
-  final List<RoomEntity> myRooms;
+  final List<BookingEntity> myBookings;
+  final bool hasMoreMyBookings;
+  final bool isLoadingMyBookingsMore;
+  final String? myBookingsCursor;
+  final List<BookingEntity> upcomingMyBookings;
+  final List<BookingEntity> pastMyBookings;
   final List<BookingEntity> studioBookings;
   final bool hasMoreStudioBookings;
   final bool isLoadingStudioBookingsMore;
   final String? studioBookingsCursor;
   final String? errorMessage;
 
-  StudiosState copyWith({
+  MusicianBookingsState copyWith({
     StudiosStatus? status,
-    Object? myStudio = _unset,
-    List<RoomEntity>? myRooms,
+    List<BookingEntity>? myBookings,
+    bool? hasMoreMyBookings,
+    bool? isLoadingMyBookingsMore,
+    Object? myBookingsCursor = _unset,
+    List<BookingEntity>? upcomingMyBookings,
+    List<BookingEntity>? pastMyBookings,
     List<BookingEntity>? studioBookings,
     bool? hasMoreStudioBookings,
     bool? isLoadingStudioBookingsMore,
     Object? studioBookingsCursor = _unset,
     Object? errorMessage = _unset,
   }) {
-    return StudiosState(
+    return MusicianBookingsState(
       status: status ?? this.status,
-      myStudio: identical(myStudio, _unset)
-          ? this.myStudio
-          : myStudio as StudioEntity?,
-      myRooms: myRooms ?? this.myRooms,
+      myBookings: myBookings ?? this.myBookings,
+      hasMoreMyBookings: hasMoreMyBookings ?? this.hasMoreMyBookings,
+      isLoadingMyBookingsMore:
+          isLoadingMyBookingsMore ?? this.isLoadingMyBookingsMore,
+      myBookingsCursor: identical(myBookingsCursor, _unset)
+          ? this.myBookingsCursor
+          : myBookingsCursor as String?,
+      upcomingMyBookings: upcomingMyBookings ?? this.upcomingMyBookings,
+      pastMyBookings: pastMyBookings ?? this.pastMyBookings,
       studioBookings: studioBookings ?? this.studioBookings,
       hasMoreStudioBookings:
           hasMoreStudioBookings ?? this.hasMoreStudioBookings,
@@ -61,8 +76,12 @@ class StudiosState extends Equatable {
   @override
   List<Object?> get props => [
     status,
-    myStudio,
-    myRooms,
+    myBookings,
+    hasMoreMyBookings,
+    isLoadingMyBookingsMore,
+    myBookingsCursor,
+    upcomingMyBookings,
+    pastMyBookings,
     studioBookings,
     hasMoreStudioBookings,
     isLoadingStudioBookingsMore,

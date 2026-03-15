@@ -7,6 +7,7 @@ import 'package:upsessions/core/locator/locator.dart';
 import '../../cubits/my_studio_cubit.dart';
 import '../../cubits/studio_media_cubit.dart';
 import '../../cubits/studios_state.dart';
+import '../../cubits/studios_status.dart';
 import '../../models/studio_entity.dart';
 import '../../repositories/studios_repository.dart';
 import '../../services/studio_image_service.dart';

@@ -8,7 +8,7 @@ import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository
 import 'package:upsessions/modules/studios/cubits/booking_cubit.dart';
 import 'package:upsessions/modules/studios/models/booking_entity.dart';
 import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
-import 'package:upsessions/modules/studios/ui/consumer/studios_list_page.dart';
+import 'package:upsessions/modules/studios/ui/consumer/rehearsal_booking_context.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 

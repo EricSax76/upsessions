@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../cubits/bookings_cubit.dart';
-import '../../cubits/studios_state.dart';
+import '../../cubits/musician_bookings_state.dart';
+import '../../cubits/studios_status.dart';
 import 'widgets/booking_card.dart';
 import '../../repositories/studios_repository.dart';
 import '../../../auth/repositories/auth_repository.dart';
@@ -46,7 +47,7 @@ class _MusicianBookingsPageState extends State<MusicianBookingsPage> {
 
     return BlocProvider.value(
       value: _cubit!,
-      child: BlocBuilder<BookingsCubit, StudiosState>(
+      child: BlocBuilder<BookingsCubit, MusicianBookingsState>(
         builder: (context, state) {
           if (state.status == StudiosStatus.loading ||
               (state.status == StudiosStatus.initial &&

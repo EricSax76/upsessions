@@ -5,6 +5,7 @@ import '../models/room_entity.dart';
 import '../models/studio_entity.dart';
 import '../repositories/studios_repository.dart';
 import 'studios_state.dart';
+import 'studios_status.dart';
 
 class MyStudioCubit extends Cubit<StudiosState> {
   MyStudioCubit({required StudiosRepository repository})

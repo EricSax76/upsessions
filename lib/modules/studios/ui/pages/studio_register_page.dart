@@ -10,6 +10,7 @@ import '../../../auth/cubits/auth_cubit.dart';
 
 import '../../cubits/my_studio_cubit.dart';
 import '../../cubits/studios_state.dart';
+import '../../cubits/studios_status.dart';
 import '../../repositories/studios_repository.dart';
 import 'studio_register_form_controller.dart';
 import 'studio_register_stepper.dart';
@@ -44,7 +45,8 @@ class _StudioRegisterPageState extends State<StudioRegisterPage> {
     final picked = await showDatePicker(
       context: context,
       initialDate:
-          _form.insuranceExpiry ?? DateTime.now().add(const Duration(days: 365)),
+          _form.insuranceExpiry ??
+          DateTime.now().add(const Duration(days: 365)),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
     );
@@ -145,9 +147,11 @@ class _StudioRegisterPageState extends State<StudioRegisterPage> {
         } else if (_form.insuranceExpiry == null) {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
-            ..showSnackBar(const SnackBar(
-              content: Text('Selecciona la fecha de caducidad del seguro RC'),
-            ));
+            ..showSnackBar(
+              const SnackBar(
+                content: Text('Selecciona la fecha de caducidad del seguro RC'),
+              ),
+            );
         }
     }
   }

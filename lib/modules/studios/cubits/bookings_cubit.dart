@@ -2,18 +2,19 @@ import 'package:bloc/bloc.dart';
 
 import '../models/booking_entity.dart';
 import '../repositories/studios_repository.dart';
-import 'studios_state.dart';
+import 'musician_bookings_state.dart';
+import 'studios_status.dart';
 
-class BookingsCubit extends Cubit<StudiosState> {
+class BookingsCubit extends Cubit<MusicianBookingsState> {
   BookingsCubit({required StudiosRepository repository})
     : _repository = repository,
-      super(const StudiosState());
+      super(const MusicianBookingsState());
 
   static const int _bookingsPageSize = 20;
 
   final StudiosRepository _repository;
 
-  void _safeEmit(StudiosState newState) {
+  void _safeEmit(MusicianBookingsState newState) {
     if (isClosed) return;
     emit(newState);
   }

@@ -16,8 +16,8 @@ import '../modules/musicians/ui/pages/musician_detail_page.dart';
 import '../modules/studios/models/room_entity.dart';
 import '../modules/studios/models/studio_entity.dart';
 import '../modules/studios/repositories/studios_repository.dart';
+import '../modules/studios/ui/consumer/rehearsal_booking_context.dart';
 import '../modules/studios/ui/consumer/room_detail_page.dart';
-import '../modules/studios/ui/consumer/studios_list_page.dart';
 import '../modules/studios/ui/provider/edit_room_page.dart';
 
 class UnknownRouteScreen extends StatelessWidget {

@@ -10,6 +10,7 @@ import 'package:upsessions/modules/auth/models/user_entity.dart';
 import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/studios/cubits/my_studio_cubit.dart';
 import 'package:upsessions/modules/studios/cubits/studios_state.dart';
+import 'package:upsessions/modules/studios/cubits/studios_status.dart';
 import 'package:upsessions/modules/studios/ui/provider/studio_dashboard_page.dart';
 import 'package:upsessions/modules/studios/ui/widgets/empty_states/no_studio_empty_state.dart';
 

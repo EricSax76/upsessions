@@ -8,7 +8,7 @@ import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/rehearsals/repositories/rehearsals_repository.dart';
 import 'package:upsessions/modules/studios/models/booking_entity.dart';
 import 'package:upsessions/modules/studios/repositories/studios_repository.dart';
-import 'package:upsessions/modules/studios/ui/consumer/studios_list_page.dart';
+import 'package:upsessions/modules/studios/ui/consumer/rehearsal_booking_context.dart';
 
 part 'booking_state.dart';
 
@@ -23,10 +23,10 @@ class BookingCubit extends Cubit<BookingState> {
     required AuthRepository authRepository,
     required StudiosRepository studiosRepository,
     required RehearsalsRepository rehearsalsRepository,
-  })  : _authRepository = authRepository,
-        _studiosRepository = studiosRepository,
-        _rehearsalsRepository = rehearsalsRepository,
-        super(const BookingState()) {
+  }) : _authRepository = authRepository,
+       _studiosRepository = studiosRepository,
+       _rehearsalsRepository = rehearsalsRepository,
+       super(const BookingState()) {
     _initialize();
   }
 
@@ -53,29 +53,34 @@ class BookingCubit extends Cubit<BookingState> {
         duration = diff.inHours.clamp(1, 8);
       }
 
-      emit(state.copyWith(
-        selectedDate: date,
-        selectedTime: time,
-        durationHours: duration,
-        totalPrice: roomPricePerHour * duration,
-      ));
+      emit(
+        state.copyWith(
+          selectedDate: date,
+          selectedTime: time,
+          durationHours: duration,
+          totalPrice: roomPricePerHour * duration,
+        ),
+      );
 
       _attendeesLoadFuture = _loadAttendees();
     } else {
-      emit(state.copyWith(
-        selectedDate: DateTime.now(),
-        selectedTime: const TimeOfDay(hour: 10, minute: 0),
-        durationHours: 2,
-        totalPrice: roomPricePerHour * 2,
-      ));
+      emit(
+        state.copyWith(
+          selectedDate: DateTime.now(),
+          selectedTime: const TimeOfDay(hour: 10, minute: 0),
+          durationHours: 2,
+          totalPrice: roomPricePerHour * 2,
+        ),
+      );
     }
   }
 
   Future<void> _loadAttendees() async {
     if (rehearsalContext == null) return;
     try {
-      final memberIds = await _rehearsalsRepository
-          .getGroupMemberIds(rehearsalContext!.groupId);
+      final memberIds = await _rehearsalsRepository.getGroupMemberIds(
+        rehearsalContext!.groupId,
+      );
       emit(state.copyWith(attendees: memberIds));
     } catch (_) {
       // Non-blocking: attendees are optional for the booking flow.
@@ -91,10 +96,12 @@ class BookingCubit extends Cubit<BookingState> {
   }
 
   void durationChanged(int duration) {
-    emit(state.copyWith(
-      durationHours: duration,
-      totalPrice: roomPricePerHour * duration,
-    ));
+    emit(
+      state.copyWith(
+        durationHours: duration,
+        totalPrice: roomPricePerHour * duration,
+      ),
+    );
   }
 
   void paymentMethodChanged(BookingPaymentMethod method) {
@@ -104,10 +111,12 @@ class BookingCubit extends Cubit<BookingState> {
   Future<void> confirmBooking() async {
     final user = _authRepository.currentUser;
     if (user == null) {
-      emit(state.copyWith(
-        status: BookingFormStatus.failure,
-        errorMessage: 'Debes iniciar sesión para reservar.',
-      ));
+      emit(
+        state.copyWith(
+          status: BookingFormStatus.failure,
+          errorMessage: 'Debes iniciar sesión para reservar.',
+        ),
+      );
       return;
     }
 
@@ -118,7 +127,7 @@ class BookingCubit extends Cubit<BookingState> {
 
       final date = state.selectedDate!;
       final time = state.selectedTime!;
-      
+
       final startDateTime = DateTime(
         date.year,
         date.month,
@@ -127,7 +136,9 @@ class BookingCubit extends Cubit<BookingState> {
         time.minute,
       );
 
-      final endDateTime = startDateTime.add(Duration(hours: state.durationHours));
+      final endDateTime = startDateTime.add(
+        Duration(hours: state.durationHours),
+      );
       final bookingId = const Uuid().v4();
 
       final vatAmount = state.totalPrice * 0.21;
@@ -165,10 +176,12 @@ class BookingCubit extends Cubit<BookingState> {
 
       emit(state.copyWith(status: BookingFormStatus.success));
     } catch (e) {
-      emit(state.copyWith(
-        status: BookingFormStatus.failure,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: BookingFormStatus.failure,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 }

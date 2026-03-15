@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../forms/studio_form_sections.dart';
 import 'studio_register_form_controller.dart';
 
 class StudioRegisterStepper extends StatelessWidget {
@@ -159,63 +160,13 @@ class StudioRegisterStepper extends StatelessWidget {
           title: const Text('Normativa'),
           content: Form(
             key: form.regulatoryFormKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: form.vatNumberController,
-                  decoration: const InputDecoration(
-                    labelText: 'NIF-IVA (VAT Number)',
-                    helperText: 'LIVA — facturas intracomunitarias',
-                  ),
-                  validator: form.validateRequiredField,
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: form.licenseNumberController,
-                  decoration: const InputDecoration(
-                    labelText: 'Licencia municipal',
-                    helperText:
-                        'Reglamento espectáculos — licencia de actividad',
-                  ),
-                  validator: form.validateRequiredField,
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: form.maxRoomCapacityController,
-                  decoration: const InputDecoration(
-                    labelText: 'Aforo máximo total',
-                    helperText: 'Reglamento espectáculos — seguridad',
-                  ),
-                  keyboardType: TextInputType.number,
-                  validator: form.validatePositiveIntField,
-                ),
-                const SizedBox(height: 8),
-                SwitchListTile(
-                  title: const Text('Cumplimiento normativa acústica'),
-                  subtitle: const Text('Ordenanzas municipales de ruido'),
-                  value: form.noiseOrdinanceCompliant,
-                  onChanged: onNoiseOrdinanceChanged,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Horario de apertura (LSSI Art. 10)',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                ...form.openingHoursControllers.entries.map(
-                  (entry) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: TextFormField(
-                      controller: entry.value,
-                      decoration: InputDecoration(
-                        labelText: entry.key.toUpperCase(),
-                        hintText: '09:00–18:00',
-                        isDense: true,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            child: StudioRegulatorySection(
+              draft: form.studioDraft,
+              requiredValidator: form.validateRequiredField,
+              positiveIntValidator: form.validatePositiveIntField,
+              onNoiseChanged: onNoiseOrdinanceChanged,
+              openingHoursPadding: const EdgeInsets.only(bottom: 4),
+              openingHoursDense: true,
             ),
           ),
           isActive: currentStep >= 3,
@@ -227,29 +178,11 @@ class StudioRegisterStepper extends StatelessWidget {
           title: const Text('Accesibilidad'),
           content: Form(
             key: form.accessibilityFormKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: form.accessibilityInfoController,
-                  decoration: const InputDecoration(
-                    labelText: 'Información de accesibilidad',
-                    helperText: 'RD 1/2013 (LIONDAU) — accesibilidad',
-                  ),
-                  maxLines: 3,
-                  validator: form.validateRequiredField,
-                ),
-                const SizedBox(height: 16),
-                ListTile(
-                  title: const Text('Caducidad seguro RC'),
-                  subtitle: Text(
-                    form.insuranceExpiry != null
-                        ? '${form.insuranceExpiry!.day}/${form.insuranceExpiry!.month}/${form.insuranceExpiry!.year}'
-                        : 'Seleccionar fecha (requerido)',
-                  ),
-                  trailing: const Icon(Icons.calendar_today),
-                  onTap: onInsuranceExpiryTap,
-                ),
-              ],
+            child: StudioAccessibilitySection(
+              draft: form.studioDraft,
+              requiredValidator: form.validateRequiredField,
+              onInsuranceExpiryTap: onInsuranceExpiryTap,
+              missingDateText: 'Seleccionar fecha (requerido)',
             ),
           ),
           isActive: currentStep >= 4,

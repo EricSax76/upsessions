@@ -22,6 +22,7 @@ import '../modules/rehearsals/ui/pages/group_rehearsals_page.dart';
 import '../modules/groups/ui/pages/invite_accept_page.dart';
 import '../modules/rehearsals/ui/pages/rehearsal_detail_page.dart';
 import '../modules/studios/cubits/my_studio_cubit.dart';
+import '../modules/studios/ui/consumer/studio_rooms_page.dart';
 import '../modules/studios/ui/consumer/studios_list_page.dart';
 import '../modules/studios/ui/provider/edit_room_page.dart';
 import '../modules/studios/ui/provider/studio_profile_page.dart';

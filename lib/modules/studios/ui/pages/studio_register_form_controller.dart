@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../forms/studio_form_draft.dart';
+import '../forms/studio_form_validator.dart';
 import 'studio_registration_coordinator.dart';
 
 class StudioRegisterFormController {
@@ -13,34 +15,43 @@ class StudioRegisterFormController {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  final nameController = TextEditingController();
-  final businessNameController = TextEditingController();
-  final cifController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final addressController = TextEditingController();
-  final phoneController = TextEditingController();
+  final studioDraft = StudioFormDraft();
 
-  // Normativa
-  final vatNumberController = TextEditingController();
-  final licenseNumberController = TextEditingController();
-  final cityController = TextEditingController();
-  final provinceController = TextEditingController();
-  final postalCodeController = TextEditingController();
-  final maxRoomCapacityController = TextEditingController();
-  final accessibilityInfoController = TextEditingController();
-  bool noiseOrdinanceCompliant = false;
-  DateTime? insuranceExpiry;
+  TextEditingController get nameController => studioDraft.nameController;
+  TextEditingController get businessNameController =>
+      studioDraft.businessNameController;
+  TextEditingController get cifController => studioDraft.cifController;
+  TextEditingController get descriptionController =>
+      studioDraft.descriptionController;
+  TextEditingController get addressController => studioDraft.addressController;
+  TextEditingController get phoneController => studioDraft.phoneController;
 
-  // Opening hours
-  final Map<String, TextEditingController> openingHoursControllers = {
-    'lun': TextEditingController(),
-    'mar': TextEditingController(),
-    'mie': TextEditingController(),
-    'jue': TextEditingController(),
-    'vie': TextEditingController(),
-    'sab': TextEditingController(),
-    'dom': TextEditingController(),
-  };
+  TextEditingController get vatNumberController =>
+      studioDraft.vatNumberController;
+  TextEditingController get licenseNumberController =>
+      studioDraft.licenseNumberController;
+  TextEditingController get cityController => studioDraft.cityController;
+  TextEditingController get provinceController =>
+      studioDraft.provinceController;
+  TextEditingController get postalCodeController =>
+      studioDraft.postalCodeController;
+  TextEditingController get maxRoomCapacityController =>
+      studioDraft.maxRoomCapacityController;
+  TextEditingController get accessibilityInfoController =>
+      studioDraft.accessibilityInfoController;
+
+  Map<String, TextEditingController> get openingHoursControllers =>
+      studioDraft.openingHoursControllers;
+
+  bool get noiseOrdinanceCompliant => studioDraft.noiseOrdinanceCompliant;
+  set noiseOrdinanceCompliant(bool value) {
+    studioDraft.noiseOrdinanceCompliant = value;
+  }
+
+  DateTime? get insuranceExpiry => studioDraft.insuranceExpiry;
+  set insuranceExpiry(DateTime? value) {
+    studioDraft.insuranceExpiry = value;
+  }
 
   bool validateAccountStep() =>
       accountFormKey.currentState?.validate() ?? false;
@@ -54,80 +65,65 @@ class StudioRegisterFormController {
       regulatoryFormKey.currentState?.validate() ?? false;
 
   bool validateAccessibilityStep() {
-    if (insuranceExpiry == null) return false;
+    if (studioDraft.insuranceExpiry == null) return false;
     return accessibilityFormKey.currentState?.validate() ?? false;
   }
 
   String? validateRequiredField(String? value) {
-    if (value?.trim().isNotEmpty == true) {
-      return null;
-    }
-    return 'Requerido';
+    return StudioFormValidator.required(value, message: 'Requerido');
   }
 
   String? validatePositiveIntField(String? value) {
-    final trimmed = value?.trim() ?? '';
-    if (trimmed.isEmpty) return 'Requerido';
-    final parsed = int.tryParse(trimmed);
-    if (parsed == null || parsed <= 0) {
-      return 'Debe ser un entero mayor que 0';
-    }
-    return null;
+    return StudioFormValidator.positiveInt(
+      value,
+      requiredMessage: 'Requerido',
+      invalidMessage: 'Debe ser un entero mayor que 0',
+    );
   }
 
   String? validateEmail(String? value) {
     if (value?.contains('@') == true) {
       return null;
     }
-    return 'Email inválido';
+    return 'Email invalido';
   }
 
   String? validatePassword(String? value) {
     if ((value?.length ?? 0) >= 6) {
       return null;
     }
-    return 'Mínimo 6 caracteres';
+    return 'Minimo 6 caracteres';
   }
 
   String? validatePasswordConfirmation(String? value) {
     if (value == passwordController.text) {
       return null;
     }
-    return 'Las contraseñas no coinciden';
-  }
-
-  Map<String, String> buildOpeningHours() {
-    final hours = <String, String>{};
-    for (final entry in openingHoursControllers.entries) {
-      final value = entry.value.text.trim();
-      if (value.isNotEmpty) {
-        hours[entry.key] = value;
-      }
-    }
-    return hours;
+    return 'Las contrasenas no coinciden';
   }
 
   StudioRegistrationDraft buildDraft() {
+    final maxRoomCapacity = studioDraft.parseMaxRoomCapacity() ?? 1;
+
     return StudioRegistrationDraft(
       email: emailController.text,
       password: passwordController.text,
-      name: nameController.text,
-      businessName: businessNameController.text,
-      cif: cifController.text,
-      description: descriptionController.text,
-      address: addressController.text,
-      phone: phoneController.text,
-      // Normativa
-      vatNumber: vatNumberController.text,
-      licenseNumber: licenseNumberController.text,
-      openingHours: buildOpeningHours(),
-      city: cityController.text,
-      province: provinceController.text,
-      postalCode: postalCodeController.text,
-      maxRoomCapacity: int.parse(maxRoomCapacityController.text.trim()),
-      accessibilityInfo: accessibilityInfoController.text,
-      noiseOrdinanceCompliant: noiseOrdinanceCompliant,
-      insuranceExpiry: insuranceExpiry!,
+      name: studioDraft.nameController.text,
+      businessName: studioDraft.businessNameController.text,
+      cif: studioDraft.cifController.text,
+      description: studioDraft.descriptionController.text,
+      address: studioDraft.addressController.text,
+      phone: studioDraft.phoneController.text,
+      vatNumber: studioDraft.vatNumberController.text,
+      licenseNumber: studioDraft.licenseNumberController.text,
+      openingHours: studioDraft.buildOpeningHours(),
+      city: studioDraft.cityController.text,
+      province: studioDraft.provinceController.text,
+      postalCode: studioDraft.postalCodeController.text,
+      maxRoomCapacity: maxRoomCapacity,
+      accessibilityInfo: studioDraft.accessibilityInfoController.text,
+      noiseOrdinanceCompliant: studioDraft.noiseOrdinanceCompliant,
+      insuranceExpiry: studioDraft.insuranceExpiry ?? DateTime.now(),
     );
   }
 
@@ -135,21 +131,6 @@ class StudioRegisterFormController {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
-    nameController.dispose();
-    businessNameController.dispose();
-    cifController.dispose();
-    descriptionController.dispose();
-    addressController.dispose();
-    phoneController.dispose();
-    vatNumberController.dispose();
-    licenseNumberController.dispose();
-    cityController.dispose();
-    provinceController.dispose();
-    postalCodeController.dispose();
-    maxRoomCapacityController.dispose();
-    accessibilityInfoController.dispose();
-    for (final c in openingHoursControllers.values) {
-      c.dispose();
-    }
+    studioDraft.dispose();
   }
 }

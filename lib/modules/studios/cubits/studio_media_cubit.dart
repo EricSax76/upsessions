@@ -4,6 +4,7 @@ import '../models/studio_entity.dart';
 import '../repositories/studios_repository.dart';
 import '../services/studio_image_service.dart';
 import 'studios_state.dart';
+import 'studios_status.dart';
 
 class StudioMediaCubit extends Cubit<StudiosState> {
   StudioMediaCubit({

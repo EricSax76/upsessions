@@ -5,7 +5,7 @@ import '../features/messaging/models/chat_thread.dart';
 import '../features/messaging/ui/pages/messages_page.dart';
 import '../modules/announcements/models/announcement_entity.dart';
 import '../modules/musicians/models/musician_entity.dart';
-import '../modules/studios/ui/consumer/studios_list_page.dart';
+import '../modules/studios/ui/consumer/rehearsal_booking_context.dart';
 
 String? musicianIdFromState(GoRouterState state) {
   final id = _pathOrQueryParameter(state, 'musicianId');

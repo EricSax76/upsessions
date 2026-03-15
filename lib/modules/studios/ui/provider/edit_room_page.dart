@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/my_studio_cubit.dart';
 import '../../cubits/studios_state.dart';
+import '../../cubits/studios_status.dart';
 import '../../models/room_entity.dart';
 import '../../repositories/studios_repository.dart';
 import '../../../../core/locator/locator.dart';

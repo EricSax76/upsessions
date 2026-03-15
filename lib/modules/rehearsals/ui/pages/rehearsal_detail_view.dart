@@ -9,7 +9,7 @@ import '../../../../core/widgets/loading_indicator.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/cubits/auth_cubit.dart';
 import '../../../groups/repositories/groups_repository.dart';
-import '../../../studios/ui/consumer/studios_list_page.dart';
+import '../../../studios/ui/consumer/rehearsal_booking_context.dart';
 import '../../../studios/repositories/studios_repository.dart';
 import '../../cubits/rehearsal_detail_cubit.dart';
 import '../../cubits/rehearsal_detail_state.dart';

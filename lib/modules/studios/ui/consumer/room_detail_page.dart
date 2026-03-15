@@ -4,7 +4,7 @@ import 'package:upsessions/l10n/app_localizations.dart';
 
 import '../../cubits/booking_cubit.dart';
 import '../../models/room_entity.dart';
-import 'studios_list_page.dart';
+import 'rehearsal_booking_context.dart';
 import 'room_booking_dialog.dart';
 import '../../../auth/repositories/auth_repository.dart';
 import '../../repositories/studios_repository.dart';

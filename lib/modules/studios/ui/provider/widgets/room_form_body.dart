@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 import '../../../cubits/my_studio_cubit.dart';
 import '../../../cubits/studios_state.dart';
+import '../../../cubits/studios_status.dart';
 import '../../../models/room_entity.dart';
 import 'photo_picker_section.dart';
 
@@ -115,16 +116,14 @@ class _RoomFormBodyState extends State<RoomFormBody> {
       amenities: [],
       photos: photos,
       // Normativa
-      minBookingHours:
-          int.tryParse(_minBookingHoursController.text) ?? 1,
+      minBookingHours: int.tryParse(_minBookingHoursController.text) ?? 1,
       maxDecibels: maxDecibelsText.isNotEmpty
           ? double.tryParse(maxDecibelsText)
           : null,
       ageRestriction: ageRestrictionText.isNotEmpty
           ? int.tryParse(ageRestrictionText)
           : null,
-      cancellationPolicy:
-          cancellationText.isNotEmpty ? cancellationText : null,
+      cancellationPolicy: cancellationText.isNotEmpty ? cancellationText : null,
       isAccessible: _isAccessible,
       isActive: _isActive,
     );
@@ -158,10 +157,8 @@ class _RoomFormBodyState extends State<RoomFormBody> {
                     // ── Datos basicos ──────────────────────────
                     TextFormField(
                       controller: _nameController,
-                      decoration:
-                          const InputDecoration(labelText: 'Room Name'),
-                      validator: (v) =>
-                          v?.isEmpty ?? true ? 'Required' : null,
+                      decoration: const InputDecoration(labelText: 'Room Name'),
+                      validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -199,8 +196,7 @@ class _RoomFormBodyState extends State<RoomFormBody> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      validator: (v) =>
-                          v?.isEmpty ?? true ? 'Required' : null,
+                      validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -218,8 +214,10 @@ class _RoomFormBodyState extends State<RoomFormBody> {
 
                     // ── Configuración de sala ─────────────────
                     const SizedBox(height: 32),
-                    Text('Configuración de sala',
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      'Configuración de sala',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _minBookingHoursController,
@@ -254,8 +252,10 @@ class _RoomFormBodyState extends State<RoomFormBody> {
 
                     // ── Políticas ─────────────────────────────
                     const SizedBox(height: 32),
-                    Text('Políticas',
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      'Políticas',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _cancellationPolicyController,
@@ -270,18 +270,16 @@ class _RoomFormBodyState extends State<RoomFormBody> {
                     SwitchListTile(
                       title: const Text('Accesibilidad'),
                       subtitle: const Text(
-                          'RD 1/2013 — acceso movilidad reducida'),
+                        'RD 1/2013 — acceso movilidad reducida',
+                      ),
                       value: _isAccessible,
-                      onChanged: (v) =>
-                          setState(() => _isAccessible = v),
+                      onChanged: (v) => setState(() => _isAccessible = v),
                     ),
                     SwitchListTile(
                       title: const Text('Sala activa'),
-                      subtitle:
-                          const Text('Visible para reservas'),
+                      subtitle: const Text('Visible para reservas'),
                       value: _isActive,
-                      onChanged: (v) =>
-                          setState(() => _isActive = v),
+                      onChanged: (v) => setState(() => _isActive = v),
                     ),
 
                     // ── Submit ─────────────────────────────────
@@ -292,8 +290,7 @@ class _RoomFormBodyState extends State<RoomFormBody> {
                         onPressed: isLoading ? null : _submit,
                         child: isLoading
                             ? CircularProgressIndicator(
-                                color:
-                                    Theme.of(context).colorScheme.onPrimary,
+                                color: Theme.of(context).colorScheme.onPrimary,
                               )
                             : Text(
                                 widget.room == null

@@ -2,17 +2,18 @@ import 'package:bloc/bloc.dart';
 
 import '../models/studio_entity.dart';
 import '../repositories/studios_repository.dart';
-import 'studios_state.dart';
+import 'studios_list_state.dart';
+import 'studios_status.dart';
 
-class StudiosListCubit extends Cubit<StudiosState> {
+class StudiosListCubit extends Cubit<StudiosListState> {
   StudiosListCubit({required StudiosRepository repository})
     : _repository = repository,
-      super(const StudiosState());
+      super(const StudiosListState());
 
   final StudiosRepository _repository;
   static const _studiosPageSize = 20;
 
-  void _safeEmit(StudiosState newState) {
+  void _safeEmit(StudiosListState newState) {
     if (isClosed) return;
     emit(newState);
   }
@@ -68,8 +69,7 @@ class StudiosListCubit extends Cubit<StudiosState> {
           state.copyWith(
             status: StudiosStatus.success,
             selectedStudio: studio,
-            myRooms: rooms,
-            bookings: const [],
+            selectedStudioRooms: rooms,
             errorMessage: null,
           ),
         );
