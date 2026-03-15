@@ -5,15 +5,17 @@ import 'package:upsessions/l10n/app_localizations.dart';
 import '../../../../../core/widgets/forms/search_field.dart';
 import '../../../cubits/musician_search_cubit.dart';
 
-class MusicianSearchTopBar extends StatelessWidget {
-  const MusicianSearchTopBar({
-    super.key,
-    required this.controller,
-    required this.onFiltersPressed,
-  });
+class MusicianSearchTopBar extends StatefulWidget {
+  const MusicianSearchTopBar({super.key, required this.onFiltersPressed});
 
-  final TextEditingController controller;
   final VoidCallback onFiltersPressed;
+
+  @override
+  State<MusicianSearchTopBar> createState() => _MusicianSearchTopBarState();
+}
+
+class _MusicianSearchTopBarState extends State<MusicianSearchTopBar> {
+  late final TextEditingController _controller = TextEditingController();
 
   int _activeFilterCount(MusicianSearchState state) {
     var count = 0;
@@ -26,6 +28,23 @@ class MusicianSearchTopBar extends StatelessWidget {
     return count;
   }
 
+  void _syncControllerWithStateQuery(String query) {
+    if (_controller.text == query) {
+      return;
+    }
+
+    _controller.value = TextEditingValue(
+      text: query,
+      selection: TextSelection.collapsed(offset: query.length),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
@@ -35,12 +54,7 @@ class MusicianSearchTopBar extends StatelessWidget {
     final activeFilters = _activeFilterCount(state);
     final hasFilters = activeFilters > 0;
     final cubit = context.read<MusicianSearchCubit>();
-    if (controller.text != state.query) {
-      controller.value = TextEditingValue(
-        text: state.query,
-        selection: TextSelection.collapsed(offset: state.query.length),
-      );
-    }
+    _syncControllerWithStateQuery(state.query);
 
     return Container(
       decoration: BoxDecoration(
@@ -60,7 +74,7 @@ class MusicianSearchTopBar extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(left: 8),
               child: SearchField(
-                controller: controller,
+                controller: _controller,
                 hintText: loc.searchTopBarHint,
                 onSubmitted: (value) => cubit.searchNow(query: value),
                 onChanged: cubit.onQueryChanged,
@@ -78,7 +92,7 @@ class MusicianSearchTopBar extends StatelessWidget {
                   color: hasFilters
                       ? colorScheme.primary
                       : colorScheme.onSurfaceVariant,
-                  onPressed: onFiltersPressed,
+                  onPressed: widget.onFiltersPressed,
                   tooltip: 'Filtros avanzados',
                 ),
                 if (hasFilters)

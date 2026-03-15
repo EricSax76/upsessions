@@ -102,8 +102,7 @@ class ArtistChipWithAttribution extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final uri = Uri.tryParse(spotifyUrl?.trim() ?? '');
-    if (uri == null) {
+    if (!SpotifyLauncher.canLaunch(spotifyUrl)) {
       if (!expand) {
         return chip;
       }
@@ -124,7 +123,7 @@ class ArtistChipWithAttribution extends StatelessWidget {
                 : chip,
           ),
           const SizedBox(width: 6),
-          _SpotifyLinkButton(uri: uri),
+          _SpotifyLinkButton(spotifyUrl: spotifyUrl),
         ],
       );
     }
@@ -135,16 +134,16 @@ class ArtistChipWithAttribution extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         chip,
-        _SpotifyLinkButton(uri: uri),
+        _SpotifyLinkButton(spotifyUrl: spotifyUrl),
       ],
     );
   }
 }
 
 class _SpotifyLinkButton extends StatelessWidget {
-  const _SpotifyLinkButton({required this.uri});
+  const _SpotifyLinkButton({required this.spotifyUrl});
 
-  final Uri uri;
+  final String? spotifyUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +152,7 @@ class _SpotifyLinkButton extends StatelessWidget {
       message: 'Abrir en Spotify',
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: () => SpotifyLauncher.launch(context, uri.toString()),
+        onTap: () => SpotifyLauncher.launch(context, spotifyUrl),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           decoration: BoxDecoration(

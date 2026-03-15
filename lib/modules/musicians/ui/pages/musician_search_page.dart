@@ -22,14 +22,6 @@ class MusicianSearchPage extends StatefulWidget {
 }
 
 class _MusicianSearchPageState extends State<MusicianSearchPage> {
-  final _searchController = TextEditingController();
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -40,23 +32,15 @@ class _MusicianSearchPageState extends State<MusicianSearchPage> {
             )
             ..loadFilters()
             ..search(),
-      child: MusicianSearchView(
-        showAppBar: widget.showAppBar,
-        searchController: _searchController,
-      ),
+      child: MusicianSearchView(showAppBar: widget.showAppBar),
     );
   }
 }
 
 class MusicianSearchView extends StatelessWidget {
-  const MusicianSearchView({
-    super.key,
-    this.showAppBar = true,
-    required this.searchController,
-  });
+  const MusicianSearchView({super.key, this.showAppBar = true});
 
   final bool showAppBar;
-  final TextEditingController searchController;
 
   bool _isWide(BuildContext context) {
     return MediaQuery.of(context).size.width >= 1024;
@@ -145,10 +129,9 @@ class MusicianSearchView extends StatelessWidget {
 
     final body = MusicianSearchLayout(
       topBar: MusicianSearchTopBar(
-        controller: searchController,
         onFiltersPressed: () {
           if (_isWide(context)) {
-            cubit.searchNow(query: searchController.text);
+            cubit.searchNow();
             return;
           }
           _showBottomFilters(context);

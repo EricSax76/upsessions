@@ -48,7 +48,7 @@ class ArtistInfluenceTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          if (spotifyUrl != null && spotifyUrl!.isNotEmpty) ...[
+          if (SpotifyLauncher.canLaunch(spotifyUrl)) ...[
             _ActionButton(
               icon: Icons.open_in_new,
               label: 'Spotify',
