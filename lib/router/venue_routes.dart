@@ -8,9 +8,11 @@ import '../modules/auth/repositories/auth_repository.dart';
 import '../modules/venues/cubits/manager_venues_cubit.dart';
 import '../modules/venues/cubits/manager_venue_form_cubit.dart';
 import '../modules/venues/models/venue_entity.dart';
+import '../modules/venues/repositories/venue_notifications_repository.dart';
 import '../modules/venues/repositories/venues_repository.dart';
 import '../modules/venues/ui/pages/manager_venue_form_page.dart';
 import '../modules/venues/ui/pages/venue_dashboard_page.dart';
+import '../modules/venues/ui/pages/venue_notifications_page.dart';
 import '../modules/venues/ui/widgets/shell/venue_shell_page.dart';
 
 NoTransitionPage<void> _noTransitionPage(GoRouterState state, Widget child) {
@@ -76,6 +78,16 @@ List<RouteBase> buildVenueRoutes() {
               ),
             );
           },
+        ),
+        GoRoute(
+          path: AppRoutes.venuesDashboardNotifications,
+          redirect: (context, state) => _requireVenueAuthRedirect(),
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            VenueNotificationsPage(
+              repository: locate<VenueNotificationsRepository>(),
+            ),
+          ),
         ),
       ],
     ),

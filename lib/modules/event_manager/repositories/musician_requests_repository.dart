@@ -7,8 +7,8 @@ class MusicianRequestsRepository {
   MusicianRequestsRepository({
     required FirebaseFirestore firestore,
     required AuthRepository authRepository,
-  })  : _collection = firestore.collection('musician_requests'),
-        _authRepository = authRepository;
+  }) : _collection = firestore.collection('musician_requests'),
+       _authRepository = authRepository;
 
   final CollectionReference<Map<String, dynamic>> _collection;
   final AuthRepository _authRepository;
@@ -24,12 +24,17 @@ class MusicianRequestsRepository {
     return _toEntities(snapshot.docs);
   }
 
-  Future<MusicianRequestEntity> sendRequest(MusicianRequestEntity request) async {
+  Future<MusicianRequestEntity> sendRequest(
+    MusicianRequestEntity request,
+  ) async {
     final managerId = _authRepository.currentUser?.id ?? '';
     if (managerId.isEmpty) throw Exception('No autenticado');
 
     final payload = {
-      ...MusicianRequestDto.fromEntity(request.copyWith(managerId: managerId)).toJson(),
+      ...MusicianRequestDto.fromEntity(
+        request.copyWith(managerId: managerId),
+      ).toJson(),
+      'readByManager': false,
       'createdAt': FieldValue.serverTimestamp(),
     };
 

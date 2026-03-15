@@ -22,6 +22,8 @@ class ManagerBottomNav extends StatelessWidget {
     } else if (location.startsWith(AppRoutes.eventManagerHireMusicians) ||
         location.startsWith(AppRoutes.eventManagerGigOffers)) {
       currentIndex = 4;
+    } else if (location.startsWith(AppRoutes.eventManagerNotifications)) {
+      currentIndex = 5;
     }
 
     return NavigationBar(
@@ -30,19 +32,16 @@ class ManagerBottomNav extends StatelessWidget {
         switch (index) {
           case 0:
             context.go(AppRoutes.eventManagerDashboard);
-            break;
           case 1:
             context.go(AppRoutes.eventManagerEvents);
-            break;
           case 2:
             context.go(AppRoutes.eventManagerJamSessions);
-            break;
           case 3:
             context.go(AppRoutes.eventManagerAgenda);
-            break;
           case 4:
             context.go(AppRoutes.eventManagerHireMusicians);
-            break;
+          case 5:
+            context.go(AppRoutes.eventManagerNotifications);
         }
       },
       destinations: const [
@@ -70,6 +69,11 @@ class ManagerBottomNav extends StatelessWidget {
           icon: Icon(Icons.person_search_outlined),
           selectedIcon: Icon(Icons.person_search),
           label: 'Talento',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.notifications_outlined),
+          selectedIcon: Icon(Icons.notifications),
+          label: 'Avisos',
         ),
       ],
     );

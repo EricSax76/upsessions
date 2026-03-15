@@ -9,9 +9,9 @@ class PushNotificationsService {
     required FirebaseMessaging messaging,
     required FirebaseFirestore firestore,
     String webVapidKey = '',
-  })  : _messaging = messaging,
-        _firestore = firestore,
-        _webVapidKey = webVapidKey;
+  }) : _messaging = messaging,
+       _firestore = firestore,
+       _webVapidKey = webVapidKey;
 
   final FirebaseMessaging _messaging;
   final FirebaseFirestore _firestore;
@@ -69,23 +69,17 @@ class PushNotificationsService {
 
   Future<void> _saveToken(String uid, String token) async {
     if (uid.trim().isEmpty) return;
-    final ref = _firestore
-        .collection('musicians')
-        .doc(uid)
-        .collection('fcmTokens')
-        .doc(token);
+    final ref = _usersTokenRef(uid, token);
     try {
-      await ref.set(
-        {
-          'token': token,
-          'platform': _platformLabel(),
-          'updatedAt': FieldValue.serverTimestamp(),
-          'createdAt': FieldValue.serverTimestamp(),
-        },
-        SetOptions(merge: true),
-      );
+      await ref.set({
+        'token': token,
+        'platform': _platformLabel(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
     } on FirebaseException catch (error) {
-      if (error.code == 'permission-denied' || error.code == 'unauthenticated') {
+      if (error.code == 'permission-denied' ||
+          error.code == 'unauthenticated') {
         // Token registration is best-effort; don't crash the app if rules reject it.
         return;
       }
@@ -94,18 +88,24 @@ class PushNotificationsService {
   }
 
   Future<void> _deleteToken(String uid, String token) async {
-    final ref = _firestore
-        .collection('musicians')
-        .doc(uid)
-        .collection('fcmTokens')
-        .doc(token);
     try {
-      await ref.delete();
+      await _usersTokenRef(uid, token).delete();
     } on FirebaseException catch (error) {
       if (error.code != 'permission-denied') {
         rethrow;
       }
     }
+  }
+
+  DocumentReference<Map<String, dynamic>> _usersTokenRef(
+    String uid,
+    String token,
+  ) {
+    return _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('fcmTokens')
+        .doc(token);
   }
 
   String _platformLabel() {

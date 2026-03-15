@@ -1,31 +1,30 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
-import 'package:upsessions/modules/notifications/repositories/invite_notifications_repository.dart';
 import 'package:upsessions/modules/notifications/cubits/notifications_status_cubit.dart';
-import 'package:upsessions/modules/notifications/models/invite_notification_entity.dart';
+import 'package:upsessions/modules/musicians/repositories/musician_notifications_repository.dart';
 
-class MockChatRepository extends Mock implements ChatRepository {}
-class MockInviteNotificationsRepository extends Mock implements InviteNotificationsRepository {}
+class MockMusicianNotificationsRepository extends Mock
+    implements MusicianNotificationsRepository {}
 
 void main() {
-  late MockChatRepository mockChatRepository;
-  late MockInviteNotificationsRepository mockInviteNotificationsRepository;
+  late MockMusicianNotificationsRepository mockMusicianNotificationsRepository;
 
   setUp(() {
-    mockChatRepository = MockChatRepository();
-    mockInviteNotificationsRepository = MockInviteNotificationsRepository();
+    mockMusicianNotificationsRepository = MockMusicianNotificationsRepository();
   });
 
   group('NotificationsStatusCubit', () {
     test('initial state is 0', () {
-      when(() => mockChatRepository.watchUnreadTotal()).thenAnswer((_) => Stream.value(0));
-      when(() => mockInviteNotificationsRepository.watchMyInvites()).thenAnswer((_) => Stream.value([]));
-      
+      when(
+        () => mockMusicianNotificationsRepository.watchUnreadChatsCount(),
+      ).thenAnswer((_) => Stream.value(0));
+      when(
+        () => mockMusicianNotificationsRepository.watchUnreadInvitesCount(),
+      ).thenAnswer((_) => Stream.value(0));
+
       final cubit = NotificationsStatusCubit(
-        chatRepository: mockChatRepository,
-        inviteNotificationsRepository: mockInviteNotificationsRepository,
+        musicianNotificationsRepository: mockMusicianNotificationsRepository,
       );
       expect(cubit.state, 0);
       cubit.close();
@@ -34,50 +33,35 @@ void main() {
     blocTest<NotificationsStatusCubit, int>(
       'emits total unread count when streams emit',
       build: () {
-        when(() => mockChatRepository.watchUnreadTotal()).thenAnswer((_) => Stream.value(5));
-        when(() => mockInviteNotificationsRepository.watchMyInvites()).thenAnswer((_) => Stream.value([]));
-        
+        when(
+          () => mockMusicianNotificationsRepository.watchUnreadChatsCount(),
+        ).thenAnswer((_) => Stream.value(5));
+        when(
+          () => mockMusicianNotificationsRepository.watchUnreadInvitesCount(),
+        ).thenAnswer((_) => Stream.value(0));
+
         return NotificationsStatusCubit(
-          chatRepository: mockChatRepository,
-          inviteNotificationsRepository: mockInviteNotificationsRepository,
+          musicianNotificationsRepository: mockMusicianNotificationsRepository,
         );
       },
       expect: () => [5],
     );
 
-     blocTest<NotificationsStatusCubit, int>(
+    blocTest<NotificationsStatusCubit, int>(
       'sums up chats and invites',
       build: () {
-        when(() => mockChatRepository.watchUnreadTotal()).thenAnswer((_) => Stream.value(3));
-        when(() => mockInviteNotificationsRepository.watchMyInvites()).thenAnswer((_) => Stream.value([
-          const InviteNotificationEntity(
-            id: '1', 
-            groupId: 'G1', 
-            groupName: 'Group 1', 
-            inviteId: 'inv1', 
-            createdBy: 'User A', 
-            createdAt: null,
-            status: 'pending',
-            read: false,
-          ), 
-          const InviteNotificationEntity(
-            id: '2', 
-            groupId: 'G1', 
-            groupName: 'Group 1', 
-            inviteId: 'inv2', 
-            createdBy: 'User A', 
-            createdAt: null,
-            status: 'pending',
-            read: true, // Read, should not count
-          ),
-        ]));
-        
+        when(
+          () => mockMusicianNotificationsRepository.watchUnreadChatsCount(),
+        ).thenAnswer((_) => Stream.value(3));
+        when(
+          () => mockMusicianNotificationsRepository.watchUnreadInvitesCount(),
+        ).thenAnswer((_) => Stream.value(1));
+
         return NotificationsStatusCubit(
-          chatRepository: mockChatRepository,
-          inviteNotificationsRepository: mockInviteNotificationsRepository,
+          musicianNotificationsRepository: mockMusicianNotificationsRepository,
         );
       },
-      expect: () => [3, 4], // 3 from chat, then +1 unread invite = 4
+      expect: () => [3, 4],
     );
   });
 }

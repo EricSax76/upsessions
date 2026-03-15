@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'notification_scenario.dart';
+
 class InviteNotificationEntity {
   const InviteNotificationEntity({
     required this.id,
@@ -20,6 +22,7 @@ class InviteNotificationEntity {
   final DateTime? createdAt;
   final String status;
   final bool read;
+  NotificationScenario get scenario => NotificationScenario.musicianGroupInvite;
 
   factory InviteNotificationEntity.fromDoc(
     DocumentSnapshot<Map<String, dynamic>> doc,

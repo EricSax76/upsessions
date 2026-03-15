@@ -34,6 +34,12 @@ class VenueMenuList extends StatelessWidget {
         label: localizations.venueMenuExploreVenues,
         route: AppRoutes.venues,
       ),
+      _VenueMenuRouteItem(
+        icon: Icons.notifications_outlined,
+        activeIcon: Icons.notifications,
+        label: 'Notificaciones',
+        route: AppRoutes.venuesDashboardNotifications,
+      ),
     ];
 
     return Padding(
@@ -57,6 +63,15 @@ class VenueMenuList extends StatelessWidget {
             activeIcon: menuItems[2].activeIcon,
             label: menuItems[2].label,
             route: menuItems[2].route,
+            currentLocation: location,
+          ),
+          const Divider(height: 32),
+          _buildItem(
+            context,
+            icon: menuItems[3].icon,
+            activeIcon: menuItems[3].activeIcon,
+            label: menuItems[3].label,
+            route: menuItems[3].route,
             currentLocation: location,
           ),
           const Divider(height: 32),
@@ -193,6 +208,9 @@ class VenueMenuList extends StatelessWidget {
     }
     if (route == AppRoutes.venues) {
       return currentLocation == AppRoutes.venues;
+    }
+    if (route == AppRoutes.venuesDashboardNotifications) {
+      return currentLocation == AppRoutes.venuesDashboardNotifications;
     }
     return currentLocation.startsWith(route);
   }

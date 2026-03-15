@@ -14,6 +14,7 @@ import 'package:upsessions/modules/auth/repositories/auth_repository.dart';
 import 'package:upsessions/modules/auth/repositories/profile_repository.dart';
 import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/musician_notifications_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/artist_image_repository.dart';
 import 'package:upsessions/modules/profile/cubit/profile_cubit.dart';
@@ -63,6 +64,9 @@ class UpsessionsApp extends StatelessWidget {
         RepositoryProvider(create: (_) => locate<ChatRepository>()),
         RepositoryProvider(
           create: (_) => locate<InviteNotificationsRepository>(),
+        ),
+        RepositoryProvider(
+          create: (_) => locate<MusicianNotificationsRepository>(),
         ),
         RepositoryProvider(create: (_) => locate<EventsRepository>()),
         RepositoryProvider(create: (_) => locate<RehearsalsRepository>()),

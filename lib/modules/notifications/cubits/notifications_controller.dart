@@ -3,25 +3,21 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import 'package:upsessions/features/messaging/models/chat_thread.dart';
-import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/musician_notifications_repository.dart';
 import '../../../modules/auth/repositories/auth_repository.dart';
 import '../models/invite_notification_entity.dart';
-import '../repositories/invite_notifications_repository.dart';
 import '../ui/models/notifications_view_model.dart';
 
 class NotificationsController extends ChangeNotifier {
   NotificationsController({
-    required ChatRepository chatRepository,
-    required InviteNotificationsRepository inviteRepository,
+    required MusicianNotificationsRepository musicianNotificationsRepository,
     required AuthRepository authRepository,
-  })  : _chatRepository = chatRepository,
-        _inviteRepository = inviteRepository {
+  }) : _musicianNotificationsRepository = musicianNotificationsRepository {
     _currentUserId = authRepository.currentUser?.id ?? '';
     _subscribe();
   }
 
-  final ChatRepository _chatRepository;
-  final InviteNotificationsRepository _inviteRepository;
+  final MusicianNotificationsRepository _musicianNotificationsRepository;
 
   bool _isDisposed = false;
 
@@ -48,21 +44,19 @@ class NotificationsController extends ChangeNotifier {
   // ── Actions ────────────────────────────────
 
   void openThread(String threadId) {
-    _chatRepository.markThreadRead(threadId);
+    _musicianNotificationsRepository.markThreadRead(threadId);
   }
 
   Future<void> openInvite(InviteNotificationEntity invite) async {
-    await _inviteRepository.markRead(invite.inviteId);
+    await _musicianNotificationsRepository.markInviteRead(invite.inviteId);
   }
 
   // ── Stream subscriptions ───────────────────
 
   void _subscribe() {
-    _threadsSub = _chatRepository.watchThreads().listen(
+    _threadsSub = _musicianNotificationsRepository.watchUnreadThreads().listen(
       (threads) {
-        _unreadThreads = threads
-            .where((thread) => thread.unreadCount > 0)
-            .toList(growable: false);
+        _unreadThreads = threads;
         _checkLoaded();
         _safeNotify();
       },
@@ -73,7 +67,7 @@ class NotificationsController extends ChangeNotifier {
       },
     );
 
-    _invitesSub = _inviteRepository.watchMyInvites().listen(
+    _invitesSub = _musicianNotificationsRepository.watchInvites().listen(
       (invites) {
         _invites = invites;
         _checkLoaded();

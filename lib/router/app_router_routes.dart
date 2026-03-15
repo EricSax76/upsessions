@@ -10,7 +10,7 @@ import '../modules/events/ui/pages/create_event_page.dart';
 import '../modules/events/ui/pages/events_page.dart';
 import '../features/media/ui/pages/media_gallery_page.dart';
 import '../features/legal/ui/pages/legal_pages.dart';
-import '../modules/notifications/ui/pages/notifications_page.dart';
+import '../modules/musicians/ui/pages/musician_notifications_page.dart';
 import '../features/onboarding/ui/pages/app_welcome_page.dart';
 import '../features/onboarding/ui/pages/book_onboarding_page.dart';
 import '../features/onboarding/ui/pages/collaborate_onboarding_page.dart';
@@ -22,7 +22,7 @@ import '../features/home/ui/pages/user_home_page.dart';
 import '../modules/events/repositories/events_repository.dart';
 import '../modules/auth/repositories/auth_repository.dart';
 import '../features/messaging/repositories/chat_repository.dart';
-import '../modules/notifications/repositories/invite_notifications_repository.dart';
+import '../modules/musicians/repositories/musician_notifications_repository.dart';
 import '../features/media/repositories/media_repository.dart';
 import '../modules/announcements/ui/pages/announcement_form_page.dart';
 import '../modules/announcements/ui/pages/announcements_hub_page.dart';
@@ -266,10 +266,8 @@ List<RouteBase> buildAppRoutes() {
           path: AppRoutes.notifications,
           pageBuilder: (context, state) => _noTransitionPage(
             state,
-            NotificationsPage(
-              chatRepository: context.read<ChatRepository>(),
-              inviteNotificationsRepository: context
-                  .read<InviteNotificationsRepository>(),
+            MusicianNotificationsPage(
+              repository: context.read<MusicianNotificationsRepository>(),
             ),
           ),
         ),

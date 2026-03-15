@@ -1,62 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_routes.dart';
+import '../../../auth/repositories/auth_repository.dart';
+import '../../repositories/musician_notifications_repository.dart';
+import '../../../notifications/cubits/notifications_controller.dart';
+import '../../../notifications/models/invite_notification_entity.dart';
+import '../../../notifications/ui/widgets/invites_section.dart';
+import '../../../notifications/ui/widgets/unread_threads_section.dart';
 
-import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
-import '../../../../modules/auth/repositories/auth_repository.dart';
-import '../../cubits/notifications_controller.dart';
-import '../../models/invite_notification_entity.dart';
-import '../../repositories/invite_notifications_repository.dart';
-import '../widgets/invites_section.dart';
-import '../widgets/unread_threads_section.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+class MusicianNotificationsPage extends StatefulWidget {
+  const MusicianNotificationsPage({super.key, required this.repository});
 
-class NotificationsPage extends StatelessWidget {
-  const NotificationsPage({
-    super.key,
-    required this.chatRepository,
-    required this.inviteNotificationsRepository,
-  });
-
-  final ChatRepository chatRepository;
-  final InviteNotificationsRepository inviteNotificationsRepository;
+  final MusicianNotificationsRepository repository;
 
   @override
-  Widget build(BuildContext context) {
-    return _NotificationsView(
-      chatRepository: chatRepository,
-      inviteNotificationsRepository: inviteNotificationsRepository,
-      authRepository: context.read<AuthRepository>(),
-    );
-  }
+  State<MusicianNotificationsPage> createState() =>
+      _MusicianNotificationsPageState();
 }
 
-class _NotificationsView extends StatefulWidget {
-  const _NotificationsView({
-    required this.chatRepository,
-    required this.inviteNotificationsRepository,
-    required this.authRepository,
-  });
-
-  final ChatRepository chatRepository;
-  final InviteNotificationsRepository inviteNotificationsRepository;
-  final AuthRepository authRepository;
-
-  @override
-  State<_NotificationsView> createState() => _NotificationsViewState();
-}
-
-class _NotificationsViewState extends State<_NotificationsView> {
+class _MusicianNotificationsPageState extends State<MusicianNotificationsPage> {
   late final NotificationsController _controller;
 
   @override
   void initState() {
     super.initState();
     _controller = NotificationsController(
-      chatRepository: widget.chatRepository,
-      inviteRepository: widget.inviteNotificationsRepository,
-      authRepository: widget.authRepository,
+      musicianNotificationsRepository: widget.repository,
+      authRepository: context.read<AuthRepository>(),
     );
   }
 

@@ -1,37 +1,37 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
-import '../repositories/invite_notifications_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/musician_notifications_repository.dart';
 
 class NotificationsStatusCubit extends Cubit<int> {
   NotificationsStatusCubit({
-    required ChatRepository chatRepository,
-    required InviteNotificationsRepository inviteNotificationsRepository,
-  })  : _chatRepository = chatRepository,
-        _inviteNotificationsRepository = inviteNotificationsRepository,
-        super(0) {
+    required MusicianNotificationsRepository musicianNotificationsRepository,
+  }) : _musicianNotificationsRepository = musicianNotificationsRepository,
+       super(0) {
     _start();
   }
 
-  final ChatRepository _chatRepository;
-  final InviteNotificationsRepository _inviteNotificationsRepository;
-  
+  final MusicianNotificationsRepository _musicianNotificationsRepository;
+
   StreamSubscription? _chatSubscription;
   StreamSubscription? _inviteSubscription;
-  
+
   int _unreadChats = 0;
   int _unreadInvites = 0;
 
   void _start() {
-    _chatSubscription = _chatRepository.watchUnreadTotal().listen((count) {
-      _unreadChats = count;
-      _emitTotal();
-    });
+    _chatSubscription = _musicianNotificationsRepository
+        .watchUnreadChatsCount()
+        .listen((count) {
+          _unreadChats = count;
+          _emitTotal();
+        });
 
-    _inviteSubscription = _inviteNotificationsRepository.watchMyInvites().listen((invites) {
-      _unreadInvites = invites.where((i) => !i.read).length;
-      _emitTotal();
-    });
+    _inviteSubscription = _musicianNotificationsRepository
+        .watchUnreadInvitesCount()
+        .listen((count) {
+          _unreadInvites = count;
+          _emitTotal();
+        });
   }
 
   void _emitTotal() {

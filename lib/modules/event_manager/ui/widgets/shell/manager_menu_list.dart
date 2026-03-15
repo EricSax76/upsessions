@@ -98,6 +98,14 @@ class ManagerMenuList extends StatelessWidget {
           ),
           _buildItem(
             context,
+            icon: Icons.notifications_outlined,
+            activeIcon: Icons.notifications,
+            label: 'Notificaciones',
+            route: AppRoutes.eventManagerNotifications,
+            currentLocation: location,
+          ),
+          _buildItem(
+            context,
             icon: Icons.settings_outlined,
             activeIcon: Icons.settings,
             label: 'Ajustes',

@@ -55,6 +55,44 @@ function record(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
+async function fetchUserPushTokens(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+): Promise<string[]> {
+  const [usersTokensSnap, legacyMusicianTokensSnap] = await Promise.all([
+    db.collection('users').doc(uid).collection('fcmTokens').get(),
+    db.collection('musicians').doc(uid).collection('fcmTokens').get(),
+  ]);
+
+  const tokenSet = new Set<string>();
+  for (const doc of usersTokensSnap.docs) {
+    const token = String(doc.id || '').trim();
+    if (token) tokenSet.add(token);
+  }
+  for (const doc of legacyMusicianTokensSnap.docs) {
+    const token = String(doc.id || '').trim();
+    if (token) tokenSet.add(token);
+  }
+  return Array.from(tokenSet);
+}
+
+async function deleteInvalidUserPushTokens(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  invalidTokens: string[],
+): Promise<void> {
+  if (!invalidTokens.length) return;
+
+  await Promise.all(
+    invalidTokens.flatMap((token) => {
+      return [
+        db.collection('users').doc(uid).collection('fcmTokens').doc(token).delete().catch(() => null),
+        db.collection('musicians').doc(uid).collection('fcmTokens').doc(token).delete().catch(() => null),
+      ];
+    }),
+  );
+}
+
 function contactPayloadFromMusician(
   contactId: string,
   musicianData: Record<string, unknown>,
@@ -125,13 +163,7 @@ export const onGroupInviteCreated = region.firestore
       { merge: true },
     );
 
-    const tokensSnap = await db
-      .collection('musicians')
-      .doc(targetUid)
-      .collection('fcmTokens')
-      .get();
-
-    const tokens = tokensSnap.docs.map((doc) => doc.id).filter(Boolean);
+    const tokens = await fetchUserPushTokens(db, targetUid);
     if (!tokens.length) {
       return;
     }
@@ -163,16 +195,7 @@ export const onGroupInviteCreated = region.firestore
       }
     });
 
-    await Promise.all(
-      invalidTokens.map((token) =>
-        db
-          .collection('musicians')
-          .doc(targetUid)
-          .collection('fcmTokens')
-          .doc(token)
-          .delete(),
-      ),
-    );
+    await deleteInvalidUserPushTokens(db, targetUid, invalidTokens);
   });
 
 export const onGroupInviteUsedCreateContacts = region.firestore

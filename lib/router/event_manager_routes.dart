@@ -18,8 +18,10 @@ import '../modules/event_manager/repositories/event_manager_repository.dart';
 import '../modules/event_manager/repositories/gig_offers_repository.dart';
 import '../modules/event_manager/repositories/manager_events_repository.dart';
 import '../modules/event_manager/repositories/musician_requests_repository.dart';
+import '../modules/event_manager/repositories/manager_notifications_repository.dart';
 import '../modules/event_manager/ui/pages/gig_offers_page.dart';
 import '../modules/event_manager/ui/pages/hire_musicians_page.dart';
+import '../modules/event_manager/ui/pages/manager_notifications_page.dart';
 import '../modules/event_manager/ui/pages/manager_agenda_page.dart';
 import '../modules/event_manager/ui/pages/manager_dashboard_page.dart';
 import '../modules/event_manager/ui/pages/manager_event_detail_page.dart';
@@ -266,6 +268,15 @@ List<RouteBase> buildEventManagerRoutes() {
           path: AppRoutes.eventManagerSettings,
           pageBuilder: (context, state) =>
               _noTransitionPage(state, const ManagerSettingsPage()),
+        ),
+        GoRoute(
+          path: AppRoutes.eventManagerNotifications,
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            ManagerNotificationsPage(
+              repository: locate<ManagerNotificationsRepository>(),
+            ),
+          ),
         ),
       ],
     ),

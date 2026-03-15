@@ -29,6 +29,7 @@ class AppRoutes {
   static const venuesDashboard = '/venues/dashboard';
   static const venuesDashboardVenueForm = '/venues/dashboard/form';
   static const venuesDashboardVenueEdit = '/venues/dashboard/:venueId/edit';
+  static const venuesDashboardNotifications = '/venues/dashboard/notifications';
   static const eventDetailRoute = '/events/:eventId';
   static const createEvent = '/events/create';
   static const rehearsals = '/rehearsals';
@@ -49,6 +50,7 @@ class AppRoutes {
   static const studiosRegister = '/studios/register';
   static const studiosCreate = '/studios/create';
   static const studiosDashboard = '/studios/dashboard';
+  static const studiosNotifications = '/studios/notifications';
   static const studiosProfile = '/studios/profile';
   static const studiosRoomsRoute = '/studios/:studioId/rooms';
   static const studiosRoomDetailRoute = '/studios/:studioId/rooms/:roomId';
@@ -80,6 +82,7 @@ class AppRoutes {
   static const eventManagerGigOfferForm = '/event-manager/gig-offers/form';
   static const eventManagerProfile = '/event-manager/profile';
   static const eventManagerSettings = '/event-manager/settings';
+  static const eventManagerNotifications = '/event-manager/notifications';
 
   static const groupRoute = '/rehearsals/groups/:groupId';
   static const groupRehearsalsRoute = '/rehearsals/groups/:groupId/rehearsals';

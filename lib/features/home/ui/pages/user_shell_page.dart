@@ -11,8 +11,7 @@ import 'package:upsessions/modules/auth/cubits/auth_cubit.dart';
 import 'package:upsessions/modules/groups/cubits/my_groups_cubit.dart';
 import 'package:upsessions/modules/notifications/cubits/notifications_status_cubit.dart';
 import 'package:upsessions/modules/contacts/cubits/liked_musicians_cubit.dart';
-import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
-import 'package:upsessions/modules/notifications/repositories/invite_notifications_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/musician_notifications_repository.dart';
 import 'package:upsessions/modules/groups/repositories/groups_repository.dart';
 import '../widgets/header/sm_app_bar.dart';
 import '../widgets/legal/legal_compliance_gate.dart';
@@ -26,15 +25,13 @@ class UserShellPage extends StatelessWidget {
     super.key,
     required this.child,
     required this.groupsRepository,
-    required this.chatRepository,
-    required this.inviteNotificationsRepository,
+    required this.musicianNotificationsRepository,
     required this.likedMusiciansCubit,
   });
 
   final Widget child;
   final GroupsRepository groupsRepository;
-  final ChatRepository chatRepository;
-  final InviteNotificationsRepository inviteNotificationsRepository;
+  final MusicianNotificationsRepository musicianNotificationsRepository;
   final LikedMusiciansCubit likedMusiciansCubit;
 
   @override
@@ -56,8 +53,7 @@ class UserShellPage extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => NotificationsStatusCubit(
-            chatRepository: chatRepository,
-            inviteNotificationsRepository: inviteNotificationsRepository,
+            musicianNotificationsRepository: musicianNotificationsRepository,
           ),
         ),
         BlocProvider(create: (_) => SidebarCubit()),

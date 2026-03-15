@@ -31,6 +31,11 @@ class StudioSidebarMenu extends StatelessWidget {
         icon: Icons.store_outlined,
         route: AppRoutes.studiosProfile,
       ),
+      _MenuItem(
+        label: 'Notificaciones',
+        icon: Icons.notifications_outlined,
+        route: AppRoutes.studiosNotifications,
+      ),
     ];
   }
 

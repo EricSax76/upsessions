@@ -11,17 +11,27 @@ class VenueBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
     final location = GoRouterState.of(context).uri.path;
-    final isDashboard = location.startsWith(AppRoutes.venuesDashboard);
-    final currentIndex = isDashboard ? 0 : 1;
+
+    int currentIndex = 0;
+    if (location == AppRoutes.venuesDashboardNotifications) {
+      currentIndex = 2;
+    } else if (location == AppRoutes.venues) {
+      currentIndex = 1;
+    } else if (location.startsWith(AppRoutes.venuesDashboard)) {
+      currentIndex = 0;
+    }
 
     return NavigationBar(
       selectedIndex: currentIndex,
       onDestinationSelected: (index) {
-        if (index == 0) {
-          context.go(AppRoutes.venuesDashboard);
-          return;
+        switch (index) {
+          case 0:
+            context.go(AppRoutes.venuesDashboard);
+          case 1:
+            context.go(AppRoutes.venues);
+          case 2:
+            context.go(AppRoutes.venuesDashboardNotifications);
         }
-        context.go(AppRoutes.venues);
       },
       destinations: [
         NavigationDestination(
@@ -33,6 +43,11 @@ class VenueBottomNav extends StatelessWidget {
           icon: Icon(Icons.travel_explore_outlined),
           selectedIcon: Icon(Icons.travel_explore),
           label: localizations.venueBottomNavExplore,
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.notifications_outlined),
+          selectedIcon: Icon(Icons.notifications),
+          label: 'Avisos',
         ),
       ],
     );

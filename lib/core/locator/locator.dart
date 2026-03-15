@@ -24,6 +24,7 @@ import 'package:upsessions/features/media/repositories/media_repository.dart';
 import 'package:upsessions/features/messaging/repositories/chat_repository.dart';
 import 'package:upsessions/modules/events/repositories/events_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/musicians_repository.dart';
+import 'package:upsessions/modules/musicians/repositories/musician_notifications_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/affinity_options_repository.dart';
 import 'package:upsessions/modules/musicians/repositories/artist_image_repository.dart';
 import 'package:upsessions/features/home/repositories/home_announcements_repository.dart';
@@ -50,6 +51,9 @@ import 'package:upsessions/modules/event_manager/repositories/manager_events_rep
 import 'package:upsessions/modules/jam_sessions/repositories/jam_sessions_repository.dart';
 import 'package:upsessions/modules/event_manager/repositories/musician_requests_repository.dart';
 import 'package:upsessions/modules/event_manager/repositories/gig_offers_repository.dart';
+import 'package:upsessions/modules/event_manager/repositories/manager_notifications_repository.dart';
+import 'package:upsessions/modules/studios/repositories/studio_notifications_repository.dart';
+import 'package:upsessions/modules/venues/repositories/venue_notifications_repository.dart';
 
 final GetIt getIt = GetIt.instance;
 final Set<String> _loggedLocateTypes = <String>{};
@@ -183,6 +187,12 @@ Future<void> setupServiceLocator() async {
         authRepository: getIt<AuthRepository>(),
       ),
     )
+    ..registerLazySingleton<MusicianNotificationsRepository>(
+      () => MusicianNotificationsRepository(
+        chatRepository: getIt<ChatRepository>(),
+        inviteNotificationsRepository: getIt<InviteNotificationsRepository>(),
+      ),
+    )
     ..registerLazySingleton<CreateRehearsalUseCase>(
       () => CreateRehearsalUseCase(
         groupsRepository: getIt<GroupsRepository>(),
@@ -243,6 +253,24 @@ Future<void> setupServiceLocator() async {
     )
     ..registerLazySingleton<GigOffersRepository>(
       () => GigOffersRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        authRepository: getIt<AuthRepository>(),
+      ),
+    )
+    ..registerLazySingleton<StudioNotificationsRepository>(
+      () => StudioNotificationsRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        authRepository: getIt<AuthRepository>(),
+      ),
+    )
+    ..registerLazySingleton<ManagerNotificationsRepository>(
+      () => ManagerNotificationsRepository(
+        firestore: getIt<FirebaseFirestore>(),
+        authRepository: getIt<AuthRepository>(),
+      ),
+    )
+    ..registerLazySingleton<VenueNotificationsRepository>(
+      () => VenueNotificationsRepository(
         firestore: getIt<FirebaseFirestore>(),
         authRepository: getIt<AuthRepository>(),
       ),

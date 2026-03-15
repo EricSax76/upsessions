@@ -751,6 +751,10 @@ service cloud.firestore {
         let keys = request.resource.data.diff(resource.data).affectedKeys();
         let oldStatus = resource.data.status;
         let newStatus = request.resource.data.status;
+        let managerMarksRead =
+          request.auth.uid == resource.data.managerId
+          && keys.hasOnly(['readByManager', 'updatedAt'])
+          && request.resource.data.readByManager == true;
 
         return (
           // Musician decides acceptance/rejection of a pending request.
@@ -764,7 +768,7 @@ service cloud.firestore {
           && keys.hasOnly(['status', 'updatedAt'])
           && oldStatus == 'pending'
           && newStatus == 'rejected'
-        );
+        ) || managerMarksRead;
       }
 
       allow read: if isSignedIn() && (resource.data.managerId == request.auth.uid || resource.data.musicianId == request.auth.uid);
@@ -799,6 +803,12 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if isOwner(uid);
       allow create, update, delete: if false;
+
+      // Client-managed FCM tokens for any authenticated role.
+      // Parent profile remains server-managed.
+      match /fcmTokens/{tokenId} {
+        allow read, write: if isOwner(uid);
+      }
 
       match /policy_acceptances/{acceptanceId} {
         allow read: if isOwner(uid);
